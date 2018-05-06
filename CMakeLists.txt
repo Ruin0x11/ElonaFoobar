@@ -37,6 +37,17 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
+# Set the type of GUI to use
+if(LINUX)
+  file(GLOB PLATFORM_SRC ${PROJECT_SOURCE_DIR}/asura/gtk/*.cpp)
+elseif(APPLE)
+  file(GLOB PLATFORM_SRC ${PROJECT_SOURCE_DIR}/asura/cocoa/*.cpp)
+elseif(MSVC)
+  file(GLOB PLATFORM_SRC ${PROJECT_SOURCE_DIR}/asura/windows/*.cpp)
+else()
+  file(GLOB PLATFORM_SRC ${PROJECT_SOURCE_DIR}/asura/reference/*.cpp)
+endif()
+
 # Source files
 set(CORE_SOURCES
     ability.cpp
@@ -89,8 +100,11 @@ set(CORE_SOURCES
     trait.cpp
     variables.cpp
     wish.cpp
+    asura/asura.cpp
     ${PROJECT_BINARY_DIR}/version.cpp
 )
+
+
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 

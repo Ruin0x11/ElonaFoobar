@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include "enums.hpp"
 #include "macro_gdata.hpp"
+#include "asura/asura.hpp"
 #include "snail/color.hpp"
 #include "snail/font.hpp"
 #include "snail/input.hpp"
@@ -388,8 +389,7 @@ void delcom(int);
 
 void elona_delete(const fs::path& filename);
 
-int dialog(const std::string& message, int = 0);
-
+asura::dialog::response dialog(const std::string& message, dialog_type_t = dialog_type_t::info_ok);
 
 
 void exec(const std::string&, int);
@@ -769,7 +769,6 @@ inline T clamp(const T& x, const T& min, const T& max)
 using namespace elona;
 
 
-
 #define DIM1(a) (a).clear()
 #define DIM2(a, b) (a).allocate_and_clear(b)
 #define DIM3(a, b, c) (a).allocate_and_clear(b, c)
@@ -784,10 +783,6 @@ using namespace elona;
     } while (0)
 #define SDIM3(a, b, c) (a).allocate_and_clear(c)
 #define SDIM4(a, b, c, d) (a).allocate_and_clear(c, d)
-
-#define DIALOG_OK  1
-#define DIALOG_YES 6
-#define DIALOG_NO  7
 
 
 // For basic_string literal suffix.

@@ -117,7 +117,7 @@ void check_double_launching()
             lang(
                 u8"二重起動のため終了します。"s,
                 u8"The program is already running."s),
-            1);
+            dialog_type_t::warning_ok);
         end();
         return;
     }

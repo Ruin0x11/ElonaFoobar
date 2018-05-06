@@ -72,12 +72,12 @@ label_17401:
     {
         if (fs::exists(filesystem::dir::tmp() / (u8"mdata_"s + mid + u8".s2")))
         {
-            int stat = dialog(
+            asura::dialog::response stat = dialog(
                 lang(
                     u8"マップを初期化しますか？（注：ゲームに影響が出る可能性があります。エラーが出てマップが読み込めない場合のみ、必ず元のセーブのバックアップをとった上で実行してください。）"s,
                     u8"Initialize this map? (Warning, only do this if an error occurs when loading this map. Make sure make a backup of the current save folder before doing this.)"s),
-                3);
-            if (stat == 6)
+                dialog_type_t::warning_yes_no);
+            if (stat == asura::dialog::response::yes)
             {
                 ctrl_file(file_operation_t::_11);
             }

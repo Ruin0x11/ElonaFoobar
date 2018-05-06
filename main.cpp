@@ -4,20 +4,15 @@
 #include "version.hpp"
 #include <iostream>
 #include "defines.hpp"
-#if defined(ELONA_OS_WINDOWS)
-#include <windows.h> // OutputDebugStringA
-#endif
+#include "asura/asura.hpp"
 
 namespace elona
 {
 int run();
 
 void report_error(const char* what) {
-#if defined(ELONA_OS_WINDOWS)
-	OutputDebugStringA(what);
-	MessageBoxA(NULL, what, "Error", MB_OK | MB_ICONSTOP);
-#endif
-	ELONA_LOG(what);
+    asura::dialog::ok(std::string(what), asura::dialog::message_type::error);
+    ELONA_LOG(what);
 }
 }
 
