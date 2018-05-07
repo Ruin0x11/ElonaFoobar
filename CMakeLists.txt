@@ -42,6 +42,10 @@ if(LINUX)
   file(GLOB PLATFORM_SRC ${PROJECT_SOURCE_DIR}/asura/gtk/*.cpp)
 elseif(APPLE)
   file(GLOB PLATFORM_SRC ${PROJECT_SOURCE_DIR}/asura/cocoa/*.cpp)
+
+  # Compile .cpp as Objective-C++
+  set_source_files_properties(${PLATFORM_SRC} asura/asura.cpp PROPERTIES
+    COMPILE_FLAGS "-x objective-c++")
 elseif(MSVC)
   file(GLOB PLATFORM_SRC ${PROJECT_SOURCE_DIR}/asura/windows/*.cpp)
 else()

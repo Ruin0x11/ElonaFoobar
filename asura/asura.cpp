@@ -3,7 +3,7 @@
 
 #if defined(ELONA_OS_WINDOWS)
 #include "windows/header.hpp"
-#elif defined(ELONA_OS_MACOSX)
+#elif defined(ELONA_OS_MACOS)
 #include "cocoa/header.hpp"
 #elif defined(ELONA_OS_LINUX)
 #include "gtk/header.hpp"
@@ -18,7 +18,7 @@ namespace asura
 
 #if defined(ELONA_OS_WINDOWS)
 #include "windows/platform.cpp"
-#elif defined(ELONA_OS_MACOSX)
+#elif defined(ELONA_OS_MACOS)
 #include "cocoa/platform.cpp"
 #elif defined(ELONA_OS_LINUX)
 #include "gtk/platform.cpp"
