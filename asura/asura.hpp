@@ -17,7 +17,6 @@ namespace dialog
 
 enum class response : int
 {
-  none = 0,
   ok = 1,
   yes = 6,
   no = 7,

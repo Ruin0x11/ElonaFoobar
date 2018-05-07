@@ -30,16 +30,20 @@ set(PROJECT_VERSION_PLATFORM "${CMAKE_SYSTEM}")
 # Versioning file
 configure_file("${PROJECT_SOURCE_DIR}/version.cpp.in" "${PROJECT_BINARY_DIR}/version.cpp")
 
-
 # C++14 or later
 enable_language(CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
+# Set Linux flag
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
+
 # Set the type of GUI to use
 if(LINUX)
-  file(GLOB PLATFORM_SRC ${PROJECT_SOURCE_DIR}/asura/gtk/*.cpp)
+  file(GLOB PLATFORM_SRC ${PROJECT_SOURCE_DIR}/asura/fltk/*.cpp)
 elseif(APPLE)
   file(GLOB PLATFORM_SRC ${PROJECT_SOURCE_DIR}/asura/cocoa/*.cpp)
 
@@ -228,6 +232,21 @@ if(NOT DEFINED SDL2_MIXER_INCLUDE_DIR OR NOT DEFINED SDL2_MIXER_LIBRARIES)
 endif()
 include_directories(${SDL2_MIXER_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} ${SDL2_MIXER_LIBRARIES})
+
+if(LINUX)
+    if(NOT DEFINED X11_INCLUDE_DIR OR NOT DEFINED X11_LIBRARIES)
+        find_package(X11 REQUIRED)
+    endif()
+    include_directories(${X11_INCLUDE_DIR})
+    target_link_libraries(${PROJECT_NAME} ${X11_LIBRARIES})
+
+    if(NOT DEFINED FLTK_INCLUDE_DIR OR NOT DEFINED FLTK_LIBRARIES)
+        set(FLTK_SKIP_OPENGL TRUE)
+        find_package(FLTK REQUIRED)
+    endif()
+    include_directories(${FLTK_INCLUDE_DIR})
+    target_link_libraries(${PROJECT_NAME} ${FLTK_LIBRARIES})
+endif()
 
 # Compiler options
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_14)

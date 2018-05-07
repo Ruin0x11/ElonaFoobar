@@ -44,7 +44,7 @@ dialog::response dialog(const std::string& message, dialog::message_type message
             break;
         }
 
-        return dialog::response::none;
+        return dialog::response::no;
     }
 }
 

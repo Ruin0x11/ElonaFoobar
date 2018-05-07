@@ -27,6 +27,9 @@ int main(int argc, char** argv)
 
     ELONA_LOG(latest_version.long_string());
 
+    std::string res = asura::browser::directory();
+    asura::dialog::ok(res, asura::dialog::message_type::error);
+
     try
     {
         return run();

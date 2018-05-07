@@ -529,7 +529,7 @@ void elona_delete(const fs::path& filename)
 
 asura::dialog::response dialog(const std::string& message, dialog_type_t option) {
     asura::dialog::message_type type = asura::dialog::message_type::information;
-    asura::dialog::response res = asura::dialog::response::none;
+    asura::dialog::response res = asura::dialog::response::ok;
     if (option == dialog_type_t::warning_ok || option == dialog_type_t::warning_yes_no) {
         type = asura::dialog::message_type::warning;
     }
