@@ -18149,7 +18149,7 @@ void label_1466(int cc)
 
 
 
-void label_1467(int cc, int experience)
+void gain_skill_experience_performance(int cc, int experience)
 {
     skillexp(183, cc, experience, 0, 0);
 }
@@ -49371,7 +49371,7 @@ void label_2146()
     int experience = cdata[cc].quality_of_performance - sdata(183, cc) + 50;
     if (experience > 0)
     {
-        label_1467(0, experience);
+        gain_skill_experience_performance(cc, experience);
     }
     return;
 }
