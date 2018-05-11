@@ -89,6 +89,7 @@ contents in this repository. Note that images, sounds and fonts are not included
 ## Thirdparty libraries
 
 * picojson: see thirdparty/picojson/LICENSE.
+* sol2: see thirdparty/sol2/LICENSE.
 * cmake/FindXXX.cmake: see cmake/LICENSE.
 
 

@@ -16,6 +16,7 @@
 #include "item_db.hpp"
 #include "item_material.hpp"
 #include "log.hpp"
+#include "lua.hpp"
 #include "macro.hpp"
 #include "main.hpp"
 #include "race.hpp"
@@ -765,6 +766,7 @@ int cat_cbitmod(lua_State* L)
 int run()
 {
     cat::global.initialize();
+    lua::init();
 
 
     export_to_cat_world(cat::global.ptr());

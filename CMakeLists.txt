@@ -72,6 +72,7 @@ set(CORE_SOURCES
     item_db.cpp
     item_material.cpp
     log.cpp
+    lua.cpp
     magic.cpp
     main.cpp
     map.cpp

@@ -20,6 +20,7 @@
 #include "item_db.hpp"
 #include "item_material.hpp"
 #include "log.hpp"
+#include "lua.hpp"
 #include "macro.hpp"
 #include "main.hpp"
 #include "map.hpp"
@@ -68543,6 +68544,9 @@ turn_result_t turn_end()
 
 turn_result_t pc_turn(bool advance_time)
 {
+    lua::sol.get()->script(R"(
+Elona.GUI.txt(" Calling rnd: " .. Elona.Rand.rnd(20))
+)");
     if (advance_time)
     {
         if (gdata_catches_god_signal)
