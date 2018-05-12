@@ -58,7 +58,7 @@ void clear_log_panel()
 {
     gsel(8);
     gmode(0);
-    pos(0, ui.msgline % ui.maxlog * ui.msgspace);
+    pos(0, ui.cur_msgline % ui.maxlog * ui.msgspace);
     gcopy(
         0,
         ui.msgx,
@@ -744,12 +744,12 @@ void msg_newline()
     clear_log_panel();
 
     message_width = 0;
-    ++ui.msgline;
-    if (ui.msgline >= ui.maxlog)
+    ++ui.cur_msgline;
+    if (ui.cur_msgline >= ui.maxlog)
     {
-        ui.msgline -= ui.maxlog;
+        ui.cur_msgline -= ui.maxlog;
     }
-    msg(ui.msgline % ui.maxlog) = "";
+    msg(ui.cur_msgline % ui.maxlog) = "";
     p_at_txtfunc = (ui.windoww - ui.msgx) / 192;
     gmode(0);
     pos(ui.msgx, ui.msgy + 5);
@@ -773,7 +773,7 @@ void msg_newline()
         gcopy(
             3,
             496,
-            536 + ui.msgline % 4 * ui.msgspace,
+            536 + ui.cur_msgline % 4 * ui.msgspace,
             x_at_txtfunc,
             ui.msgspace);
     }
@@ -788,7 +788,7 @@ void txtnew()
 {
     if (tnew == 0)
     {
-        if (strlen_u(msg(ui.msgline % ui.maxlog)) > 4)
+        if (strlen_u(msg(ui.cur_msgline % ui.maxlog)) > 4)
         {
             msg_newline();
             message_width = 2;
@@ -824,7 +824,7 @@ void txt_conv()
 
     if (tnew == 1)
     {
-        if (!msg(ui.msgline % ui.maxlog).empty())
+        if (!msg(ui.cur_msgline % ui.maxlog).empty())
         {
             msg_newline();
             tnew = 0;
@@ -919,7 +919,7 @@ void txt_conv()
                 if (len >= msgtemp(0).size())
                     len = msgtemp(0).size();
                 auto m = msgtemp(0).substr(0, len);
-                msg(ui.msgline % ui.maxlog) += m;
+                msg(ui.cur_msgline % ui.maxlog) += m;
                 msg_write(m);
                 msgtemp(0) = msgtemp(0).substr(len);
                 if (msgtemp(0).empty() || msgtemp(0) == u8" ")
@@ -931,7 +931,7 @@ void txt_conv()
             }
             break;
         }
-        msg(ui.msgline % ui.maxlog) += msgtemp(0);
+        msg(ui.cur_msgline % ui.maxlog) += msgtemp(0);
         msg_write(msgtemp(0));
         message_width += width;
     }
@@ -973,13 +973,13 @@ void txt_conv()
                 continue;
             }
             auto mst = strmid(msgtemp(0), 0, p_at_txtfunc);
-            msg(ui.msgline % ui.maxlog) += mst;
+            msg(ui.cur_msgline % ui.maxlog) += mst;
             msg_write(mst);
             message_width += p_at_txtfunc;
             msgtemp(0) = strmid(
                 msgtemp(0), p_at_txtfunc, msgtemp(0).size() - p_at_txtfunc);
         }
-        msg(ui.msgline % ui.maxlog) += msgtemp(0);
+        msg(ui.cur_msgline % ui.maxlog) += msgtemp(0);
         msg_write(msgtemp(0));
         message_width += msgtemp(0).size();
     }

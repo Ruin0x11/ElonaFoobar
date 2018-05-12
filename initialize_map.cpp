@@ -2945,10 +2945,10 @@ label_1744_internal:
     }
     cdata[0].current_map = gdata_current_map;
     cdata[0].current_dungeon_level = gdata_current_dungeon_level;
-    ui.raderx = -1;
-    ui.radery = -1;
-    ui.raderw = 120 / mdata(0) + 2;
-    ui.raderh = 84 / mdata(1) + 2;
+    ui.cur_raderx = -1;
+    ui.cur_radery = -1;
+    ui.cur_raderw = 120 / mdata(0) + 2;
+    ui.cur_raderh = 84 / mdata(1) + 2;
     scx = cdata[0].position.x;
     scy = cdata[0].position.y;
     msync = 1;

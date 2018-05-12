@@ -952,7 +952,7 @@ void load_config2()
             1,
             [&](auto value) { config::instance().joypad = value; }),
         std::make_unique<config_integer>(
-            u8"msgLine", 4, [&](auto value) { ui.msgline = value; }), // TODO will this be set after ui_init()?
+            u8"msgLine", 4, [&](auto value) { ui.cur_msgline = value; }), // TODO will this be set after ui_init()?
         std::make_unique<config_integer>(
             u8"tileSize", 48, [&](auto value) { ui.tiles = value; }),
         std::make_unique<config_integer>(

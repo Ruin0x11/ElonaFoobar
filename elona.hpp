@@ -163,11 +163,6 @@ struct elona_vector2
         return (*storage.at(j))[i];
     }
 
-    const T operator()(size_t i, size_t j) const
-    {
-        return (*this)(i, j);
-    }
-
 
     void clear()
     {

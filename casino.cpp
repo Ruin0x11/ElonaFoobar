@@ -968,7 +968,7 @@ bool casino_blackjack()
             u8"Sorry sir, you don't seem to have casino chips."s));
     }
     list(0, listmax) = 0;
-    listn(0, listmax) = lang(u8"やめる"s, u8"I quit."s);
+    listn(0, listmax) = lang(u8"やめる"s, u8"I quit."s); // BUG cannot quit
     ++listmax;
     if (mat(1) >= 1)
     {
@@ -1019,9 +1019,9 @@ bool casino_blackjack()
         }
         if (cardround == 0)
         {
-            card_state state = card_init(60, 160);
+            state = card_init(60, 160);
             state.no_joker = 1;
-            card_player_init(state, 2, 5);
+            card_player_init(state);
             card_player_add(state, 0, 220, 124);
             card_player_add(state, 1, 220, 240);
         }
@@ -1035,9 +1035,6 @@ bool casino_blackjack()
         card_show_pile(state);
         card_showholder(state);
         card_show(state);
-
-        int your_score = card_cp_score(state, 1);
-        int dealer_score = card_cp_score(state, 0);
 
         if (cardround == 0)
         {
@@ -1055,7 +1052,7 @@ bool casino_blackjack()
                 {
                     break;
                 }
-                if (dealer_score < your_score || dealer_score - rnd(5) <= 11)
+                if (card_cp_score(state, 0) < card_cp_score(state, 1) || card_cp_score(state, 0) - rnd(5) <= 11)
                 {
                     int stat = card_serve(state, 0);
                     card_open2(state, stat);
@@ -1065,24 +1062,24 @@ bool casino_blackjack()
             }
         }
         noteadd(lang(
-            u8"あなたの合計は"s + your_score + u8"です。"s,
-            u8"Your hand is "s + your_score + u8"."s));
+            u8"あなたの合計は"s + card_cp_score(state, 1) + u8"です。"s,
+            u8"Your hand is "s + card_cp_score(state, 1) + u8"."s));
         if (cardround == -1)
         {
             noteadd(lang(
-                u8"親の合計は"s + dealer_score + u8"です。"s,
-                u8"The dealer's hand is "s + dealer_score + u8"."s));
+                u8"親の合計は"s + card_cp_score(state, 0) + u8"です。"s,
+                u8"The dealer's hand is "s + card_cp_score(state, 0) + u8"."s));
             winner = -1;
-            if (dealer_score <= 21)
+            if (card_cp_score(state, 0) <= 21)
             {
-                if (your_score > 21 || dealer_score > your_score)
+                if (card_cp_score(state, 1) > 21 || card_cp_score(state, 0) > card_cp_score(state, 1))
                 {
                     winner = 0;
                 }
             }
-            if (dealer_score <= 21)
+            if (card_cp_score(state, 0) <= 21)
             {
-                if (dealer_score > 21 || your_score > dealer_score)
+                if (card_cp_score(state, 0) > 21 || card_cp_score(state, 1) > card_cp_score(state, 0))
                 {
                     winner = 1;
                 }
@@ -1304,12 +1301,15 @@ bool casino_blackjack()
 
 
 
-void card_player_init(card_state& state, int prm_417, int prm_418)
+void card_player_init(card_state& state)
 {
     int card_holder = 100;
-    DIM3(state.card_player, card_holder, prm_417);
-    state.card_player_max = prm_417;
-    state.card_holder_max = prm_418;
+    int player_max = 2;
+    int holder_max = 5;
+
+    DIM3(state.card_player, card_holder, player_max);
+    state.card_player_max = player_max;
+    state.card_holder_max = holder_max;
 }
 
 
@@ -1369,7 +1369,7 @@ card_state card_init(int pilex, int piley, int)
 
 
 
-void card_show2(const card_state& state, int prm_425, int prm_426)
+void card_show2(card_state& state, int prm_425, int prm_426)
 {
     elona_vector1<int> card_color;
     std::string card_abbrev;
@@ -1695,7 +1695,7 @@ int trashcard(card_state& state, int prm_430)
 
 
 
-int card_cp_score(const card_state& state, int prm_431)
+int card_cp_score(card_state& state, int prm_431)
 {
     int ace = 0;
     int score = 0;
@@ -1731,7 +1731,7 @@ int card_cp_score(const card_state& state, int prm_431)
 
 
 
-int card_last_index(const card_state& state, int prm_432)
+int card_last_index(card_state& state, int prm_432)
 {
     int card_last_idx = 0;
     for (int holder_idx = 0; holder_idx < state.card_holder_max; ++holder_idx)
@@ -1747,7 +1747,7 @@ int card_last_index(const card_state& state, int prm_432)
 
 
 
-int card_cp_black_card(const card_state& state, int prm_433)
+int card_cp_black_card(card_state& state, int prm_433)
 {
     int card_idx = 0;
     for (int holder_idx = 0; holder_idx < state.card_holder_max; ++holder_idx)
@@ -1762,7 +1762,7 @@ int card_cp_black_card(const card_state& state, int prm_433)
 }
 
 
-int card_cp_num(const card_state& state, int prm_434)
+int card_cp_num(card_state& state, int prm_434)
 {
     int card_count = 0;
     for (int holder_idx = 0; holder_idx < state.card_holder_max; ++holder_idx)
@@ -1776,7 +1776,7 @@ int card_cp_num(const card_state& state, int prm_434)
 }
 
 
-int card_pile_remain(const card_state& state)
+int card_pile_remain(card_state& state)
 {
     int remain = 0;
     for (int card_idx = 0; card_idx < state.card_max; ++card_idx)

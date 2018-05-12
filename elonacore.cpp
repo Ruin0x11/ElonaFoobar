@@ -16132,13 +16132,13 @@ void label_1433()
     {
         sx = 112;
     }
-    if (ui.raderx != -1)
+    if (ui.cur_raderx != -1)
     {
-        pos(ui.raderx + ui.raderx, ui.radery + ui.radery);
-        gcopy(3, 688 + ui.raderx, 528 + ui.radery, 6, 6);
+        pos(ui.raderx + ui.cur_raderx, ui.radery + ui.cur_radery);
+        gcopy(3, 688 + ui.cur_raderx, 528 + ui.cur_radery, 6, 6);
     }
-    ui.raderx = sx;
-    ui.radery = sy;
+    ui.cur_raderx = sx;
+    ui.cur_radery = sy;
     pos(ui.raderx + sx, ui.radery + sy);
     gcopy(3, 15, 338, 6, 6);
     for (int y = 0; y < mdata(1); ++y)
@@ -16439,10 +16439,10 @@ void label_1439()
                 2,
                 map(sx, sy, 0) % 33 * ui.tiles + sx % 16,
                 map(sx, sy, 0) / 33 * ui.tiles + sy % 12,
-                ui.raderw,
-                ui.raderh);
+                ui.cur_raderw,
+                ui.cur_raderh);
             pos(688 + sx(1), 528 + sy(1));
-            gfini(ui.raderw, ui.raderh);
+            gfini(ui.cur_raderw, ui.cur_raderh);
             if (chipm(7, map(sx, sy, 0)) & 4)
             {
                 gfdec2(100, 100, 100);
@@ -16450,7 +16450,7 @@ void label_1439()
         }
     }
     pos(688, 528);
-    gfini(ui.raderw * mdata(0), ui.raderh * mdata(1));
+    gfini(ui.cur_raderw * mdata(0), ui.cur_raderh * mdata(1));
     gfinc(10, 10, 10);
     gsel(0);
     return;
@@ -16463,7 +16463,7 @@ void label_1440()
     sy(1) = 84 * sy / mdata(1);
     sx(1) = 120 * sx / mdata(0);
     pos(ui.raderx + sx(1), ui.radery + sy(1));
-    gcopy(3, 688 + sx(1), 528 + sy(1), ui.raderw, ui.raderh);
+    gcopy(3, 688 + sx(1), 528 + sy(1), ui.cur_raderw, ui.cur_raderh);
     return;
 }
 
@@ -64518,7 +64518,7 @@ turn_result_t show_message_log()
     boxf();
     for (int cnt = 0, cnt_end = (ui.maxlog - 3); cnt < cnt_end; ++cnt)
     {
-        p = ui.msgline - cnt - 3;
+        p = ui.cur_msgline - cnt - 3;
         if (p < 0)
         {
             p += ui.maxlog;

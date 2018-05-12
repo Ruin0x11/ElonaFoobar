@@ -46,6 +46,12 @@ struct ui_state
     int prompty;
     int promptx;
     int vertype;
+
+    int cur_raderx;
+    int cur_radery;
+    int cur_raderw;
+    int cur_raderh;
+    int cur_msgline;
 };
 
 extern ui_state ui;
