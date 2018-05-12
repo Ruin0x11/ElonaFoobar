@@ -21,6 +21,7 @@
 #include "main.hpp"
 #include "race.hpp"
 #include "range.hpp"
+#include "audio.hpp"
 #include "trait.hpp"
 #include "variables.hpp"
 #include "version.hpp"
@@ -379,7 +380,6 @@ void initialize_elona()
     SDIM2(playerheader, 100);
     artifactlocation.clear();
     SDIM1(newsbuff);
-    soundfile.resize(122);
     SDIM3(musicfile, 30, 97);
     DIM3(slight, inf_screenw + 4, inf_screenh + 4);
 
@@ -454,10 +454,7 @@ void initialize_elona()
     {
         config::instance().music = 2;
     }
-    if (config::instance().sound == 1 && DSINIT() == 0)
-    {
-        config::instance().sound = 2;
-    }
+    DSINIT();
     if (config::instance().joypad == 1)
     {
         DIINIT();
@@ -616,7 +613,6 @@ void start_elona()
         {
             playerid = defload;
             mode = 3;
-            music = 0;
             initialize_game();
             main_loop();
             return;
@@ -801,8 +797,7 @@ main_menu_result_t main_title_menu()
 {
     mode = 10;
     lomiaseaster = 0;
-    music = 65;
-    play_music();
+    play_music(65);
     cs = 0;
     cs_bk = -1;
     keyrange = 6;
