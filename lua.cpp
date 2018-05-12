@@ -10,17 +10,117 @@ namespace lua
 
 std::unique_ptr<sol::state> sol;
 
+namespace Chara {
+bool is_alive(const character&);
+bool is_player(const character&);
+bool is_ally(const character&);
+
+void mut_damage_hp(character&, int, int);
+void mut_damage_con(character&, int, int);
+};
+
+namespace Skill {
+int level()
+}
+
+namespace Pos {
+int dist(const position_t&, const position_t&);
+}
+
+namespace World {
+int time();
+};
+
+namespace Map {
+int blocked(const position_t&);
+position_t bound_within(const position_t&);
+bool can_access(const position_t&);
+}
+
 namespace Fov {
 bool los(const position_t&, const position_t&);
+bool can_see(const character&);
 };
 
 namespace Rand {
 int rnd(int);
+bool one_in(int);
+bool coinflip();
 };
+
+namespace Item {
+bool has_enchantment(const item&, int);
+}
 
 namespace GUI {
 void txt(const std::string&);
 };
+
+
+bool Chara::is_alive(const character& chara)
+{
+    return chara.state == 1;
+}
+
+bool Chara::is_player(const character& chara)
+{
+    return chara.id == 0; // TODO
+}
+
+bool Chara::is_ally(const character& chara)
+{
+    return chara.id <= 16; // TODO
+}
+
+void Chara::mut_damage_hp(character& chara, int damage, int type)
+{
+    elona::dmghp(chara, damage, type);
+}
+
+void Chara::mut_damage_con(character& chara, int damage, int type)
+{
+    elona::dmgcon(chara, damage, type);
+}
+
+
+int Pos::dist(const position_t& from, const position_t& to)
+{
+    return elona::dist(from.x, from.y, to.x, to.y);
+}
+
+
+int World::time()
+{
+    return gdata_hour
+        + gdata_day * 24
+        + gdata_month * 24 * 30
+        + gdata_year * 24 * 30 * 12;
+}
+
+
+int Map::blocked(const position_t& pos)
+{
+    return elona::map(pos.x, pos.y, 0) == 0;
+}
+
+position_t Map::bound_within(const position_t& pos)
+{
+    int x = clamp(
+        pos.x,
+        0,
+        mdata(0) - 1);
+    int y = clamp(
+        pos.y,
+        0,
+        mdata(1) - 1);
+    return position_t{x, y};
+}
+
+bool Map::can_access(const position_t& pos)
+{
+    cell_check(pos.x, pos.y);
+    return cellaccess != 0;
+}
 
 
 bool Fov::los(const position_t& from, const position_t& to)
@@ -28,10 +128,31 @@ bool Fov::los(const position_t& from, const position_t& to)
     return elona::fov_los(from.x, from.y, to.x, to.y) == 1;
 }
 
+bool Fov::can_see(const character& chara)
+{
+    return elona::is_in_fov(chara.id); // TODO
+}
+
 
 int Rand::rnd(int n)
 {
     return elona::rnd(n);
+}
+
+bool Rand::one_in(int n)
+{
+    return elona::rnd(n) == 0;
+}
+
+bool Rand::coinflip()
+{
+    return elona::rnd(2) == 0;
+}
+
+
+bool Item::has_enchantment(const item& item, int id)
+{
+    return elona::encfindspec(item.id, id); //TODO
 }
 
 
@@ -99,28 +220,37 @@ void on_map_exit()
 void on_chara_creation(int id)
 {
     // for each mod, init its extra data for the character
+    // for each mod, run chara creation callback
 }
 
 void on_item_creation(int id)
 {
     // for each mod, init its extra data for the item
+    // for each mod, run item creation callback
 }
 
 void on_chara_removal(int id)
 {
     // for each mod, invalidate global chara state
+    // for each mod, run chara removal callback
 }
 
 void on_item_removal(int id)
 {
     // for each mod, invalidate global item state
+    // for each mod, run item removal callback
 }
 
 void init()
 {
     sol = std::make_unique<sol::state>();
     sol.get()->new_usertype<position_t>( "position",
-                                  sol::constructors<position_t()>()
+                                         sol::constructors<position_t()>()
+        );
+    sol.get()->new_usertype<character>( "character",
+                                        sol::constructors<character()>(),
+                                        "damage_hp", &Chara::mut_damage_hp,
+                                        "damage_con", &Chara::mut_damage_con
         );
 
     sol::table Elona = sol.get()->create_named_table("Elona");
