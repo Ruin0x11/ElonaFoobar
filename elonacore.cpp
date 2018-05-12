@@ -68544,11 +68544,9 @@ turn_result_t turn_end()
 
 turn_result_t pc_turn(bool advance_time)
 {
-    lua::sol.get()->script(R"(
-Elona.GUI.txt(" Calling rnd: " .. Elona.Rand.rnd(20))
-)");
     if (advance_time)
     {
+        lua::callback("player_turn");
         if (gdata_catches_god_signal)
         {
             if (rnd(1000) == 0)
@@ -68942,6 +68940,12 @@ label_2747:
     {
         tcgmain();
         label_1746();
+        update_entire_screen();
+        return turn_result_t::turn_end;
+    }
+    if (getkey(snail::key::f5))
+    {
+        lua::reload();
         update_entire_screen();
         return turn_result_t::turn_end;
     }
