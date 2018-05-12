@@ -1,6 +1,7 @@
 #include "ability.hpp"
 #include "character.hpp"
 #include "class.hpp"
+#include "damage.hpp"
 #include "elona.hpp"
 #include "i18n.hpp"
 #include "race.hpp"
@@ -585,7 +586,7 @@ int access_character_info()
         {
             if (rnd(3) == 0)
             {
-                resistmod(cc, 50, 50);
+                add_resistance(cc, 50, 50);
             }
             return -1;
         }
@@ -595,7 +596,7 @@ int access_character_info()
         {
             if (rnd(3) == 0)
             {
-                resistmod(cc, 51, 50);
+                add_resistance(cc, 51, 50);
             }
             return -1;
         }
@@ -676,7 +677,7 @@ int access_character_info()
         {
             if (rnd(4) == 0)
             {
-                resistmod(cc, 52, 50);
+                add_resistance(cc, 52, 50);
             }
             return -1;
         }
@@ -687,7 +688,7 @@ int access_character_info()
             eating_effect_chaos();
             if (rnd(5) == 0)
             {
-                resistmod(cc, 59, 50);
+                add_resistance(cc, 59, 50);
             }
             return -1;
         }
@@ -698,7 +699,7 @@ int access_character_info()
             eating_effect_lightning();
             if (rnd(3) == 0)
             {
-                resistmod(cc, 58, 50);
+                add_resistance(cc, 58, 50);
             }
             return -1;
         }
@@ -709,7 +710,7 @@ int access_character_info()
             eating_effect_lightning();
             if (rnd(3) == 0)
             {
-                resistmod(cc, 59, 50);
+                add_resistance(cc, 59, 50);
             }
             return -1;
         }
@@ -720,7 +721,7 @@ int access_character_info()
             eating_effect_lightning();
             if (rnd(3) == 0)
             {
-                resistmod(cc, 54, 50);
+                add_resistance(cc, 54, 50);
             }
             return -1;
         }
@@ -731,7 +732,7 @@ int access_character_info()
             eating_effect_lightning();
             if (rnd(3) == 0)
             {
-                resistmod(cc, 58, 50);
+                add_resistance(cc, 58, 50);
             }
             return -1;
         }
@@ -827,7 +828,7 @@ int access_character_info()
             eating_effect_eat_poisonous_one();
             if (rnd(6) == 0)
             {
-                resistmod(cc, 55, 50);
+                add_resistance(cc, 55, 50);
             }
             return -1;
         }
@@ -838,7 +839,7 @@ int access_character_info()
             eating_effect_eat_poisonous_one();
             if (rnd(6) == 0)
             {
-                resistmod(cc, 55, 50);
+                add_resistance(cc, 55, 50);
             }
             return -1;
         }
@@ -926,7 +927,7 @@ int access_character_info()
             eating_effect_eat_poisonous_one();
             if (rnd(6) == 0)
             {
-                resistmod(cc, 55, 50);
+                add_resistance(cc, 55, 50);
             }
             return -1;
         }
@@ -937,7 +938,7 @@ int access_character_info()
             eating_effect_eat_poisonous_one();
             if (rnd(6) == 0)
             {
-                resistmod(cc, 55, 50);
+                add_resistance(cc, 55, 50);
             }
             return -1;
         }
@@ -948,7 +949,7 @@ int access_character_info()
             eating_effect_eat_poisonous_one();
             if (rnd(6) == 0)
             {
-                resistmod(cc, 55, 50);
+                add_resistance(cc, 55, 50);
             }
             return -1;
         }
@@ -959,7 +960,7 @@ int access_character_info()
             eating_effect_eat_poisonous_one();
             if (rnd(6) == 0)
             {
-                resistmod(cc, 55, 50);
+                add_resistance(cc, 55, 50);
             }
             return -1;
         }
@@ -970,7 +971,7 @@ int access_character_info()
             eating_effect_eat_poisonous_one();
             if (rnd(6) == 0)
             {
-                resistmod(cc, 55, 50);
+                add_resistance(cc, 55, 50);
             }
             return -1;
         }
@@ -1030,7 +1031,7 @@ int access_character_info()
             eating_effect_calm();
             if (rnd(5) == 0)
             {
-                resistmod(cc, 50, 50);
+                add_resistance(cc, 50, 50);
             }
             return -1;
         }
@@ -1040,7 +1041,7 @@ int access_character_info()
         {
             if (rnd(5) == 0)
             {
-                resistmod(cc, 50, 50);
+                add_resistance(cc, 50, 50);
             }
             return -1;
         }
@@ -1247,7 +1248,7 @@ int access_character_info()
         {
             if (rnd(10) == 0)
             {
-                resistmod(cc, 54, 50);
+                add_resistance(cc, 54, 50);
             }
             return -1;
         }
@@ -1257,7 +1258,7 @@ int access_character_info()
         {
             if (rnd(10) == 0)
             {
-                resistmod(cc, 54, 50);
+                add_resistance(cc, 54, 50);
             }
             return -1;
         }
@@ -1267,7 +1268,7 @@ int access_character_info()
         {
             if (rnd(8) == 0)
             {
-                resistmod(cc, 54, 50);
+                add_resistance(cc, 54, 50);
             }
             return -1;
         }
@@ -1277,7 +1278,7 @@ int access_character_info()
         {
             if (rnd(6) == 0)
             {
-                resistmod(cc, 54, 50);
+                add_resistance(cc, 54, 50);
             }
             return -1;
         }
@@ -1287,7 +1288,7 @@ int access_character_info()
         {
             if (rnd(4) == 0)
             {
-                resistmod(cc, 53, 50);
+                add_resistance(cc, 53, 50);
             }
             return -1;
         }
@@ -1297,7 +1298,7 @@ int access_character_info()
         {
             if (rnd(4) == 0)
             {
-                resistmod(cc, 53, 50);
+                add_resistance(cc, 53, 50);
             }
             return -1;
         }

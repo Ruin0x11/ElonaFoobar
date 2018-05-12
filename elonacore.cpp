@@ -11,6 +11,7 @@
 #include "class.hpp"
 #include "config.hpp"
 #include "ctrl_file.hpp"
+#include "damage.cpp"
 #include "debug.hpp"
 #include "draw.hpp"
 #include "elona.hpp"
@@ -284,8 +285,6 @@ void screen_txtadv();
 
 int prm_518;
 int prm_818;
-int prm_820;
-int prm_853;
 
 int tmp_at_m172;
 
@@ -383,9 +382,6 @@ int gspd = 0;
 int f_at_m125 = 0;
 int dx_at_m133 = 0;
 elona_vector1<int> dy_at_m133;
-int f_at_con = 0;
-int res_at_con = 0;
-int p_at_con = 0;
 int dx_at_m136 = 0;
 int dy_at_m136 = 0;
 int ci_at_m138 = 0;
@@ -395,7 +391,6 @@ int ti_at_m138 = 0;
 elona_vector1<int> list_at_m138;
 int f_at_m138 = 0;
 int a_at_m138 = 0;
-int dmg_at_m141 = 0;
 int rtdmg = 0;
 std::string ndeathcause;
 int catitem = 0;
@@ -2463,7 +2458,7 @@ void initialize_item_chip()
     chipi(4, 104) = 22;
     chipi(4, 107) = 22;
     chipi(4, 116) = 22;
-    chipi(4, 117) = 22;
+    chipi(4, 117) = 22;
     chipi(4, 123) = 12;
     chipi(4, 125) = 12;
     chipi(4, 130) = 12;
@@ -9863,217 +9858,6 @@ int cell_findspace(int prm_796, int prm_797, int prm_798)
 
 
 
-int findbuff(int prm_799, int prm_800)
-{
-    int f_at_m131 = 0;
-    f_at_m131 = -1;
-    for (int cnt = 0; cnt < 16; ++cnt)
-    {
-        if (cdata[prm_799].buffs[cnt].id == 0)
-        {
-            break;
-        }
-        if (cdata[prm_799].buffs[cnt].id == prm_800)
-        {
-            f_at_m131 = cnt;
-            break;
-        }
-    }
-    return f_at_m131;
-}
-
-
-
-int addbuff(int prm_801, int prm_802, int prm_803, int prm_804)
-{
-    int p_at_m132 = 0;
-    int fixeddur_at_m132 = 0;
-    int f_at_m132 = 0;
-    if (prm_804 <= 0)
-    {
-        return 0;
-    }
-    p_at_m132 = -1;
-    for (int cnt = 0; cnt < 16; ++cnt)
-    {
-        if (cdata[prm_801].buffs[cnt].id == prm_802)
-        {
-            if (cdata[prm_801].buffs[cnt].turns < prm_804)
-            {
-                p_at_m132 = cnt;
-                break;
-            }
-            else
-            {
-                p_at_m132 = -2;
-                break;
-            }
-        }
-        if (cdata[prm_801].buffs[cnt].id == 0)
-        {
-            p_at_m132 = cnt;
-            break;
-        }
-    }
-    if (p_at_m132 == -1)
-    {
-        p_at_m132 = rnd(16);
-    }
-    if (p_at_m132 == -2)
-    {
-        if (is_in_fov(prm_801))
-        {
-            txt(lang(
-                u8"しかし、効果はなかった。"s,
-                u8"But it produces no effect."s));
-            return 0;
-        }
-    }
-    fixeddur_at_m132 = prm_804;
-    if (the_buff_db[prm_802]->type == buff_data::type_t::hex)
-    {
-        f_at_m132 = 0;
-        if (sdata(60, prm_801) / 2 > rnd(prm_803 * 2 + 100))
-        {
-            f_at_m132 = 1;
-        }
-        if (prm_803 * 3 < sdata(60, prm_801))
-        {
-            f_at_m132 = 1;
-        }
-        if (prm_803 / 3 > sdata(60, prm_801))
-        {
-            f_at_m132 = 0;
-        }
-        if (cdata[prm_801].quality > 3)
-        {
-            if (rnd(4))
-            {
-                f_at_m132 = 1;
-            }
-            else
-            {
-                fixeddur_at_m132 = prm_804 / 5 + 1;
-            }
-        }
-        if (cdata[prm_801].quality >= 4)
-        {
-            if (prm_802 == 16)
-            {
-                f_at_m132 = 1;
-            }
-        }
-        if (findbuff(prm_801, 10) != -1)
-        {
-            if (cdata[prm_801].buffs[findbuff(prm_801, 10)].power + 50
-                    > prm_803 * 5 / 2
-                || rnd(cdata[prm_801].buffs[findbuff(prm_801, 10)].power + 50)
-                    > rnd(prm_803 + 1))
-            {
-                txt(lang(
-                    u8"ホーリーヴェイルが呪いを防いだ。"s,
-                    u8"The holy veil repels the hex."s));
-                return 0;
-            }
-        }
-        if (f_at_m132 == 1)
-        {
-            if (is_in_fov(prm_801))
-            {
-                txt(lang(
-                    name(prm_801) + u8"は抵抗した。"s,
-                    name(prm_801) + u8" resist"s + _s(prm_801)
-                        + u8" the hex."s));
-            }
-            return 0;
-        }
-        if (cc == 0)
-        {
-            hostileaction(0, prm_801);
-        }
-    }
-    if (the_buff_db[prm_802]->type != buff_data::type_t::food
-        && is_in_fov(prm_801))
-    {
-        txt(lang(
-            name(prm_801)
-                + i18n::_(u8"buff", std::to_string(prm_802), u8"message_0"),
-            name(prm_801) + u8" "s
-                + i18n::_(u8"buff", std::to_string(prm_802), u8"message_0")
-                + _s(prm_801)
-                + i18n::_(u8"buff", std::to_string(prm_802), u8"message_1")));
-    }
-    cdata[prm_801].buffs[p_at_m132].id = prm_802;
-    cdata[prm_801].buffs[p_at_m132].power = prm_803;
-    cdata[prm_801].buffs[p_at_m132].turns = fixeddur_at_m132;
-    refresh_character(prm_801);
-    return 0;
-}
-
-
-
-void delbuff(int prm_805, int prm_806)
-{
-    if (prm_805 == 0)
-    {
-        txtef(8);
-        txt(lang(
-            ""s
-                + i18n::_(
-                      u8"buff",
-                      std::to_string(cdata[prm_805].buffs[prm_806].id),
-                      u8"name")
-                + u8"の効果が切れた。"s,
-            u8"The effect of "s
-                + i18n::_(
-                      u8"buff",
-                      std::to_string(cdata[prm_805].buffs[prm_806].id),
-                      u8"name")
-                + u8" ends."s));
-    }
-    if (cdata[prm_805].buffs[prm_806].id == 15)
-    {
-        if (prm_805 == 0)
-        {
-            incognitoend();
-        }
-    }
-    if (cdata[prm_805].buffs[prm_806].id == 16)
-    {
-        cdata[prm_805].is_sentenced_daeth() = false;
-    }
-    if (cdata[prm_805].buffs[prm_806].id == 18)
-    {
-        cdata[prm_805].is_contracting_with_reaper() = false;
-    }
-    cdata[prm_805].buffs[prm_806].id = 0;
-    for (int cnt = prm_806, cnt_end = cnt + (16 - prm_806 - 1); cnt < cnt_end;
-         ++cnt)
-    {
-        if (cdata[prm_805].buffs[cnt].id == 0)
-        {
-            if (cdata[prm_805].buffs[cnt + 1].id != 0)
-            {
-                cdata[prm_805].buffs[cnt].id = cdata[prm_805].buffs[cnt + 1].id;
-                cdata[prm_805].buffs[cnt].power =
-                    cdata[prm_805].buffs[cnt + 1].power;
-                cdata[prm_805].buffs[cnt].turns =
-                    cdata[prm_805].buffs[cnt + 1].turns;
-                cdata[prm_805].buffs[cnt + 1].id = 0;
-                cdata[prm_805].buffs[cnt + 1].power = 0;
-                cdata[prm_805].buffs[cnt + 1].turns = 0;
-            }
-            else
-            {
-                break;
-            }
-        }
-    }
-    refresh_character(prm_805);
-    return;
-}
-
-
 
 void animeload(int prm_807, int prm_808)
 {
@@ -10290,1088 +10074,6 @@ void animeblood(int prm_809, int prm_810, int prm_811)
     return;
 }
 
-
-
-void resistmod(int cc, int element, int delta)
-{
-    if (delta >= 50)
-    {
-        txtef(2);
-        switch (element)
-        {
-        case 50:
-            txt(lang(
-                name(cc) + u8"の身体は急に火照りだした。"s,
-                u8"Suddenly, "s + name(cc) + u8" feel"s + _s(cc)
-                    + u8" very hot."s));
-            break;
-        case 51:
-            txt(lang(
-                name(cc) + u8"の身体は急に冷たくなった。"s,
-                u8"Suddenly, "s + name(cc) + u8" feel"s + _s(cc)
-                    + u8" cool."s));
-            break;
-        case 52:
-            txt(lang(
-                name(cc) + u8"の身体に電気が走った。"s,
-                name(cc) + u8" "s + is(cc)
-                    + u8" struck by an electric shock."s));
-            break;
-        case 54:
-            txt(lang(
-                name(cc) + u8"は急に明晰になった。"s,
-                u8"Suddenly, "s + name(cc) + your(cc)
-                    + u8" mind becomes very clear."s));
-            break;
-        case 58:
-            txt(lang(
-                name(cc) + u8"は急に神経が図太くなった。"s,
-                name(cc) + your(cc) + u8" nerve is sharpened."s));
-            break;
-        case 53:
-            txt(lang(
-                name(cc) + u8"は急に暗闇が怖くなくなった。"s,
-                name(cc) + u8" no longer fear"s + _s(cc) + u8" darkness."s));
-            break;
-        case 57:
-            txt(lang(
-                name(cc) + u8"は騒音を気にしなくなった。"s,
-                name(cc) + your(cc) + u8" eardrums get thick."s));
-            break;
-        case 59:
-            txt(lang(
-                name(cc) + u8"は急にカオスを理解した。"s,
-                u8"Suddenly, "s + name(cc) + u8" understand"s + _s(cc)
-                    + u8" chaos."s));
-            break;
-        case 55:
-            txt(lang(
-                name(cc) + u8"の毒への耐性は強くなった。"s,
-                name(cc) + u8" now "s + have(cc)
-                    + u8" antibodies to poisons."s));
-            break;
-        case 56:
-            txt(lang(
-                name(cc) + u8"の魂は地獄に近づいた。"s,
-                name(cc) + u8" "s + is(cc) + u8" no longer afraid"s + _s(cc)
-                    + u8" of hell."s));
-            break;
-        case 60:
-            txt(lang(
-                name(cc) + u8"の皮膚は魔力のオーラに包まれた。"s,
-                name(cc) + your(cc)
-                    + u8" body is covered by a magical aura."s));
-            break;
-        default: assert(0);
-        }
-    }
-    else if (delta <= 50 * -1)
-    {
-        txtef(8);
-        switch (element)
-        {
-        case 50:
-            txt(lang(
-                name(cc) + u8"は急に汗をかきだした。"s,
-                name(cc) + u8" sweat"s + _s(cc) + u8"."s));
-            break;
-        case 51:
-            txt(lang(
-                name(cc) + u8"は急に寒気を感じた。"s,
-                name(cc) + u8" shivers"s + _s(cc) + u8"."s));
-            break;
-        case 52:
-            txt(lang(
-                name(cc) + u8"は急に電気に敏感になった。"s,
-                name(cc) + u8" "s + is(cc) + u8" shocked."s));
-            break;
-        case 54:
-            txt(lang(
-                name(cc) + u8"は以前ほど明晰ではなくなった。"s,
-                name(cc) + your(cc) + u8" mind becomes slippery."s));
-            break;
-        case 58:
-            txt(lang(
-                name(cc) + u8"の神経は急に萎縮した。"s,
-                name(cc) + u8" become"s + _s(cc) + u8" dull."s));
-            break;
-        case 53:
-            txt(lang(
-                name(cc) + u8"は急に暗闇が怖くなった。"s,
-                u8"Suddenly, "s + name(cc) + u8" fear"s + _s(cc)
-                    + u8" darkness."s));
-            break;
-        case 57:
-            txt(lang(
-                name(cc) + u8"は急に辺りをうるさく感じた。"s,
-                name(cc) + u8" become"s + _s(cc)
-                    + u8" very sensitive to noises."s));
-            break;
-        case 59:
-            txt(lang(
-                name(cc) + u8"はカオスへの理解を失った。"s,
-                name(cc) + u8" no longer understand"s + _s(cc) + u8" chaos."s));
-            break;
-        case 55:
-            txt(lang(
-                name(cc) + u8"の毒への耐性は薄れた。"s,
-                name(cc) + u8" lose"s + _s(cc, true)
-                    + u8" antibodies to poisons."s));
-            break;
-        case 56:
-            txt(lang(
-                name(cc) + u8"の魂は地獄から遠ざかった。"s,
-                name(cc) + u8" "s + is(cc) + u8" afraid of hell."s));
-            break;
-        case 60:
-            txt(lang(
-                name(cc) + u8"の皮膚から魔力のオーラが消えた。"s,
-                u8"The magical aura disappears from "s + name(cc) + your(cc)
-                    + u8" body."s));
-            break;
-        }
-    }
-
-    sdata.get(element, cc).original_level =
-        clamp(sdata.get(element, cc).original_level + delta, 50, 200);
-    snd(107);
-    animeload(15, cc);
-
-    refresh_character(cc);
-}
-
-
-
-void modcorrupt(int prm_815)
-{
-    int org_at_m134 = 0;
-    int p_at_m134 = 0;
-    int mod_at_m134 = 0;
-    int cnt2_at_m134 = 0;
-    int i_at_m134 = 0;
-    org_at_m134 = gdata_ether_disease_stage / 1000;
-    p_at_m134 = prm_815 + (prm_815 > 0) * gdata_ether_disease_speed;
-    if (trait(168))
-    {
-        if (prm_815 > 0)
-        {
-            p_at_m134 = p_at_m134 * 100 / 150;
-        }
-    }
-    gdata_ether_disease_stage += p_at_m134;
-    if (gdata_ether_disease_stage < 0)
-    {
-        gdata_ether_disease_stage = 0;
-    }
-    mod_at_m134 = gdata_ether_disease_stage / 1000 - org_at_m134;
-    if (mod_at_m134 > 0)
-    {
-        if (org_at_m134 == 0)
-        {
-            txtef(8);
-            txt(lang(
-                u8"エーテルの病が発症した。"s,
-                u8"The symptom of the Ether disease is shown up on you."s));
-            if (config::instance().extrahelp)
-            {
-                if (gdata(215) == 0)
-                {
-                    if (mode == 0)
-                    {
-                        if (cdata[0].continuous_action_turn == 0)
-                        {
-                            gdata(215) = 1;
-                            ghelp = 15;
-                            show_ex_help();
-                        }
-                    }
-                }
-            }
-        }
-        if (org_at_m134 + mod_at_m134 >= 20)
-        {
-            p_at_m134 = 20 - org_at_m134;
-        }
-        else
-        {
-            p_at_m134 = mod_at_m134;
-        }
-        for (int cnt = 0, cnt_end = (p_at_m134); cnt < cnt_end; ++cnt)
-        {
-            cnt2_at_m134 = cnt;
-            if (org_at_m134 + cnt2_at_m134 > 20)
-            {
-                break;
-            }
-            for (int cnt = 0; cnt < 100000; ++cnt)
-            {
-                await();
-                int tid = rnd(17) + 200;
-                int stat = get_trait_info(0, tid);
-                if (stat == 0 || traitref != 3)
-                {
-                    continue;
-                }
-                if (trait(tid) <= traitref(1))
-                {
-                    continue;
-                }
-                --trait(tid);
-                i_at_m134 = 700 + org_at_m134 + cnt2_at_m134;
-                gdata(i_at_m134) = tid;
-                txtef(8);
-                txt(lang(
-                    u8"あなたはエーテルに侵食された。"s,
-                    u8"Your disease is getting worse."s));
-                txtef(3);
-                txt(traitrefn(1));
-                if (tid == 203)
-                {
-                    body = 9;
-                    label_2196(0);
-                }
-                if (tid == 205)
-                {
-                    body = 3;
-                    label_2196(0);
-                }
-                if (tid == 206)
-                {
-                    body = 2;
-                    label_2196(0);
-                }
-                break;
-            }
-        }
-        animeload(8, 0);
-        refresh_character(0);
-        return;
-    }
-    if (mod_at_m134 < 0)
-    {
-        if (org_at_m134 + mod_at_m134 < 0)
-        {
-            p_at_m134 = org_at_m134;
-        }
-        else
-        {
-            p_at_m134 = std::abs(mod_at_m134);
-        }
-        if (p_at_m134 < 0)
-        {
-            p_at_m134 = 0;
-        }
-        for (int cnt = 0, cnt_end = (p_at_m134); cnt < cnt_end; ++cnt)
-        {
-            cnt2_at_m134 = cnt;
-            for (int cnt = 0; cnt < 100000; ++cnt)
-            {
-                await();
-                int tid = rnd(17) + 200;
-                if (cnt == 0)
-                {
-                    i_at_m134 = 700 + org_at_m134 - cnt2_at_m134 - 1;
-                    if (gdata(i_at_m134) != 0)
-                    {
-                        tid = gdata(i_at_m134);
-                    }
-                }
-                int stat = get_trait_info(0, tid);
-                if (stat == 0 || traitref != 3)
-                {
-                    continue;
-                }
-                if (trait(tid) >= 0)
-                {
-                    continue;
-                }
-                ++trait(tid);
-                txtef(2);
-                txt(lang(
-                    u8"あなたのエーテルの侵食はやわらいだ。"s,
-                    u8"The symptoms of the Ether disease seem to calm down."s));
-                txtef(2);
-                txt(traitrefn(0));
-                break;
-            }
-        }
-        animeload(10, 0);
-        refresh_character(0);
-        return;
-    }
-    return;
-}
-
-
-
-void wet(int cc, int turns)
-{
-    cdata[cc].wet += turns;
-    if (is_in_fov(cc))
-    {
-        txt(lang(
-            name(cc) + u8"は濡れた。"s,
-            name(cc) + u8" get"s + _s(cc) + u8" wet."s));
-        if (cdata[cc].is_invisible())
-        {
-            txt(lang(
-                name(cc) + u8"の姿があらわになった。"s,
-                name(cc) + u8" "s + is(cc) + u8" revealed "s + his(cc)
-                    + u8" shape."s));
-        }
-    }
-}
-
-
-
-int dmgcon(int prm_818, int prm_819, int prm_820)
-{
-    elona::prm_818 = prm_818;
-    elona::prm_820 = prm_820;
-    if (prm_820 < 1)
-    {
-        f_at_con = 0;
-    }
-    else
-    {
-        f_at_con = 1;
-    }
-    if (prm_819 == 4)
-    {
-        if (cdata[prm_818].is_immune_to_blindness() == 1)
-        {
-            f_at_con = 0;
-        }
-        if (cdata[prm_818].quality > 3)
-        {
-            if (rnd(cdata[prm_818].level / 2 + 1))
-            {
-                f_at_con = 0;
-            }
-        }
-        res_at_con = 53;
-        label_1346();
-        if (f_at_con == 0)
-        {
-            return 0;
-        }
-        p_at_con = p_at_con / 6;
-        if (p_at_con > 0)
-        {
-            if (cdata[prm_818].blind == 0)
-            {
-                cdata[prm_818].blind = p_at_con;
-                if (is_in_fov(prm_818))
-                {
-                    txtef(8);
-                    txt(lang(
-                        name(prm_818) + u8"は盲目になった。"s,
-                        name(prm_818) + u8" "s + is(prm_818) + u8" blinded."s));
-                }
-            }
-            else
-            {
-                cdata[prm_818].blind += p_at_con / 3 + 1;
-            }
-            rowactend(prm_818);
-        }
-        return 1;
-    }
-    if (prm_819 == 5)
-    {
-        if (cdata[prm_818].is_immune_to_confusion() == 1)
-        {
-            f_at_con = 0;
-        }
-        if (findbuff(prm_818, 7) != -1)
-        {
-            f_at_con = 0;
-        }
-        if (cdata[prm_818].quality > 3)
-        {
-            if (rnd(cdata[prm_818].level / 2 + 1))
-            {
-                f_at_con = 0;
-            }
-        }
-        res_at_con = 54;
-        label_1346();
-        if (f_at_con == 0)
-        {
-            return 0;
-        }
-        p_at_con = p_at_con / 7;
-        if (p_at_con > 0)
-        {
-            if (cdata[prm_818].confused == 0)
-            {
-                cdata[prm_818].confused = p_at_con;
-                if (is_in_fov(prm_818))
-                {
-                    txtef(8);
-                    txt(lang(
-                        name(prm_818) + u8"は混乱した。"s,
-                        name(prm_818) + u8" "s + is(prm_818)
-                            + u8" confused."s));
-                }
-            }
-            else
-            {
-                cdata[prm_818].confused += p_at_con / 3 + 1;
-            }
-            rowactend(prm_818);
-        }
-        return 1;
-    }
-    if (prm_819 == 3)
-    {
-        if (cdata[prm_818].is_immune_to_paralyzation() == 1)
-        {
-            f_at_con = 0;
-        }
-        if (cdata[prm_818].quality > 3)
-        {
-            if (rnd(cdata[prm_818].level + 1))
-            {
-                f_at_con = 0;
-            }
-        }
-        res_at_con = 58;
-        label_1346();
-        if (f_at_con == 0)
-        {
-            return 0;
-        }
-        p_at_con = p_at_con / 10;
-        if (p_at_con > 0)
-        {
-            if (cdata[prm_818].paralyzed == 0)
-            {
-                cdata[prm_818].paralyzed = p_at_con;
-                if (is_in_fov(prm_818))
-                {
-                    txtef(8);
-                    txt(lang(
-                        name(prm_818) + u8"は麻痺した。"s,
-                        name(prm_818) + u8" "s + is(prm_818)
-                            + u8" paralyzed."s));
-                }
-            }
-            else
-            {
-                cdata[prm_818].paralyzed += p_at_con / 3 + 1;
-            }
-            rowactend(prm_818);
-        }
-        return 1;
-    }
-    if (prm_819 == 1)
-    {
-        if (cdata[prm_818].is_immune_to_poison() == 1)
-        {
-            f_at_con = 0;
-        }
-        if (cdata[prm_818].quality > 3)
-        {
-            if (rnd(cdata[prm_818].level / 3 + 1))
-            {
-                f_at_con = 0;
-            }
-        }
-        res_at_con = 55;
-        label_1346();
-        if (f_at_con == 0)
-        {
-            return 0;
-        }
-        p_at_con = p_at_con / 5;
-        if (p_at_con > 0)
-        {
-            if (cdata[prm_818].poisoned == 0)
-            {
-                cdata[prm_818].poisoned = p_at_con;
-                if (is_in_fov(prm_818))
-                {
-                    txtef(8);
-                    txt(lang(
-                        name(prm_818) + u8"は毒におかされた。"s,
-                        name(prm_818) + u8" "s + is(prm_818)
-                            + u8" poisoned."s));
-                }
-            }
-            else
-            {
-                cdata[prm_818].poisoned += p_at_con / 3 + 3;
-            }
-            rowactend(prm_818);
-        }
-        return 1;
-    }
-    if (prm_819 == 2)
-    {
-        if (cdata[prm_818].is_immune_to_sleep() == 1)
-        {
-            f_at_con = 0;
-        }
-        if (cdata[prm_818].quality > 3)
-        {
-            if (rnd(cdata[prm_818].level / 5 + 1))
-            {
-                f_at_con = 0;
-            }
-        }
-        res_at_con = 58;
-        label_1346();
-        if (f_at_con == 0)
-        {
-            return 0;
-        }
-        p_at_con = p_at_con / 4;
-        if (p_at_con > 0)
-        {
-            if (cdata[prm_818].sleep == 0)
-            {
-                cdata[prm_818].sleep = p_at_con;
-                if (is_in_fov(prm_818))
-                {
-                    txtef(8);
-                    txt(lang(
-                        name(prm_818) + u8"は眠りにおちた。"s,
-                        name(prm_818) + u8" fall"s + _s(prm_818)
-                            + u8" asleep."s));
-                }
-            }
-            else
-            {
-                cdata[prm_818].sleep += p_at_con / 3 + 1;
-            }
-            rowactend(prm_818);
-        }
-        return 1;
-    }
-    if (prm_819 == 6)
-    {
-        if (cdata[prm_818].is_immune_to_fear() == 1)
-        {
-            f_at_con = 0;
-        }
-        if (findbuff(prm_818, 1) != -1)
-        {
-            f_at_con = 0;
-        }
-        if (findbuff(prm_818, 7) != -1)
-        {
-            f_at_con = 0;
-        }
-        if (cdata[prm_818].quality > 3)
-        {
-            if (rnd(cdata[prm_818].level / 5 + 1))
-            {
-                f_at_con = 0;
-            }
-        }
-        res_at_con = 54;
-        label_1346();
-        if (f_at_con == 0)
-        {
-            return 0;
-        }
-        p_at_con = p_at_con / 7;
-        if (p_at_con > 0)
-        {
-            if (cdata[prm_818].fear == 0)
-            {
-                cdata[prm_818].fear = p_at_con;
-            }
-            if (is_in_fov(prm_818))
-            {
-                txt(lang(
-                    name(prm_818) + u8"は恐怖に侵された。"s,
-                    name(prm_818) + u8" "s + is(prm_818) + u8" frightened."s));
-            }
-        }
-        return 1;
-    }
-    if (prm_819 == 7)
-    {
-        if (cdata[prm_818].quality > 3)
-        {
-            if (rnd(cdata[prm_818].level / 3 + 1))
-            {
-                f_at_con = 0;
-            }
-        }
-        if (cdatan(2, prm_818) == u8"golem"s)
-        {
-            f_at_con = 0;
-        }
-        res_at_con = 57;
-        label_1346();
-        if (f_at_con == 0)
-        {
-            return 0;
-        }
-        p_at_con = p_at_con / 8;
-        if (p_at_con > 0)
-        {
-            if (cdata[prm_818].dimmed == 0)
-            {
-                cdata[prm_818].dimmed = p_at_con;
-                if (is_in_fov(prm_818))
-                {
-                    txtef(8);
-                    txt(lang(
-                        name(prm_818) + u8"は朦朧とした。"s,
-                        name(prm_818) + u8" "s + is(prm_818) + u8" dimmed."s));
-                }
-            }
-            else
-            {
-                cdata[prm_818].dimmed += p_at_con / 3 + 1;
-            }
-            rowactend(prm_818);
-        }
-        return 1;
-    }
-    if (prm_819 == 9)
-    {
-        p_at_con = prm_820 / 25;
-        if (cdata[prm_818].quality > 3)
-        {
-            p_at_con /= 2;
-        }
-        if (p_at_con > 0)
-        {
-            if (cdata[prm_818].bleeding == 0)
-            {
-                cdata[prm_818].bleeding = p_at_con;
-                if (is_in_fov(prm_818))
-                {
-                    txtef(8);
-                    txt(lang(
-                        name(prm_818) + u8"は血を流し始めた。"s,
-                        name(prm_818) + u8" begin"s + _s(prm_818)
-                            + u8" to bleed."s));
-                }
-            }
-            else
-            {
-                cdata[prm_818].bleeding += p_at_con;
-            }
-            rowactend(prm_818);
-        }
-        return 1;
-    }
-    if (prm_819 == 8)
-    {
-        p_at_con = prm_820 / 10;
-        if (p_at_con > 0)
-        {
-            if (cdata[prm_818].drunk == 0)
-            {
-                cdata[prm_818].drunk = p_at_con;
-                if (is_in_fov(prm_818))
-                {
-                    txt(lang(
-                        name(prm_818) + u8"は酔っ払った。"s,
-                        name(prm_818) + u8" get"s + _s(prm_818)
-                            + u8" drunk."s));
-                }
-            }
-            else
-            {
-                cdata[prm_818].drunk += p_at_con;
-            }
-        }
-        return 1;
-    }
-    if (prm_819 == 11)
-    {
-        p_at_con = prm_820 / 8;
-        if (p_at_con > 0)
-        {
-            if (cdata[prm_818].insane == 0)
-            {
-                cdata[prm_818].insane = p_at_con;
-                if (is_in_fov(prm_818))
-                {
-                    txtef(8);
-                    txt(lang(
-                        name(prm_818) + u8"は気が狂った。"s,
-                        name(prm_818) + u8" become"s + _s(prm_818)
-                            + u8" insane."s));
-                }
-            }
-            else
-            {
-                cdata[prm_818].insane += p_at_con / 3 + 1;
-            }
-            rowactend(prm_818);
-        }
-        return 1;
-    }
-    if (prm_819 == 12)
-    {
-        p_at_con = prm_820 / 10;
-        if (p_at_con > 0)
-        {
-            if (cdata[prm_818].sick == 0)
-            {
-                cdata[prm_818].sick = p_at_con;
-                if (is_in_fov(prm_818))
-                {
-                    txtef(8);
-                    txt(lang(
-                        name(prm_818) + u8"は病気になった。"s,
-                        name(prm_818) + u8" get"s + _s(prm_818) + u8" sick."s));
-                }
-            }
-            else
-            {
-                cdata[prm_818].sick += p_at_con / 10 + 1;
-            }
-        }
-        return 1;
-    }
-    return 0;
-}
-
-
-
-void label_1346()
-{
-    int r_at_con = 0;
-    p_at_con = rnd(prm_820 / 2 + 1) + prm_820 / 2;
-    r_at_con = sdata(res_at_con, prm_818) / 50;
-    p_at_con = p_at_con * 100 / (50 + r_at_con * 50);
-    if (r_at_con >= 3)
-    {
-        if (p_at_con < 40)
-        {
-            f_at_con = 0;
-        }
-    }
-    return;
-}
-
-
-
-void healhp(int cc, int delta)
-{
-    cdata[cc].hp += delta;
-    if (cdata[cc].hp > cdata[cc].max_hp)
-    {
-        cdata[cc].hp = cdata[cc].max_hp;
-    }
-}
-
-
-
-void healmp(int cc, int delta)
-{
-    cdata[cc].mp += delta;
-    if (cdata[cc].mp > cdata[cc].max_mp)
-    {
-        cdata[cc].mp = cdata[cc].max_mp;
-    }
-}
-
-
-
-void healsp(int cc, int delta)
-{
-    cdata[cc].sp += delta;
-    if (cdata[cc].sp > cdata[cc].max_sp)
-    {
-        cdata[cc].sp = cdata[cc].max_sp;
-    }
-}
-
-
-
-void healcon(int prm_827, int prm_828, int prm_829)
-{
-    if (prm_828 == 6)
-    {
-        if (cdata[prm_827].fear > 0)
-        {
-            if (prm_829 == 0)
-            {
-                cdata[prm_827].fear = 0;
-            }
-            else
-            {
-                cdata[prm_827].fear -= prm_829;
-            }
-            if (cdata[prm_827].fear <= 0)
-            {
-                cdata[prm_827].fear = 0;
-                if (is_in_fov(prm_827))
-                {
-                    txt(lang(
-                        name(prm_827) + u8"は恐怖から立ち直った。"s,
-                        name(prm_827) + u8" shake"s + _s(prm_827) + u8" off "s
-                            + his(prm_827) + u8" fear."s));
-                }
-            }
-            return;
-        }
-    }
-    if (prm_828 == 4)
-    {
-        if (cdata[prm_827].blind > 0)
-        {
-            if (prm_829 == 0)
-            {
-                cdata[prm_827].blind = 0;
-            }
-            else
-            {
-                cdata[prm_827].blind -= prm_829;
-            }
-            if (cdata[prm_827].blind <= 0)
-            {
-                cdata[prm_827].blind = 0;
-                if (is_in_fov(prm_827))
-                {
-                    txt(lang(
-                        name(prm_827) + u8"は盲目から回復した。"s,
-                        name(prm_827) + u8" can see again."s));
-                }
-            }
-            return;
-        }
-    }
-    if (prm_828 == 5)
-    {
-        if (cdata[prm_827].confused > 0)
-        {
-            if (prm_829 == 0)
-            {
-                cdata[prm_827].confused = 0;
-            }
-            else
-            {
-                cdata[prm_827].confused -= prm_829;
-            }
-            if (cdata[prm_827].confused <= 0)
-            {
-                cdata[prm_827].confused = 0;
-                if (is_in_fov(prm_827))
-                {
-                    txt(lang(
-                        name(prm_827) + u8"は混乱から回復した。"s,
-                        name(prm_827) + u8" recover"s + _s(prm_827)
-                            + u8" from confusion."s));
-                }
-            }
-            return;
-        }
-    }
-    if (prm_828 == 3)
-    {
-        if (cdata[prm_827].paralyzed > 0)
-        {
-            if (prm_829 == 0)
-            {
-                cdata[prm_827].paralyzed = 0;
-            }
-            else
-            {
-                cdata[prm_827].paralyzed -= prm_829;
-            }
-            if (cdata[prm_827].paralyzed <= 0)
-            {
-                cdata[prm_827].paralyzed = 0;
-                if (is_in_fov(prm_827))
-                {
-                    txt(lang(
-                        name(prm_827) + u8"は麻痺から回復した。"s,
-                        name(prm_827) + u8" recover"s + _s(prm_827)
-                            + u8" from paralysis."s));
-                }
-            }
-            return;
-        }
-    }
-    if (prm_828 == 1)
-    {
-        if (cdata[prm_827].poisoned > 0)
-        {
-            if (prm_829 == 0)
-            {
-                cdata[prm_827].poisoned = 0;
-            }
-            else
-            {
-                cdata[prm_827].poisoned -= prm_829;
-            }
-            if (cdata[prm_827].poisoned <= 0)
-            {
-                cdata[prm_827].poisoned = 0;
-                if (is_in_fov(prm_827))
-                {
-                    txt(lang(
-                        name(prm_827) + u8"は毒から回復した。"s,
-                        name(prm_827) + u8" recover"s + _s(prm_827)
-                            + u8" from poison."s));
-                }
-            }
-            return;
-        }
-    }
-    if (prm_828 == 2)
-    {
-        if (cdata[prm_827].sleep > 0)
-        {
-            if (prm_829 == 0)
-            {
-                cdata[prm_827].sleep = 0;
-            }
-            else
-            {
-                cdata[prm_827].sleep -= prm_829;
-            }
-            if (cdata[prm_827].sleep <= 0)
-            {
-                cdata[prm_827].sleep = 0;
-                if (is_in_fov(prm_827))
-                {
-                    txt(lang(
-                        name(prm_827) + u8"は心地よい眠りから覚めた。"s,
-                        name(prm_827) + u8" awake"s + _s(prm_827) + u8" from "s
-                            + his(prm_827) + u8" sleep."s));
-                }
-            }
-            return;
-        }
-    }
-    if (prm_828 == 7)
-    {
-        if (cdata[prm_827].dimmed > 0)
-        {
-            if (prm_829 == 0)
-            {
-                cdata[prm_827].dimmed = 0;
-            }
-            else
-            {
-                cdata[prm_827].dimmed -= prm_829;
-            }
-            if (cdata[prm_827].dimmed <= 0)
-            {
-                cdata[prm_827].dimmed = 0;
-                if (is_in_fov(prm_827))
-                {
-                    txt(lang(
-                        name(prm_827) + u8"の意識ははっきりした。"s,
-                        name(prm_827) + u8" recover"s + _s(prm_827)
-                            + u8" from poison."s));
-                }
-            }
-        }
-    }
-    if (prm_828 == 9)
-    {
-        if (cdata[prm_827].bleeding > 0)
-        {
-            if (prm_829 == 0)
-            {
-                cdata[prm_827].bleeding = 0;
-            }
-            else
-            {
-                cdata[prm_827].bleeding -= prm_829;
-            }
-            if (cdata[prm_827].bleeding <= 0)
-            {
-                cdata[prm_827].bleeding = 0;
-                if (is_in_fov(prm_827))
-                {
-                    txt(lang(
-                        name(prm_827) + u8"の出血は止まった。"s,
-                        name(prm_827) + your(prm_827) + u8" bleeding stops."s));
-                }
-            }
-        }
-    }
-    if (prm_828 == 8)
-    {
-        if (cdata[prm_827].drunk > 0)
-        {
-            if (prm_829 == 0)
-            {
-                cdata[prm_827].drunk = 0;
-            }
-            else
-            {
-                cdata[prm_827].drunk -= prm_829;
-            }
-            if (cdata[prm_827].drunk <= 0)
-            {
-                cdata[prm_827].drunk = 0;
-                if (is_in_fov(prm_827))
-                {
-                    txt(lang(
-                        name(prm_827) + u8"の酔いは覚めた。"s,
-                        name(prm_827) + u8" get"s + _s(prm_827)
-                            + u8" sober."s));
-                }
-            }
-        }
-    }
-    if (prm_828 == 11)
-    {
-        if (cdata[prm_827].insane > 0)
-        {
-            if (prm_829 == 0)
-            {
-                cdata[prm_827].insane = 0;
-            }
-            else
-            {
-                cdata[prm_827].insane -= prm_829;
-            }
-            if (cdata[prm_827].insane <= 0)
-            {
-                cdata[prm_827].insane = 0;
-                if (is_in_fov(prm_827))
-                {
-                    txt(lang(
-                        name(prm_827) + u8"は正気に戻った。"s,
-                        name(prm_827) + u8" come"s + _s(prm_827) + u8" to "s
-                            + yourself(prm_827) + u8" again."s));
-                }
-            }
-        }
-    }
-    if (prm_828 == 12)
-    {
-        if (cdata[prm_827].sick > 0)
-        {
-            if (prm_829 == 0)
-            {
-                cdata[prm_827].sick = 0;
-            }
-            else
-            {
-                cdata[prm_827].sick -= prm_829;
-            }
-            if (cdata[prm_827].sick <= 0)
-            {
-                cdata[prm_827].sick = 0;
-                if (is_in_fov(prm_827))
-                {
-                    txt(lang(
-                        name(prm_827) + u8"の病気は治った。"s,
-                        name(prm_827) + u8" recover"s + _s(prm_827)
-                            + u8" from "s + his(prm_827) + u8" illness."s));
-                }
-            }
-        }
-    }
-    return;
-}
 
 
 
@@ -12408,1477 +11110,6 @@ void txteledmg(int type, int attacker, int target, int element)
 }
 
 
-
-int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
-{
-    int ele_at_m141 = 0;
-    int c3_at_m141 = 0;
-    int r_at_m141 = 0;
-    int dmglevel_at_m141 = 0;
-    int f_at_m141 = 0;
-    int se_at_m141 = 0;
-    elona_vector1<int> p_at_m141;
-    int exp_at_m141 = 0;
-    elona::prm_853 = prm_853;
-    ele_at_m141 = prm_856;
-    if (txt3rd == 0)
-    {
-        c3_at_m141 = prm_855;
-    }
-    else
-    {
-        c3_at_m141 = -1;
-    }
-    if (cdata[prm_853].state != 1)
-    {
-        end_dmghp();
-        return 0;
-    }
-    dmg_at_m141 = prm_854 * (1 + (cdata[prm_853].furious > 0));
-    if (prm_855 >= 0)
-    {
-        if (cdata[prm_855].furious > 0)
-        {
-            dmg_at_m141 *= 2;
-        }
-    }
-    if (ele_at_m141 != 0 && ele_at_m141 < 61)
-    {
-        r_at_m141 = sdata(ele_at_m141, prm_853) / 50;
-        if (r_at_m141 < 3)
-        {
-            dmg_at_m141 =
-                dmg_at_m141 * 150 / clamp((r_at_m141 * 50 + 50), 40, 150);
-        }
-        else if (r_at_m141 < 10)
-        {
-            dmg_at_m141 = dmg_at_m141 * 100 / (r_at_m141 * 50 + 50);
-        }
-        else
-        {
-            dmg_at_m141 = 0;
-        }
-        dmg_at_m141 = dmg_at_m141 * 100 / (sdata(60, prm_853) / 2 + 50);
-    }
-    if (prm_855 == 0)
-    {
-        if (critical)
-        {
-            snd(3);
-        }
-        else
-        {
-            snd(2);
-        }
-    }
-    if (cdata[prm_853].wet > 0)
-    {
-        if (ele_at_m141 == 50 || prm_855 == -9)
-        {
-            dmg_at_m141 = dmg_at_m141 / 3;
-        }
-        if (ele_at_m141 == 52)
-        {
-            dmg_at_m141 = dmg_at_m141 * 3 / 2;
-        }
-    }
-    if (ele_at_m141)
-    {
-        if (ele_at_m141 != 60)
-        {
-            if (cdata[prm_853].is_immune_to_elemental_damage())
-            {
-                dmg_at_m141 = 0;
-            }
-        }
-    }
-    if (cdata[prm_853].is_metal())
-    {
-        dmg_at_m141 = rnd(dmg_at_m141 / 10 + 2);
-    }
-    if (cdata[prm_853].is_contracting_with_reaper())
-    {
-        if (cdata[prm_853].hp - dmg_at_m141 <= 0)
-        {
-            if (clamp(
-                    25 + cdata[prm_853].buffs[findbuff(prm_853, 18)].power / 17,
-                    25,
-                    80)
-                >= rnd(100))
-            {
-                dmg_at_m141 *= -1;
-            }
-        }
-    }
-    if (cdata[prm_853].nullify_damage > 0)
-    {
-        if (cdata[prm_853].nullify_damage > rnd(100))
-        {
-            dmg_at_m141 = 0;
-        }
-    }
-    if (ele_at_m141 == 658)
-    {
-        dmg_at_m141 = prm_854;
-    }
-    rtdmg = dmg_at_m141;
-
-    if (prm_853 == 0 && cdata[0].god_id == core_god::opatos)
-    {
-        dmg_at_m141 = dmg_at_m141 * 90 / 100;
-    }
-
-    if (debug::voldemort && prm_853 == 0)
-    {
-        dmg_at_m141 = 0;
-    }
-    cdata[prm_853].hp -= dmg_at_m141;
-
-
-    if (is_in_fov(prm_853))
-    {
-        add_damage_popup(std::to_string(dmg_at_m141), prm_853, {0, 0, 0});
-    }
-
-
-    if (ele_at_m141 == 56)
-    {
-        if (prm_855 >= 0)
-        {
-            if (dmg_at_m141 > 0)
-            {
-                healhp(
-                    prm_855,
-                    clamp(
-                        rnd(dmg_at_m141 * (150 + prm_857 * 2) / 1000 + 10),
-                        1,
-                        cdata[prm_855].max_hp / 10 + rnd(5)));
-            }
-        }
-    }
-    if (prm_853 == 0)
-    {
-        gdata(30) = 0;
-        if (cdata[prm_853].hp < 0)
-        {
-            if (evid() != -1)
-            {
-                if (evid() != 21)
-                {
-                    cdata[prm_853].hp = 1;
-                }
-            }
-            if (gdata_current_map == 40)
-            {
-                cdata[prm_853].hp = 1;
-            }
-        }
-    }
-    if (dmg_at_m141 <= 0)
-    {
-        dmglevel_at_m141 = -1;
-    }
-    else
-    {
-        dmglevel_at_m141 = dmg_at_m141 * 6 / cdata[prm_853].max_hp;
-    }
-    if (cdata[prm_853].hp < 0)
-    {
-        if (prm_853 < 16)
-        {
-            for (int cnt = 0; cnt < 16; ++cnt)
-            {
-                if (prm_853 == cnt)
-                {
-                    continue;
-                }
-                if (cdata[cnt].state != 1)
-                {
-                    continue;
-                }
-                if (cdata[cnt].has_lay_hand() == 0)
-                {
-                    continue;
-                }
-                if (cdata[cnt].is_lay_hand_available() == 0)
-                {
-                    continue;
-                }
-                cdata[cnt].is_lay_hand_available() = false;
-                txtef(9);
-                txt(lang(
-                    name(cnt)
-                        + u8"は叫んだ。「この者にジュアの加護を。レイハンド！」"s,
-                    name(cnt) + u8" shout"s + _s(cnt) + u8", "s
-                        + u8"\"Lay hand!\""s));
-                txt(lang(
-                    name(prm_853) + u8"は回復した。"s,
-                    name(prm_853) + u8" "s + is(prm_853) + u8" healed."s));
-                cdata[prm_853].hp = cdata[prm_853].max_hp / 2;
-                animode = 100 + prm_853;
-                play_animation(19);
-                snd(120);
-                break;
-            }
-        }
-        else if (cdata[prm_853].is_hung_on_sand_bag())
-        {
-            cdata[prm_853].hp = cdata[prm_853].max_hp;
-        }
-    }
-    if (cdata[prm_853].hp >= 0)
-    {
-        if (dmglevel_at_m141 > 1)
-        {
-            spillblood(
-                cdata[prm_853].position.x,
-                cdata[prm_853].position.y,
-                1 + rnd(2));
-        }
-        if (gdata(809) == 1)
-        {
-            txteledmg(0, c3_at_m141, prm_853, ele_at_m141);
-            goto label_1369_internal;
-        }
-        if (dmglevel_at_m141 > 0)
-        {
-            if (cdata[prm_853].max_hp / 2 > cdata[prm_853].hp)
-            {
-                ++dmglevel_at_m141;
-                if (cdata[prm_853].max_hp / 4 > cdata[prm_853].hp)
-                {
-                    ++dmglevel_at_m141;
-                    if (cdata[prm_853].max_hp / 10 > cdata[prm_853].hp)
-                    {
-                        ++dmglevel_at_m141;
-                    }
-                }
-            }
-        }
-        if (gdata(809) == 2)
-        {
-            txtcontinue();
-            if (dmglevel_at_m141 == -1)
-            {
-                txt(lang(
-                    u8"かすり傷をつけた。"s,
-                    u8"make"s + _s(c3_at_m141) + u8" a scratch."s));
-            }
-            if (dmglevel_at_m141 == 0)
-            {
-                txtef(5);
-                txt(lang(
-                    u8"軽い傷を負わせた。"s,
-                    u8"slightly wound"s + _s(c3_at_m141) + u8" "s + him(prm_853)
-                        + u8"."s));
-            }
-            if (dmglevel_at_m141 == 1)
-            {
-                txtef(11);
-                txt(lang(
-                    u8"傷つけた。"s,
-                    u8"moderately wound"s + _s(c3_at_m141) + u8" "s
-                        + him(prm_853) + u8"."s));
-            }
-            if (dmglevel_at_m141 == 2)
-            {
-                txtef(10);
-                txt(lang(
-                    u8"深い傷を負わせた。"s,
-                    u8"severely wound"s + _s(c3_at_m141) + u8" "s + him(prm_853)
-                        + u8"."s));
-            }
-            if (dmglevel_at_m141 >= 3)
-            {
-                txtef(3);
-                txt(lang(
-                    u8"致命傷を与えた。"s,
-                    u8"critically wound"s + _s(c3_at_m141) + u8" "s
-                        + him(prm_853) + u8"!"s));
-            }
-            rowact_check(prm_853);
-            goto label_1369_internal;
-        }
-        if (dmglevel_at_m141 == 1)
-        {
-            if (is_in_fov(prm_853))
-            {
-                txtef(11);
-                txt(lang(
-                    name(prm_853) + u8"は痛手を負った。"s,
-                    name(prm_853) + u8" scream"s + _s(prm_853) + u8"."s));
-            }
-        }
-        if (dmglevel_at_m141 == 2)
-        {
-            if (is_in_fov(prm_853))
-            {
-                txtef(10);
-                txt(lang(
-                    name(prm_853) + u8"は苦痛にもだえた。"s,
-                    name(prm_853) + u8" writhe"s + _s(prm_853)
-                        + u8" in pain."s));
-            }
-        }
-        if (dmglevel_at_m141 >= 3)
-        {
-            if (is_in_fov(prm_853))
-            {
-                txtef(3);
-                txt(lang(
-                    name(prm_853) + u8"は悲痛な叫び声をあげた。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
-                        + u8" severely hurt!"s));
-            }
-        }
-        if (dmg_at_m141 < 0)
-        {
-            if (cdata[prm_853].hp > cdata[prm_853].max_hp)
-            {
-                cdata[prm_853].hp = cdata[prm_853].max_hp;
-            }
-            if (is_in_fov(prm_853))
-            {
-                txtef(4);
-                txt(lang(
-                    name(prm_853) + u8"は回復した。"s,
-                    name(prm_853) + u8" "s + is(prm_853) + u8" healed."s));
-            }
-        }
-    label_1369_internal:
-        rowact_check(prm_853);
-        if (cdata[prm_853].hp < cdata[prm_853].max_hp / 5)
-        {
-            if (prm_853 != 0)
-            {
-                if (cdata[prm_853].fear == 0)
-                {
-                    if (cdata[prm_853].is_immune_to_fear() == 0)
-                    {
-                        if (dmg_at_m141 * 100 / cdata[prm_853].max_hp + 10
-                            > rnd(200))
-                        {
-                            f_at_m141 = 1;
-                        }
-                        else
-                        {
-                            f_at_m141 = 0;
-                        }
-                        if (prm_855 == 0)
-                        {
-                            if (trait(44))
-                            {
-                                f_at_m141 = 0;
-                            }
-                        }
-                        if (f_at_m141)
-                        {
-                            cdata[prm_853].fear = rnd(20) + 5;
-                            if (is_in_fov(prm_853))
-                            {
-                                txtef(4);
-                                txt(lang(
-                                    name(prm_853) + u8"は恐怖して逃げ出した。"s,
-                                    name(prm_853) + u8" run"s + _s(prm_853)
-                                        + u8" away in terror."s));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (ele_at_m141)
-        {
-            if (ele_at_m141 == 59)
-            {
-                if (rnd(10) < prm_857 / 75 + 4)
-                {
-                    dmgcon(prm_853, 4, rnd(prm_857 / 3 * 2 + 1));
-                }
-                if (rnd(20) < prm_857 / 50 + 4)
-                {
-                    dmgcon(prm_853, 3, rnd(prm_857 / 3 * 2 + 1));
-                }
-                if (rnd(20) < prm_857 / 50 + 4)
-                {
-                    dmgcon(prm_853, 5, rnd(prm_857 / 3 * 2 + 1));
-                }
-                if (rnd(20) < prm_857 / 50 + 4)
-                {
-                    dmgcon(prm_853, 1, rnd(prm_857 / 3 * 2 + 1));
-                }
-                if (rnd(20) < prm_857 / 50 + 4)
-                {
-                    dmgcon(prm_853, 2, rnd(prm_857 / 3 * 2 + 1));
-                }
-            }
-            if (ele_at_m141 == 52)
-            {
-                if (rnd(3 + (cdata[prm_853].quality >= 4) * 3) == 0)
-                {
-                    ++cdata[prm_853].paralyzed;
-                }
-            }
-            if (ele_at_m141 == 53)
-            {
-                dmgcon(prm_853, 4, rnd(prm_857 + 1));
-            }
-            if (ele_at_m141 == 58)
-            {
-                dmgcon(prm_853, 3, rnd(prm_857 + 1));
-            }
-            if (ele_at_m141 == 54)
-            {
-                dmgcon(prm_853, 5, rnd(prm_857 + 1));
-            }
-            if (ele_at_m141 == 57)
-            {
-                dmgcon(prm_853, 5, rnd(prm_857 + 1));
-            }
-            if (ele_at_m141 == 55)
-            {
-                dmgcon(prm_853, 1, rnd(prm_857 + 1));
-            }
-            if (ele_at_m141 == 61)
-            {
-                dmgcon(prm_853, 9, rnd(prm_857 + 1));
-            }
-            if (ele_at_m141 == 62)
-            {
-                if (prm_853 == 0)
-                {
-                    modcorrupt(rnd(prm_857 + 1));
-                }
-            }
-            if (ele_at_m141 == 63)
-            {
-                if (prm_853 == 0 || rnd(3) == 0)
-                {
-                    item_acid(prm_853, -1);
-                }
-            }
-        }
-        if ((ele_at_m141 == 50 || prm_855 == -9) && cdata[prm_853].wet == 0)
-        {
-            item_fire(prm_853, -1);
-        }
-        if (ele_at_m141 == 51)
-        {
-            item_cold(prm_853, -1);
-        }
-        if (cdata[prm_853].sleep != 0)
-        {
-            if (ele_at_m141 != 54 && ele_at_m141 != 58 && ele_at_m141 != 59)
-            {
-                cdata[prm_853].sleep = 0;
-                txt(lang(
-                    name(prm_853) + u8"は眠りを妨げられた。"s,
-                    name(prm_853) + your(prm_853) + u8" sleep "s + is(prm_853)
-                        + u8" disturbed."s));
-            }
-        }
-        if (prm_855 == 0)
-        {
-            hostileaction(0, prm_853);
-            gdata(94) = prm_853;
-        }
-        if (prm_853 == 0)
-        {
-            if (cdata[prm_853].max_hp / 4 > cdata[prm_853].hp)
-            {
-                if (config::instance().sound)
-                {
-                    if (config::instance().heart == 1)
-                    {
-                        if (!CHECKPLAY(32))
-                        {
-                            snd(32);
-                        }
-                    }
-                }
-            }
-        }
-        if (cdata[prm_853].explodes())
-        {
-            if (rnd(3) == 0)
-            {
-                cdata[prm_853].will_explode_soon() = true;
-                txtef(9);
-                txt(lang(u8" *カチッ* "s, u8"*click*"s));
-            }
-        }
-        if (cdata[prm_853].splits())
-        {
-            if (gdata(809) != 1)
-            {
-                if (dmg_at_m141 > cdata[prm_853].max_hp / 20 || rnd(10) == 0)
-                {
-                    if (mdata(6) != 1)
-                    {
-                        int stat = copy_chara(prm_853);
-                        if (stat == 1)
-                        {
-                            txt(lang(
-                                name(prm_853) + u8"は分裂した！"s,
-                                name(prm_853) + u8" split"s + _s(prm_853)
-                                    + u8"!"s));
-                        }
-                    }
-                }
-            }
-        }
-        if (cdata[prm_853].splits2())
-        {
-            if (gdata(809) != 1)
-            {
-                if (rnd(3) == 0)
-                {
-                    if (cdata[prm_853].confused == 0
-                        && cdata[prm_853].dimmed == 0
-                        && cdata[prm_853].poisoned == 0
-                        && cdata[prm_853].paralyzed == 0
-                        && cdata[prm_853].blind == 0)
-                    {
-                        if (mdata(6) != 1)
-                        {
-                            int stat = copy_chara(prm_853);
-                            if (stat == 1)
-                            {
-                                txt(lang(
-                                    name(prm_853) + u8"は分裂した！"s,
-                                    name(prm_853) + u8" split"s + _s(prm_853)
-                                        + u8"!"s));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (cdata[prm_853].is_quick_tempered())
-        {
-            if (gdata(809) != 1)
-            {
-                if (cdata[prm_853].furious == 0)
-                {
-                    if (rnd(20) == 0)
-                    {
-                        if (is_in_fov(prm_853))
-                        {
-                            txtef(4);
-                            txt(lang(
-                                name(prm_853) + u8"は怒りに体を奮わせた！"s,
-                                name(prm_853) + u8" "s + is(prm_853)
-                                    + u8" engulfed in fury!"s));
-                        }
-                        cdata[prm_853].furious += rnd(30) + 15;
-                    }
-                }
-            }
-        }
-        if (prm_855 >= 0)
-        {
-            f_at_m141 = 0;
-            if (cdata[prm_853].relationship <= -3)
-            {
-                if (cdata[prm_855].original_relationship > -3)
-                {
-                    if (cdata[prm_853].hate == 0 || rnd(4) == 0)
-                    {
-                        f_at_m141 = 1;
-                    }
-                }
-            }
-            else if (cdata[prm_855].original_relationship <= -3)
-            {
-                if (cdata[prm_853].hate == 0 || rnd(4) == 0)
-                {
-                    f_at_m141 = 1;
-                }
-            }
-            if (prm_855 != 0)
-            {
-                if (cdata[prm_855].enemy_id == prm_853)
-                {
-                    if (rnd(3) == 0)
-                    {
-                        f_at_m141 = 1;
-                    }
-                }
-            }
-            if (f_at_m141)
-            {
-                if (prm_853 != 0)
-                {
-                    cdata[prm_853].enemy_id = prm_855;
-                    if (cdata[prm_853].hate == 0)
-                    {
-                        cdata[prm_853].emotion_icon = 218;
-                        cdata[prm_853].hate = 20;
-                    }
-                    else
-                    {
-                        cdata[prm_853].hate += 2;
-                    }
-                }
-            }
-        }
-    }
-    if (cdata[prm_853].hp < 0)
-    {
-        se_at_m141 = eleinfo(ele_at_m141, 1);
-        if (se_at_m141)
-        {
-            snd(se_at_m141, false, false);
-        }
-        txtef(3);
-        if (prm_855 >= 0)
-        {
-            if (ele_at_m141)
-            {
-                if (prm_853 >= 16 && gdata(809) == 2)
-                {
-                    txtcontinue();
-                    txteledmg(1, c3_at_m141, prm_853, ele_at_m141);
-                }
-                else
-                {
-                    txteledmg(2, c3_at_m141, prm_853, ele_at_m141);
-                }
-            }
-            else
-            {
-                p_at_m141 = rnd(4);
-                if (p_at_m141 == 0)
-                {
-                    if (prm_853 >= 16 && gdata(809) == 2)
-                    {
-                        txtcontinue();
-                        txt(lang(
-                            u8"粉々の肉片に変えた。"s,
-                            u8"transform"s + _s(c3_at_m141) + u8" "s
-                                + him(prm_853)
-                                + u8" into several pieces of meat."s));
-                    }
-                    else
-                    {
-                        txt(lang(
-                            name(prm_853) + u8"は粉々の肉片に変えられた。"s,
-                            name(prm_853) + u8" "s + is(prm_853)
-                                + u8" transformed into several pieces of meat."s));
-                    }
-                }
-                if (p_at_m141 == 1)
-                {
-                    if (prm_853 >= 16 && gdata(809) == 2)
-                    {
-                        txtcontinue();
-                        txt(lang(
-                            u8"破壊した。"s,
-                            u8"destroy"s + _s(c3_at_m141) + u8" "s
-                                + him(prm_853) + u8"."s));
-                    }
-                    else
-                    {
-                        txt(lang(
-                            name(prm_853) + u8"は破壊された。"s,
-                            name(prm_853) + u8" "s + is(prm_853)
-                                + u8" killed."s));
-                    }
-                }
-                if (p_at_m141 == 2)
-                {
-                    if (prm_853 >= 16 && gdata(809) == 2)
-                    {
-                        txtcontinue();
-                        txt(lang(
-                            u8"ミンチにした。"s,
-                            u8"mince"s + _s(c3_at_m141) + u8" "s + him(prm_853)
-                                + u8"."s));
-                    }
-                    else
-                    {
-                        txt(lang(
-                            name(prm_853) + u8"はミンチにされた。"s,
-                            name(prm_853) + u8" "s + is(prm_853)
-                                + u8" minced."s));
-                    }
-                }
-                if (p_at_m141 == 3)
-                {
-                    if (prm_853 >= 16 && gdata(809) == 2)
-                    {
-                        txtcontinue();
-                        txt(lang(
-                            u8"殺した。"s,
-                            u8"kill"s + _s(c3_at_m141) + u8" "s + him(prm_853)
-                                + u8"."s));
-                    }
-                    else
-                    {
-                        txt(lang(
-                            name(prm_853) + u8"は殺された。"s,
-                            name(prm_853) + u8" "s + is(prm_853)
-                                + u8" slain."s));
-                    }
-                }
-            }
-            ndeathcause = lang(
-                cdatan(0, cc) + u8"に殺された。"s,
-                u8"was killed by "s + cdatan(0, cc));
-        }
-        else
-        {
-            if (prm_855 == -11)
-            {
-                txt(lang(
-                    name(prm_853) + u8"は見えざる手に葬られた。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
-                        + u8" assassinated by the unseen hand."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        u8"見えざる手に葬られた。"s,
-                        u8"got assassinated by the unseen hand"s);
-                }
-            }
-            if (prm_855 == -1)
-            {
-                txt(lang(
-                    name(prm_853) + u8"は罠にかかって死んだ。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
-                        + u8" caught in a trap and die"s + _s(prm_853)
-                        + u8"."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        u8"罠にかかって死んだ。"s,
-                        u8"got caught in a trap and died"s);
-                }
-            }
-            if (prm_855 == -2)
-            {
-                txt(lang(
-                    name(prm_853) + u8"はマナの反動で死んだ。"s,
-                    name(prm_853) + u8" die"s + _s(prm_853)
-                        + u8" from over-casting."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        u8"マナの反動で消滅した。"s,
-                        u8"was completely wiped by magic reaction"s);
-                }
-            }
-            if (prm_855 == -3)
-            {
-                txt(lang(
-                    name(prm_853) + u8"は餓死した。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
-                        + u8" starved to death."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause =
-                        lang(u8"飢え死にした。"s, u8"was starved to death"s);
-                }
-            }
-            if (prm_855 == -4)
-            {
-                txt(lang(
-                    name(prm_853) + u8"は毒に蝕まれ死んだ。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
-                        + u8" killed with poison."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        u8"毒にもがき苦しみながら死んだ。"s,
-                        u8"miserably died from poison"s);
-                }
-            }
-            if (prm_855 == -13)
-            {
-                txt(lang(
-                    name(prm_853) + u8"は出血多量で死んだ。"s,
-                    name(prm_853) + u8" die"s + _s(prm_853)
-                        + u8" from loss of blood"s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        u8"血を流しすぎて死んだ。"s,
-                        u8"died from loss of blood"s);
-                }
-            }
-            if (prm_855 == -5)
-            {
-                txt(lang(
-                    name(prm_853) + u8"は呪いの力で死んだ。"s,
-                    name(prm_853) + u8" die"s + _s(prm_853)
-                        + u8" from curse."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause =
-                        lang(u8"呪い殺された。"s, u8"died from curse"s);
-                }
-            }
-            if (prm_855 == -7)
-            {
-                txt(lang(
-                    name(prm_853) + u8"は階段から転げ落ちて死んだ。"s,
-                    name(prm_853) + u8" tumble"s + _s(prm_853)
-                        + u8" from stairs and die"s + _s(prm_853) + u8"."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        u8"階段から転げ落ちて亡くなった。"s,
-                        u8"tumbled from stairs and died"s);
-                }
-            }
-            if (prm_855 == -8)
-            {
-                txt(lang(
-                    name(prm_853) + u8"は聴衆に殺された。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
-                        + u8" killed by an audience."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        u8"演奏中に激怒した聴衆に殺された。"s,
-                        u8"was killed by an audience"s);
-                }
-            }
-            if (prm_855 == -9)
-            {
-                txt(lang(
-                    name(prm_853) + u8"は焼け死んだ。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
-                        + u8" burnt and turned into ash."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        u8"焼けて消滅した。"s,
-                        u8"was burnt and turned into ash"s);
-                }
-            }
-            if (prm_855 == -12)
-            {
-                txt(lang(
-                    name(prm_853) + u8"は食中毒で死んだ。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
-                        + u8" killed by food poisoning."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        u8"食中毒で倒れた。"s,
-                        u8"got killed by food poisoning"s);
-                }
-            }
-            if (prm_855 == -14)
-            {
-                txt(lang(
-                    name(prm_853) + u8"はエーテルに侵食され死んだ。"s,
-                    name(prm_853) + u8" die"s + _s(prm_853)
-                        + u8" of the Ether disease."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        u8"エーテルの病に倒れた。"s,
-                        u8"died of the Ether disease"s);
-                }
-            }
-            if (prm_855 == -15)
-            {
-                txt(lang(
-                    name(prm_853) + u8"は溶けて液体になった。"s,
-                    name(prm_853) + u8" melt"s + _s(prm_853) + u8" down."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause =
-                        lang(u8"溶けて液体になった。"s, u8"melted down"s);
-                }
-            }
-            if (prm_855 == -16)
-            {
-                txt(lang(
-                    name(prm_853) + u8"はバラバラになった。"s,
-                    name(prm_853) + u8" shatter"s + _s(prm_853) + u8"."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(u8"自殺した。"s, u8"committed suicide"s);
-                }
-            }
-            if (prm_855 == -17)
-            {
-                txt(lang(
-                    name(prm_853) + u8"は核爆発に巻き込まれて塵となった。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
-                        + u8" turned into atoms."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        u8"核爆発に巻き込まれて死んだ。"s,
-                        u8"was killed by an atomic bomb"s);
-                }
-            }
-            if (prm_855 == -18)
-            {
-                txt(lang(
-                    name(prm_853)
-                        + u8"はアイアンメイデンの中で串刺しになって果てた。"s,
-                    name(prm_853) + u8" step"s + _s(prm_853)
-                        + u8" in an iron maiden and die"s + _s(prm_853)
-                        + u8"."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        u8"アイアンメイデンにはさまれて死んだ。"s,
-                        u8"stepped in an iron maiden and died"s);
-                }
-            }
-            if (prm_855 == -19)
-            {
-                txt(lang(
-                    name(prm_853) + u8"はギロチンで首をちょんぎられて死んだ。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
-                        + u8" guillotined and die"s + _s(prm_853) + u8"."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        u8"ギロチンで首を落とされて死んだ。"s,
-                        u8"was guillotined"s);
-                }
-            }
-            if (prm_855 == -20)
-            {
-                txt(lang(
-                    name(prm_853) + u8"は首を吊った。"s,
-                    name(prm_853) + u8" hang"s + _s(prm_853) + u8" "s
-                        + his(prm_853) + u8"self."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        u8"首を吊った。"s, u8"commited suicide by hanging"s);
-                }
-            }
-            if (prm_855 == -21)
-            {
-                txt(lang(
-                    name(prm_853) + u8"はもちを喉に詰まらせて死んだ。"s,
-                    name(prm_853) + u8" choke"s + _s(prm_853)
-                        + u8" on mochi and die."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        u8"もちを喉に詰まらせて死んだ。"s,
-                        u8"ate mochi and died"s);
-                }
-            }
-            if (prm_855 == -6)
-            {
-                p_at_m141(0) = -1;
-                p_at_m141(1) = 0;
-                for (const auto& cnt : items(0))
-                {
-                    if (inv[cnt].number == 0)
-                    {
-                        continue;
-                    }
-                    if (inv[cnt].weight > p_at_m141(1))
-                    {
-                        p_at_m141(0) = cnt;
-                        p_at_m141(1) = inv[cnt].weight;
-                    }
-                }
-                if (p_at_m141 == -1)
-                {
-                    rtvaln = lang(u8"荷物"s, u8"backpack"s);
-                }
-                else
-                {
-                    rtvaln = itemname(p_at_m141);
-                }
-                txt(lang(
-                    name(prm_853) + u8"は"s + rtvaln
-                        + u8"の重さに耐え切れず死んだ。"s,
-                    name(prm_853) + u8" "s + is(prm_853) + u8" squashed by "s
-                        + rtvaln + u8"."s));
-                if (prm_853 == 0)
-                {
-                    ndeathcause = lang(
-                        rtvaln + u8"の重さに耐え切れず潰れた。"s,
-                        u8"was squashed by "s + rtvaln);
-                }
-            }
-        }
-        if (prm_855 == -9 || ele_at_m141 == 50)
-        {
-            addmef(
-                cdata[prm_853].position.x,
-                cdata[prm_853].position.y,
-                5,
-                24,
-                rnd(10) + 5,
-                100,
-                prm_855);
-        }
-        if (ele_at_m141 == 56)
-        {
-            if (prm_855 >= 0)
-            {
-                if (dmg_at_m141 > 0)
-                {
-                    healhp(cc, rnd(dmg_at_m141 * (200 + prm_857) / 1000 + 5));
-                }
-            }
-        }
-        if (gdata_mount != prm_853 || prm_853 == 0)
-        {
-            cell_removechara(
-                cdata[prm_853].position.x, cdata[prm_853].position.y);
-        }
-        if (cdata[prm_853].breaks_into_debris())
-        {
-            if (is_in_fov(prm_853))
-            {
-                x = cdata[prm_853].position.x;
-                y = cdata[prm_853].position.y;
-                snd(45, false, false);
-                animeblood(prm_853, 1, ele_at_m141);
-            }
-            spillfrag(cdata[prm_853].position.x, cdata[prm_853].position.y, 3);
-        }
-        else
-        {
-            snd(8 + rnd(2), false, false);
-            animeblood(prm_853, 0, ele_at_m141);
-            spillblood(cdata[prm_853].position.x, cdata[prm_853].position.y, 4);
-        }
-        if (cdata[prm_853].character_role == 0)
-        {
-            cdata[prm_853].state = 0;
-        }
-        else if (cdata[prm_853].character_role == 13)
-        {
-            cdata[prm_853].state = 4;
-            cdata[prm_853].time_to_revive = gdata_hour + gdata_day * 24
-                + gdata_month * 24 * 30 + gdata_year * 24 * 30 * 12 + 24
-                + rnd(12);
-        }
-        else
-        {
-            cdata[prm_853].state = 2;
-            cdata[prm_853].time_to_revive = gdata_hour + gdata_day * 24
-                + gdata_month * 24 * 30 + gdata_year * 24 * 30 * 12 + 48;
-        }
-        if (prm_853 != 0)
-        {
-            if (prm_853 < 16)
-            {
-                modimp(prm_853, -10);
-                cdata[prm_853].state = 6;
-                cdata[prm_853].current_map = 0;
-                if (cdata[prm_853].is_escorted() == 1)
-                {
-                    evadd(15, cdata[prm_853].id);
-                    cdata[prm_853].state = 0;
-                }
-                if (cdata[prm_853].is_escorted_in_sub_quest() == 1)
-                {
-                    cdata[prm_853].state = 0;
-                }
-            }
-        }
-        if (prm_853 == 0)
-        {
-            ++gdata_death_count;
-        }
-        if (prm_853 == gdata(94))
-        {
-            gdata(94) = 0;
-        }
-        if (prm_855 >= 0)
-        {
-            if (prm_855 != 0)
-            {
-                customtalk(prm_855, 103);
-            }
-            exp_at_m141 = clamp(cdata[prm_853].level, 1, 200)
-                    * clamp((cdata[prm_853].level + 1), 1, 200)
-                    * clamp((cdata[prm_853].level + 2), 1, 200) / 20
-                + 8;
-            if (cdata[prm_853].level > cdata[prm_855].level)
-            {
-                exp_at_m141 /= 4;
-            }
-            if (cdata[prm_853].splits() || cdata[prm_853].splits2())
-            {
-                exp_at_m141 /= 20;
-            }
-            cdata[prm_855].experience += exp_at_m141;
-            if (prm_855 == 0)
-            {
-                gdata_sleep_experience += exp_at_m141;
-            }
-            cdata[prm_855].hate = 0;
-            if (prm_855 < 16)
-            {
-                cdata[prm_855].enemy_id = 0;
-                cdata[0].enemy_id = 0;
-                gdata(94) = 0;
-            }
-        }
-        if (prm_853 != 0)
-        {
-            if (gdata_current_map != 35)
-            {
-                if (gdata_current_map != 42)
-                {
-                    if (cdata[prm_853].id == 2)
-                    {
-                        evadd(1);
-                    }
-                    if (cdata[prm_853].id == 141)
-                    {
-                        txtef(2);
-                        txt(lang(
-                            u8"愚者の魔石を手に入れた！"s,
-                            u8"You obtain the fool's magic stone!"s));
-                        snd(51);
-                        gdata_magic_stone_of_fool = 1;
-                    }
-                    if (cdata[prm_853].id == 143)
-                    {
-                        txtef(2);
-                        txt(lang(
-                            u8"覇者の魔石を手に入れた！"s,
-                            u8"You obtain the king's magic stone!"s));
-                        snd(51);
-                        gdata_magic_stone_of_king = 1;
-                    }
-                    if (cdata[prm_853].id == 144)
-                    {
-                        txtef(2);
-                        txt(lang(
-                            u8"賢者の魔石を手に入れた！"s,
-                            u8"You obtain the sage's magic stone!"s));
-                        snd(51);
-                        gdata_magic_stone_of_sage = 1;
-                    }
-                    if (cdata[prm_853].id == 242)
-                    {
-                        if (gdata_novice_knight < 1000)
-                        {
-                            gdata_novice_knight = 2;
-                            snd(44);
-                            txtef(2);
-                            txt(lang(
-                                u8"ジャーナルが更新された。"s,
-                                u8"Your journal has been updated."s));
-                        }
-                    }
-                    if (cdata[prm_853].id == 257)
-                    {
-                        if (gdata_pyramid_trial < 1000)
-                        {
-                            gdata_pyramid_trial = 1000;
-                            snd(44);
-                            txtef(2);
-                            txt(lang(
-                                u8"ジャーナルが更新された。"s,
-                                u8"Your journal has been updated."s));
-                            txt(lang(
-                                u8"クエストを達成した！"s,
-                                u8"You have completed the quest!"s));
-                            snd(51);
-                        }
-                    }
-                    if (cdata[prm_853].id == 300)
-                    {
-                        if (gdata_minotaur_king < 1000)
-                        {
-                            gdata_minotaur_king = 2;
-                            snd(44);
-                            txtef(2);
-                            txt(lang(
-                                u8"ジャーナルが更新された。"s,
-                                u8"Your journal has been updated."s));
-                        }
-                    }
-                    if (cdata[prm_853].id == 318)
-                    {
-                        evadd(
-                            27,
-                            cdata[prm_853].position.x,
-                            cdata[prm_853].position.y);
-                    }
-                    if (cdata[prm_853].id == 319)
-                    {
-                        ++gdata_kill_count_of_little_sister;
-                        txtef(3);
-                        txt(lang(
-                            u8"リトルシスター殺害"s
-                                + gdata_kill_count_of_little_sister
-                                + u8"回、救出"s
-                                + gdata_save_count_of_little_sister + u8"回。"s,
-                            u8"You have saved little sister "s
-                                + gdata_save_count_of_little_sister
-                                + u8" times and killed "s
-                                + gdata_kill_count_of_little_sister
-                                + u8" times."s));
-                    }
-                    if (gdata_current_dungeon_level
-                            == adata(10, gdata_current_map)
-                        || gdata_current_map == 42)
-                    {
-                        if (adata(20, gdata_current_map) == prm_853
-                            && cdata[prm_853].is_lord_of_dungeon() == 1)
-                        {
-                            evadd(5);
-                        }
-                    }
-                    if (cdata[prm_853].id == 331)
-                    {
-                        if (rnd(4) == 0)
-                        {
-                            evadd(
-                                28,
-                                cdata[prm_853].position.x,
-                                cdata[prm_853].position.y);
-                        }
-                    }
-                    check_quest();
-                }
-                else if (gdata_current_map == 42)
-                {
-                    if (adata(20, gdata_current_map) == prm_853
-                        && cdata[prm_853].is_lord_of_dungeon() == 1)
-                    {
-                        evadd(5);
-                    }
-                }
-            }
-        }
-        if (prm_853 != 0)
-        {
-            ++npcmemory(0, cdata[prm_853].id);
-            customtalk(prm_853, 102);
-            if (prm_853 < 16)
-            {
-                txt(lang(
-                    u8"あなたは悲しくなった。"s,
-                    u8"You feel sad for a moment."s));
-            }
-        }
-        --gdata_other_character_count;
-        if (gdata_mount)
-        {
-            if (prm_853 == gdata_mount)
-            {
-                txt(lang(
-                    name(0) + u8"は"s + name(prm_853) + u8"の死体から降りた。"s,
-                    name(0) + u8" get off the corpse of "s + name(prm_853)
-                        + u8"."s));
-                ride_end();
-            }
-        }
-        check_kill(prm_855, prm_853);
-        catitem = 0;
-        rollanatomy = 0;
-        if (rnd(60) == 0)
-        {
-            rollanatomy = 1;
-        }
-        if (prm_855 >= 0)
-        {
-            if (cdata[prm_855].id == 260)
-            {
-                catitem = prm_855;
-            }
-            if (int(std::sqrt(sdata(161, prm_855))) > rnd(150))
-            {
-                rollanatomy = 1;
-            }
-            skillexp(161, prm_855, 10 + rollanatomy * 4);
-        }
-        rc = prm_853;
-        label_1573();
-        if (gdata_current_map == 40)
-        {
-            if (rnd(5) == 0)
-            {
-                snd(69);
-            }
-        }
-        if (cdata[prm_853].is_death_master() == 1)
-        {
-            txt(lang(
-                u8"死の宣告は無効になった。"s, u8"The death word breaks."s));
-            for (int cnt = 0; cnt < ELONA_MAX_CHARACTERS; ++cnt)
-            {
-                if (cdata[cnt].state != 1)
-                {
-                    continue;
-                }
-                p_at_m141 = cnt;
-                for (int cnt = 0; cnt < 16; ++cnt)
-                {
-                    if (cdata[p_at_m141].buffs[cnt].id == 0)
-                    {
-                        break;
-                    }
-                    if (cdata[p_at_m141].buffs[cnt].id == 16)
-                    {
-                        delbuff(p_at_m141, cnt);
-                        --cnt;
-                        continue;
-                    }
-                }
-            }
-        }
-        if (prm_855 == 0)
-        {
-            if (gdata_catches_god_signal)
-            {
-                if (rnd(20) == 0)
-                {
-                    txtgod(cdata[0].god_id, 9);
-                }
-            }
-        }
-        end_dmghp();
-        return 0;
-    }
-    end_dmghp();
-    return 1;
-}
-
-
-
-void end_dmghp()
-{
-    if (cdata[prm_853].is_hung_on_sand_bag())
-    {
-        if (is_in_fov(prm_853))
-        {
-            txt(u8"("s + dmg_at_m141 + u8")"s + lang(u8" "s, ""s));
-            if (rnd(20) == 0)
-            {
-                txt(lang(u8"「くっ！」"s, u8"\"Kill me already!\""s),
-                    lang(u8"「まだまだ！」"s, u8"\"No..not yet...!\""s),
-                    lang(
-                        u8"「もう限界…」"s,
-                        u8"\"I can't take it anymore...\""s),
-                    lang(u8"「うぐぐ」"s, u8"\"Argh!\""s),
-                    lang(u8"「あう」"s, u8"\"Uhhh\""s),
-                    lang(u8"「ああんっ」"s, u8"\"Ugggg\""s));
-            }
-        }
-    }
-    gdata(809) = 0;
-    txt3rd = 0;
-    return;
-}
-
-
-
-void dmgmp(int cc, int delta)
-{
-    cdata[cc].mp -= delta;
-    if (cdata[cc].mp < -999999)
-    {
-        cdata[cc].mp = -999999;
-    }
-    if (cdata[cc].mp < 0)
-    {
-        gain_skill_experience_mana_capacity(cc);
-        int damage = -cdata[cc].mp * 400 / (100 + sdata(164, cc) * 10);
-        if (cc == 0)
-        {
-            if (trait(156) == 1)
-            {
-                damage /= 2;
-            }
-        }
-        else
-        {
-            damage /= 5;
-            if (damage < 10)
-                return;
-        }
-        txt(lang(
-            u8"マナの反動が"s + name(cc) + u8"の精神を蝕んだ！"s,
-            u8"Magic reaction hurts "s + name(cc) + u8"!"s));
-        dmghp(cc, damage, -2);
-    }
-}
-
-
-
-void dmgsp(int cc, int delta)
-{
-    if (cc != 0 || debug::voldemort)
-        return;
-
-    if (cdata[cc].sp >= -100)
-    {
-        cdata[cc].sp -= delta;
-    }
-}
-
-
-
-void healsan(int prm_862, int prm_863)
-{
-    cdata[prm_862].insanity -= prm_863;
-    if (cdata[prm_862].insanity < 0)
-    {
-        cdata[prm_862].insanity = 0;
-    }
-    return;
-}
-
-
-
-void damage_insanity(int cc, int delta)
-{
-    if (cdata[cc].quality >= 4)
-        return;
-
-    int resistance = std::max(sdata(54, cc) / 50, 1);
-    if (resistance > 10)
-        return;
-
-    delta /= resistance;
-    if (cc < 16)
-    {
-        if (trait(166))
-        {
-            delta -= rnd(4);
-        }
-    }
-    delta = std::max(delta, 0);
-    cdata[cc].insanity += delta;
-    if (rnd(10) == 0 || rnd(delta + 1) > 5 || rnd(cdata[cc].insanity + 1) > 50)
-    {
-        dmgcon(cc, 11, 100);
-    }
-}
-
-
-
-bool actionsp(int cc, int sp)
-{
-    if (cc != 0 || debug::voldemort)
-        return true;
-
-    if (cdata[cc].sp < 50 && cdata[cc].sp < rnd(75))
-    {
-        dmgsp(cc, sp);
-        return false;
-    }
-    dmgsp(cc, sp);
-    return true;
-}
-
-
-
 int advfavoriteskill(int prm_868)
 {
     randomize(prm_868);
@@ -14097,11 +11328,11 @@ void chara_vomit(int prm_876)
         skillmod(11, prm_876, -75);
         skillmod(17, prm_876, -100);
     }
-    dmgcon(prm_876, 7, 100);
+    damage_status_effect(prm_876, 7, 100);
     modweight(prm_876, -(1 + rnd(5)));
     if (cdata[prm_876].nutrition <= 0)
     {
-        dmghp(prm_876, 9999, -3);
+        damage_hp(prm_876, 9999, -3);
     }
     cdata[prm_876].nutrition -= 3000;
     return;
@@ -14137,7 +11368,7 @@ void eatstatus(curse_state_t curse_state, int eater)
         {
             addbuff(eater, 19, 100, 500 + rnd(500));
         }
-        healsan(eater, 2);
+        heal_sanity(eater, 2);
     }
 }
 
@@ -14168,7 +11399,7 @@ void sickifcursed(curse_state_t curse_state, int drinker, int prm_882)
                 name(drinker) + u8"は気分が悪くなった。"s,
                 name(drinker) + u8" feel"s + _s(drinker) + u8" grumpy."s));
         }
-        dmgcon(drinker, 12, 200);
+        damage_status_effect(drinker, 12, 200);
     }
 }
 
@@ -17845,11 +15076,11 @@ int try_to_cast_spell()
         }
         if (cc == 0)
         {
-            dmgmp(cc, cdata[cc].max_mp);
+            damage_mp(cc, cdata[cc].max_mp);
         }
         else
         {
-            dmgmp(cc, cdata[cc].max_mp / 3);
+            damage_mp(cc, cdata[cc].max_mp / 3);
         }
         return 0;
     }
@@ -17868,7 +15099,7 @@ int try_to_cast_spell()
                 txt(lang(u8"難解だ！"s, u8"It's too difficult!"s));
             }
         }
-        dmgcon(cc, 5, 100);
+        damage_status_effect(cc, 5, 100);
         return 0;
     }
     if (rnd(4) == 0)
@@ -18050,18 +15281,18 @@ void label_1520(int cc)
     regen = 1;
     if (cdata[cc].sleep > 0)
     {
-        healcon(cc, 2, 1);
+        heal_status_effect(cc, 2, 1);
         if (cdata[cc].sleep > 0)
         {
             cdata[cc].emotion_icon = 114;
         }
-        healhp(cc, 1);
-        healmp(cc, 1);
+        heal_hp(cc, 1);
+        heal_mp(cc, 1);
     }
     if (cdata[cc].poisoned > 0)
     {
-        dmghp(cc, rnd(2 + sdata(11, cc) / 10), -4);
-        healcon(cc, 1, 1);
+        damage_hp(cc, rnd(2 + sdata(11, cc) / 10), -4);
+        heal_status_effect(cc, 1, 1);
         if (cdata[cc].poisoned > 0)
         {
             cdata[cc].emotion_icon = 108;
@@ -18080,7 +15311,7 @@ void label_1520(int cc)
         ++cdata[cc].choked;
         if (cdata[cc].choked > 15)
         {
-            dmghp(cc, 500, -21);
+            damage_hp(cc, 500, -21);
         }
         regen = 0;
     }
@@ -18133,14 +15364,14 @@ void label_1520(int cc)
             {
                 if (rnd(200) == 0)
                 {
-                    healcon(cc, 12);
+                    heal_status_effect(cc, 12);
                 }
             }
         }
     }
     if (cdata[cc].blind > 0)
     {
-        healcon(cc, 4, 1);
+        heal_status_effect(cc, 4, 1);
         if (cdata[cc].blind > 0)
         {
             cdata[cc].emotion_icon = 110;
@@ -18149,7 +15380,7 @@ void label_1520(int cc)
     if (cdata[cc].paralyzed > 0)
     {
         regen = 0;
-        healcon(cc, 3, 1);
+        heal_status_effect(cc, 3, 1);
         if (cdata[cc].paralyzed > 0)
         {
             cdata[cc].emotion_icon = 115;
@@ -18157,7 +15388,7 @@ void label_1520(int cc)
     }
     if (cdata[cc].confused > 0)
     {
-        healcon(cc, 5, 1);
+        heal_status_effect(cc, 5, 1);
         if (cdata[cc].confused > 0)
         {
             cdata[cc].emotion_icon = 111;
@@ -18165,7 +15396,7 @@ void label_1520(int cc)
     }
     if (cdata[cc].fear > 0)
     {
-        healcon(cc, 6, 1);
+        heal_status_effect(cc, 6, 1);
         if (cdata[cc].fear > 0)
         {
             cdata[cc].emotion_icon = 113;
@@ -18173,7 +15404,7 @@ void label_1520(int cc)
     }
     if (cdata[cc].dimmed > 0)
     {
-        healcon(cc, 7, 1);
+        heal_status_effect(cc, 7, 1);
         if (cdata[cc].dimmed > 0)
         {
             cdata[cc].emotion_icon = 112;
@@ -18181,7 +15412,7 @@ void label_1520(int cc)
     }
     if (cdata[cc].drunk > 0)
     {
-        healcon(cc, 8, 1);
+        heal_status_effect(cc, 8, 1);
         if (cdata[cc].drunk > 0)
         {
             cdata[cc].emotion_icon = 106;
@@ -18189,11 +15420,11 @@ void label_1520(int cc)
     }
     if (cdata[cc].bleeding > 0)
     {
-        dmghp(
+        damage_hp(
             cc,
             rnd(cdata[cc].hp * (1 + cdata[cc].bleeding / 4) / 100 + 3) + 1,
             -13);
-        healcon(cc, 9, 1 + cdata[cc].cures_bleeding_quickly() * 3);
+        heal_status_effect(cc, 9, 1 + cdata[cc].cures_bleeding_quickly() * 3);
         if (cdata[cc].bleeding > 0)
         {
             cdata[cc].emotion_icon = 109;
@@ -18296,7 +15527,7 @@ void label_1520(int cc)
         {
             cdata[cc].fear += rnd(10);
         }
-        healcon(cc, 11, 1);
+        heal_status_effect(cc, 11, 1);
         if (cdata[cc].insane > 0)
         {
             cdata[cc].emotion_icon = 124;
@@ -18310,7 +15541,7 @@ void label_1520(int cc)
             {
                 if (cdata[cc].continuous_action_id != 1)
                 {
-                    dmghp(cc, rnd(2) + cdata[0].max_hp / 50, -3);
+                    damage_hp(cc, rnd(2) + cdata[0].max_hp / 50, -3);
                     if (gdata_play_turns % 10 == 0)
                     {
                         rowact_check(cc);
@@ -18342,7 +15573,7 @@ void label_1520(int cc)
             if (gdata_continuous_active_hours >= 50)
             {
                 regen = 0;
-                dmgsp(cc, 1);
+                damage_stamina(cc, 1);
             }
         }
     }
@@ -18375,11 +15606,11 @@ void label_1520(int cc)
     {
         if (rnd(6) == 0)
         {
-            healhp(cc, rnd(sdata(154, cc) / 3 + 1) + 1);
+            heal_hp(cc, rnd(sdata(154, cc) / 3 + 1) + 1);
         }
         if (rnd(5) == 0)
         {
-            healmp(cc, rnd(sdata(155, cc) / 2 + 1) + 1);
+            heal_mp(cc, rnd(sdata(155, cc) / 2 + 1) + 1);
         }
     }
 }
@@ -19518,7 +16749,8 @@ void place_character()
         if (cdata[rc].character_role == 13)
         {
             cdata[rc].state = 4;
-            cdata[prm_853].time_to_revive = gdata_hour + gdata_day * 24
+            // TODO rc was originally defender, but it wasn't used anywhere else in elonacore.cpp
+            cdata[rc].time_to_revive = gdata_hour + gdata_day * 24
                 + gdata_month * 24 * 30 + gdata_year * 24 * 30 * 12 + 24
                 + rnd(12);
         }
@@ -21378,7 +18610,7 @@ void label_1577()
 {
     if (rnd(4) == 0)
     {
-        dmghp(cc, cdata[cc].hp * (5 + cdata[cc].curse_power / 5) / 100, -5);
+        damage_hp(cc, cdata[cc].hp * (5 + cdata[cc].curse_power / 5) / 100, -5);
         return;
     }
     if (mdata(6) != 1)
@@ -22256,8 +19488,8 @@ void eat_rotten_food()
         ++fdmax;
     }
     nutrition = 1000;
-    dmgcon(cc, 3, 100);
-    dmgcon(cc, 5, 200);
+    damage_status_effect(cc, 3, 100);
+    damage_status_effect(cc, 5, 200);
     return;
 }
 
@@ -23029,8 +20261,8 @@ void apply_general_eating_effect()
                     txt(lang(
                         u8"これは人肉だ…うぇぇ！"s,
                         u8"Eeeek! It's human flesh!"s));
-                    damage_insanity(cc, 15);
-                    dmgcon(cc, 11, 150);
+                    damage_sanity(cc, 15);
+                    damage_status_effect(cc, 11, 150);
                     if (trait(41) == 0)
                     {
                         if (rnd(5) == 0)
@@ -23193,7 +20425,7 @@ void apply_general_eating_effect()
         txt(lang(
             name(cc) + u8"の心はすこし癒された。"s,
             name(cc) + your(cc) + u8" heart is warmed."s));
-        healsan(cc, 30);
+        heal_sanity(cc, 30);
     }
     if (ibit(14, ci) == 1)
     {
@@ -23207,7 +20439,7 @@ void apply_general_eating_effect()
             txt(lang(u8"「ギャァァ…！」"s, u8"\"Gyaaaaa...!\""s),
                 lang(u8"「ブッ！」"s, u8"\"Ugh!\""s));
         }
-        dmghp(cc, rnd(250) + 250, -4);
+        damage_hp(cc, rnd(250) + 250, -4);
         if (cdata[cc].state != 1)
         {
             if (cc != 0)
@@ -23243,7 +20475,7 @@ void apply_general_eating_effect()
             modify_karma(0, -10);
             lovemiracle(cc);
         }
-        dmgcon(cc, 7, 500);
+        damage_status_effect(cc, 7, 500);
         cdata[cc].emotion_icon = 317;
     }
     for (int cnt = 0; cnt < 15; ++cnt)
@@ -23256,13 +20488,13 @@ void apply_general_eating_effect()
         if (enc == 36)
         {
             p = rnd(inv[ci].enchantments[cnt].power / 50 + 1) + 1;
-            healsp(cc, p);
+            heal_stamina(cc, p);
             continue;
         }
         if (enc == 38)
         {
             p = rnd(inv[ci].enchantments[cnt].power / 25 + 1) + 1;
-            healmp(cc, p / 5);
+            heal_mp(cc, p / 5);
             continue;
         }
         if (enc == 37)
@@ -23371,7 +20603,7 @@ void eating_effect_eat_iron()
             u8"It's too hard! "s + name(cc) + your(cc)
                 + u8" stomach screams."s));
     }
-    dmgcon(cc, 7, 200);
+    damage_status_effect(cc, 7, 200);
     return;
 }
 
@@ -23386,8 +20618,8 @@ void eating_effect_insanity()
             u8"気が変になりそうな味だ。"s,
             u8"It tastes really, really strange."s));
     }
-    damage_insanity(cc, 25);
-    dmgcon(cc, 11, 500);
+    damage_sanity(cc, 25);
+    damage_status_effect(cc, 11, 500);
     return;
 }
 
@@ -23420,7 +20652,7 @@ void eating_effect_eat_holy_one()
     }
     if (rnd(5) == 0)
     {
-        resistmod(cc, 53, 50);
+        add_resistance(cc, 53, 50);
     }
     return;
 }
@@ -23464,7 +20696,7 @@ void eating_effect_fire()
             name(cc) + u8"の体は一瞬燃え上がった。"s,
             name(cc) + your(cc) + u8" body burns up for a second."s));
     }
-    resistmod(cc, 50, 100);
+    add_resistance(cc, 50, 100);
     return;
 }
 
@@ -23478,9 +20710,9 @@ void eating_effect_insanity2()
         txt(lang(
             name(cc) + u8"の胃は狂気で満たされた。"s, u8"Sheer madness!"s));
     }
-    resistmod(cc, 54, 50);
-    damage_insanity(cc, 200);
-    dmgcon(cc, 11, 1000);
+    add_resistance(cc, 54, 50);
+    damage_sanity(cc, 200);
+    damage_status_effect(cc, 11, 1000);
     return;
 }
 
@@ -23523,7 +20755,7 @@ void eating_effect_eat_poisonous_one()
         txtef(8);
         txt(lang(u8"これは有毒だ！"s, u8"Argh! It's poisonous!"s));
     }
-    dmgcon(cc, 1, 100);
+    damage_status_effect(cc, 1, 100);
     return;
 }
 
@@ -23597,7 +20829,7 @@ void eating_effect_insanity3()
             u8"Something is wrong with "s + name(cc) + your(cc)
                 + u8" stomach..."s));
     }
-    dmgcon(cc, 5, 200);
+    damage_status_effect(cc, 5, 200);
     return;
 }
 
@@ -23612,7 +20844,7 @@ void eating_effect_calm()
             u8"この肉は心を落ち着かせる効果があるようだ。"s,
             u8"Eating this brings "s + name(cc) + u8" inner peace."s));
     }
-    healsan(cc, 20);
+    heal_sanity(cc, 20);
     return;
 }
 
@@ -23626,10 +20858,10 @@ void eating_effect_insanity4()
         txt(lang(
             name(cc) + u8"の胃は狂気で満たされた。"s, u8"Sheer madness!"s));
     }
-    damage_insanity(cc, 50);
+    damage_sanity(cc, 50);
     if (rnd(5) == 0)
     {
-        resistmod(cc, 54, 50);
+        add_resistance(cc, 54, 50);
     }
     return;
 }
@@ -23645,7 +20877,7 @@ void eating_effect_chaos()
             name(cc) + u8"の胃は混沌で満たされた。"s,
             name(cc) + u8" "s + is(cc) + u8" shaken by a chaotic power."s));
     }
-    dmgcon(cc, 5, 300);
+    damage_status_effect(cc, 5, 300);
     return;
 }
 
@@ -23660,7 +20892,7 @@ void eating_effect_lightning()
             name(cc) + u8"の神経に電流が走った。"s,
             name(cc) + your(cc) + u8" nerve is damaged."s));
     }
-    dmgcon(cc, 3, 300);
+    damage_status_effect(cc, 3, 300);
     return;
 }
 
@@ -23695,7 +20927,7 @@ void eating_effect_ether()
             name(cc) + u8"の体内はエーテルで満たされた。"s,
             u8"Ether corrupts your body."s));
     }
-    modcorrupt(1000);
+    modify_corruption(1000);
     return;
 }
 
@@ -31401,7 +28633,7 @@ void label_1754()
                 dmg = (6 - r) * (6 - r) * 2;
                 txtef(3);
                 txt(lang(u8"熱い！"s, u8"It's hot!"s));
-                dmghp(cc, dmg, -9);
+                damage_hp(cc, dmg, -9);
             }
         }
         return;
@@ -33828,7 +31060,7 @@ label_1894_internal:
                 txt(lang(
                     name(p) + u8"「ぎゃぁーー！」"s,
                     name(p) + u8" screams, "s + u8"\"Ahhhhhhh!\""s));
-                dmghp(p, 99999, -11);
+                damage_hp(p, 99999, -11);
                 break;
             }
         }
@@ -43527,7 +40759,7 @@ turn_result_t do_get_command()
             snd(83);
             txt(lang(
                 u8"雪をかきあつめた。"s, u8"You rake up a handful of snow."s));
-            if (!actionsp(0, 10))
+            if (!do_stamina_action(0, 10))
             {
                 txt(lang(
                     u8"疲労し過ぎて失敗した！"s, u8"You are too exhausted!"s));
@@ -46387,7 +43619,7 @@ label_21451_internal:
                             u8"墨が噴き出した。"s,
                             u8"Gallons of ink spreads."s));
                     }
-                    dmgcon(cc, 4, 100 + gdata_current_dungeon_level * 2);
+                    damage_status_effect(cc, 4, 100 + gdata_current_dungeon_level * 2);
                 }
                 if (feat(2) == 6)
                 {
@@ -46397,7 +43629,7 @@ label_21451_internal:
                             u8"刺激的な匂いがただよう。"s,
                             u8"Stimulative gas spreads."s));
                     }
-                    dmgcon(cc, 3, 100 + gdata_current_dungeon_level * 2);
+                    damage_status_effect(cc, 3, 100 + gdata_current_dungeon_level * 2);
                 }
                 if (feat(2) == 5)
                 {
@@ -46407,7 +43639,7 @@ label_21451_internal:
                             u8"臭い匂いがたちこめた。"s,
                             u8"Smelly gas spreads."s));
                     }
-                    dmgcon(cc, 5, 100 + gdata_current_dungeon_level * 2);
+                    damage_status_effect(cc, 5, 100 + gdata_current_dungeon_level * 2);
                 }
                 if (feat(2) == 3)
                 {
@@ -46467,7 +43699,7 @@ label_21451_internal:
                     }
                     else
                     {
-                        dmghp(
+                        damage_hp(
                             cc, rnd(gdata_current_dungeon_level * 2 + 10), -1);
                     }
                 }
@@ -46479,7 +43711,7 @@ label_21451_internal:
                             u8"毒ガスが噴き出した。"s,
                             u8"Poisonous gas spreads."s));
                     }
-                    dmgcon(cc, 1, 100 + gdata_current_dungeon_level * 2);
+                    damage_status_effect(cc, 1, 100 + gdata_current_dungeon_level * 2);
                 }
                 if (feat(2) == 2)
                 {
@@ -46489,7 +43721,7 @@ label_21451_internal:
                             u8"催眠ガスが噴き出した。"s,
                             u8"Sleeping gas spreads."s));
                     }
-                    dmgcon(cc, 2, 100 + gdata_current_dungeon_level * 2);
+                    damage_status_effect(cc, 2, 100 + gdata_current_dungeon_level * 2);
                 }
                 if (feat(2) == 7)
                 {
@@ -46500,7 +43732,7 @@ label_21451_internal:
                     aniy = movy;
                     play_animation(2);
                     cell_featset(movx, movy, 0);
-                    dmghp(cc, 100 + rnd(200), -1);
+                    damage_hp(cc, 100 + rnd(200), -1);
                 }
                 efsource = 0;
             }
@@ -46675,7 +43907,7 @@ void label_2146()
                         {
                             dmg = cdata[tc].level * 2 + rnd(100);
                         }
-                        dmghp(cc, dmg, -8);
+                        damage_hp(cc, dmg, -8);
                         if (cdata[cc].state == 0)
                         {
                             break;
@@ -46739,7 +43971,7 @@ void label_2146()
                 {
                     if (rnd(15) == 0)
                     {
-                        dmgcon(tc, 8, 500);
+                        damage_status_effect(tc, 8, 500);
                     }
                 }
                 if (rnd(sdata(183, cc) + 1) > rnd(cdata[tc].level * 5 + 1))
@@ -47028,7 +44260,7 @@ void label_2147()
     }
     if (cc == 0)
     {
-        if (!actionsp(0, 1 + rnd(2)))
+        if (!do_stamina_action(0, 1 + rnd(2)))
         {
             txt(lang(u8"疲労し過ぎて失敗した！"s, u8"You are too exhausted!"s));
             rowactend(cc);
@@ -47088,20 +44320,20 @@ void label_2147()
         {
             if (rnd(3) == 0)
             {
-                dmgcon(c, 11, 500);
+                damage_status_effect(c, 11, 500);
             }
             if (rnd(5) == 0)
             {
-                dmgcon(c, 3, 500);
+                damage_status_effect(c, 3, 500);
             }
-            dmgcon(c, 11, 300);
-            healsan(c, 10);
+            damage_status_effect(c, 11, 300);
+            heal_sanity(c, 10);
             skillexp(11, c, 250 + (c >= 57) * 1000);
             skillexp(15, c, 250 + (c >= 57) * 1000);
         }
         if (rnd(15) == 0)
         {
-            dmgcon(c, 12, 200);
+            damage_status_effect(c, 12, 200);
         }
         skillexp(17, c, 250 + (c >= 57) * 1000);
     }
@@ -47391,7 +44623,7 @@ void continuous_action_others()
                     txt(lang(
                         u8"突然ふたが閉まった！"s,
                         u8"Suddenly, the iron maiden falls forward."s));
-                    dmghp(cc, 9999, -18);
+                    damage_hp(cc, 9999, -18);
                     return;
                 }
             }
@@ -47403,7 +44635,7 @@ void continuous_action_others()
                     txt(lang(
                         u8"突然ギロチンが落ちてきた！"s,
                         u8"Suddenly, the guillotine is activated."s));
-                    dmghp(cc, 9999, -19);
+                    damage_hp(cc, 9999, -19);
                     return;
                 }
             }
@@ -47807,7 +45039,7 @@ void label_2151()
         cdata[tc].hp = cdata[tc].max_hp;
         cdata[tc].mp = cdata[tc].max_mp;
         cdata[tc].sp = cdata[tc].max_sp;
-        healcon(tc, 12, 7 + rnd(7));
+        heal_status_effect(tc, 12, 7 + rnd(7));
         if (cdata[tc].has_anorexia())
         {
             cdata[tc].anorexia_count -= rnd(6);
@@ -47821,7 +45053,7 @@ void label_2151()
             cure_anorexia(tc);
             cdata[tc].anorexia_count = 0;
         }
-        healsan(tc, 10);
+        heal_sanity(tc, 10);
         if (cdata[tc].has_lay_hand())
         {
             cdata[tc].is_lay_hand_available() = true;
@@ -47962,12 +45194,12 @@ void do_rest()
     {
         if (cdata[cc].continuous_action_turn % 2 == 0)
         {
-            healsp(cc, 1);
+            heal_stamina(cc, 1);
         }
         if (cdata[cc].continuous_action_turn % 3 == 0)
         {
-            healhp(cc, 1);
-            healmp(cc, 1);
+            heal_hp(cc, 1);
+            heal_mp(cc, 1);
         }
         return;
     }
@@ -48116,7 +45348,7 @@ void label_2153()
                     u8"You are too hungry. You chow down snow."s));
                 cdata[cc].nutrition += 5000;
                 label_2162();
-                dmgcon(0, 7, 1000);
+                damage_status_effect(0, 7, 1000);
             }
         }
     }
@@ -48377,7 +45609,7 @@ void spot_fishing()
         }
         if (rnd(10) == 0)
         {
-            dmgsp(cc, 1);
+            damage_stamina(cc, 1);
         }
         return;
     }
@@ -48563,7 +45795,7 @@ void spot_mining_or_wall()
     {
         if (rnd(5) == 0)
         {
-            dmgsp(cc, 1);
+            damage_stamina(cc, 1);
         }
         ++countdig;
         f = 0;
@@ -48781,7 +46013,7 @@ void label_2161()
                             u8"\"Are you teasing me?\""s,
                             u8"\"You fool!\""s);
                     }
-                    dmghp(cc, 999, -12);
+                    damage_hp(cc, 999, -12);
                     if (cdata[cc].state != 1)
                     {
                         if (cdata[cc].relationship > 0)
@@ -49238,7 +46470,7 @@ int label_2168()
                 mp = rnd(mp * 140 / 100 + 1) + 1;
             }
         }
-        dmgmp(cc, mp);
+        damage_mp(cc, mp);
         if (cdata[cc].state != 1)
         {
             efsource = 0;
@@ -49471,7 +46703,7 @@ int drink_well()
                 }
                 else
                 {
-                    dmghp(cc, 9999, -1);
+                    damage_hp(cc, 9999, -1);
                 }
                 break;
             }
@@ -49883,11 +47115,11 @@ int label_2174()
                     txt(lang(
                         u8"疲労し過ぎて失敗した！"s,
                         u8"You are too exhausted!"s));
-                    dmgsp(0, the_ability_db[efid]->cost / 2 + 1);
+                    damage_stamina(0, the_ability_db[efid]->cost / 2 + 1);
                     return 1;
                 }
             }
-            dmgsp(
+            damage_stamina(
                 0,
                 rnd(the_ability_db[efid]->cost / 2 + 1)
                     + the_ability_db[efid]->cost / 2 + 1);
@@ -50166,13 +47398,13 @@ void label_2187()
     }
     for (int cnt = 0, cnt_end = (subloop); cnt < cnt_end; ++cnt)
     {
-        healhp(tc(cnt), roll(dice1, dice2, bonus));
-        healcon(tc(cnt), 6);
-        healcon(tc(cnt), 1, 50);
-        healcon(tc(cnt), 5, 50);
-        healcon(tc(cnt), 7, 30);
-        healcon(tc(cnt), 9, 20);
-        healsan(tc(cnt), 1);
+        heal_hp(tc(cnt), roll(dice1, dice2, bonus));
+        heal_status_effect(tc(cnt), 6);
+        heal_status_effect(tc(cnt), 1, 50);
+        heal_status_effect(tc(cnt), 5, 50);
+        heal_status_effect(tc(cnt), 7, 30);
+        heal_status_effect(tc(cnt), 9, 20);
+        heal_sanity(tc(cnt), 1);
     }
     return;
 }
@@ -50648,7 +47880,7 @@ int pick_up_item()
                     }
                     else
                     {
-                        healmp(0, inv[ci].count * 5 * inv[ci].number);
+                        heal_mp(0, inv[ci].count * 5 * inv[ci].number);
                     }
                     inv[ci].count = 0;
                 }
@@ -51182,7 +48414,7 @@ turn_result_t do_bash()
                     name(cc) + u8"は"s + name(tc) + u8"に全力で体当たりした。"s,
                     name(cc) + u8" bash"s + _s(cc) + u8" up "s + name(tc)
                         + u8" at full power."s));
-                dmghp(tc, sdata(10, cc) * 5, cc);
+                damage_hp(tc, sdata(10, cc) * 5, cc);
                 if (cdata[tc].state == 1)
                 {
                     txt(lang(
@@ -51692,7 +48924,7 @@ turn_result_t proc_movement_event()
     {
         if (chipm(1, p) == 5)
         {
-            healsan(cc, 1);
+            heal_sanity(cc, 1);
         }
         addefmap(cdata[cc].position.x, cdata[cc].position.y, 1, 3);
         if (cdata[cc].wet == 0)
@@ -52419,7 +49651,7 @@ turn_result_t do_use_stairs_command(int val0)
     }
     if (movelevelbystairs == 1)
     {
-        bool ok = actionsp(0, 15);
+        bool ok = do_stamina_action(0, 15);
         if (!ok || cdata[0].inventory_weight_type >= 3)
         {
             if (!ok || rnd(5 - cdata[0].inventory_weight_type) == 0)
@@ -52427,7 +49659,7 @@ turn_result_t do_use_stairs_command(int val0)
                 txt(lang(
                     u8"うわああ！"s + name(0) + u8"は階段から足を踏み外した。"s,
                     u8"Noooo! You lost your step and roll down!"s));
-                dmghp(
+                damage_hp(
                     cc,
                     cdata[cc].max_hp
                             * (cdata[0].inventory_weight * 10
@@ -53235,12 +50467,12 @@ int label_2217()
                             txt(lang(
                                 u8"疲労し過ぎて失敗した！"s,
                                 u8"You are too exhausted!"s));
-                            dmgsp(0, encammoref(2, ammoproc) / 2 + 1);
+                            damage_stamina(0, encammoref(2, ammoproc) / 2 + 1);
                             ammoproc = -1;
                             return 1;
                         }
                     }
-                    dmgsp(0, rnd(encammoref(2, ammoproc) + 1));
+                    damage_stamina(0, rnd(encammoref(2, ammoproc) + 1));
                 }
                 --inv[ammo].enchantments[inv[ammo].count].power;
             }
@@ -53369,8 +50601,8 @@ void try_to_melee_attack()
                     name(cc) + u8" bash"s + _s(cc) + u8" "s + name(tc)
                         + u8" with "s + his(cc) + u8" shield."s));
             }
-            dmghp(tc, rnd(sdata(168, cc)) + 1, cc);
-            dmgcon(tc, 7, 50 + int(std::sqrt(sdata(168, cc))) * 15);
+            damage_hp(tc, rnd(sdata(168, cc)) + 1, cc);
+            damage_status_effect(tc, 7, 50 + int(std::sqrt(sdata(168, cc))) * 15);
             cdata[tc].paralyzed += rnd(3);
         }
     }
@@ -53763,7 +50995,7 @@ label_22191_internal:
                 }
             }
         }
-        dmghp(tc, dmg, cc, ele, elep);
+        damage_hp(tc, dmg, cc, ele, elep);
         if (critical)
         {
             skillexp(186, cc, 60 / expmodifer, 2);
@@ -53829,7 +51061,7 @@ label_22191_internal:
         {
             if (attackrange == 0)
             {
-                dmghp(
+                damage_hp(
                     cc,
                     attackdmg * cdata[tc].cut_counterattack / 100 + 1,
                     tc,
@@ -53855,7 +51087,7 @@ label_22191_internal:
                                 name(cc) + u8" "s + is(cc)
                                     + u8" stuck by several thorns."s));
                         }
-                        dmghp(
+                        damage_hp(
                             cc,
                             clamp(attackdmg / 10, 1, cdata[tc].max_hp / 10),
                             tc,
@@ -53874,7 +51106,7 @@ label_22191_internal:
                                 name(cc) + u8" "s + is(cc)
                                     + u8" stuck by several ether thorns."s));
                         }
-                        dmghp(
+                        damage_hp(
                             cc,
                             clamp(attackdmg / 10, 1, cdata[tc].max_hp / 10),
                             tc,
@@ -54046,19 +51278,19 @@ void label_2220()
         if (enc == 36)
         {
             p = rnd(inv[cw].enchantments[cnt].power / 50 + 1) + 1;
-            healsp(cc, p);
-            dmgsp(tc, p / 2);
+            heal_stamina(cc, p);
+            damage_stamina(tc, p / 2);
             continue;
         }
         if (enc == 38)
         {
             p = rnd(inv[cw].enchantments[cnt].power / 25 + 1) + 1;
-            healmp(cc, p / 5);
+            heal_mp(cc, p / 5);
             if (cdata[tc].state != 1)
             {
                 continue;
             }
-            dmgmp(tc, p);
+            damage_mp(tc, p);
             continue;
         }
         if (enc == 37)
@@ -54091,7 +51323,7 @@ void label_2220()
             if (strutil::contains(s(0), u8"/dragon/"))
             {
                 gdata(809) = 1;
-                dmghp(tc, orgdmg / 2, cc);
+                damage_hp(tc, orgdmg / 2, cc);
             }
             continue;
         }
@@ -54101,7 +51333,7 @@ void label_2220()
             if (strutil::contains(s(0), u8"/god/"))
             {
                 gdata(809) = 1;
-                dmghp(tc, orgdmg / 2, cc);
+                damage_hp(tc, orgdmg / 2, cc);
             }
             continue;
         }
@@ -54111,7 +51343,7 @@ void label_2220()
             if (strutil::contains(s(0), u8"/undead/"))
             {
                 gdata(809) = 1;
-                dmghp(tc, orgdmg / 2, cc);
+                damage_hp(tc, orgdmg / 2, cc);
             }
             continue;
         }
@@ -54131,7 +51363,7 @@ void label_2220()
                     continue;
                 }
                 gdata(809) = 1;
-                dmghp(
+                damage_hp(
                     tc,
                     rnd(orgdmg * (100 + inv[cw].enchantments[cnt].power) / 1000
                         + 1)
@@ -54187,7 +51419,7 @@ void label_2220()
         if (cdata[tc].state == 1)
         {
             gdata(809) = 1;
-            dmghp(
+            damage_hp(
                 tc,
                 orgdmg * 2 / 3,
                 cc,
@@ -55645,7 +52877,7 @@ turn_result_t do_use_command()
         {
             return turn_result_t::turn_end;
         }
-        dmghp(0, 99999, -20);
+        damage_hp(0, 99999, -20);
         goto label_2229_internal;
     case 33:
         if (inv[ci].subname == 0)
@@ -55854,7 +53086,7 @@ turn_result_t do_use_command()
             u8"Suddenly, someone closes the door."s));
         txtef(9);
         txt(lang(u8"「ニヤリ」"s, u8"*Grin*"s));
-        dmghp(0, 9999, -18);
+        damage_hp(0, 9999, -18);
         goto label_2229_internal;
     case 36:
         txt(lang(
@@ -55867,7 +53099,7 @@ turn_result_t do_use_command()
             u8"Suddenly, someone activates the guillotine."s));
         txtef(9);
         txt(lang(u8"「ニヤリ」"s, u8"*Grin*"s));
-        dmghp(0, 9999, -19);
+        damage_hp(0, 9999, -19);
         goto label_2229_internal;
     case 39:
         txtef(9);
@@ -57093,8 +54325,8 @@ talk_result_t talk_house_visitor()
                 lang(u8"「ふぅ」"s, u8"\"Whew!\""s),
                 lang(u8"「たまらないわ」"s, u8"\"I'm revived!\""s),
                 lang(u8"「んまっ♪」"s, u8"\"Awesome.\""s));
-            dmgcon(tc, 8, 1000);
-            dmgcon(cc, 8, 1000);
+            damage_status_effect(tc, 8, 1000);
+            damage_status_effect(cc, 8, 1000);
             modimp(tc, 15);
             return talk_result_t::talk_end;
         }
@@ -61315,7 +58547,7 @@ void failed_quest(int val0)
                                 }
                                 txtef(9);
                                 txt(s);
-                                dmghp(tc, 999999, p);
+                                damage_hp(tc, 999999, p);
                             }
                             cdata[tc].state = 0;
                             break;
@@ -62622,7 +59854,7 @@ label_2692_internal:
                 {
                     if (rnd(100) == 0)
                     {
-                        dmgcon(cc, 2, 4000);
+                        damage_status_effect(cc, 2, 4000);
                     }
                 }
             }
@@ -65573,7 +62805,7 @@ turn_result_t pass_one_turn(bool label_2738_flg)
         {
             if (cdata[0].continuous_action_id == 0)
             {
-                healsp(0, 2);
+                heal_stamina(0, 2);
             }
         }
         if (gdata_is_returning_or_escaping != 0)
@@ -65662,11 +62894,11 @@ turn_result_t pass_one_turn(bool label_2738_flg)
                 {
                     if (gdata_protects_from_etherwind == 0)
                     {
-                        modcorrupt(5 + clamp(gdata_play_turns / 20000, 0, 15));
+                        modify_corruption(5 + clamp(gdata_play_turns / 20000, 0, 15));
                     }
                     else if (rnd(10) == 0)
                     {
-                        modcorrupt(5);
+                        modify_corruption(5);
                     }
                 }
                 if (gdata_protects_from_etherwind == 0 || rnd(4) == 0)
@@ -65685,7 +62917,7 @@ turn_result_t pass_one_turn(bool label_2738_flg)
         {
             if (adata(16, gdata_current_map) != 7 && gdata_current_map != 30)
             {
-                modcorrupt(10);
+                modify_corruption(10);
             }
         }
     }
@@ -65713,7 +62945,7 @@ turn_result_t pass_one_turn(bool label_2738_flg)
                             hostileaction(0, tc);
                         }
                     }
-                    int stat = dmghp(
+                    int stat = damage_hp(
                         tc, rnd(mef(5, ef) / 25 + 5) + 1, -15, 63, mef(5, ef));
                     if (stat == 0)
                     {
@@ -65739,7 +62971,7 @@ turn_result_t pass_one_turn(bool label_2738_flg)
                 }
             }
             int stat =
-                dmghp(tc, rnd(mef(5, ef) / 15 + 5) + 1, -9, 50, mef(5, ef));
+                damage_hp(tc, rnd(mef(5, ef) / 15 + 5) + 1, -9, 50, mef(5, ef));
             if (stat == 0)
             {
                 check_kill(mef(6, ef), tc);
@@ -65789,7 +63021,7 @@ turn_result_t pass_one_turn(bool label_2738_flg)
             {
                 if (cdata[cc].buffs[cnt].id == 16)
                 {
-                    dmghp(cc, 9999, -11);
+                    damage_hp(cc, 9999, -11);
                 }
                 delbuff(cc, cnt);
                 --cnt;
@@ -66132,7 +63364,7 @@ turn_result_t turn_end()
                 txt(lang(
                     name(0) + u8"は荷物に圧迫されもがいた。"s,
                     u8"Your backpack is squashing you!"s));
-                dmghp(
+                damage_hp(
                     cc,
                     cdata[cc].max_hp
                             * (cdata[0].inventory_weight * 10
@@ -66206,7 +63438,7 @@ turn_result_t pc_turn(bool advance_time)
         }
         if (gdata_ether_disease_stage >= 20000)
         {
-            dmghp(0, 999999, -14);
+            damage_hp(0, 999999, -14);
         }
         if (cdata[0].state != 1)
         {

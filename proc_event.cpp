@@ -4,6 +4,7 @@
 #include "calc.hpp"
 #include "character.hpp"
 #include "config.hpp"
+#include "damage.hpp"
 #include "elona.hpp"
 #include "item.hpp"
 #include "random.hpp"
@@ -360,7 +361,7 @@ void proc_event()
         }
         if (gdata_ether_disease_stage >= 20000)
         {
-            modcorrupt(-2000);
+            modify_corruption(-2000);
         }
         txt(lang(u8"金貨を幾らか失った…"s, u8"You lost some money."s));
         cdata[0].gold -= cdata[0].gold / 3;
@@ -369,7 +370,7 @@ void proc_event()
         autosave = 1 * (gdata_current_map != 35);
         break;
     case 20:
-        dmghp(evdata1(evnum - (evnum != 0) * 1), 9999, -11);
+        damage_hp(evdata1(evnum - (evnum != 0) * 1), 9999, -11);
         cdata[evdata1(evnum - (evnum != 0) * 1)].character_role = 0;
         cdata[evdata1(evnum - (evnum != 0) * 1)].state = 0;
         flt();
@@ -830,7 +831,7 @@ void proc_event()
                     {
                         tc = map(dx, dy, 1) - 1;
                         dmg = 1000;
-                        dmghp(tc, dmg, -17);
+                        damage_hp(tc, dmg, -17);
                     }
                     mapitem_fire(dx, dy);
                 }

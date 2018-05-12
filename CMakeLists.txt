@@ -57,6 +57,7 @@ set(CORE_SOURCES
     config.cpp
     ctrl_file.cpp
     ctrl_inventory.cpp
+    damage.cpp
     debug.cpp
     draw.cpp
     elonacore.cpp

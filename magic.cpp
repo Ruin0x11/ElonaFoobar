@@ -6,6 +6,7 @@
 #include "character.hpp"
 #include "config.hpp"
 #include "ctrl_file.hpp"
+#include "damage.hpp"
 #include "debug.hpp"
 #include "elona.hpp"
 #include "i18n.hpp"
@@ -266,7 +267,7 @@ int magic()
                                             + u8"."s));
                                 }
                             }
-                            dmghp(tc, dmg, cc, ele, elep);
+                            damage_hp(tc, dmg, cc, ele, elep);
                         }
                     }
                 }
@@ -378,8 +379,8 @@ int magic()
                                     name(tc) + u8"の狂気は消え去った。"s,
                                     name(tc) + u8" "s + is(tc)
                                         + u8" completely sane again."s));
-                                healsan(tc, efp / 10);
-                                healcon(tc, 11, 9999);
+                                heal_sanity(tc, efp / 10);
+                                heal_status_effect(tc, 11, 9999);
                             }
                             continue;
                         }
@@ -466,13 +467,13 @@ int magic()
                                             + u8"."s));
                                 }
                             }
-                            dmghp(tc, dmg, cc, ele, elep);
+                            damage_hp(tc, dmg, cc, ele, elep);
                         }
                     }
                 }
                 if (efid == 644)
                 {
-                    dmghp(cc, 99999, -16);
+                    damage_hp(cc, 99999, -16);
                 }
                 if (chainbomb > 0)
                 {
@@ -525,7 +526,7 @@ int magic()
                             u8"The arrow hits "s + name(tc) + u8"."s));
                     }
                 }
-                dmghp(tc, dmg, cc, ele, elep);
+                damage_hp(tc, dmg, cc, ele, elep);
                 goto the_end;
             case 4:
                 if (efid == 400)
@@ -570,7 +571,7 @@ int magic()
                 label_2187();
                 if (efstatus == curse_state_t::blessed)
                 {
-                    healcon(tc, 12, 5 + rnd(5));
+                    heal_status_effect(tc, 12, 5 + rnd(5));
                 }
                 sickifcursed(efstatus, tc, 3);
                 play_animation(5);
@@ -679,14 +680,14 @@ int magic()
                     cdata[tc].hp = cdata[tc].max_hp / 12 + 1;
                     goto the_end;
                 }
-                dmghp(tc, roll(dice1, dice2, bonus), cc, ele, elep);
+                damage_hp(tc, roll(dice1, dice2, bonus), cc, ele, elep);
                 if (efid == 617)
                 {
-                    dmgcon(tc, 6, elep);
+                    damage_status_effect(tc, 6, elep);
                 }
                 if (efid == 618)
                 {
-                    dmgcon(tc, 2, elep);
+                    damage_status_effect(tc, 2, elep);
                 }
                 if (efid == 614)
                 {
@@ -1090,7 +1091,7 @@ int magic()
                                             + u8"."s));
                                 }
                             }
-                            dmghp(tc, dmg, cc, ele, elep);
+                            damage_hp(tc, dmg, cc, ele, elep);
                         }
                     }
                 }
@@ -1139,7 +1140,7 @@ label_2181_internal:
                     + u8" sick at entrails caught in "s + name(cc) + your(cc)
                     + u8" tentacles."s);
         }
-        damage_insanity(tc, rnd(roll(dice1, dice2, bonus) + 1));
+        damage_sanity(tc, rnd(roll(dice1, dice2, bonus) + 1));
         break;
     case 1136:
         if (mdata(6) != 1)
@@ -1283,7 +1284,7 @@ label_2181_internal:
                 name(tc) + u8"は恋の予感がした。"s,
                 name(tc) + u8" sense"s + _s(tc) + u8" a sigh of love,"s));
             modimp(tc, clamp(efp / 15, 0, 15));
-            dmgcon(tc, 7, 100);
+            damage_status_effect(tc, 7, 100);
             lovemiracle(tc);
             break;
         }
@@ -1300,7 +1301,7 @@ label_2181_internal:
             lovemiracle(tc);
             modimp(tc, clamp(efp / 4, 0, 25));
         }
-        dmgcon(tc, 7, 500);
+        damage_status_effect(tc, 7, 500);
         break;
     case 654:
         if (is_in_fov(tc))
@@ -1392,7 +1393,7 @@ label_2181_internal:
                     lang(u8"「んまっ♪」"s, u8"\"Awesome.\""s));
             }
         }
-        dmgcon(tc, 8, efp);
+        damage_status_effect(tc, 8, efp);
         eatstatus(efstatus, tc);
         break;
     case 1116:
@@ -1417,7 +1418,7 @@ label_2181_internal:
                         + his(tc) + u8" stomach."s));
             }
         }
-        dmghp(tc, efp * efstatusfix(500, 400, 100, 50) / 1000, -15, 63, efp);
+        damage_hp(tc, efp * efstatusfix(500, 400, 100, 50) / 1000, -15, 63, efp);
         break;
     case 1103:
         if (is_in_fov(tc))
@@ -1443,7 +1444,7 @@ label_2181_internal:
                 name(tc) + u8"のスタミナが少し回復した。"s,
                 name(tc) + u8" restore"s + _s(tc) + u8" some stamina."s));
         }
-        healsp(tc, 25);
+        heal_stamina(tc, 25);
         sickifcursed(efstatus, tc, 1);
         break;
     case 1147:
@@ -1454,7 +1455,7 @@ label_2181_internal:
                 name(tc) + u8"のスタミナはかなり回復した。"s,
                 name(tc) + u8" greatly restore"s + _s(tc) + u8" stamina."s));
         }
-        healsp(tc, 100);
+        heal_stamina(tc, 100);
         sickifcursed(efstatus, tc, 1);
         break;
     case 1142:
@@ -1470,11 +1471,11 @@ label_2181_internal:
             }
             if (cdata[tc].hp > 10)
             {
-                dmghp(tc, cdata[tc].hp - rnd(10), -15);
+                damage_hp(tc, cdata[tc].hp - rnd(10), -15);
             }
             else
             {
-                dmghp(tc, rnd(20000), -15);
+                damage_hp(tc, rnd(20000), -15);
             }
         }
         else if (is_in_fov(tc))
@@ -1515,11 +1516,11 @@ label_2181_internal:
                     txt(lang(
                         u8"疲労し過ぎて失敗した！"s,
                         u8"You are too exhausted!"s));
-                    dmgsp(0, the_ability_db[efid]->cost / 2 + 1);
+                    damage_stamina(0, the_ability_db[efid]->cost / 2 + 1);
                     break;
                 }
             }
-            dmgsp(
+            damage_stamina(
                 0,
                 rnd(the_ability_db[efid]->cost / 2 + 1)
                     + the_ability_db[efid]->cost / 2 + 1);
@@ -1540,11 +1541,11 @@ label_2181_internal:
                     txt(lang(
                         u8"疲労し過ぎて失敗した！"s,
                         u8"You are too exhausted!"s));
-                    dmgsp(0, the_ability_db[efid]->cost / 2 + 1);
+                    damage_stamina(0, the_ability_db[efid]->cost / 2 + 1);
                     break;
                 }
             }
-            dmgsp(
+            damage_stamina(
                 0,
                 rnd(the_ability_db[efid]->cost / 2 + 1)
                     + the_ability_db[efid]->cost / 2 + 1);
@@ -1688,11 +1689,11 @@ label_2181_internal:
                     txt(lang(
                         u8"疲労し過ぎて失敗した！"s,
                         u8"You are too exhausted!"s));
-                    dmgsp(0, the_ability_db[efid]->cost / 2 + 1);
+                    damage_stamina(0, the_ability_db[efid]->cost / 2 + 1);
                     break;
                 }
             }
-            dmgsp(
+            damage_stamina(
                 0,
                 rnd(the_ability_db[efid]->cost / 2 + 1)
                     + the_ability_db[efid]->cost / 2 + 1);
@@ -1726,11 +1727,11 @@ label_2181_internal:
                     txt(lang(
                         u8"疲労し過ぎて失敗した！"s,
                         u8"You are too exhausted!"s));
-                    dmgsp(0, the_ability_db[efid]->cost / 2 + 1);
+                    damage_stamina(0, the_ability_db[efid]->cost / 2 + 1);
                     break;
                 }
             }
-            dmgsp(
+            damage_stamina(
                 0,
                 rnd(the_ability_db[efid]->cost / 2 + 1)
                     + the_ability_db[efid]->cost / 2 + 1);
@@ -1835,11 +1836,11 @@ label_2181_internal:
                     txt(lang(
                         u8"疲労し過ぎて失敗した！"s,
                         u8"You are too exhausted!"s));
-                    dmgsp(0, the_ability_db[efid]->cost / 2 + 1);
+                    damage_stamina(0, the_ability_db[efid]->cost / 2 + 1);
                     break;
                 }
             }
-            dmgsp(
+            damage_stamina(
                 0,
                 rnd(the_ability_db[efid]->cost / 2 + 1)
                     + the_ability_db[efid]->cost / 2 + 1);
@@ -2842,7 +2843,7 @@ label_2181_internal:
                         + u8" head."s));
             }
         }
-        dmghp(tc, cdata[tc].max_hp, cc, 658);
+        damage_hp(tc, cdata[tc].max_hp, cc, 658);
         break;
     case 440:
     case 439:
@@ -3032,7 +3033,7 @@ label_2181_internal:
         }
         break;
     case 621:
-        healmp(tc, efp / 2 + rnd((efp / 2 + 1)));
+        heal_mp(tc, efp / 2 + rnd((efp / 2 + 1)));
         if (is_in_fov(tc))
         {
             txt(lang(
@@ -3042,7 +3043,7 @@ label_2181_internal:
         }
         break;
     case 624:
-        healmp(tc, roll(dice1, dice2, bonus));
+        heal_mp(tc, roll(dice1, dice2, bonus));
         if (is_in_fov(tc))
         {
             txt(lang(
@@ -3069,7 +3070,7 @@ label_2181_internal:
                         + his(tc) + u8" stomach."s));
             }
         }
-        dmgcon(tc, 1, efp);
+        damage_status_effect(tc, 1, efp);
         break;
     case 1111:
         if (is_in_fov(tc))
@@ -3078,7 +3079,7 @@ label_2181_internal:
                 name(tc) + u8"は墨を浴びた！"s,
                 u8"Ink squirts into "s + name(tc) + your(tc) + u8" face!"s));
         }
-        dmgcon(tc, 4, efp);
+        damage_status_effect(tc, 4, efp);
         break;
     case 1109:
         if (is_in_fov(tc))
@@ -3088,7 +3089,7 @@ label_2181_internal:
                 u8"A foul stench floods "s + name(tc) + your(tc)
                     + u8" nostrils!"s));
         }
-        dmgcon(tc, 5, efp);
+        damage_status_effect(tc, 5, efp);
         break;
     case 1110:
         if (is_in_fov(tc))
@@ -3097,7 +3098,7 @@ label_2181_internal:
                 name(tc) + u8"は痺れた！"s,
                 name(tc) + u8" get"s + _s(tc) + u8" numbness!"s));
         }
-        dmgcon(tc, 3, efp);
+        damage_status_effect(tc, 3, efp);
         break;
     case 1112:
         if (is_in_fov(tc))
@@ -3106,7 +3107,7 @@ label_2181_internal:
                 name(tc) + u8"は甘い液体を浴びた！"s,
                 u8"Strange sweet liquid splashes onto "s + name(tc) + u8"!"s));
         }
-        dmgcon(tc, 2, efp);
+        damage_status_effect(tc, 2, efp);
         break;
     case 645:
     case 1114:
@@ -3218,7 +3219,7 @@ label_2181_internal:
             if (sdata.get(p, tc).original_level >= 150)
             {
                 ++f;
-                resistmod(tc, p, 50 * -1);
+                add_resistance(tc, p, 50 * -1);
                 if (f >= efp / 100)
                 {
                     break;
@@ -4202,7 +4203,7 @@ label_2181_internal:
                 continue;
             }
             tc = cnt;
-            dmghp(tc, 9999999, cc);
+            damage_hp(tc, 9999999, cc);
         }
         break;
     case 465:
@@ -4229,7 +4230,7 @@ label_2181_internal:
                 {
                     tc = map(dx, dy, 1) - 1;
                     dmg = sdata(16, cc) * efp / 10;
-                    dmghp(tc, dmg, cc, 50, 1000);
+                    damage_hp(tc, dmg, cc, 50, 1000);
                 }
             }
         }
@@ -4300,7 +4301,7 @@ label_2181_internal:
             txt(lang(
                 u8"エーテルの抗体があなたの体内に行き渡った。"s,
                 u8"Your Ether Disease is cured greatly."s));
-            modcorrupt(efp * -10);
+            modify_corruption(efp * -10);
         }
         else
         {
@@ -4308,7 +4309,7 @@ label_2181_internal:
             txt(lang(
                 u8"エーテルの病菌があなたの体内に行き渡った。"s,
                 u8" The Ether Disease spreads around your body."s));
-            modcorrupt(200);
+            modify_corruption(200);
         }
         break;
     case 633:
@@ -4320,7 +4321,7 @@ label_2181_internal:
         txt(lang(
             name(cc) + u8"に睨まれ、あなたはエーテルに侵食された。"s,
             name(cc) + u8" gazes at you. Your Ether Disease deteriorates."s));
-        modcorrupt(100);
+        modify_corruption(100);
         break;
     case 638:
     case 648:
@@ -4381,7 +4382,7 @@ label_2181_internal:
                 }
             }
         }
-        dmgcon(tc, 7, 200);
+        damage_status_effect(tc, 7, 200);
         break;
     case 652:
         if (is_in_fov(tc))
@@ -4391,7 +4392,7 @@ label_2181_internal:
                 name(cc) + u8" gaze"s + _s(cc) + u8" at "s + name(tc)
                     + u8"."s));
         }
-        dmgmp(tc, rnd(20) + 1);
+        damage_mp(tc, rnd(20) + 1);
         break;
     case 1133:
         if (is_in_fov(tc))
@@ -4478,7 +4479,7 @@ label_2181_internal:
                 name(cc) + u8" eat"s + _s(cc) + u8" "s + itemname(ci, 1)
                     + u8"!"s));
         }
-        healhp(cc, cdata[cc].max_hp / 3);
+        heal_hp(cc, cdata[cc].max_hp / 3);
         label_2161();
         refresh_burden_state();
         break;

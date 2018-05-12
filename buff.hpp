@@ -90,6 +90,8 @@ extern buff_db the_buff_db;
 // 27  "魅力の成長", "Grow Charisma"
 // 28  "速度の成長", "Grow Speed"
 
-
+int findbuff(int = 0, int = 0);
+int addbuff(int = 0, int = 0, int = 0, int = 0);
+void delbuff(int = 0, int = 0);
 
 } // namespace elona

@@ -2,6 +2,7 @@
 #include "audio.hpp"
 #include "calc.hpp"
 #include "character.hpp"
+#include "damage.hpp"
 #include "elona.hpp"
 #include "i18n.hpp"
 #include "item.hpp"
@@ -2282,7 +2283,7 @@ talk_result_t talk_unique()
             s = refchara_str(cdata[tc].id, 8);
             if (!strutil::contains(s(0), u8"/man/"))
             {
-                dmgcon(tcbk, 11, 1000);
+                damage_status_effect(tcbk, 11, 1000);
                 f = 1;
                 modify_karma(0, 2);
             }

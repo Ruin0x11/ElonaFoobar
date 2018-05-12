@@ -742,7 +742,7 @@ label_1876_internal:
             atx.pic(3) = 96;
             noteadd(u8"痛っ！蚊に刺された。"s);
             snd(2);
-            dmghp(0, cdata[0].max_hp * 5 / 100, -10);
+            damage_hp(0, cdata[0].max_hp * 5 / 100, -10);
         }
         else
         {
@@ -752,7 +752,7 @@ label_1876_internal:
             atx.pic(3) = 96;
             noteadd(u8"うっ！ヘビに噛まれた。"s);
             snd(2);
-            dmghp(0, cdata[0].max_hp * 10 / 100, -10);
+            damage_hp(0, cdata[0].max_hp * 10 / 100, -10);
         }
         atx.through = 1;
         goto label_1875;
@@ -767,7 +767,7 @@ label_1876_internal:
             atx.pic(3) = 96;
             noteadd(u8"痛っ！蚊に刺された。"s);
             snd(2);
-            dmghp(0, cdata[0].max_hp * 5 / 100, -10);
+            damage_hp(0, cdata[0].max_hp * 5 / 100, -10);
         }
         else
         {
@@ -777,7 +777,7 @@ label_1876_internal:
             atx.pic(3) = 96;
             noteadd(u8"うっ！ヘビに噛まれた。"s);
             snd(2);
-            dmghp(0, cdata[0].max_hp * 10 / 100, -10);
+            damage_hp(0, cdata[0].max_hp * 10 / 100, -10);
         }
         atx.through = 1;
         goto label_1875;
