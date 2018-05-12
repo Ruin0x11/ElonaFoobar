@@ -5,6 +5,7 @@
 #include "elona.hpp"
 #include "json.hpp"
 #include "range.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 
 
@@ -951,27 +952,27 @@ void load_config2()
             1,
             [&](auto value) { config::instance().joypad = value; }),
         std::make_unique<config_integer>(
-            u8"msgLine", 4, [&](auto value) { inf_msgline = value; }),
+            u8"msgLine", 4, [&](auto value) { ui.msgline = value; }), // TODO will this be set after ui_init()?
         std::make_unique<config_integer>(
-            u8"tileSize", 48, [&](auto value) { inf_tiles = value; }),
+            u8"tileSize", 48, [&](auto value) { ui.tiles = value; }),
         std::make_unique<config_integer>(
-            u8"fontSize", 14, [&](auto value) { inf_mesfont = value; }),
+            u8"fontSize", 14, [&](auto value) { ui.mesfont = value; }),
         std::make_unique<config_integer>(
-            u8"infVerType", 1, [&](auto value) { inf_vertype = value; }),
+            u8"infVerType", 1, [&](auto value) { ui.vertype = value; }),
         std::make_unique<config_integer>(
-            u8"windowX", 0, [&](auto value) { windowx = value; }),
+            u8"windowX", 0, [&](auto value) { ui.windowx = value; }),
         std::make_unique<config_integer>(
-            u8"windowY", 0, [&](auto value) { windowy = value; }),
+            u8"windowY", 0, [&](auto value) { ui.windowy = value; }),
         std::make_unique<config_integer>(
-            u8"windowW", 800, [&](auto value) { windoww = value; }),
+            u8"windowW", 800, [&](auto value) { ui.windoww = value; }),
         std::make_unique<config_integer>(
-            u8"windowH", 600, [&](auto value) { windowh = value; }),
+            u8"windowH", 600, [&](auto value) { ui.windowh = value; }),
         std::make_unique<config_integer>(
-            u8"clockX", 0, [&](auto value) { inf_clockx = value; }),
+            u8"clockX", 0, [&](auto value) { ui.clockx = value; }),
         std::make_unique<config_integer>(
-            u8"clockW", 120, [&](auto value) { inf_clockw = value; }),
+            u8"clockW", 120, [&](auto value) { ui.clockw = value; }),
         std::make_unique<config_integer>(
-            u8"clockH", 96, [&](auto value) { inf_clockh = value; }),
+            u8"clockH", 96, [&](auto value) { ui.clockh = value; }),
         std::make_unique<config_string>(
             u8"defLoadFolder", "", [&](auto value) { defload = value; }),
         std::make_unique<config_integer>(

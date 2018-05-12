@@ -43,11 +43,13 @@ set(CORE_SOURCES
     access_character_info.cpp
     access_item_db.cpp
     animation.cpp
+    atx.cpp
     audio.cpp
     autopick.cpp
     buff.cpp
     calc.cpp
     card.cpp
+    casino.cpp
     cat.cpp
     cell_draw.cpp
     character.cpp
@@ -88,6 +90,7 @@ set(CORE_SOURCES
     tcg.cpp
     text.cpp
     trait.cpp
+    ui.cpp
     variables.cpp
     wish.cpp
     ${PROJECT_BINARY_DIR}/version.cpp

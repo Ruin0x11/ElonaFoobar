@@ -2,6 +2,7 @@
 #include "config.hpp"
 #include "elona.hpp"
 #include "macro.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 
 using namespace elona;
@@ -378,8 +379,8 @@ void set_option()
     int cfg_sound2 = config::instance().sound;
     int cfg_music2 = config::instance().music;
     int cfg_fullscreen2 = config::instance().fullscreen;
-    int windoww2 = windoww;
-    int windowh2 = windowh;
+    int windoww2 = ui.windoww;
+    int windowh2 = ui.windowh;
 
     const auto config_menu_definitions = create_config_menu();
 
@@ -411,11 +412,11 @@ void set_option()
         gmode(0);
         pos(0, 0);
         picload(filesystem::dir::graphic() / u8"title.bmp", 1);
-        gzoom(4, 0, 0, 800, 600, windoww, windowh);
+        gzoom(4, 0, 0, 800, 600, ui.windoww, ui.windowh);
         gsel(0);
         gmode(0);
         pos(0, 0);
-        gcopy(4, 0, 0, windoww, windowh);
+        gcopy(4, 0, 0, ui.windoww, ui.windowh);
         gmode(2);
     }
 
@@ -479,7 +480,7 @@ void set_option()
         if (mode == 1)
         {
             display_window(
-                (windoww - width) / 2 + inf_screenx,
+                (ui.windoww - width) / 2 + ui.screenx, // TODO refactor out ui
                 winposy(height, 1),
                 width,
                 height);
@@ -487,7 +488,7 @@ void set_option()
         else
         {
             display_window(
-                (windoww - width) / 2 + inf_screenx,
+                (ui.windoww - width) / 2 + ui.screenx,
                 winposy(height) - 12,
                 width,
                 height);
@@ -1124,8 +1125,8 @@ void set_option()
                     }
                     windoww2 = x(i);
                     windowh2 = y(i);
-                    set_config(u8"windowW", windoww2);
-                    set_config(u8"windowH", windowh2);
+                    set_config(u8"ui.windowW", windoww2);
+                    set_config(u8"ui.windowH", windowh2);
                     snd(20);
                     reset_page = true;
                     continue;

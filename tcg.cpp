@@ -5,6 +5,7 @@
 #include "filesystem.hpp"
 #include "input.hpp"
 #include "macro.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 
 
@@ -1560,14 +1561,14 @@ void tcgdrawbg()
     w_at_tcg = 128;
     h_at_tcg = 128;
     gmode(0);
-    for (int cnt = 0, cnt_end = (windowh / h_at_tcg + 1); cnt < cnt_end; ++cnt)
+    for (int cnt = 0, cnt_end = (ui.windowh / h_at_tcg + 1); cnt < cnt_end; ++cnt)
     {
         cnt2_at_tcg = cnt;
-        for (int cnt = 0, cnt_end = (windoww / w_at_tcg + 1); cnt < cnt_end;
+        for (int cnt = 0, cnt_end = (ui.windoww / w_at_tcg + 1); cnt < cnt_end;
              ++cnt)
         {
-            pos(windoww - (cnt + 1) * w_at_tcg,
-                windowh - (cnt2_at_tcg + 1) * h_at_tcg);
+            pos(ui.windoww - (cnt + 1) * w_at_tcg,
+                ui.windowh - (cnt2_at_tcg + 1) * h_at_tcg);
             gcopy(3, x_at_tcg, y_at_tcg, w_at_tcg, h_at_tcg);
         }
     }
@@ -1614,8 +1615,8 @@ void tcginit()
     cfg_chaintime = 50;
     basew_at_tcg = 800;
     baseh_at_tcg = 600;
-    basex_at_tcg = (windoww - basew_at_tcg) / 2;
-    basey_at_tcg = (windowh - baseh_at_tcg) / 2;
+    basex_at_tcg = (ui.windoww - basew_at_tcg) / 2;
+    basey_at_tcg = (ui.windowh - baseh_at_tcg) / 2;
     graveix_at_tcg(0) = basex_at_tcg + 638;
     graveix_at_tcg(1) = basex_at_tcg + 638;
     graveiy_at_tcg(0) = basey_at_tcg + 315;

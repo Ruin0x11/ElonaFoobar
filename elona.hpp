@@ -123,6 +123,15 @@ struct elona_vector1
         return storage.size();
     }
 
+    int begin() const
+    {
+        return storage.begin()
+    }
+
+    int end() const
+    {
+        return storage.end()
+    }
 
 
 private:
@@ -152,6 +161,11 @@ struct elona_vector2
             storage.at(j)->resize(i + 1);
         }
         return (*storage.at(j))[i];
+    }
+
+    const T operator()(size_t i, size_t j) const
+    {
+        return (*this)(i, j);
     }
 
 

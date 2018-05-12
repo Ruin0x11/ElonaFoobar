@@ -4,6 +4,7 @@
 #include "config.hpp"
 #include "elona.hpp"
 #include "map.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 
 
@@ -143,7 +144,7 @@ void prepare_item_image(int id, int color, int character_image)
             255 - c_col(0, color),
             255 - c_col(1, color),
             255 - c_col(2, color));
-        gcopy(1, 0, 768, inf_tiles, inf_tiles);
+        gcopy(1, 0, 768, ui.tiles, ui.tiles);
         set_color_mod(255, 255, 255);
         pos(0, 1008);
         set_color_mod(
@@ -155,10 +156,10 @@ void prepare_item_image(int id, int color, int character_image)
             5,
             chipc(0, character_id) + 8,
             chipc(1, character_id) + 4
-                + (chipc(3, character_id) > inf_tiles) * 8,
+                + (chipc(3, character_id) > ui.tiles) * 8,
             chipc(2, character_id) - 16,
             chipc(3, character_id) - 8
-                - (chipc(3, character_id) > inf_tiles) * 10,
+                - (chipc(3, character_id) > ui.tiles) * 10,
             22,
             20);
         set_color_mod(255, 255, 255, 5);
@@ -184,7 +185,7 @@ void prepare_item_image(int id, int color, int character_image)
             chipc(3, character_id) - 8);
         set_color_mod(255, 255, 255, 5);
         gmode(4, -1, -1, 192);
-        pos(0, 960 + (chipc(3, character_id) == inf_tiles) * 48);
+        pos(0, 960 + (chipc(3, character_id) == ui.tiles) * 48);
         set_color_mod(
             255 - c_col(0, color),
             255 - c_col(1, color),
@@ -192,9 +193,9 @@ void prepare_item_image(int id, int color, int character_image)
         gcopy(
             1,
             144,
-            768 + (chipc(3, character_id) > inf_tiles) * 48,
-            inf_tiles,
-            chipc(3, character_id) + (chipc(3, character_id) > inf_tiles) * 48);
+            768 + (chipc(3, character_id) > ui.tiles) * 48,
+            ui.tiles,
+            chipc(3, character_id) + (chipc(3, character_id) > ui.tiles) * 48);
         set_color_mod(255, 255, 255);
         gmode(2);
         gsel(0);
@@ -203,7 +204,7 @@ void prepare_item_image(int id, int color, int character_image)
 
 
 
-void show_hp_bar(show_hp_bar_side side, int inf_clocky)
+void show_hp_bar(show_hp_bar_side side, int clocky)
 {
     const bool right = side == show_hp_bar_side::right_side;
 
@@ -215,8 +216,8 @@ void show_hp_bar(show_hp_bar_side side, int inf_clocky)
             && cdata[i].has_been_used_stethoscope())
         {
             const auto name = cdatan(0, i);
-            const int x = 16 + (windoww - strlen_u(name) * 7 - 16) * right;
-            const int y = inf_clocky + 200 - 180 * right + cnt * 32;
+            const int x = 16 + (ui.windoww - strlen_u(name) * 7 - 16) * right;
+            const int y = clocky + 200 - 180 * right + cnt * 32;
             // std::cout << "HP bar(" << i << "):name: " << position_t{x, y} <<
             // std::endl;
             pos(x, y);
@@ -227,7 +228,7 @@ void show_hp_bar(show_hp_bar_side side, int inf_clocky)
             if (cc.state == 1)
             {
                 const int width = clamp(cc.hp * 30 / cc.max_hp, 1, 30);
-                const int x_ = 16 + (windoww - 108) * right;
+                const int x_ = 16 + (ui.windoww - 108) * right;
                 const int y_ = y + 17;
                 // std::cout << "HP bar(" << i << "):bar:  " << position_t{x_,
                 // y_} << std::endl;
@@ -301,7 +302,7 @@ void clear_damage_popups()
 }
 
 
-void show_damage_popups(int inf_ver)
+void show_damage_popups(int ver)
 {
     for (auto&& damage_popup : damage_popups)
     {
@@ -338,10 +339,10 @@ void show_damage_popups(int inf_ver)
 
         int cfg_dmgfont = easing(damage_popup.frame / 10.0) * 20 + 12;
 
-        int x = (cc.position.x - scx) * inf_tiles + inf_screenx
+        int x = (cc.position.x - scx) * ui.tiles + ui.screenx
             - strlen_u(damage_popup.text) * (2 + cfg_dmgfont + 1) / 2 / 2
-            + inf_tiles / 2;
-        int y = (cc.position.y - scy) * inf_tiles + inf_screeny
+            + ui.tiles / 2;
+        int y = (cc.position.y - scy) * ui.tiles + ui.screeny
             - mondmgpos * (2 + cfg_dmgfont + 3) - 2 * damage_popup.frame;
         x += sxfix * (scx != scxbk) * (scrollp >= 3);
         y += syfix * (scy != scybk) * (scrollp >= 3);

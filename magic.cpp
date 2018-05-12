@@ -15,6 +15,7 @@
 #include "macro.hpp"
 #include "map.hpp"
 #include "trait.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 #include "wish.hpp"
 
@@ -1218,23 +1219,23 @@ label_2181_internal:
         gsel(0);
         ww = 400;
         wh = 300;
-        wx = (windoww - ww) / 2 + inf_screenx;
+        wx = (ui.windoww - ww) / 2 + ui.screenx;
         wy = winposy(wh);
         gmode(2);
         pos(wx, wy);
         gcopy(4, 0, 0, ww, wh);
-        gmode(1, inf_tiles, inf_tiles);
+        gmode(1, ui.tiles, ui.tiles);
         for (int cnt = 0; cnt < 5; ++cnt)
         {
             y = cnt + inv[ci].param2 - 2;
-            sy = cnt * inf_tiles + wy + 26;
+            sy = cnt * ui.tiles + wy + 26;
             for (int cnt = 0; cnt < 7; ++cnt)
             {
                 x = cnt + inv[ci].param1 - 3;
-                sx = cnt * inf_tiles + wx + 46;
+                sx = cnt * ui.tiles + wx + 46;
                 p = map(x, y, 0);
                 pos(sx + 1, sy + 1);
-                gcopy(2, p % 33 * inf_tiles, p / 33 * inf_tiles);
+                gcopy(2, p % 33 * ui.tiles, p / 33 * ui.tiles);
                 if (x == inv[ci].param1)
                 {
                     if (y == inv[ci].param2)
@@ -2969,7 +2970,7 @@ label_2181_internal:
                     u8"依頼請負中の帰還は法律で禁止されている。それでも帰還する？"s,
                     u8"Returning while taking a quest if forbidden. Are you sure you want to return?"s));
                 ELONA_YES_NO_PROMPT();
-                rtval = show_prompt(promptx, prompty, 160);
+                rtval = show_prompt(ui.promptx, ui.prompty, 160);
                 if (rtval != 0)
                 {
                     break;

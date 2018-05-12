@@ -5,6 +5,7 @@
 #include "elona.hpp"
 #include "item.hpp"
 #include "map.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 
 using namespace elona;
@@ -89,16 +90,16 @@ private:
 
 void render_shadow_low(int light)
 {
-    gmode(6, inf_tiles, inf_tiles, light);
+    gmode(6, ui.tiles, ui.tiles, light);
 
-    for (const auto& pos : loop_xy<int>(inf_screenw, inf_screenh))
+    for (const auto& pos : loop_xy<int>(ui.screenw, ui.screenh))
     {
         const auto x = pos.first;
         const auto y = pos.second;
         if (slight(x + 2, y + 2) >= 1000)
         {
             elona::pos(
-                x * inf_tiles + inf_screenx, y * inf_tiles + inf_screeny);
+                x * ui.tiles + ui.screenx, y * ui.tiles + ui.screeny);
             gcopy(3, 144, 752);
         }
     }
@@ -223,8 +224,8 @@ void render_shadow(int p_, int dx_, int dy_)
                 pos(dx_, dy_);
                 gcopy(
                     3,
-                    0 + deco(0, p_) * inf_tiles,
-                    656 + deco(1, p_) * inf_tiles);
+                    0 + deco(0, p_) * ui.tiles,
+                    656 + deco(1, p_) * ui.tiles);
             }
         }
     }
@@ -261,7 +262,7 @@ void render_shadow(int p_, int dx_, int dy_)
             i_ = shadowmap(p2_);
         }
         pos(dx_, dy_);
-        gcopy(3, 144 + i_ * inf_tiles, 752);
+        gcopy(3, 144 + i_ * ui.tiles, 752);
     }
 }
 
@@ -269,18 +270,18 @@ void render_shadow(int p_, int dx_, int dy_)
 
 void render_shadow_high(int light, int sxfix_, int syfix_)
 {
-    gmode(6, inf_tiles, inf_tiles, light);
+    gmode(6, ui.tiles, ui.tiles, light);
 
     if (scrollanime == 0)
     {
-        for (const auto& pos : loop_xy<int>(inf_screenw, inf_screenh))
+        for (const auto& pos : loop_xy<int>(ui.screenw, ui.screenh))
         {
             const auto x = pos.first;
             const auto y = pos.second;
             render_shadow(
                 slight(x + 2, y + 2),
-                inf_screenx + sxfix_ * (scrollp > 3) + x * inf_tiles,
-                inf_screeny + syfix_ * (scrollp > 3) + y * inf_tiles);
+                ui.screenx + sxfix_ * (scrollp > 3) + x * ui.tiles,
+                ui.screeny + syfix_ * (scrollp > 3) + y * ui.tiles);
         }
     }
     else
@@ -290,16 +291,16 @@ void render_shadow_high(int light, int sxfix_, int syfix_)
         {
             f_ = 1;
         }
-        for (const auto& pos : loop_xy<int>(inf_screenw + 2, inf_screenh + 2))
+        for (const auto& pos : loop_xy<int>(ui.screenw + 2, ui.screenh + 2))
         {
             const auto x = pos.first;
             const auto y = pos.second;
-            int dy_ = inf_screeny + syfix_ * f_ - 48 + y * inf_tiles;
-            if (dy_ <= -inf_tiles || dy_ >= windowh - inf_verh)
+            int dy_ = ui.screeny + syfix_ * f_ - 48 + y * ui.tiles;
+            if (dy_ <= -ui.tiles || dy_ >= ui.windowh - ui.verh)
                 continue;
             render_shadow(
                 slight(x + 1, y + 1),
-                inf_screenx + sxfix_ * f_ - 48 + x * inf_tiles,
+                ui.screenx + sxfix_ * f_ - 48 + x * ui.tiles,
                 dy_);
         }
     }
@@ -357,19 +358,19 @@ void render_cloud()
     for (size_t i = 0; i < clouds.size(); ++i)
     {
         gmode(5, -1, -1, 7 + i * 2);
-        int x = (clouds[i].x0 - cdata[0].position.x * inf_tiles + sxfix) * 100
+        int x = (clouds[i].x0 - cdata[0].position.x * ui.tiles + sxfix) * 100
                 / (40 + i * 5)
             + scrturn * 100 / (50 + i * 20);
-        int y = (clouds[i].y0 - cdata[0].position.y * inf_tiles + syfix) * 100
+        int y = (clouds[i].y0 - cdata[0].position.y * ui.tiles + syfix) * 100
             / (40 + i * 5);
-        x = x % (windoww + clouds[i].width) - clouds[i].width;
-        y = y % (inf_very + clouds[i].height) - clouds[i].height;
+        x = x % (ui.windoww + clouds[i].width) - clouds[i].width;
+        y = y % (ui.very + clouds[i].height) - clouds[i].height;
         int height = clouds[i].height;
-        if (y + height > inf_very)
+        if (y + height > ui.very)
         {
-            height = inf_very - y;
+            height = ui.very - y;
         }
-        if (y < inf_very)
+        if (y < ui.very)
         {
             pos(x, y);
             gcopy(2, clouds[i].x, clouds[i].y, clouds[i].width, height);
@@ -498,28 +499,28 @@ void cell_draw()
         }
     }
 
-    int dy_ = (reph(1) - scy) * inf_tiles + inf_screeny + syfix_;
+    int dy_ = (reph(1) - scy) * ui.tiles + ui.screeny + syfix_;
 
-    for (int y = reph(1); y < reph(1) + reph; ++y, dy_ += inf_tiles)
+    for (int y = reph(1); y < reph(1) + reph; ++y, dy_ += ui.tiles)
     {
-        int dx_ = (repw(1) + repw - 1 - scx) * inf_tiles + inf_screenx + sxfix_;
-        if (dy_ <= -inf_tiles || dy_ >= windowh - inf_verh)
+        int dx_ = (repw(1) + repw - 1 - scx) * ui.tiles + ui.screenx + sxfix_;
+        if (dy_ <= -ui.tiles || dy_ >= ui.windowh - ui.verh)
         {
             continue;
         }
         if (y < 0 || y >= mdata(1))
         {
-            for (int i = scx; i < scx + inf_screenw; ++i)
+            for (int i = scx; i < scx + ui.screenw; ++i)
             {
-                gmode(0, inf_tiles, inf_tiles);
+                gmode(0, ui.tiles, ui.tiles);
                 p_ = tile_fog;
                 pos(dx_, dy_);
-                gcopy(2, p_ % 33 * inf_tiles, p_ / 33 * inf_tiles);
-                dx_ -= inf_tiles;
+                gcopy(2, p_ % 33 * ui.tiles, p_ / 33 * ui.tiles);
+                dx_ -= ui.tiles;
             }
             continue;
         }
-        for (int cnt = 0; cnt < repw; ++cnt, dx_ -= inf_tiles)
+        for (int cnt = 0; cnt < repw; ++cnt, dx_ -= ui.tiles)
         {
             const int x_ = repw(1) + repw - 1 - cnt;
             int px_ = 0;
@@ -528,19 +529,19 @@ void cell_draw()
             {
                 if (x_ == repw(2))
                 {
-                    px_ = (cdata[0].position.x - scx) * inf_tiles + inf_screenx
+                    px_ = (cdata[0].position.x - scx) * ui.tiles + ui.screenx
                         - 48;
                     if (scxbk == scx)
                     {
                         px_ -= sxfix;
                     }
-                    py_ = (cdata[0].position.y + 1 - scy) * inf_tiles
-                        + inf_screeny;
+                    py_ = (cdata[0].position.y + 1 - scy) * ui.tiles
+                        + ui.screeny;
                     if (scybk == scy)
                     {
                         py_ -= syfix;
                     }
-                    gmode(5, inf_tiles, inf_tiles, 50 + flick_);
+                    gmode(5, ui.tiles, ui.tiles, 50 + flick_);
                     pos(px_, py_);
                     gcopy(3, 800, 208, 144, 48);
                 }
@@ -548,20 +549,20 @@ void cell_draw()
             if (reph(2) == y && x_ == repw(2) && cdata[0].state == 1)
             {
                 ground_ = map(cdata[0].position.x, cdata[0].position.y, 0);
-                px_ = (cdata[0].position.x - scx) * inf_tiles + inf_screenx;
+                px_ = (cdata[0].position.x - scx) * ui.tiles + ui.screenx;
                 if (scxbk == scx)
                 {
                     px_ -= sxfix;
                 }
-                py_ = (cdata[0].position.y - scy) * inf_tiles + inf_screeny;
+                py_ = (cdata[0].position.y - scy) * ui.tiles + ui.screeny;
                 if (scybk == scy)
                 {
                     py_ -= syfix;
                 }
-                gmode(5, inf_tiles, inf_tiles, 50 + flick_);
+                gmode(5, ui.tiles, ui.tiles, 50 + flick_);
                 pos(px_ - 48, py_ - 48);
                 gcopy(3, 800, 112, 144, 96);
-                if (py_ < windowh - inf_verh - 24)
+                if (py_ < ui.windowh - ui.verh - 24)
                 {
                     if (cdata[0].continuous_action_id == 7)
                     {
@@ -623,20 +624,20 @@ void cell_draw()
                     draw_emo(0, px_ + 4, py_ - 32);
                 }
             }
-            if (dx_ <= -inf_tiles || dx_ >= windoww)
+            if (dx_ <= -ui.tiles || dx_ >= ui.windoww)
             {
                 continue;
             }
             if (x_ < 0 || x_ >= mdata(0))
             {
-                gmode(0, inf_tiles, inf_tiles);
+                gmode(0, ui.tiles, ui.tiles);
                 p_ = tile_fog;
                 pos(dx_, dy_);
-                gcopy(2, p_ % 33 * inf_tiles, p_ / 33 * inf_tiles);
+                gcopy(2, p_ % 33 * ui.tiles, p_ / 33 * ui.tiles);
                 continue;
             }
             ground_ = map(x_, y, 2);
-            gmode(0, inf_tiles, inf_tiles);
+            gmode(0, ui.tiles, ui.tiles);
             pos(dx_, dy_);
             bool wall_ = false;
             if (chipm(2, ground_) == 2 && y < mdata(1) - 1
@@ -658,21 +659,21 @@ void cell_draw()
                         - (scrturn_ % (chipm(3, ground_) + 1)
                            == chipm(3, ground_))
                             * 2 * (chipm(3, ground_) != 0)))
-                        * inf_tiles,
-                    ground_ / 33 * inf_tiles);
+                        * ui.tiles,
+                    ground_ / 33 * ui.tiles);
             }
             else
             {
-                gcopy(2, ground_ % 33 * inf_tiles, ground_ / 33 * inf_tiles);
+                gcopy(2, ground_ % 33 * ui.tiles, ground_ / 33 * ui.tiles);
             }
-            gmode(2, inf_tiles, inf_tiles);
+            gmode(2, ui.tiles, ui.tiles);
             if (map(x_, y, 7) != 0 && mapsync(x_, y) == msync)
             {
                 p_(0) = map(x_, y, 7) % 10;
                 p_(1) = map(x_, y, 7) / 10;
                 if (p_(1))
                 {
-                    gcopy(5, p_(1) * inf_tiles + 288, 1152);
+                    gcopy(5, p_(1) * ui.tiles + 288, 1152);
                 }
                 if (p_)
                 {
@@ -680,7 +681,7 @@ void cell_draw()
                     {
                         p_ = 6;
                     }
-                    gcopy(5, p_ * inf_tiles, 1152);
+                    gcopy(5, p_ * ui.tiles, 1152);
                 }
             }
             if (efmap(1, x_, y) > 0 && mapsync(x_, y) == msync)
@@ -711,7 +712,7 @@ void cell_draw()
                         mefsubref(0, p_) + efmap(1, x_, y) * 32,
                         mefsubref(1, p_));
                 }
-                gmode(2, inf_tiles, inf_tiles);
+                gmode(2, ui.tiles, ui.tiles);
             }
             if (map(x_, y, 6) != 0 && map(x_, y, 2) == map(x_, y, 0))
             {
@@ -721,9 +722,9 @@ void cell_draw()
                     pos(dx_, dy_ - chipm(5, p_));
                     gcopy(
                         2,
-                        p_ % 33 * inf_tiles,
-                        p_ / 33 * inf_tiles,
-                        inf_tiles,
+                        p_ % 33 * ui.tiles,
+                        p_ / 33 * ui.tiles,
+                        ui.tiles,
                         48 + chipm(6, p_));
                 }
                 if (mdata(6) == 1)
@@ -761,11 +762,11 @@ void cell_draw()
                 if (mef(1, p2_) > 10000)
                 {
                     prepare_item_image(p_, p_(1));
-                    gcopy(1, 0, 960, inf_tiles, inf_tiles);
+                    gcopy(1, 0, 960, ui.tiles, ui.tiles);
                 }
                 else
                 {
-                    gcopy(1, chipi(0, p_), chipi(1, p_), inf_tiles, inf_tiles);
+                    gcopy(1, chipi(0, p_), chipi(1, p_), ui.tiles, ui.tiles);
                 }
             }
             if (map(x_, y, 5) != 0)
@@ -810,7 +811,7 @@ void cell_draw()
                             if (config::instance().objectshadow && chipi(6, p_))
                             {
                                 gmode(2, chipi(2, p_), chipi(3, p_), 70);
-                                if (chipi(3, p_) == inf_tiles)
+                                if (chipi(3, p_) == ui.tiles)
                                 {
                                     pos(dx_ + chipi(2, p_) / 2
                                             + chipi(6, p_) / 80 + 2,
@@ -855,7 +856,7 @@ void cell_draw()
                                            - (scrturn_ % (chipi(7, p_) + 1)
                                               == chipi(7, p_))
                                                * 2 * (chipi(7, p_) != 0))
-                                            * inf_tiles,
+                                            * ui.tiles,
                                     chipi(1, p_),
                                     chipi(2, p_),
                                     chipi(3, p_));
@@ -892,7 +893,7 @@ void cell_draw()
                         if (config::instance().objectshadow && chipi(6, p_))
                         {
                             gmode(2, chipi(2, p_), chipi(3, p_), 80);
-                            if (chipi(3, p_) == inf_tiles)
+                            if (chipi(3, p_) == ui.tiles)
                             {
                                 pos(dx_ + chipi(2, p_) / 2 + chipi(6, p_) / 80
                                         + 2,
@@ -936,7 +937,7 @@ void cell_draw()
                                        - (scrturn_ % (chipi(7, p_) + 1)
                                           == chipi(7, p_))
                                            * 2 * (chipi(7, p_) != 0))
-                                        * inf_tiles,
+                                        * ui.tiles,
                                 chipi(1, p_),
                                 chipi(2, p_),
                                 chipi(3, p_));
@@ -1065,13 +1066,13 @@ void cell_draw()
                         {
                             if (chipm(0, ground_) == 3)
                             {
-                                gmode(4, inf_tiles, inf_tiles, 100);
+                                gmode(4, ui.tiles, ui.tiles, 100);
                                 pos(dx_,
                                     dy_ + 16 - chipc(4, p_)
                                         - (chipm(0, ground_) == 3) * -16);
                                 gcopy(
                                     5, 0, 976, chipc(2, p_), chipc(3, p_) - 16);
-                                gmode(2, inf_tiles, inf_tiles);
+                                gmode(2, ui.tiles, ui.tiles);
                                 pos(dx_,
                                     dy_ - chipc(4, p_)
                                         - (chipm(0, ground_) == 3) * -16);
@@ -1083,7 +1084,7 @@ void cell_draw()
                                 gmode(6, -1, -1, 110);
                                 pos(dx_ + 8, dy_ + 20);
                                 gcopy(3, 240, 384, 32, 16);
-                                gmode(2, inf_tiles, inf_tiles);
+                                gmode(2, ui.tiles, ui.tiles);
                                 pos(dx_,
                                     dy_ - chipc(4, p_)
                                         - (chipm(0, ground_) == 3) * -16);
@@ -1132,13 +1133,13 @@ void cell_draw()
                     pos(dx_, dy_ - lightdata[p_]._3);
                     gmode(
                         5,
-                        inf_tiles,
-                        inf_tiles,
+                        ui.tiles,
+                        ui.tiles,
                         lightdata[p_]._2 + rnd((lightdata[p_]._5 + 1)));
                     gcopy(
                         3,
                         192 + lightdata[p_]._0 * 48
-                            + rnd(lightdata[p_]._1 + 1) * inf_tiles,
+                            + rnd(lightdata[p_]._1 + 1) * ui.tiles,
                         704);
                 }
             }
@@ -1153,14 +1154,14 @@ void cell_draw()
                         pos(dx_, dy_ - 12);
                         gcopy(
                             2,
-                            ground_ % 33 * inf_tiles,
-                            ground_ / 33 * inf_tiles,
-                            inf_tiles - std::max(dx_ + inf_tiles - windoww, 0)
+                            ground_ % 33 * ui.tiles,
+                            ground_ / 33 * ui.tiles,
+                            ui.tiles - std::max(dx_ + ui.tiles - ui.windoww, 0)
                                 + std::min(dx_, 0),
                             12);
                         pos(std::max(dx_, 0), dy_ - 20);
                         gfini(
-                            inf_tiles - std::max(dx_ + inf_tiles - windoww, 0)
+                            ui.tiles - std::max(dx_ + ui.tiles - ui.windoww, 0)
                                 + std::min(dx_, 0),
                             8);
                         gfdec2(25, 25, 25);
@@ -1176,13 +1177,13 @@ void cell_draw()
                     {
                         pos(std::max(dx_, 0), dy_);
                         gfini(
-                            inf_tiles - std::max(dx_ + inf_tiles - windoww, 0)
+                            ui.tiles - std::max(dx_ + ui.tiles - ui.windoww, 0)
                                 + std::min(dx_, 0),
                             24);
                         gfdec2(16, 16, 16);
                         pos(std::max(dx_, 0), dy_ + 24);
                         gfini(
-                            inf_tiles - std::max(dx_ + inf_tiles - windoww, 0)
+                            ui.tiles - std::max(dx_ + ui.tiles - ui.windoww, 0)
                                 + std::min(dx_, 0),
                             12);
                         gfdec2(12, 12, 12);

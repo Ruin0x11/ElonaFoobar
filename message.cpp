@@ -3,6 +3,7 @@
 #include "config.hpp"
 #include "elona.hpp"
 #include "map.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 
 
@@ -36,17 +37,17 @@ void msg_write(std::string& message)
             + message.substr(
                   pos + std::strlen(musical_note) + (symbol_type != 0));
         elona::pos(
-            (message_width + pos) * inf_mesfont / 2 + inf_msgx + 7 + en * 3,
-            (inf_msgline - 1) * inf_msgspace + inf_msgy + 5);
+            (message_width + pos) * ui.mesfont / 2 + ui.msgx + 7 + en * 3,
+            (ui.msgline - 1) * ui.msgspace + ui.msgy + 5);
         gmode(2);
         gcopy(3, 600 + symbol_type * 24, 360, 16, 16);
     }
 
     elona::color(tcol_at_txtfunc(0), tcol_at_txtfunc(1), tcol_at_txtfunc(2));
     elona::pos(
-        message_width * inf_mesfont / 2 + inf_msgx + 6,
-        (inf_msgline - 1) * inf_msgspace + inf_msgy + 6);
-    font(inf_mesfont - en * 2);
+        message_width * ui.mesfont / 2 + ui.msgx + 6,
+        (ui.msgline - 1) * ui.msgspace + ui.msgy + 6);
+    font(ui.mesfont - en * 2);
     mes(message);
     elona::color(0, 0, 0);
 }
@@ -57,13 +58,13 @@ void clear_log_panel()
 {
     gsel(8);
     gmode(0);
-    pos(0, msgline % inf_maxlog * inf_msgspace);
+    pos(0, ui.msgline % ui.maxlog * ui.msgspace);
     gcopy(
         0,
-        inf_msgx,
-        inf_msgy + 5 + inf_msgspace * 3 + en * 3,
-        windoww - inf_msgx,
-        inf_msgspace);
+        ui.msgx,
+        ui.msgy + 5 + ui.msgspace * 3 + en * 3,
+        ui.windoww - ui.msgx,
+        ui.msgspace);
     gsel(0);
 }
 
@@ -700,8 +701,8 @@ void anime_halt()
 
 void msg_halt()
 {
-    x_at_txtfunc = windoww - 120;
-    y_at_txtfunc = windowh - 22;
+    x_at_txtfunc = ui.windoww - 120;
+    y_at_txtfunc = ui.windowh - 22;
     anime_halt();
     screenupdate = -1;
     update_screen();
@@ -743,38 +744,38 @@ void msg_newline()
     clear_log_panel();
 
     message_width = 0;
-    ++msgline;
-    if (msgline >= inf_maxlog)
+    ++ui.msgline;
+    if (ui.msgline >= ui.maxlog)
     {
-        msgline -= inf_maxlog;
+        ui.msgline -= ui.maxlog;
     }
-    msg(msgline % inf_maxlog) = "";
-    p_at_txtfunc = (windoww - inf_msgx) / 192;
+    msg(ui.msgline % ui.maxlog) = "";
+    p_at_txtfunc = (ui.windoww - ui.msgx) / 192;
     gmode(0);
-    pos(inf_msgx, inf_msgy + 5);
+    pos(ui.msgx, ui.msgy + 5);
     gcopy(
         0,
-        inf_msgx,
-        inf_msgy + 5 + inf_msgspace,
-        windoww - inf_msgx,
-        inf_msgspace * 3 + en * 3);
+        ui.msgx,
+        ui.msgy + 5 + ui.msgspace,
+        ui.windoww - ui.msgx,
+        ui.msgspace * 3 + en * 3);
     for (int cnt = 0, cnt_end = (p_at_txtfunc + 1); cnt < cnt_end; ++cnt)
     {
         if (cnt == p_at_txtfunc)
         {
-            x_at_txtfunc = (windoww - inf_msgx) % 192;
+            x_at_txtfunc = (ui.windoww - ui.msgx) % 192;
         }
         else
         {
             x_at_txtfunc = 192;
         }
-        pos(cnt * 192 + inf_msgx, inf_msgy + 5 + inf_msgspace * 3 + en * 2);
+        pos(cnt * 192 + ui.msgx, ui.msgy + 5 + ui.msgspace * 3 + en * 2);
         gcopy(
             3,
             496,
-            536 + msgline % 4 * inf_msgspace,
+            536 + ui.msgline % 4 * ui.msgspace,
             x_at_txtfunc,
-            inf_msgspace);
+            ui.msgspace);
     }
     gmode(2);
     msgtempprev = "";
@@ -787,7 +788,7 @@ void txtnew()
 {
     if (tnew == 0)
     {
-        if (strlen_u(msg(msgline % inf_maxlog)) > 4)
+        if (strlen_u(msg(ui.msgline % ui.maxlog)) > 4)
         {
             msg_newline();
             message_width = 2;
@@ -823,26 +824,26 @@ void txt_conv()
 
     if (tnew == 1)
     {
-        if (!msg(msgline % inf_maxlog).empty())
+        if (!msg(ui.msgline % ui.maxlog).empty())
         {
             msg_newline();
             tnew = 0;
             if (config::instance().msgtrans)
             {
-                p_at_txtfunc = (windoww - inf_msgx) / 192;
+                p_at_txtfunc = (ui.windoww - ui.msgx) / 192;
                 gmode(4, -1, -1, config::instance().msgtrans * 20);
                 for (int i = 0; i < p_at_txtfunc + 1; ++i)
                 {
                     if (i == p_at_txtfunc)
                     {
-                        x_at_txtfunc = (windoww - inf_msgx) % 192;
+                        x_at_txtfunc = (ui.windoww - ui.msgx) % 192;
                     }
                     else
                     {
                         x_at_txtfunc = 192;
                     }
-                    pos(i * 192 + inf_msgx, inf_msgy + 5);
-                    gcopy(3, 496, 536, x_at_txtfunc, inf_msgspace * 3);
+                    pos(i * 192 + ui.msgx, ui.msgy + 5);
+                    gcopy(3, 496, 536, x_at_txtfunc, ui.msgspace * 3);
                 }
             }
             if (config::instance().msgaddtime)
@@ -884,11 +885,11 @@ void txt_conv()
         while (1)
         {
             width = strlen_u(msgtemp(0));
-            if (message_width + 4 > inf_maxmsglen && !msgtemp(0).empty())
+            if (message_width + 4 > ui.maxmsglen && !msgtemp(0).empty())
             {
                 msg_newline();
             }
-            if (message_width + width > inf_maxmsglen)
+            if (message_width + width > ui.maxmsglen)
             {
                 size_t len{};
                 size_t wdt{};
@@ -897,9 +898,9 @@ void txt_conv()
                     const auto byte = strutil::byte_count(msgtemp(0)[len]);
                     wdt += byte == 1 ? 1 : 2;
                     len += byte;
-                    if (wdt + message_width > inf_maxmsglen)
+                    if (wdt + message_width > ui.maxmsglen)
                     {
-                        if (wdt + message_width > inf_maxmsglen + 2)
+                        if (wdt + message_width > ui.maxmsglen + 2)
                         {
                             break;
                         }
@@ -918,7 +919,7 @@ void txt_conv()
                 if (len >= msgtemp(0).size())
                     len = msgtemp(0).size();
                 auto m = msgtemp(0).substr(0, len);
-                msg(msgline % inf_maxlog) += m;
+                msg(ui.msgline % ui.maxlog) += m;
                 msg_write(m);
                 msgtemp(0) = msgtemp(0).substr(len);
                 if (msgtemp(0).empty() || msgtemp(0) == u8" ")
@@ -930,7 +931,7 @@ void txt_conv()
             }
             break;
         }
-        msg(msgline % inf_maxlog) += msgtemp(0);
+        msg(ui.msgline % ui.maxlog) += msgtemp(0);
         msg_write(msgtemp(0));
         message_width += width;
     }
@@ -966,19 +967,19 @@ void txt_conv()
             {
                 break;
             }
-            if (message_width + p_at_txtfunc > inf_maxmsglen)
+            if (message_width + p_at_txtfunc > ui.maxmsglen)
             {
                 msg_newline();
                 continue;
             }
             auto mst = strmid(msgtemp(0), 0, p_at_txtfunc);
-            msg(msgline % inf_maxlog) += mst;
+            msg(ui.msgline % ui.maxlog) += mst;
             msg_write(mst);
             message_width += p_at_txtfunc;
             msgtemp(0) = strmid(
                 msgtemp(0), p_at_txtfunc, msgtemp(0).size() - p_at_txtfunc);
         }
-        msg(msgline % inf_maxlog) += msgtemp(0);
+        msg(ui.msgline % ui.maxlog) += msgtemp(0);
         msg_write(msgtemp(0));
         message_width += msgtemp(0).size();
     }

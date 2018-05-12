@@ -10,6 +10,7 @@
 #include "item.hpp"
 #include "item_db.hpp"
 #include "macro.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 #include "enums.hpp"
 
@@ -803,7 +804,7 @@ label_2060_internal:
     {
         font(12 + sizefix - en * 2);
         y = 34;
-        x = windoww - 650 + 156;
+        x = ui.windoww - 650 + 156;
         window2(x, y, 475, 22, 5, 5);
         pos(x - 28, y - 8);
         gcopy(3, 64, 288, 50, 32);
@@ -902,7 +903,7 @@ label_2061_internal:
                 + lang(u8"[連続で置く]"s, u8"[Multi Drop]"s);
         }
     }
-    display_window((windoww - 640) / 2 + inf_screenx, winposy(432), 640, 432);
+    display_window((ui.windoww - 640) / 2 + ui.screenx, winposy(432), 640, 432);
     if (invicon(invctrl) != -1)
     {
         pos(wx + 46, wy - 14);
@@ -948,7 +949,7 @@ label_2061_internal:
     display_note(s);
     if (invctrl == 25)
     {
-        x = (windoww - 640) / 2 + inf_screenx + 455;
+        x = (ui.windoww - 640) / 2 + ui.screenx + 455;
         y = winposy(432) - 32;
         int w = 200;
         int h = 102;
@@ -1057,8 +1058,8 @@ label_2061_internal:
             0,
             960,
             0,
-            chipi(2, p(1)) * inf_tiles / chipi(3, p(1)),
-            inf_tiles);
+            chipi(2, p(1)) * ui.tiles / chipi(3, p(1)),
+            ui.tiles);
         if (inv[p].body_part != 0)
         {
             pos(wx + 46, wy + 72 + cnt * 18 - 3);
@@ -1167,10 +1168,10 @@ label_2061_internal:
                     itemname(ci, 1) + u8"をいくつ落とす？ (1〜"s
                         + inv[ci].number + u8") "s,
                     u8"How many? (1 to "s + inv[ci].number + u8")"s));
-                display_msg(screenmsgy, 1);
+                display_msg(ui.screenmsgy, 1);
                 inputlog = ""s + inv[ci].number;
                 input_number_dialog(
-                    (windoww - 200) / 2 + inf_screenx,
+                    (ui.windoww - 200) / 2 + ui.screenx,
                     winposy(60),
                     inv[ci].number);
                 in = elona::stoi(inputlog(0));
@@ -1321,10 +1322,10 @@ label_2061_internal:
                             + inv[ci].number + u8") "s,
                         u8"How many? (1 to "s + inv[ci].number + u8")"s));
                 }
-                display_msg(screenmsgy, 2);
+                display_msg(ui.screenmsgy, 2);
                 inputlog = ""s + inv[ci].number;
                 input_number_dialog(
-                    (windoww - 200) / 2 + inf_screenx,
+                    (ui.windoww - 200) / 2 + ui.screenx,
                     winposy(60),
                     inv[ci].number);
                 in = elona::stoi(inputlog(0));
@@ -1365,7 +1366,7 @@ label_2061_internal:
                             + u8" gold pieces?"s));
                 }
                 ELONA_YES_NO_PROMPT();
-                rtval = show_prompt(promptx, prompty, 160);
+                rtval = show_prompt(ui.promptx, ui.prompty, 160);
                 if (rtval != 0)
                 {
                     screenupdate = -1;
@@ -2333,7 +2334,7 @@ label_2061_internal:
                         u8"まだアイテムが残っているがいい？"s,
                         u8"Really leave these items?"s));
                     ELONA_YES_NO_PROMPT();
-                    rtval = show_prompt(promptx, prompty, 160);
+                    rtval = show_prompt(ui.promptx, ui.prompty, 160);
                     if (rtval != 0)
                     {
                         goto label_2060_internal;

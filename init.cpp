@@ -22,6 +22,7 @@
 #include "range.hpp"
 #include "audio.hpp"
 #include "trait.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 #include "version.hpp"
 
@@ -161,7 +162,7 @@ void load_character_sprite()
     {
         const auto file = filesystem::to_utf8_path(entry.path().filename());
         p = elona::stoi(strmid(file, 6, instr(file, 6, u8"."s)));
-        pos(p % 33 * inf_tiles, p / 33 * inf_tiles);
+        pos(p % 33 * ui.tiles, p / 33 * ui.tiles);
         picload(entry.path(), 1);
     }
     gsel(0);
@@ -199,31 +200,31 @@ void initialize_elona()
     initialize_ui_constants();
     if (config::instance().fullscreen)
     {
-        chgdisp(1, windoww, windowh);
-        bgscr(0, windoww, windowh, 0, 0);
-        width(windoww, windowh, 0, 0);
+        chgdisp(1, ui.windoww, ui.windowh);
+        bgscr(0, ui.windoww, ui.windowh, 0, 0);
+        width(ui.windoww, ui.windowh, 0, 0);
     }
     else
     {
-        screen(0, windoww, windowh, 0, windowx, windowy);
+        screen(0, ui.windoww, ui.windowh, 0, ui.windowx, ui.windowy);
     }
     gsel(0);
     boxf();
     redraw();
     buffer(3, 1440, 800);
     picload(filesystem::dir::graphic() / u8"interface.bmp", 1);
-    buffer(4, windoww, windowh);
-    buffer(8, windoww, windowh);
+    buffer(4, ui.windoww, ui.windowh);
+    buffer(8, ui.windoww, ui.windowh);
     gsel(0);
     buffer(1, 1584, 1200);
     picload(filesystem::dir::graphic() / u8"item.bmp", 1);
-    if (inf_tiles != 48)
+    if (ui.tiles != 48)
     {
         pos(0, 0);
-        gzoom(1, 0, 0, 1584, 1200, 33 * inf_tiles, 25 * inf_tiles);
+        gzoom(1, 0, 0, 1584, 1200, 33 * ui.tiles, 25 * ui.tiles);
     }
-    buffer(2, 33 * inf_tiles, 25 * inf_tiles);
-    buffer(6, 33 * inf_tiles, 25 * inf_tiles);
+    buffer(2, 33 * ui.tiles, 25 * ui.tiles);
+    buffer(6, 33 * ui.tiles, 25 * ui.tiles);
     buffer(7, 24, 24);
     buffer(9, 24, 24);
 
@@ -235,7 +236,7 @@ void initialize_elona()
     SDIM2(inputlog, 100);
     SDIM2(key, 20);
     SDIM2(keylog, 20);
-    SDIM3(msg, 120, inf_maxlog);
+    SDIM3(msg, 120, ui.maxlog);
     SDIM2(msgtemp, 1000);
     SDIM3(randn1, 30, 20);
     DIM2(rtval, 10);
@@ -281,7 +282,7 @@ void initialize_elona()
     DIM2(matneed, 20);
     DIM3(pcc, 30, 20);
 
-    maxrain = windoww * windowh / 3500;
+    maxrain = ui.windoww * ui.windowh / 3500;
 
     DIM2(rainx, maxrain * 2);
     DIM2(rainy, maxrain * 2);
@@ -380,7 +381,7 @@ void initialize_elona()
     artifactlocation.clear();
     SDIM1(newsbuff);
     SDIM3(musicfile, 30, 97);
-    DIM3(slight, inf_screenw + 4, inf_screenh + 4);
+    DIM3(slight, ui.screenw + 4, ui.screenh + 4);
 
     gsel(3);
     gmode(0);
@@ -817,7 +818,7 @@ main_menu_result_t main_title_menu()
     gmode(0);
     pos(0, 0);
     picload(filesystem::dir::graphic() / u8"title.bmp", 1);
-    gzoom(4, 0, 0, 800, 600, windoww, windowh);
+    gzoom(4, 0, 0, 800, 600, ui.windoww, ui.windowh);
     gmode(2);
     font(13 - en * 2);
     color(255, 255, 255);
@@ -892,7 +893,7 @@ main_menu_result_t main_title_menu()
     gsel(0);
     gmode(0);
     pos(0, 0);
-    gcopy(4, 0, 0, windoww, windowh);
+    gcopy(4, 0, 0, ui.windoww, ui.windowh);
     gmode(2);
 
     while (1)
@@ -1079,7 +1080,7 @@ main_menu_result_t main_menu_new_game()
     gsel(4);
     pos(0, 0);
     picload(filesystem::dir::graphic() / u8"void.bmp", 1);
-    gzoom(4, 0, 0, 800, 600, windoww, windowh);
+    gzoom(4, 0, 0, 800, 600, ui.windoww, ui.windowh);
     gsel(2);
     for (int cnt = 0; cnt < 8; ++cnt)
     {
@@ -1098,7 +1099,7 @@ main_menu_result_t main_menu_new_game()
         keyrange = 0;
         gmode(0);
         pos(0, 0);
-        gcopy(4, 0, 0, windoww, windowh);
+        gcopy(4, 0, 0, ui.windoww, ui.windowh);
         gmode(2);
         s = lang(
             u8"これ以上は冒険者を保存できない。"s,
@@ -1130,18 +1131,18 @@ main_menu_result_t character_making_select_race()
     page = 0;
     gmode(0);
     pos(0, 0);
-    gcopy(4, 0, 0, windoww, windowh);
+    gcopy(4, 0, 0, ui.windoww, ui.windowh);
     gmode(2);
     s = lang(
         u8"やあ、待っていたよ。早速旅の支度をしようか。"s,
         u8"Welcome traveler, I've been looking for you."s);
     draw_caption();
     font(13 - en * 2, snail::font_t::style_t::bold);
-    pos(20, windowh - 20);
+    pos(20, ui.windowh - 20);
     mes(u8"Press F1 to show help."s);
     if (geneuse != ""s)
     {
-        pos(20, windowh - 36);
+        pos(20, ui.windowh - 36);
         mes(u8"Gene from "s + geneuse);
     }
     listmax = 0;
@@ -1193,7 +1194,7 @@ main_menu_result_t character_making_select_race()
             s(0) = lang(u8"種族の選択"s, u8"Race Selection"s);
             s(1) = strhint3b;
             display_window(
-                (windoww - 680) / 2 + inf_screenx,
+                (ui.windoww - 680) / 2 + ui.screenx,
                 winposy(500, 1) + 20,
                 680,
                 500);
@@ -1286,16 +1287,16 @@ main_menu_result_t character_making_select_sex(bool advanced_to_next_menu)
     pagesize = 0;
     gmode(0);
     pos(0, 0);
-    gcopy(4, 0, 0, windoww, windowh);
+    gcopy(4, 0, 0, ui.windoww, ui.windowh);
     gmode(2);
     s = lang(u8"男性と女性に能力の違いはない。"s, u8"What's your gender?"s);
     draw_caption();
     font(13 - en * 2, snail::font_t::style_t::bold);
-    pos(20, windowh - 20);
+    pos(20, ui.windowh - 20);
     mes(u8"Press F1 to show help."s);
     if (geneuse != ""s)
     {
-        pos(20, windowh - 36);
+        pos(20, ui.windowh - 36);
         mes(u8"Gene from "s + geneuse);
     }
     windowshadow = 1;
@@ -1305,7 +1306,7 @@ main_menu_result_t character_making_select_sex(bool advanced_to_next_menu)
         s(0) = lang(u8"性別の選択"s, u8"Gender Selection"s);
         s(1) = strhint3b;
         display_window(
-            (windoww - 370) / 2 + inf_screenx, winposy(168, 1) - 20, 370, 168);
+            (ui.windoww - 370) / 2 + ui.screenx, winposy(168, 1) - 20, 370, 168);
         x = ww / 2;
         y = wh - 60;
         gmode(4, 180, 300, 30);
@@ -1365,18 +1366,18 @@ main_menu_result_t character_making_select_class(bool advanced_to_next_menu)
     pagesize = 0;
     gmode(0);
     pos(0, 0);
-    gcopy(4, 0, 0, windoww, windowh);
+    gcopy(4, 0, 0, ui.windoww, ui.windowh);
     gmode(2);
     s = lang(
         u8"職業や種族は、初期の能力だけでなく、成長の方向性に影響するんだ。"s,
         u8"Your class and race determine growth rate of your skills and attributes."s);
     draw_caption();
     font(13 - en * 2, snail::font_t::style_t::bold);
-    pos(20, windowh - 20);
+    pos(20, ui.windowh - 20);
     mes(u8"Press F1 to show help."s);
     if (geneuse != ""s)
     {
-        pos(20, windowh - 36);
+        pos(20, ui.windowh - 36);
         mes(u8"Gene from "s + geneuse);
     }
     listmax = 0;
@@ -1407,7 +1408,7 @@ main_menu_result_t character_making_select_class(bool advanced_to_next_menu)
             s(0) = lang(u8"職業の選択"s, u8"Class Selection"s);
             s(1) = strhint3b;
             display_window(
-                (windoww - 680) / 2 + inf_screenx,
+                (ui.windoww - 680) / 2 + ui.screenx,
                 winposy(500, 1) + 20,
                 680,
                 500);
@@ -1490,18 +1491,18 @@ main_menu_result_t character_making_role_attributes(bool advanced_to_next_menu)
             pagesize = 0;
             gmode(0);
             pos(0, 0);
-            gcopy(4, 0, 0, windoww, windowh);
+            gcopy(4, 0, 0, ui.windoww, ui.windowh);
             gmode(2);
             s = lang(
                 u8"死にたくないなら、ある程度の能力は必要だね。"s,
                 u8"You should prepare well, if you want to survive long enough in Irva."s);
             draw_caption();
             font(13 - en * 2, snail::font_t::style_t::bold);
-            pos(20, windowh - 20);
+            pos(20, ui.windowh - 20);
             mes(u8"Press F1 to show help."s);
             if (geneuse != ""s)
             {
-                pos(20, windowh - 36);
+                pos(20, ui.windowh - 36);
                 mes(u8"Gene from "s + geneuse);
             }
             del_chara(0);
@@ -1550,7 +1551,7 @@ main_menu_result_t character_making_role_attributes(bool advanced_to_next_menu)
         s(1) =
             strhint3b + key_mode2 + lang(u8" [最低値ロール]", u8" [Min Roll]");
         display_window(
-            (windoww - 360) / 2 + inf_screenx, winposy(352, 1) - 20, 360, 352);
+            (ui.windoww - 360) / 2 + ui.screenx, winposy(352, 1) - 20, 360, 352);
         x = 150;
         y = 240;
         gmode(4, 180, 300, 30);
@@ -1578,8 +1579,8 @@ main_menu_result_t character_making_role_attributes(bool advanced_to_next_menu)
             if (cnt >= 2)
             {
                 pos(wx + 198, wy + 76 + cnt * 23);
-                gmode(2, inf_tiles, inf_tiles);
-                grotate(1, (cnt - 2) * inf_tiles, 672, 0, inf_tiles, inf_tiles);
+                gmode(2, ui.tiles, ui.tiles);
+                grotate(1, (cnt - 2) * ui.tiles, 672, 0, ui.tiles, ui.tiles);
                 pos(wx + 210, wy + 66 + cnt * 23);
                 mes(""s + list(0, cnt) / 1000000);
                 if (cmlock(cnt - 2) == 1)
@@ -1653,18 +1654,18 @@ main_menu_result_t character_making_select_feats_and_alias(bool is_choosing_feat
         gain_race_feat();
         gmode(0);
         pos(0, 0);
-        gcopy(4, 0, 0, windoww, windowh);
+        gcopy(4, 0, 0, ui.windoww, ui.windowh);
         gmode(2);
         s = lang(
             u8"フィートとは、君の持っている有益な特徴だ。3つまで選べるよ。"s,
             u8"Choose your feats wisely."s);
         draw_caption();
         font(13 - en * 2, snail::font_t::style_t::bold);
-        pos(20, windowh - 20);
+        pos(20, ui.windowh - 20);
         mes(u8"Press F1 to show help."s);
         if (geneuse != ""s)
         {
-            pos(20, windowh - 36);
+            pos(20, ui.windowh - 36);
             mes(u8"Gene from "s + geneuse);
         }
         menu_result result = menu_feats();
@@ -1682,18 +1683,18 @@ main_menu_result_t character_making_select_feats_and_alias(bool is_choosing_feat
     page = 0;
     gmode(0);
     pos(0, 0);
-    gcopy(4, 0, 0, windoww, windowh);
+    gcopy(4, 0, 0, ui.windoww, ui.windowh);
     gmode(2);
     s = lang(
         u8"有名になると、名前とは別の通り名で呼ばれることがあるらしい。"s,
         u8"Choose your Alias."s);
     draw_caption();
     font(13 - en * 2, snail::font_t::style_t::bold);
-    pos(20, windowh - 20);
+    pos(20, ui.windowh - 20);
     mes(u8"Press F1 to show help."s);
     if (geneuse != ""s)
     {
-        pos(20, windowh - 36);
+        pos(20, ui.windowh - 36);
         mes(u8"Gene from "s + geneuse);
     }
     windowshadow = 1;
@@ -1708,7 +1709,7 @@ main_menu_result_t character_making_select_feats_and_alias(bool is_choosing_feat
             s(0) = lang(u8"異名の選択"s, u8"Alias Selection"s);
             s(1) = strhint3b;
             display_window(
-                (windoww - 400) / 2 + inf_screenx,
+                (ui.windoww - 400) / 2 + ui.screenx,
                 winposy(458, 1) + 20,
                 400,
                 458);
@@ -1792,18 +1793,18 @@ main_menu_result_t character_making_final_phase()
     {
         gmode(0);
         pos(0, 0);
-        gcopy(4, 0, 0, windoww, windowh);
+        gcopy(4, 0, 0, ui.windoww, ui.windowh);
         gmode(2);
         s = lang(
             u8"君の見た目を知っておきたいな。まあ、後からいつでも変えられるけどね。"s,
             u8"What you look like? Don't worry, you can change them later."s);
         draw_caption();
         font(13 - en * 2, snail::font_t::style_t::bold);
-        pos(20, windowh - 20);
+        pos(20, ui.windowh - 20);
         mes(u8"Press F1 to show help."s);
         if (geneuse != ""s)
         {
-            pos(20, windowh - 36);
+            pos(20, ui.windowh - 36);
             mes(u8"Gene from "s + geneuse);
         }
         cdata[0].has_own_sprite() = true;
@@ -1830,7 +1831,7 @@ main_menu_result_t character_making_final_phase()
         {
             gmode(0);
             pos(0, 0);
-            gcopy(4, 0, 0, windoww, windowh);
+            gcopy(4, 0, 0, ui.windoww, ui.windowh);
             gmode(2);
             s = lang(
                 u8"決定ｷｰを押すことで、生い立ちをリロールできる。"s,
@@ -1873,7 +1874,7 @@ main_menu_result_t character_making_final_phase()
         gsel(2);
         pos(0, 0);
         gmode(0);
-        gcopy(0, 0, 100, windoww, windowh - 100);
+        gcopy(0, 0, 100, ui.windoww, ui.windowh - 100);
         gsel(0);
         clear_background_in_character_making();
         s = lang(u8"満足できたかな？"s, u8"Are you satisfied now?"s);
@@ -1883,7 +1884,7 @@ main_menu_result_t character_making_final_phase()
             lang(u8"いいえ"s, u8"No"s), u8"b"s, ""s + promptmax);
         ELONA_APPEND_PROMPT(
             lang(u8"最初から"s, u8"Restart"s), u8"c"s, ""s + promptmax);
-        rtval = show_prompt(promptx, 240, 160);
+        rtval = show_prompt(ui.promptx, 240, 160);
         snd(20);
         if (rtval != 1 && rtval != -1)
         {
@@ -1897,7 +1898,7 @@ main_menu_result_t character_making_final_phase()
     }
     gmode(0);
     pos(0, 100);
-    gcopy(2, 0, 0, windoww, windowh - 100);
+    gcopy(2, 0, 0, ui.windoww, ui.windowh - 100);
     gmode(2);
     s = lang(
         u8"最後の質問だ。君の名前は？"s, u8"Last question. What's your name?"s);
@@ -1908,7 +1909,7 @@ main_menu_result_t character_making_final_phase()
         inputlog = "";
         input_mode = 1;
         input_text_dialog(
-            (windoww - 230) / 2 + inf_screenx, winposy(120), 10, false);
+            (ui.windoww - 230) / 2 + ui.screenx, winposy(120), 10, false);
         cmname = ""s + inputlog;
         if (cmname == ""s || cmname == u8" "s)
         {
@@ -1925,7 +1926,7 @@ main_menu_result_t character_making_final_phase()
         {
             gmode(0);
             pos(0, 100);
-            gcopy(2, 0, 0, windoww, windowh - 100);
+            gcopy(2, 0, 0, ui.windoww, ui.windowh - 100);
             gmode(2);
             s = lang(
                 u8"あいにく、その名前の冒険者はすでに存在する。"s,
@@ -1964,10 +1965,10 @@ void show_race_or_class_info(int CNT, int val0)
     {
         chara_preparepic(ref1, CNT);
         pos(wx + 380, wy - chipc(3, ref1) + 60);
-        gcopy(5, 0, 960, inf_tiles, chipc(3, ref1));
+        gcopy(5, 0, 960, ui.tiles, chipc(3, ref1));
         chara_preparepic(ref2, CNT);
         pos(wx + 350, wy - chipc(3, ref1) + 60);
-        gcopy(5, 0, 960, inf_tiles, chipc(3, ref1));
+        gcopy(5, 0, 960, ui.tiles, chipc(3, ref1));
         pos(wx + 460, wy + 38);
         mes(lang(u8"種族: "s, u8"Race: "s) + cmrace(1));
     }
@@ -2077,9 +2078,9 @@ void show_race_or_class_info(int CNT, int val0)
                 color(120, 120, 120);
             }
             pos(cnt * 150 + tx + 13, ty + 7);
-            gmode(2, inf_tiles, inf_tiles);
+            gmode(2, ui.tiles, ui.tiles);
             grotate(
-                1, (cnt2 * 3 + cnt) * inf_tiles, 672, 0, inf_tiles, inf_tiles);
+                1, (cnt2 * 3 + cnt) * ui.tiles, 672, 0, ui.tiles, ui.tiles);
             pos(cnt * 150 + tx + 32, ty);
             mes(strmid(
                     i18n::_(u8"ability", std::to_string(r), u8"name"),
@@ -2111,8 +2112,8 @@ void show_race_or_class_info(int CNT, int val0)
     if (r != 0)
     {
         pos(tx + 13, ty + 6);
-        gmode(2, inf_tiles, inf_tiles);
-        grotate(1, 0, 672, 0, inf_tiles, inf_tiles);
+        gmode(2, ui.tiles, ui.tiles);
+        grotate(1, 0, 672, 0, ui.tiles, ui.tiles);
         pos(tx + 32, ty);
         mes(s);
         ty += 14;
@@ -2131,14 +2132,14 @@ void show_race_or_class_info(int CNT, int val0)
                 lenfix(s, 16);
             }
             pos(tx + 13, ty + 6);
-            gmode(2, inf_tiles, inf_tiles);
+            gmode(2, ui.tiles, ui.tiles);
             grotate(
                 1,
-                (the_ability_db[cnt]->related_basic_attribute - 10) * inf_tiles,
+                (the_ability_db[cnt]->related_basic_attribute - 10) * ui.tiles,
                 672,
                 0,
-                inf_tiles,
-                inf_tiles);
+                ui.tiles,
+                ui.tiles);
             s(1) = i18n::_(u8"ability", std::to_string(cnt), u8"description");
             if (en)
             {

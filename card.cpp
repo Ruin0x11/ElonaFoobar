@@ -6,6 +6,7 @@
 #include "i18n.hpp"
 #include "item.hpp"
 #include "variables.hpp"
+#include "ui.hpp"
 
 #include <iostream>
 
@@ -25,7 +26,7 @@ void show_card_collection()
     page_load();
     ww = 700;
     wh = 400;
-    wx = (windoww - ww) / 2 + inf_screenx;
+    wx = (ui.windoww - ww) / 2 + ui.screenx;
     wy = winposy(wh);
     windowanime(wx, wy, ww, wh, 10, 4);
     gsel(3);
@@ -60,7 +61,7 @@ reset_page:
         s(0) = lang(u8"カード", u8"Card");
         s(1) = strhint5;
         display_window(
-            (windoww - 730) / 2 + inf_screenx,
+            (ui.windoww - 730) / 2 + ui.screenx,
             winposy(430, 0),
             730,
             430,

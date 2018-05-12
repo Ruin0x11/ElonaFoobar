@@ -7,6 +7,7 @@
 #include "elona.hpp"
 #include "item.hpp"
 #include "random.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 
 
@@ -693,14 +694,14 @@ void proc_event()
         pos(0, 0);
         picload(filesystem::dir::graphic() / u8"bg22.bmp");
         gsel(4);
-        pos(windoww / 2 - 1, windowh / 2 - 1);
+        pos(ui.windoww / 2 - 1, ui.windowh / 2 - 1);
         gmode(0, 640, 480);
-        grotate(7, 0, 0, 0, windoww + 4, windowh + 4);
+        grotate(7, 0, 0, 0, ui.windoww + 4, ui.windowh + 4);
         gsel(7);
         picload(filesystem::dir::graphic() / u8"anime9.bmp");
         gsel(0);
-        dx = windoww / 2;
-        dy = (windowh - inf_verh) / 2;
+        dx = ui.windoww / 2;
+        dy = (ui.windowh - ui.verh) / 2; // TODO see how can be moved
         p(0) = 0;
         p(1) = 0;
         p(2) = 0;
@@ -721,7 +722,7 @@ void proc_event()
                 pos(5 - rnd(10), 5 - rnd(10));
             }
             gmode(0);
-            gcopy(4, 0, 0, windoww, windowh);
+            gcopy(4, 0, 0, ui.windoww, ui.windowh);
             if (i > 8)
             {
                 --p;
@@ -872,8 +873,8 @@ void proc_event()
                 y = rnd(mdata(1));
                 map(x, y, 0) = 37;
             }
-            x = rnd(inf_screenw) + scx;
-            y = rnd(inf_screenh) + scy;
+            x = rnd(ui.screenw) + scx;
+            y = rnd(ui.screenh) + scy;
             if (x < 0 || y < 0 || x >= mdata(0) || y >= mdata(1) || rnd(5) == 0)
             {
                 x = rnd(mdata(0));

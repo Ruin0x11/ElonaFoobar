@@ -19,14 +19,14 @@ enum class show_hp_bar_side
     right_side,
 };
 
-void show_hp_bar(show_hp_bar_side side, int inf_clocky);
+void show_hp_bar(show_hp_bar_side side, int clocky);
 
 void add_damage_popup(
     const std::string& text,
     int character,
     const snail::color& color);
 void clear_damage_popups();
-void show_damage_popups(int inf_ver);
+void show_damage_popups(int ver);
 
 
 } // namespace elona

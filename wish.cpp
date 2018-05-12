@@ -9,6 +9,7 @@
 #include "item.hpp"
 #include "item_db.hpp"
 #include "optional.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 
 
@@ -662,7 +663,7 @@ bool process_wish()
 
     inputlog = "";
     input_text_dialog(
-        (windoww - 290) / 2 + inf_screenx, winposy(90), 16, false);
+        (ui.windoww - 290) / 2 + ui.screenx, winposy(90), 16, false); // TODO see how this can be moved
 
     txt(lang(u8"「" + inputlog + u8"！！」", u8"\"" + inputlog + u8"!!\""));
 
