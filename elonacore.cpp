@@ -68511,11 +68511,11 @@ label_2747:
         update_entire_screen();
         return turn_result_t::turn_end;
     }
-    if (getkey(snail::key::f5))
+    if (getkey(snail::key::f8))
     {
         lua::reload();
-        update_entire_screen();
-        return turn_result_t::turn_end;
+        txt(u8"Reloaded lua."s);
+        return turn_result_t::pc_turn_user_error;
     }
     if (getkey(snail::key::f9))
     {

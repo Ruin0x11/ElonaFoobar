@@ -19,6 +19,7 @@ namespace Chara {
 bool is_alive(const character&);
 bool is_player(const character&);
 bool is_ally(const character&);
+character player();
 
 void mut_damage_hp(character&, int, int);
 void mut_damage_con(character&, int, int);
@@ -84,6 +85,11 @@ bool Chara::is_player(const character& chara)
 bool Chara::is_ally(const character& chara)
 {
     return chara.id <= 16; // TODO
+}
+
+character Chara::player()
+{
+    return elona::cdata[0];
 }
 
 void Chara::mut_damage_hp(character& chara, int damage, int type)
@@ -203,6 +209,9 @@ void GUI::txt(const std::string& str)
 
 void reload()
 {
+    // TODO more sophisticated reloading
+    (*sol.get())["Global"]["Callbacks"] = sol::nullopt;
+
     load_mod("core");
     txt("Reloaded core/init.lua. ");
 }
@@ -225,6 +234,7 @@ void Registry::set_on_event(const std::string& event_id, const sol::function& fu
     std::string mod_name = (*sol.get())["Global"]["MOD_NAME"];
     ELONA_LOG("Setting " << event_id << " of " << mod_name);
     (*sol.get())["Global"]["Callbacks"][event_id] = func;
+    ELONA_LOG("Set " << event_id << " of " << mod_name);
 }
 
 void callback(const std::string& event_id)
@@ -236,7 +246,7 @@ void callback(const std::string& event_id)
     sol::optional<sol::function> func = (*sol.get())["Global"]["Callbacks"][event_id];
     if(func)
     {
-        func.value()();
+        func.value()(event_id);
     }
 }
 //
@@ -315,6 +325,10 @@ void init()
         );
 
     sol::table Elona = sol.get()->create_named_table("Elona");
+    Elona.set_function("log", [](const std::string& msg) { elona::log::detail::out << msg << std::endl; } );
+
+    sol::table Chara = Elona.create_named("Chara");
+    Chara.set_function("player", Chara::player);
 
     sol::table Fov = Elona.create_named("Fov");
     Fov.set_function("los", Fov::los);
@@ -338,8 +352,9 @@ void init()
     sol::table Global = sol.get()->create_named_table("Global");
     Global.create_named("Callbacks");
 
+    // prevent usage of some tables during mod loading, since calling things like GUI.txt at the top level before starting the game is dangerous
     // load core mod first
-    reload();
+    load_mod("core");
     // for each other mod, load_mod()
     // after global prototype db is made, make it read-only
     // make stdlib table Elona read-only

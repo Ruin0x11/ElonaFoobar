@@ -5,6 +5,15 @@ local function fail_if_missing(var, msg)
     return false
 end
 
+function table.find(tbl, func, ...)
+    for k, v in pairs(tbl) do
+        if func(v, k, ...) then
+            return v, k
+        end
+    end
+    return nil
+end
+
 local function is_valid_id(event_id)
     if not (type(event_id) == "string") then
         error("Invalid Event Id, Must be string. Passed in "..event_id, 3)
@@ -25,12 +34,12 @@ function Event.register(event_ids, handler)
 
         if handler == nil then
             Event._registry[event_id] = nil
-            Registry.on_event(event_id, nil)
+            Elona.Registry.on_event(event_id, nil)
         else
             if not Event._registry[event_id] then
                 Event._registry[event_id] = {}
 
-                Registry.on_event(event_id, Event.dispatch)
+                Elona.Registry.on_event(event_id, Event.dispatch)
             end
             --If the handler is already registered for this event: remove and insert it to the end.
             local _, reg_index = table.find(Event._registry[event_id], function(v) return v == handler end)
@@ -44,12 +53,13 @@ function Event.register(event_ids, handler)
     return Event
 end
 
-function Event.dispatch()
-        if _registry then
-            for idx, handler in ipairs(_registry) do
-                pcall(handler)
-            end
-        end
+function Event.dispatch(event_id)
+   local _registry = Event._registry[event_id]
+   if _registry then
+      for idx, handler in ipairs(_registry) do
+         pcall(handler)
+      end
+   end
 end
 
 function Event.remove(event_ids, handler)
@@ -69,7 +79,7 @@ function Event.remove(event_ids, handler)
             end
             if table.size(Event._registry[event_id]) == 0 then
                 Event._registry[event_id] = nil
-                Registry.on_event(event_id, nil)
+                Elona.Registry.on_event(event_id, nil)
             end
         end
     end
