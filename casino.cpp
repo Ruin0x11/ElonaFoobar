@@ -1077,7 +1077,7 @@ bool casino_blackjack()
                     winner = 0;
                 }
             }
-            if (card_cp_score(state, 0) <= 21)
+            if (card_cp_score(state, 1) <= 21)
             {
                 if (card_cp_score(state, 0) > 21 || card_cp_score(state, 1) > card_cp_score(state, 0))
                 {
@@ -1719,7 +1719,7 @@ int card_cp_score(card_state& state, int prm_431)
         }
         score += current_card_score;
     }
-    for (int holder_idx = 0; holder_idx < state.card_holder_max; ++holder_idx)
+    for (int holder_idx = 0; holder_idx < ace; ++holder_idx)
     {
         if (score > 21)
         {
