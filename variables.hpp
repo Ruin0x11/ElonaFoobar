@@ -1,3 +1,5 @@
+#pragma once
+
 #include "elona.hpp"
 #include "position.hpp"
 #include "enums.hpp"
@@ -26,9 +28,13 @@ ELONA_EXTERN(int anic);
 ELONA_EXTERN(elona_vector1<int> ap);
 ELONA_EXTERN(int wishfilter);
 ELONA_EXTERN(int nooracle);
+ELONA_EXTERN(int rtdmg);
+
+ELONA_EXTERN(std::string ndeathcause);
 
 ELONA_EXTERN(elona_vector1<int> fsetrare);
 ELONA_EXTERN(elona_vector1<int> fsetwear);
+ELONA_EXTERN(elona_vector1<int> fsetweapon);
 ELONA_EXTERN(elona_vector1<int> fsetitem);
 ELONA_EXTERN(elona_vector2<int> encref);
 
@@ -609,6 +615,7 @@ int itemfind(int = 0, int = 0, int = 0);
 int itemusingfind(int, bool = false);
 int key_direction();
 int access_item_db(int);
+int access_character_info();
 int get_required_craft_materials();
 int voting_box();
 int try_to_cast_spell();
@@ -1009,7 +1016,6 @@ main_menu_result_t character_making_select_race();
 main_menu_result_t character_making_final_phase();
 void clear_background_in_character_making();
 void initialize_set_of_random_generation();
-void label_1573();
 void label_1576();
 void label_1577();
 void label_1578();

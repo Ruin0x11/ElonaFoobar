@@ -1,10 +1,12 @@
 #pragma once
 
+#include "optional.hpp"
+
 namespace elona
 {
 
 int damage_hp(int, int, int = 0, int = 0, int = 0);
-void damage_status_effect_resist();
+optional<int> damage_status_effect_resist(int, int, int, bool);
 void end_damage_hp(int, int);
 void damage_mp(int, int);
 void damage_stamina(int, int);
@@ -21,4 +23,7 @@ void heal_stamina(int = 0, int = 0);
 void modify_corruption(int = 0);
 
 void add_resistance(int = 0, int = 0, int = 0);
+
+void drop_loot(int, int, int);
+
 }
