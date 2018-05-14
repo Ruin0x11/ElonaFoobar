@@ -53,11 +53,14 @@ function Event.register(event_ids, handler)
     return Event
 end
 
-function Event.dispatch(event_id)
+function Event.dispatch(event_id, args)
    local _registry = Event._registry[event_id]
    if _registry then
       for idx, handler in ipairs(_registry) do
-         pcall(handler)
+         local status, err = pcall(handler, args)
+         if not status then
+            error("Error dispatching " .. event_id .. ": " .. err)
+         end
       end
    end
 end

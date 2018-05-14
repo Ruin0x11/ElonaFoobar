@@ -7,7 +7,7 @@
 #include "item.hpp"
 #include "putit.hpp"
 #include "variables.hpp"
-
+#include "lua.hpp"
 
 using namespace elona;
 
@@ -263,6 +263,10 @@ void fmode_7_8(bool read)
             if (fs::exists(filepath))
             {
                 load(filepath, cdata, 0, ELONA_MAX_PARTY_CHARACTERS);
+                // TODO handle separately
+                for (int chara = 0; i < ELONA_MAX_PARTY_CHARACTERS; i++) {
+                    lua::on_chara_creation(chara);
+                }
             }
         }
         else
@@ -754,7 +758,11 @@ void fmode_1_2(bool read)
                 filepath,
                 cdata,
                 ELONA_MAX_PARTY_CHARACTERS,
-                ELONA_MAX_CHARACTERS);
+                ELONA_MAX_CHARACTERS);                
+            // TODO handle separately
+            for (int chara = ELONA_MAX_PARTY_CHARACTERS; i < ELONA_MAX_CHARACTERS; i++) {
+                lua::on_chara_creation(chara);
+            }
         }
         else
         {

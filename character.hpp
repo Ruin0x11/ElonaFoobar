@@ -196,6 +196,7 @@ struct character
     character();
 
 
+    int idx;
     int state = 0;
     position_t position;
     position_t next_position;

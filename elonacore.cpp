@@ -32,6 +32,7 @@
 #include "variables.hpp"
 #include "version.hpp"
 #include "wish.hpp"
+#include <map>
 
 using namespace elona;
 
@@ -9264,6 +9265,7 @@ int characreate(int prm_756, int prm_757, int prm_758, int prm_759)
         {
             cdata[rc].state = 0;
             --npcmemory(1, cdata[rc].id);
+            lua::on_chara_creation(rc); // TODO handle deserialization separately from creation from scratch
             return 1;
         }
         if (rc != 0)
@@ -9279,6 +9281,7 @@ int characreate(int prm_756, int prm_757, int prm_758, int prm_759)
         rc = 56;
         return 0;
     }
+    lua::on_chara_creation(rc); // TODO correct?
     return 1;
 }
 
@@ -14027,6 +14030,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
         {
             ++gdata_death_count;
         }
+        lua::on_chara_removal(prm_853);
         if (prm_853 == gdata(94))
         {
             gdata(94) = 0;
@@ -20229,6 +20233,7 @@ int do_create_character()
         cdata[rc].image = 280;
     }
     cdata[rc].quality = fixlv;
+    cdata[rc].idx = rc;
     initialize_character();
     rtval = rc;
     return 1;
@@ -53515,6 +53520,7 @@ turn_result_t do_movement_command()
 
 turn_result_t proc_movement_event()
 {
+    lua::callback("chara_moved", {{"chara", cc}});
     if (cdata[cc].is_ridden())
     {
         return turn_result_t::turn_end;

@@ -9,14 +9,30 @@ function hoge()
       Elona.Chara.player():damage_hp(10, 1)
    end
 end
+--
+-- function foo()
+--    Elona.GUI.txt("Second caller ")
+--    if Elona.Rand.one_in(10) then
+--       local pos = Elona.Map.random_pos()
+--       Elona.Magic.cast(623, 100, pos) -- heal
+--    end
+-- end
 
-function foo()
-   Elona.GUI.txt("Second caller ")
-   if Elona.Rand.one_in(10) then
-      local pos = Elona.Map.random_pos()
-      Elona.Magic.cast(623, 100, pos) -- heal
-   end
+local function my_movement_handler(chara)
+   local zxc = Elona.Registry.Data["core"]
+   local qwe = zxc.Chara[chara]
+   local asd = qwe.steps
+   Elona.Registry.Data["core"].Chara[chara].steps = asd + 1
+   Elona.GUI.txt("Steps taken by " .. chara .. ": " .. Registry.Data["core"].Chara[chara].steps .. " ")
 end
 
+local function my_character_init()
+  local defaults = {
+    steps = 0
+  }
+  return defaults
+end
+
+Elona.Registry.register_chara_init(my_character_init)
+Event.register("chara_moved", my_movement_handler)
 Event.register("player_turn", hoge)
-Event.register("player_turn", foo)

@@ -7,11 +7,17 @@
 #include "variables.hpp"
 #include "log.hpp"
 #include <vector>
+#include <map>
 
 namespace elona
 {
 namespace lua
 {
+
+// TODO wrap all table editing methods in their own functions
+// TODO make everything less messy
+// TODO move api to separate source file
+// TODO make things immutable where they need to be
 
 std::unique_ptr<sol::state> sol;
 
@@ -69,6 +75,7 @@ void txt(const std::string&);
 
 namespace Registry {
 void set_on_event(const std::string&, const sol::function&);
+void register_chara_init(const sol::function&);
 }
 
 
@@ -219,10 +226,20 @@ void reload()
 void load_mod(const std::string& name)
 {
     (*sol.get())["Global"]["MOD_NAME"] = name;
-    sol.get()->script_file("mods/"s + name + "/init.lua"s);
     // create character/item/map/global tables
+
+    // TODO this could overwrite a thing
+    sol::table data = (*sol.get())["Elona"]["Registry"]["Data"];
+
+    sol::table modlocal = data.create_named(name);
+
+    sol::table Chara = modlocal.create_named("Chara");
+    sol::table Item = modlocal.create_named("Item");
+    sol::table Map = modlocal.create_named("Map");
+    sol::table Global = modlocal.create_named("Global");
     // run various mod loading stages (like defining custom fields for all prototypes in the game?)
     // evaluate init.lua to load defines
+    sol.get()->script_file("mods/"s + name + "/init.lua"s);
     // determine mod overrides inside .json files
     // merge overrides, new things, and locale configs into global database
     // add reference to global API table as Elona so the mod can use it
@@ -237,16 +254,33 @@ void Registry::set_on_event(const std::string& event_id, const sol::function& fu
     ELONA_LOG("Set " << event_id << " of " << mod_name);
 }
 
+void Registry::register_chara_init(const sol::function& func)
+{
+    (*sol.get())["Global"]["Init"] = func;
+}
+
 void callback(const std::string& event_id)
+{
+    callback(event_id, {});
+}
+
+void callback(const std::string& event_id, const std::map<std::string, int> args)
 {
     // for each mod, if there is an array of callbacks at the given name in its exports, run all of them in order
     // could use hashset to determine quickly which mods define callbacks
     // or, use a plain list with references to the exported callbacks of each mod
-    // TODO handle varargs without using _G
-    sol::optional<sol::function> func = (*sol.get())["Global"]["Callbacks"][event_id];
-    if(func)
+    sol::optional<sol::protected_function> func = (*sol.get())["Global"]["Callbacks"][event_id];
+    if (func && func.value() != sol::nil)
     {
-        func.value()(event_id);
+        auto result = func.value()(event_id, args);
+        if (!result.valid())
+        {
+            txtef(3);
+            sol::error err = result;
+            std::string what = err.what();
+            ELONA_LOG(what);
+            txt(what);
+        }
     }
 }
 //
@@ -287,11 +321,30 @@ void callback(const std::string& event_id)
 //     // run mod callbacks for map exit
 // }
 //
-// void on_chara_creation(int id)
-// {
-//     // for each mod, init its extra data for the character
-//     // for each mod, run chara creation callback
-// }
+void on_chara_creation(int id)
+{
+    // TODO handle deserialization separately from creation from scratch
+    // for each mod, init its extra data for the character
+    // for each mod, run chara creation callback
+    sol::table data = (*sol.get())["Elona"]["Registry"]["Data"];
+    sol::optional<sol::protected_function> func = (*sol.get())["Global"]["Init"];
+    for(auto& obj : data)
+    {
+        if(func && func.value() != sol::nil) {
+            auto result = func.value()(id); // TODO except player/allies/respawnable characters
+            if (result.valid())
+            {
+                data[obj]["Chara"][id] = result;
+            } 
+            else
+            {
+                sol::error err = result;
+                std::string what = err.what();
+                ELONA_LOG(what);
+            }
+        }
+    }
+}
 //
 // void on_item_creation(int id)
 // {
@@ -299,11 +352,18 @@ void callback(const std::string& event_id)
 //     // for each mod, run item creation callback
 // }
 //
-// void on_chara_removal(int id)
-// {
-//     // for each mod, invalidate global chara state
-//     // for each mod, run chara removal callback
-// }
+void on_chara_removal(int id)
+{
+    ELONA_LOG("Character removed. Here is the data that was lost.\n")
+    sol::table data = (*sol.get())["Elona"]["Registry"]["Data"];
+    for(auto& obj : data)
+    {
+        data[obj]["Chara"][id] = sol::nullopt; // TODO except player/allies/respawnable characters
+    }
+
+    // for each mod, invalidate global chara state
+    // for each mod, run chara removal callback
+}
 //
 // void on_item_removal(int id)
 // {
@@ -321,7 +381,8 @@ void init()
     sol.get()->new_usertype<character>( "character",
                                         sol::constructors<character()>(),
                                         "damage_hp", &Chara::mut_damage_hp,
-                                        "damage_con", &Chara::mut_damage_con
+                                        "damage_con", &Chara::mut_damage_con,
+                                        "idx", sol::readonly( &character::idx )
         );
 
     sol::table Elona = sol.get()->create_named_table("Elona");
@@ -348,9 +409,12 @@ void init()
 
     sol::table Registry = Elona.create_named("Registry");
     Registry.set_function("on_event", Registry::set_on_event);
+    Registry.set_function("register_chara_init", Registry::register_chara_init);
+    Registry.create_named("Data");
 
     sol::table Global = sol.get()->create_named_table("Global");
     Global.create_named("Callbacks");
+    Global.create_named("Init");
 
     // prevent usage of some tables during mod loading, since calling things like GUI.txt at the top level before starting the game is dangerous
     // load core mod first
