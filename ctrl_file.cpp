@@ -264,7 +264,7 @@ void fmode_7_8(bool read)
             {
                 load(filepath, cdata, 0, ELONA_MAX_PARTY_CHARACTERS);
                 // TODO handle separately
-                for (int chara = 0; i < ELONA_MAX_PARTY_CHARACTERS; i++) {
+                for (int chara = 0; chara < ELONA_MAX_PARTY_CHARACTERS; chara++) {
                     lua::on_chara_creation(chara);
                 }
             }
@@ -758,9 +758,9 @@ void fmode_1_2(bool read)
                 filepath,
                 cdata,
                 ELONA_MAX_PARTY_CHARACTERS,
-                ELONA_MAX_CHARACTERS);                
+                ELONA_MAX_CHARACTERS);
             // TODO handle separately
-            for (int chara = ELONA_MAX_PARTY_CHARACTERS; i < ELONA_MAX_CHARACTERS; i++) {
+            for (int chara = ELONA_MAX_PARTY_CHARACTERS; chara < ELONA_MAX_CHARACTERS; chara++) {
                 lua::on_chara_creation(chara);
             }
         }

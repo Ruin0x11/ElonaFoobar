@@ -302,6 +302,7 @@ void callback(const std::string& event_id, const std::map<std::string, int> args
 // void on_save()
 // {
 //     // for each mod, serialize everything
+       // TODO if character/item reference, serialize as integer id
 // }
 //
 // void on_load()
@@ -324,26 +325,31 @@ void callback(const std::string& event_id, const std::map<std::string, int> args
 void on_chara_creation(int id)
 {
     // TODO handle deserialization separately from creation from scratch
+    // TODO only handle deserialization for characters that actually exist
     // for each mod, init its extra data for the character
     // for each mod, run chara creation callback
+
+    //callback("chara_created", {{"cc", id}});
+
     sol::table data = (*sol.get())["Elona"]["Registry"]["Data"];
     sol::optional<sol::protected_function> func = (*sol.get())["Global"]["Init"];
-    for(auto& obj : data)
+     for(const auto& obj : data)
     {
-        if(func && func.value() != sol::nil) {
-            auto result = func.value()(id); // TODO except player/allies/respawnable characters
-            if (result.valid())
-            {
-                data[obj]["Chara"][id] = result;
-            } 
-            else
-            {
-                sol::error err = result;
-                std::string what = err.what();
-                ELONA_LOG(what);
-            }
-        }
-    }
+         const std::string key = obj.first.as<std::string>();
+         if(func && func.value() != sol::nil) {
+             auto result = func.value()(id); // TODO except player/allies/respawnable characters
+             if (result.valid())
+             {
+                 data[key]["Chara"][id] = result;
+             }
+             else
+             {
+                 sol::error err = result;
+                 std::string what = err.what();
+                 ELONA_LOG(what);
+             }
+         }
+     }
 }
 //
 // void on_item_creation(int id)
@@ -374,7 +380,7 @@ void on_chara_removal(int id)
 void init()
 {
     sol = std::make_unique<sol::state>();
-    sol.get()->open_libraries(sol::lib::base, sol::lib::package, sol::lib::table);
+    sol.get()->open_libraries(sol::lib::base, sol::lib::package, sol::lib::table, sol::lib::debug, sol::lib::string);
     sol.get()->new_usertype<position_t>( "position",
                                          sol::constructors<position_t()>()
         );

@@ -18,15 +18,17 @@ end
 --    end
 -- end
 
-local function my_movement_handler(chara)
+local function my_movement_handler(args)
+   local chara = args.chara
    local zxc = Elona.Registry.Data["core"]
-   local qwe = zxc.Chara[chara]
-   local asd = qwe.steps
+   local data = zxc.Chara[chara]
+   local asd = data.steps
    Elona.Registry.Data["core"].Chara[chara].steps = asd + 1
-   Elona.GUI.txt("Steps taken by " .. chara .. ": " .. Registry.Data["core"].Chara[chara].steps .. " ")
+   Elona.GUI.txt("Steps taken by " .. chara .. ": " .. Elona.Registry.Data["core"].Chara[chara].steps .. " ")
 end
 
-local function my_character_init()
+local function my_character_init(id)
+   Elona.log("Initing char " .. id)
   local defaults = {
     steps = 0
   }

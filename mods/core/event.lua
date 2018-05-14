@@ -57,9 +57,9 @@ function Event.dispatch(event_id, args)
    local _registry = Event._registry[event_id]
    if _registry then
       for idx, handler in ipairs(_registry) do
-         local status, err = pcall(handler, args)
+         local status, err = xpcall(handler, function(a) return debug.traceback(a) end, args)
          if not status then
-            error("Error dispatching " .. event_id .. ": " .. err)
+            error("Error dispatching " .. event_id .. ": " .. table.tostring(err))
          end
       end
    end
