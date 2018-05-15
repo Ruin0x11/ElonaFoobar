@@ -1,8 +1,10 @@
 #include "input.hpp"
 #include "audio.hpp"
+#include "blending.hpp"
 #include "config.hpp"
 #include "elona.hpp"
 #include "variables.hpp"
+#include "ui.hpp"
 
 
 
@@ -240,7 +242,7 @@ void input_number_dialog(int x, int y, int max_number)
 
 
 
-void input_text_dialog(int x, int y, int val2, bool is_cancelable)
+void input_text_dialog(int x, int y, int val2, bool is_cancelable, bool as_filename)
 {
     int ime_esc = 0;
 
@@ -249,6 +251,7 @@ void input_text_dialog(int x, int y, int val2, bool is_cancelable)
     font(16 - en * 2);
 
     pos(x, y);
+    inputlog = "";
     mesbox(inputlog);
     pos(x + 4, y + 4);
     gfini(dx - 1, 35);
@@ -352,14 +355,13 @@ void input_text_dialog(int x, int y, int val2, bool is_cancelable)
     }
     gmode(2);
     clrobj(1);
-    if (input_mode == 1)
+    if (as_filename)
     {
-        cnv_filestr(inputlog);
+        inputlog = filesystem::normalize_as_filename(inputlog);
     }
-    input_mode = 0;
     if (en)
     {
-        cnv_str(inputlog, u8"\""s, u8"'"s);
+        inputlog = strutil::replace(inputlog, u8"\"", u8"'");
     }
     rm_crlf(inputlog);
     onkey_0();

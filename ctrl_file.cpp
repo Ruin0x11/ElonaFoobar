@@ -5,6 +5,7 @@
 #include "filesystem.hpp"
 #include "foobar_save.hpp"
 #include "item.hpp"
+#include "mef.hpp"
 #include "putit.hpp"
 #include "variables.hpp"
 #include "lua.hpp"
@@ -740,7 +741,7 @@ void fmode_1_2(bool read)
         {
             DIM4(map, mdata(0), mdata(1), 10);
             DIM3(mapsync, mdata(0), mdata(1));
-            DIM3(mef, 9, 200);
+            DIM3(mef, 9, MEF_MAX);
             load_v3(filepath, map, 0, mdata(0), 0, mdata(1), 0, 10);
         }
         else
@@ -823,13 +824,13 @@ void fmode_1_2(bool read)
             }
             else
             {
-                load_v2(filepath, mef, 0, 9, 0, 200);
+                load_v2(filepath, mef, 0, 9, 0, MEF_MAX);
             }
         }
         else
         {
             fileadd(filepath);
-            save_v2(filepath, mef, 0, 9, 0, 200);
+            save_v2(filepath, mef, 0, 9, 0, MEF_MAX);
         }
     }
 
@@ -859,7 +860,7 @@ void fmode_5_6(bool read)
     if (read)
     {
         DIM3(cmapdata, 5, 400);
-        DIM3(mef, 9, 200);
+        DIM3(mef, 9, MEF_MAX);
     }
 
     {

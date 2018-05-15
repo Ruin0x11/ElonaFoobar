@@ -1,13 +1,22 @@
 #include "talk.hpp"
 #include "ability.hpp"
+#include "adventurer.hpp"
 #include "audio.hpp"
 #include "calc.hpp"
 #include "character.hpp"
+#include "character_status.hpp"
 #include "elona.hpp"
+#include "event.hpp"
+#include "food.hpp"
 #include "i18n.hpp"
 #include "item.hpp"
 #include "item_db.hpp"
+#include "quest.hpp"
 #include "macro.hpp"
+#include "map_cell.hpp"
+#include "menu.hpp"
+#include "shop.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 
 
@@ -67,10 +76,10 @@ talk_result_t talk_npc()
     if (buff == ""s)
     {
         get_npc_talk();
-        int stat = customtalk(tc, 106);
+        int stat = chara_custom_talk(tc, 106);
         if (stat)
         {
-            replace_tags_in_quest_board();
+            text_replace_tags_in_quest_board();
         }
         if (cdata[tc].interest > 0)
         {
@@ -84,11 +93,11 @@ talk_result_t talk_npc()
                         {
                             if (rnd(sdata(17, 0) + 1) > 10)
                             {
-                                modimp(tc, rnd(3));
+                                chara_mod_impression(tc, rnd(3));
                             }
                             else
                             {
-                                modimp(tc, rnd(3) * -1);
+                                chara_mod_impression(tc, rnd(3) * -1);
                             }
                         }
                     }
@@ -142,7 +151,7 @@ talk_result_t talk_npc()
     }
     if (cdata[tc].character_role == 17)
     {
-        if (get_freeally() != 0)
+        if (chara_get_free_slot_ally() != 0)
         {
             ELONA_APPEND_RESPONSE(
                 36, lang(u8"奴隷を買う"s, u8"I want to buy a slave."s));
@@ -152,7 +161,7 @@ talk_result_t talk_npc()
     }
     if (cdata[tc].character_role == 22)
     {
-        if (get_freeally() != 0)
+        if (chara_get_free_slot_ally() != 0)
         {
             ELONA_APPEND_RESPONSE(
                 57, lang(u8"馬を買う"s, u8"I want to buy a horse."s));
@@ -304,7 +313,7 @@ talk_result_t talk_npc()
         ELONA_APPEND_RESPONSE(
             46, lang(u8"免罪符を買いたい"s, u8"I want to buy an indulgence."s));
     }
-    int stat = tradecheck(tc);
+    int stat = talk_check_trade(tc);
     if (stat)
     {
         ELONA_APPEND_RESPONSE(
@@ -312,7 +321,7 @@ talk_result_t talk_npc()
     }
     if (cdata[tc].character_role == 14)
     {
-        int stat = clientguide();
+        int stat = talk_guide_quest_client();
         if (stat != 0)
         {
             for (int cnt = 0, cnt_end = (stat); cnt < cnt_end; ++cnt)
@@ -361,7 +370,7 @@ talk_result_t talk_npc()
         {
             if (tc >= 16)
             {
-                if (evid() == -1)
+                if (event_id() == -1)
                 {
                     ELONA_APPEND_RESPONSE(
                         56,
@@ -374,7 +383,7 @@ talk_result_t talk_npc()
     }
     if (cdata[tc].id == 335)
     {
-        if (evid() == -1)
+        if (event_id() == -1)
         {
             ELONA_APPEND_RESPONSE(
                 60, lang(u8"暗い場所に移ろう"s, u8"I'll buy you."s));
@@ -442,8 +451,8 @@ talk_result_t talk_npc()
         }
         if (qdata(8, rq) == 3)
         {
-            set_quest_data(3);
-            complete_quest();
+            quest_set_data(3);
+            quest_complete();
         }
         else if (qdata(14, rq) == 3 && qdata(8, rq) == 1)
         {
@@ -515,7 +524,7 @@ talk_result_t talk_npc()
             {
                 if ((cdata[tc].character_role < 2000
                      || cdata[tc].character_role >= 3000)
-                    && evid() == -1)
+                    && event_id() == -1)
                 {
                     ELONA_APPEND_RESPONSE(
                         44, lang(u8"解雇する"s, u8"You are fired."s));
@@ -527,7 +536,7 @@ talk_result_t talk_npc()
     {
         if (gdata_pael_and_her_mom == 1000)
         {
-            rc = findchara(222);
+            rc = chara_find(222);
             if (rc != 0)
             {
                 if (cdata[rc].state == 1)
@@ -543,7 +552,7 @@ talk_result_t talk_npc()
     }
     ELONA_APPEND_RESPONSE(0, i18n::_(u8"ui", u8"bye"));
     chatesc = 1;
-    talk_window();
+    talk_window_query();
     if (chatval == 10 || chatval == 11)
     {
         if ((cdata[tc].character_role >= 1000
@@ -582,7 +591,7 @@ talk_result_t talk_npc()
     {
         invctrl = 11;
         invfile = cdata[tc].shop_store_id;
-        sell_item();
+        shop_sell_item();
         screenupdate = -1;
         update_screen();
         cs = 0;
@@ -593,7 +602,7 @@ talk_result_t talk_npc()
     {
         invctrl = 12;
         invfile = cdata[tc].shop_store_id;
-        sell_item();
+        shop_sell_item();
         cc = 0;
         screenupdate = -1;
         update_screen();
@@ -842,7 +851,7 @@ talk_result_t talk_npc()
                 minlevel = arenaop(1) / 3 * 2;
                 flt(arenaop(1));
                 fixlv = arenaop(2);
-                characreate(56, 0, -3, 0);
+                chara_create(56, 0, -3, 0);
                 if (cmshade)
                 {
                     continue;
@@ -859,7 +868,7 @@ talk_result_t talk_npc()
             }
             arenaop(1) = cdata[rc].id;
             buff = lang(
-                u8"今日の対戦相手は"s + refchara_str(cdata[rc].id, 2) + _da()
+                u8"今日の対戦相手は"s + chara_refstr(cdata[rc].id, 2) + _da()
                     + u8"挑戦する"s + _noka(1),
                 u8"You got "s + cdatan(0, rc) + u8" today. What'ya say?"s);
         }
@@ -884,7 +893,7 @@ talk_result_t talk_npc()
         ELONA_APPEND_RESPONSE(1, lang(u8"挑戦する"s, u8"Alright."s));
         ELONA_APPEND_RESPONSE(0, lang(u8"やめる"s, u8"I'll pass."s));
         chatesc = 1;
-        talk_window();
+        talk_window_query();
         if (chatval != 1)
         {
             buff = lang(
@@ -951,7 +960,7 @@ talk_result_t talk_npc()
         ELONA_APPEND_RESPONSE(1, lang(u8"挑戦する"s, u8"I'll send my pet."s));
         ELONA_APPEND_RESPONSE(0, lang(u8"やめる"s, u8"I'll pass."s));
         chatesc = 1;
-        talk_window();
+        talk_window_query();
         if (chatval != 1)
         {
             buff = lang(
@@ -1015,14 +1024,14 @@ talk_result_t talk_npc()
         inv[ti].number = 1;
         ci = ti;
         rc = tc;
-        set_item_which_will_be_used();
+        chara_set_item_which_will_be_used();
         rq = deliver;
         --inv[deliver(1)].number;
         txt(lang(
             itemname(deliver(1), 1) + u8"を手渡した。"s,
             u8"You hand over "s + itemname(deliver(1), 1) + u8"."s));
-        set_quest_data(3);
-        complete_quest();
+        quest_set_data(3);
+        quest_complete();
         refresh_burden_state();
         return talk_result_t::talk_npc;
     }
@@ -1035,13 +1044,13 @@ talk_result_t talk_npc()
         cdata[tc].was_passed_item_by_you_just_now() = true;
         ci = ti;
         rc = tc;
-        set_item_which_will_be_used();
+        chara_set_item_which_will_be_used();
         --inv[supply].number;
         txt(lang(
             itemname(supply, 1) + u8"を手渡した。"s,
             u8"You hand over "s + itemname(supply, 1) + u8"."s));
-        set_quest_data(3);
-        complete_quest();
+        quest_set_data(3);
+        quest_complete();
         refresh_burden_state();
         return talk_result_t::talk_npc;
     }
@@ -1060,7 +1069,7 @@ talk_result_t talk_npc()
         ELONA_APPEND_RESPONSE(
             0, lang(u8"いや、冗談です"s, u8"W-Wait! I was just kidding."s));
         chatesc = 1;
-        talk_window();
+        talk_window_query();
         if (chatval != 1)
         {
             buff = lang(u8"冷やかし"s + _ka(1), u8"You kidding? "s);
@@ -1083,7 +1092,7 @@ talk_result_t talk_npc()
             buff = lang(u8"む…中身が空っぽ"s + _dana(2), u8"Hmm! It's empty!"s);
             ELONA_APPEND_RESPONSE(0, lang(u8"しまった…"s, u8"Oops...!"s));
             chatesc = 1;
-            talk_window();
+            talk_window_query();
             modify_karma(0, -5);
         }
         else
@@ -1095,7 +1104,7 @@ talk_result_t talk_npc()
             ELONA_APPEND_RESPONSE(
                 0, lang(u8"当然のことだ"s, u8"It's nothing."s));
             chatesc = 1;
-            talk_window();
+            talk_window_query();
             modify_karma(0, 5);
             ++gdata_lost_wallet_count;
             if (gdata_lost_wallet_count >= 4)
@@ -1114,7 +1123,7 @@ talk_result_t talk_npc()
                     0,
                     lang(u8"ぎくっ"s, u8"I really found it on the street!"s));
                 chatesc = 1;
-                talk_window();
+                talk_window_query();
                 modify_karma(0, -10);
             }
         }
@@ -1148,7 +1157,7 @@ talk_result_t talk_npc()
             }
             ELONA_APPEND_RESPONSE(0, lang(u8"やめる"s, u8"Never mind."s));
             chatesc = 1;
-            talk_window();
+            talk_window_query();
             if (chatval == 1)
             {
                 snd(12);
@@ -1197,14 +1206,14 @@ talk_result_t talk_npc()
         ELONA_APPEND_RESPONSE(1, lang(u8"切る"s, u8"Yes."s));
         ELONA_APPEND_RESPONSE(0, lang(u8"やめる"s, u8"No."s));
         chatesc = 1;
-        talk_window();
+        talk_window_query();
         if (chatval == 1)
         {
             txt(lang(
                 ""s + name(tc) + u8"と別れた…"s,
                 u8"You abandoned "s + name(tc) + u8"..."s));
             map(cdata[tc].position.x, cdata[tc].position.y, 1) = 0;
-            del_chara(tc);
+            chara_delete(tc);
             return talk_result_t::talk_end;
         }
         buff = "";
@@ -1224,7 +1233,7 @@ talk_result_t talk_npc()
             {
                 fltn(u8"horse"s);
             }
-            characreate(56, 0, -3, 0);
+            chara_create(56, 0, -3, 0);
             if (cdata[56].level == 0)
             {
                 chara_vanquish(56);
@@ -1246,7 +1255,7 @@ talk_result_t talk_npc()
         }
         ELONA_APPEND_RESPONSE(0, lang(u8"やめる"s, u8"Never mind."s));
         chatesc = 1;
-        talk_window();
+        talk_window_query();
         if (chatval == 1)
         {
             txt(lang(
@@ -1280,7 +1289,7 @@ talk_result_t talk_npc()
             ELONA_APPEND_RESPONSE(1, lang(u8"売る"s, u8"Deal."s));
             ELONA_APPEND_RESPONSE(0, lang(u8"やめる"s, u8"No way."s));
             chatesc = 1;
-            talk_window();
+            talk_window_query();
             if (chatval == 1)
             {
                 txt(lang(
@@ -1294,9 +1303,9 @@ talk_result_t talk_npc()
                 }
                 if (cdata[rc].is_escorted() == 1)
                 {
-                    evadd(15, cdata[rc].id);
+                    event_add(15, cdata[rc].id);
                 }
-                del_chara(rc);
+                chara_delete(rc);
                 buff = lang(_thanks(2), u8"Thanks!"s);
             }
             else
@@ -1327,7 +1336,7 @@ talk_result_t talk_npc()
         chatesc = 1;
         ELONA_TALK_SCENE_CUT();
         marry = tc;
-        evadd(13);
+        event_add(13);
         return talk_result_t::talk_end;
     }
     if (chatval == 39)
@@ -1388,7 +1397,7 @@ talk_result_t talk_npc()
         ELONA_APPEND_RESPONSE(1, lang(u8"切る"s, u8"Yes."s));
         ELONA_APPEND_RESPONSE(0, lang(u8"やめる"s, u8"No."s));
         chatesc = 1;
-        talk_window();
+        talk_window_query();
         if (chatval == 1)
         {
             txt(lang(
@@ -1471,7 +1480,7 @@ talk_result_t talk_npc()
         ELONA_APPEND_RESPONSE(
             0, lang(u8"やめる"s, u8"The price is too high."s));
         chatesc = 1;
-        talk_window();
+        talk_window_query();
         if (chatval == 1)
         {
             snd(12);
@@ -1504,7 +1513,7 @@ talk_result_t talk_npc()
             }
             ELONA_APPEND_RESPONSE(0, lang(u8"やめる"s, u8"No way!"s));
             chatesc = 1;
-            talk_window();
+            talk_window_query();
             if (chatval == 1)
             {
                 snd(12);
@@ -1563,7 +1572,7 @@ talk_result_t talk_npc()
         }
         ELONA_APPEND_RESPONSE(0, lang(u8"やめる"s, u8"Some other time."s));
         chatesc = 1;
-        talk_window();
+        talk_window_query();
         if (chatval == 1)
         {
             snd(12);
@@ -1606,7 +1615,7 @@ talk_result_t talk_npc()
             ELONA_APPEND_RESPONSE(0, i18n::_(u8"ui", u8"more"));
             chatesc = 1;
             ELONA_TALK_SCENE_CUT();
-            f = get_freeally();
+            f = chara_get_free_slot_ally();
             if (f == 0)
             {
                 buff = lang(
@@ -1638,7 +1647,7 @@ talk_result_t talk_npc()
         ELONA_APPEND_RESPONSE(1, lang(u8"売る"s, u8"Sure, take her."s));
         ELONA_APPEND_RESPONSE(0, lang(u8"やめる"s, u8"You cold bastard."s));
         chatesc = 1;
-        talk_window();
+        talk_window_query();
         if (chatval == 1)
         {
             txt(lang(u8"パエルの母親を売った…"s, u8"You sell Pael's mom..."s));
@@ -1646,7 +1655,7 @@ talk_result_t talk_npc()
             snd(11);
             cdata[0].gold += 50000;
             gdata_pael_and_her_mom = 1002;
-            rc = findchara(222);
+            rc = chara_find(222);
             cdata[rc].ai_calm = 3;
             cdata[rc].relationship = 0;
             cdata[rc].initial_position.x = 48;
@@ -1694,7 +1703,7 @@ talk_result_t talk_npc()
         }
         ELONA_APPEND_RESPONSE(0, lang(u8"やめる"s, u8"Another time."s));
         chatesc = 1;
-        talk_window();
+        talk_window_query();
         if (chatval == 1)
         {
             snd(12);
@@ -1724,7 +1733,7 @@ talk_result_t talk_npc()
         buff = lang(
             u8"なかなかの体つき"s + _dana() + u8"よし、買"s + _u(2),
             u8"You are...quite attractive. I'll buy you."s);
-        talk_window();
+        talk_window_query();
         if (chatval != 1)
         {
             buff = lang(u8"冷やかし"s + _ka(1), u8"You kidding? "s);
@@ -1743,7 +1752,7 @@ talk_result_t talk_npc()
     {
         if (gdata_left_turns_of_timestop == 0)
         {
-            evadd(25);
+            event_add(25);
         }
         return talk_result_t::talk_end;
     }
@@ -1772,7 +1781,7 @@ talk_result_t talk_npc()
                 + _kure(),
             u8"Okay sweetie, I need "s + sexvalue
                 + u8" gold pieces in front."s);
-        talk_window();
+        talk_window_query();
         if (chatval != 1)
         {
             buff = lang(u8"冷やかし"s + _ka(1), u8"You kidding? "s);
@@ -1823,7 +1832,7 @@ talk_result_t talk_npc()
             ELONA_APPEND_RESPONSE(p(cnt), mapname(p(cnt)));
         }
         buff = lang(u8"つぇｔ"s, u8"tset"s);
-        talk_window();
+        talk_window_query();
         if (chatval <= 0)
         {
             buff = lang(u8"冷やかし"s + _ka(1), u8"You kidding? "s);
@@ -1842,7 +1851,7 @@ talk_result_t talk_npc()
     }
     if (chatval >= 10000)
     {
-        clientguide();
+        talk_guide_quest_client();
         rc = rtval(chatval - 10000);
         p = direction(
             cdata[0].position.x,
@@ -1929,7 +1938,7 @@ talk_result_t talk_npc()
         buff = s;
         return talk_result_t::talk_npc;
     }
-    if (evid() == 11)
+    if (event_id() == 11)
     {
         levelexitby = 4;
         chatteleport = 1;

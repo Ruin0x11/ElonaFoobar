@@ -1,5 +1,6 @@
 #include "lua.hpp"
 #include "map.hpp"
+#include "damage.hpp"
 #include "elona.hpp"
 #include "character.hpp"
 #include "item.hpp"
@@ -21,199 +22,6 @@ namespace lua
 
 std::unique_ptr<sol::state> sol;
 
-namespace Chara {
-bool is_alive(const character&);
-bool is_player(const character&);
-bool is_ally(const character&);
-character player();
-
-void mut_damage_hp(character&, int, int);
-void mut_damage_con(character&, int, int);
-};
-
-namespace Skill {
-//int level();
-}
-
-namespace Pos {
-int dist(const position_t&, const position_t&);
-}
-
-namespace World {
-int time();
-};
-
-namespace Magic {
-void cast(int, int, const position_t&);
-}
-
-namespace Map {
-int blocked(const position_t&);
-position_t bound_within(const position_t&);
-bool can_access(const position_t&);
-position_t random_pos();
-}
-
-namespace Fov {
-bool los(const position_t&, const position_t&);
-bool can_see(const character&);
-};
-
-namespace Rand {
-int rnd(int);
-bool one_in(int);
-bool coinflip();
-};
-
-namespace Item {
-bool has_enchantment(const item&, int);
-}
-
-namespace GUI {
-void txt(const std::string&);
-};
-
-namespace Registry {
-void set_on_event(const std::string&, const sol::function&);
-void register_chara_init(const sol::function&);
-}
-
-
-bool Chara::is_alive(const character& chara)
-{
-    return chara.state == 1;
-}
-
-bool Chara::is_player(const character& chara)
-{
-    return chara.id == 0; // TODO
-}
-
-bool Chara::is_ally(const character& chara)
-{
-    return chara.id <= 16; // TODO
-}
-
-character Chara::player()
-{
-    return elona::cdata[0];
-}
-
-void Chara::mut_damage_hp(character& chara, int damage, int type)
-{
-    elona::dmghp(chara.id, damage, type); // TODO
-}
-
-void Chara::mut_damage_con(character& chara, int damage, int type)
-{
-    elona::dmgcon(chara.id, damage, type); // TODO
-}
-
-
-int Pos::dist(const position_t& from, const position_t& to)
-{
-    return elona::dist(from.x, from.y, to.x, to.y);
-}
-
-
-int World::time()
-{
-    return gdata_hour
-        + gdata_day * 24
-        + gdata_month * 24 * 30
-        + gdata_year * 24 * 30 * 12;
-}
-
-
-void Magic::cast(int efid, int efp, const position_t& pos)
-{
-    int ccbk = elona::cc;
-    int tcbk = elona::tc;
-    elona::cc = 0;
-    elona::tc = 0;
-    elona::efid = efid;
-    elona::efp = efp;
-    elona::tlocx = pos.x;
-    elona::tlocy = pos.y;
-    magic();
-    elona::cc = ccbk;
-    elona::tc = tcbk;
-}
-
-
-
-int Map::blocked(const position_t& pos)
-{
-    return elona::map(pos.x, pos.y, 0) == 0;
-}
-
-position_t Map::bound_within(const position_t& pos)
-{
-    int x = clamp(
-        pos.x,
-        0,
-        mdata(0) - 1);
-    int y = clamp(
-        pos.y,
-        0,
-        mdata(1) - 1);
-    return position_t{x, y};
-}
-
-bool Map::can_access(const position_t& pos)
-{
-    cell_check(pos.x, pos.y);
-    return cellaccess != 0;
-}
-
-position_t Map::random_pos()
-{
-    return Map::bound_within(
-        position_t{
-            rnd(mdata(0) - 1),
-                rnd(mdata(1) - 1)
-                });
-}
-
-
-bool Fov::los(const position_t& from, const position_t& to)
-{
-    return elona::fov_los(from.x, from.y, to.x, to.y) == 1;
-}
-
-bool Fov::can_see(const character& chara)
-{
-    return elona::is_in_fov(chara.id); // TODO
-}
-
-
-int Rand::rnd(int n)
-{
-    return elona::rnd(n);
-}
-
-bool Rand::one_in(int n)
-{
-    return elona::rnd(n) == 0;
-}
-
-bool Rand::coinflip()
-{
-    return elona::rnd(2) == 0;
-}
-
-
-bool Item::has_enchantment(const item& item, int id)
-{
-    return elona::encfindspec(item.id, id); //TODO
-}
-
-
-void GUI::txt(const std::string& str)
-{
-    elona::txt(str);
-}
-
 void reload()
 {
     // TODO more sophisticated reloading
@@ -228,7 +36,7 @@ void load_mod(const std::string& name)
     (*sol.get())["Global"]["MOD_NAME"] = name;
     // create character/item/map/global tables
 
-    // TODO this could overwrite a thing
+    // TODO this could overwrite a thing if the mod is already loaded
     sol::table data = (*sol.get())["Elona"]["Registry"]["Data"];
 
     sol::table modlocal = data.create_named(name);
@@ -244,19 +52,6 @@ void load_mod(const std::string& name)
     // merge overrides, new things, and locale configs into global database
     // add reference to global API table as Elona so the mod can use it
     (*sol.get())["Global"]["MOD_NAME"] = "";
-}
-
-void Registry::set_on_event(const std::string& event_id, const sol::function& func)
-{
-    std::string mod_name = (*sol.get())["Global"]["MOD_NAME"];
-    ELONA_LOG("Setting " << event_id << " of " << mod_name);
-    (*sol.get())["Global"]["Callbacks"][event_id] = func;
-    ELONA_LOG("Set " << event_id << " of " << mod_name);
-}
-
-void Registry::register_chara_init(const sol::function& func)
-{
-    (*sol.get())["Global"]["Init"] = func;
 }
 
 void callback(const std::string& event_id)
@@ -322,7 +117,35 @@ void callback(const std::string& event_id, const std::map<std::string, int> args
 //     // run mod callbacks for map exit
 // }
 //
-void on_chara_creation(int id)
+
+const sol::optional<sol::protected_function>& get_character_init_callback()
+{
+    return (*sol.get())["Global"]["Init"];
+}
+
+void initialize_mod_data_for_chara(int chara, const std::string& mod_name, sol::table& data_table)
+{
+    sol::optional<sol::protected_function> func = get_character_init_callback();
+    if(func && func.value() != sol::nil) {
+        auto initial_mod_data = func.value()(id); // TODO except player/allies/respawnable characters
+        if (result.valid())
+        {
+            data[key]["Chara"][id] = initial_mod_data;
+        }
+        else
+        {
+            report_error(result);
+        }
+    }
+}
+
+// TODO mods_iterator
+sol::table& get_registry_data()
+{
+    return (*sol.get())["Elona"]["Registry"]["Data"];
+}
+
+void on_chara_creation(int chara_id)
 {
     // TODO handle deserialization separately from creation from scratch
     // TODO only handle deserialization for characters that actually exist
@@ -331,25 +154,19 @@ void on_chara_creation(int id)
 
     //callback("chara_created", {{"cc", id}});
 
-    sol::table data = (*sol.get())["Elona"]["Registry"]["Data"];
-    sol::optional<sol::protected_function> func = (*sol.get())["Global"]["Init"];
-     for(const auto& obj : data)
+    sol::table registry_data = get_registry_data();
+    for(const auto& pair : registry_data)
     {
-         const std::string key = obj.first.as<std::string>();
-         if(func && func.value() != sol::nil) {
-             auto result = func.value()(id); // TODO except player/allies/respawnable characters
-             if (result.valid())
-             {
-                 data[key]["Chara"][id] = result;
-             }
-             else
-             {
-                 sol::error err = result;
-                 std::string what = err.what();
-                 ELONA_LOG(what);
-             }
-         }
-     }
+        const std::string mod_name = pair.first.as<std::string>();
+        initialize_mod_data_for_chara(chara_id, mod_name, registry_data);
+    }
+}
+
+void report_error(sol::error err)
+{
+    sol::error err = result;
+    std::string what = err.what();
+    ELONA_LOG(what);
 }
 //
 // void on_item_creation(int id)
@@ -377,50 +194,26 @@ void on_chara_removal(int id)
 //     // for each mod, run item removal callback
 // }
 
-void init()
+
+void init_global(sol::state& state)
 {
-    sol = std::make_unique<sol::state>();
-    sol.get()->open_libraries(sol::lib::base, sol::lib::package, sol::lib::table, sol::lib::debug, sol::lib::string);
-    sol.get()->new_usertype<position_t>( "position",
-                                         sol::constructors<position_t()>()
-        );
-    sol.get()->new_usertype<character>( "character",
-                                        sol::constructors<character()>(),
-                                        "damage_hp", &Chara::mut_damage_hp,
-                                        "damage_con", &Chara::mut_damage_con,
-                                        "idx", sol::readonly( &character::idx )
-        );
-
-    sol::table Elona = sol.get()->create_named_table("Elona");
-    Elona.set_function("log", [](const std::string& msg) { elona::log::detail::out << msg << std::endl; } );
-
-    sol::table Chara = Elona.create_named("Chara");
-    Chara.set_function("player", Chara::player);
-
-    sol::table Fov = Elona.create_named("Fov");
-    Fov.set_function("los", Fov::los);
-
-    sol::table Rand = Elona.create_named("Rand");
-    Rand.set_function("rnd", Rand::rnd);
-    Rand.set_function("one_in", Rand::one_in);
-
-    sol::table Magic = Elona.create_named("Magic");
-    Magic.set_function("cast", Magic::cast);
-
-    sol::table Map = Elona.create_named("Map");
-    Map.set_function("random_pos", Map::random_pos);
-
-    sol::table GUI = Elona.create_named("GUI");
-    GUI.set_function("txt", GUI::txt);
-
-    sol::table Registry = Elona.create_named("Registry");
-    Registry.set_function("on_event", Registry::set_on_event);
-    Registry.set_function("register_chara_init", Registry::register_chara_init);
-    Registry.create_named("Data");
-
     sol::table Global = sol.get()->create_named_table("Global");
     Global.create_named("Callbacks");
     Global.create_named("Init");
+}
+
+void init()
+{
+    sol = std::make_unique<sol::state>();
+    sol.get()->open_libraries(sol::lib::base,
+                              sol::lib::package,
+                              sol::lib::table,
+                              sol::lib::debug,
+                              sol::lib::string);
+
+    init_api(sol);
+    init_registry(sol);
+    init_global(sol);
 
     // prevent usage of some tables during mod loading, since calling things like GUI.txt at the top level before starting the game is dangerous
     // load core mod first

@@ -4,6 +4,7 @@
 #include "character.hpp"
 #include "debug.hpp"
 #include "elona.hpp"
+#include "fov.hpp"
 #include "i18n.hpp"
 #include "item.hpp"
 #include "item_db.hpp"
@@ -689,7 +690,7 @@ int calcattackdmg(int prm_894)
     {
         return damage;
     }
-    prot = cdata[tc].pv + sdata(carmor(tc), tc) + sdata(12, tc) / 10;
+    prot = cdata[tc].pv + sdata(chara_armor_class(tc), tc) + sdata(12, tc) / 10;
     if (prot > 0)
     {
         prot2 = prot / 4;
@@ -1360,7 +1361,7 @@ int calcspellfail(int id, int cc)
 
     int penalty = 4;
 
-    int armor_skill = carmor(cc);
+    int armor_skill = chara_armor_class(cc);
     if (armor_skill == 169)
     {
         penalty = 17 - sdata(169, cc) / 5;
