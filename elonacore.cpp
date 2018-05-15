@@ -118,10 +118,6 @@ elona_vector1<std::string> filebuff;
 elona_vector1<std::string> filetemp;
 int lensum_at_m188 = 0;
 elona_vector1<std::string> filebuff_at_m188;
-elona_vector1<int> p_at_m188;
-int len_at_m188 = 0;
-int lenhead_at_m188 = 0;
-elona_vector1<std::string> filetemp_at_m188;
 elona_vector1<std::string> txtbuff;
 int initunid = 0;
 int cun = 0;
@@ -7339,7 +7335,7 @@ void exittempinv()
 }
 
 
-void label_1892()
+void god_defends_altar()
 {
     efid = 1114;
     efp = 500;
@@ -7365,9 +7361,7 @@ void label_1892()
 
 
 
-
-
-void label_1901()
+void proc_first_and_fifth_of_month()
 {
     invfile = 4;
     ctrl_file(file_operation2_t::_4, u8"shoptmp.s2");
@@ -12287,7 +12281,7 @@ void label_2736()
         }
         if (gdata_day == 1 || gdata_day == 15)
         {
-            label_1901();
+            proc_first_and_fifth_of_month();
         }
         if (gdata_pael_and_her_mom == 1 || gdata_pael_and_her_mom == 3
             || gdata_pael_and_her_mom == 5 || gdata_pael_and_her_mom == 7

@@ -994,7 +994,9 @@ void label_1583();
 void label_1723();
 void label_1724();
 void show_shop_log();
+
 void label_1726();
+
 void label_1727(bool);
 void label_1728();
 void label_1729(int);
@@ -1035,22 +1037,9 @@ void label_1842();
 void label_1844();
 void label_18462();
 void label_1848();
-void casino_dealer();
-void casino_choose_card();
-void label_1870();
-void label_1871();
-void label_1872();
-void casino_acquire_items();
-void casino_random_site();
-void label_1877();
-void casino_wrapper();
-bool casino_start();
-bool casino_blackjack();
-void label_1886();
-void label_1892();
-void label_1901();
-void initialize_recipememory();
-void initialize_recipe();
+
+void god_defends_altar();
+void proc_first_and_fifth_of_month();
 void label_1933();
 void label_19342();
 void label_1935();

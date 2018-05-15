@@ -1092,7 +1092,7 @@ turn_result_t do_offer_command()
                 i18n::_(u8"god", core_god::int2godid(inv[ti].param1), u8"name")
                     + u8" keeps the altar."s));
             txtgod(core_god::int2godid(inv[ti].param1), 3);
-            label_1892();
+            god_defends_altar();
         }
     }
     else
