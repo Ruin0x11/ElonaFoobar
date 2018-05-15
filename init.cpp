@@ -1132,7 +1132,7 @@ void initialize_game()
     }
     if (mode == 3)
     {
-        load_save_data();
+        do_load_save_data();
     }
     initialize_fovmap_and_fovlist();
     initialize_map();

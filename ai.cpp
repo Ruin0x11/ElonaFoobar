@@ -1063,7 +1063,7 @@ label_2692_internal:
                     if (cdata[tc].continuous_action_id == 0)
                     {
                         cdata[cc].enemy_id = 0;
-                        label_2147();
+                        do_thing_that_feels_good();
                         return turn_result_t::turn_end;
                     }
                 }

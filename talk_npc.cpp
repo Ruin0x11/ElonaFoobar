@@ -1745,7 +1745,7 @@ talk_result_t talk_npc()
         ELONA_APPEND_RESPONSE(0, lang(u8"うふふ"s, u8"Come on!"s));
         chatesc = 1;
         ELONA_TALK_SCENE_CUT();
-        label_2147();
+        do_thing_that_feels_good();
         return talk_result_t::talk_end;
     }
     if (chatval == 58)
@@ -1798,7 +1798,7 @@ talk_result_t talk_npc()
         ELONA_TALK_SCENE_CUT();
         cc = tc;
         tc = 0;
-        label_2147();
+        do_thing_that_feels_good();
         cc = 0;
         return talk_result_t::talk_end;
     }

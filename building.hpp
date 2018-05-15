@@ -25,5 +25,7 @@ void update_museum();
 void label_1729(int);
 void label_1730();
 void update_ranch();
+void label_1754();
+void removeworker(int = 0);
 
 } // namespace elona

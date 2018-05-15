@@ -103,6 +103,12 @@ extern god_db the_god_db;
 
 
 void txtgod(const god_id_t& id, int type);
+int modpiety(int = 0);
+void set_npc_religion();
+void apply_god_blessing(int);
+void get_god_description();
+void label_1888();
+void switch_religion();
 
 
 } // namespace elona

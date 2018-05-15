@@ -513,6 +513,7 @@ int chara_impression_level(int = 0);
 void chara_mod_impression(int = 0, int = 0);
 void chara_set_item_which_will_be_used();
 int chara_armor_class(int = 0);
+int new_ally_joins();
 
 void initialize_character_filters();
 void chara_set_generation_filter();

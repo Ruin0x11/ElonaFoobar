@@ -370,5 +370,64 @@ void draw_emo(int cc, int x, int y)
     gcopy(3, 32 + cdata[cc].emotion_icon % 100 * 16, 608);
 }
 
+void draw_scroll(int x, int y, int width, int height)
+{
+    int x3 = width + x - width % 8 - 64;
+    int y3 = height + y - height % 8 - 64;
+
+    for (int i = 0; i < width / 8; ++i)
+    {
+        if (i < 8)
+        {
+            if (i == 0)
+            {
+                pos(x, y);
+                gcopy(7, 0, 0, 64, 48);
+                pos(x, y3);
+                gcopy(7, 0, 144, 64, 48);
+            }
+            continue;
+        }
+        if (i < width / 8 - 8)
+        {
+            pos(i * 8 + x, y);
+            gcopy(7, (i - 8) % 18 * 8 + 64, 0, 8, 48);
+            pos(i * 8 + x, y3);
+            gcopy(7, (i - 8) % 18 * 8 + 64, 144, 8, 48);
+            continue;
+        }
+        pos(x3, y);
+        gcopy(7, 208, 0, 64, 48);
+        pos(x3, y3);
+        gcopy(7, 208, 144, 64, 48);
+        break;
+    }
+
+    for (int i = 0; i < height / 8 - 14; ++i)
+    {
+        for (int j = 0; j < width / 8; ++j)
+        {
+            if (j == 0)
+            {
+                pos(x, i * 8 + y + 48);
+                gcopy(7, 0, i % 12 * 8 + 48, 64, 8);
+                continue;
+            }
+            if (j < width / 8 - 15)
+            {
+                pos(j * 8 + x + 56, i * 8 + y + 48);
+                gcopy(7, j % 18 * 8 + 64, i % 12 * 8 + 48, 8, 8);
+                continue;
+            }
+            pos(x3, i * 8 + y + 48);
+            gcopy(7, 208, i % 12 * 8 + 48, 64, 8);
+            break;
+        }
+    }
+}
+
+
+
+
 
 } // namespace elona

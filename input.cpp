@@ -366,5 +366,146 @@ void input_text_dialog(int x, int y, int val2, bool is_cancelable)
     onkey_0();
 }
 
+int ask_direction()
+{
+    snd(26);
+    gsel(4);
+    x = (cdata[0].position.x - scx) * inf_tiles + inf_screenx - 48;
+    y = (cdata[0].position.y - scy) * inf_tiles + inf_screeny - 48;
+    gmode(0);
+    pos(0, 0);
+    gcopy(0, x, y, 144, 144);
+    gsel(0);
+    t = 0;
+label_2128_internal:
+    ++t;
+    gmode(4, 28, 28, 200 - t / 2 % 20 * (t / 2 % 20));
+    x = (cdata[0].position.x - scx) * inf_tiles + inf_screenx + 24;
+    y = (cdata[0].position.y - scy) * inf_tiles + inf_screeny + 24;
+    if (key_alt == 0)
+    {
+        pos(x, y - 48);
+        grotate(3, 212, 432, 0, 28, 28);
+        pos(x, y + 48);
+        grotate(3, 212, 432, 1.0 * 3.14, 28, 28);
+        pos(x + 48, y);
+        grotate(3, 212, 432, 0.5 * 3.14, 28, 28);
+        pos(x - 48, y);
+        grotate(3, 212, 432, 1.5 * 3.14, 28, 28);
+    }
+    pos(x - 48, y - 48);
+    grotate(3, 212, 432, 1.75 * 3.14, 28, 28);
+    pos(x + 48, y + 48);
+    grotate(3, 212, 432, 0.75 * 3.14, 28, 28);
+    pos(x + 48, y - 48);
+    grotate(3, 212, 432, 0.25 * 3.14, 28, 28);
+    pos(x - 48, y + 48);
+    grotate(3, 212, 432, 1.25 * 3.14, 28, 28);
+    redraw();
+    gmode(0);
+    pos(x - 48 - 24, y - 48 - 24);
+    gcopy(4, 0, 0, 144, 144);
+    gmode(2);
+    await(30);
+    key_check(1);
+    x = cdata[0].position.x;
+    y = cdata[0].position.y;
+    if (key == key_alter)
+    {
+        goto label_2128_internal;
+    }
+    if (key == key_wait || key == key_enter)
+    {
+        tlocx = x;
+        tlocy = y;
+        keyhalt = 1;
+        return 1;
+    }
+    if (key == key_north)
+    {
+        if (key_alt)
+        {
+            goto label_2128_internal;
+        }
+        else
+        {
+            y -= 1;
+        }
+    }
+    if (key == key_south)
+    {
+        if (key_alt)
+        {
+            goto label_2128_internal;
+        }
+        else
+        {
+            y += 1;
+        }
+    }
+    if (key == key_west)
+    {
+        if (key_alt)
+        {
+            goto label_2128_internal;
+        }
+        else
+        {
+            x -= 1;
+        }
+    }
+    if (key == key_east)
+    {
+        if (key_alt)
+        {
+            goto label_2128_internal;
+        }
+        else
+        {
+            x += 1;
+        }
+    }
+    if (key == key_northwest)
+    {
+        x -= 1;
+        y -= 1;
+    }
+    if (key == key_northeast)
+    {
+        x += 1;
+        y -= 1;
+    }
+    if (key == key_southwest)
+    {
+        x -= 1;
+        y += 1;
+    }
+    if (key == key_southeast)
+    {
+        x += 1;
+        y += 1;
+    }
+    if (key != ""s)
+    {
+        if (x < 0 || y < 0 || x >= mdata(0) || y >= mdata(1))
+        {
+            x = cdata[0].position.x;
+            y = cdata[0].position.y;
+            keyhalt = 1;
+            return 0;
+        }
+        if (x == cdata[0].position.x && y == cdata[0].position.y)
+        {
+            return 0;
+        }
+        tlocx = x;
+        tlocy = y;
+        keyhalt = 1;
+        return 1;
+    }
+    goto label_2128_internal;
+}
+
+
 
 } // namespace elona

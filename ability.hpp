@@ -106,5 +106,27 @@ private:
 
 extern skill_data sdata;
 
+void skillinit(int = 0, int = 0, int = 0);
+void skillgain(int = 0, int = 0, int = 0, int = 0);
+int skillmod(int = 0, int = 0, int = 0);
+int skillexp(int = 0, int = 0, int = 0, int = 0, int = 0);
+void gain_special_action();
+void resistmod(int = 0, int = 0, int = 0);
+void label_1457();
+void label_1458();
+void label_1459(int);
+void gain_skill_experience_lock_picking(int);
+void gain_skill_experience_detection(int);
+void gain_skill_experience_casting(int);
+void gain_skill_experience_mana_capacity(int);
+void label_1464(int);
+void label_1465(int);
+void label_1466(int);
+void label_1468(int);
+void label_1469(int);
+void label_1470(int);
+void label_1471(int);
+void label_1472(int);
+
 
 } // namespace elona

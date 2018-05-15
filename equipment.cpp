@@ -14,6 +14,147 @@ namespace elona
 
 int i_at_m66 = 0;
 
+int equip_item(int cc)
+{
+    if (ci == -1)
+    {
+        return 0;
+    }
+    if (cdata_body_part(cc, body) % 10000 != 0)
+    {
+        return 0;
+    }
+    if (inv[ci].body_part != 0)
+    {
+        return 0;
+    }
+    item_separate(ci);
+    if (cc == 0)
+    {
+        item_identify(inv[ci], identification_state_t::almost_identified);
+    }
+    inv[ci].body_part = body;
+    cdata_body_part(cc, body) =
+        cdata_body_part(cc, body) / 10000 * 10000 + ci + 1;
+    return 1;
+}
+
+
+
+void unequip_item(int cc)
+{
+    p = cdata_body_part(cc, body) % 10000;
+    if (p == 0)
+    {
+        rtval = -2;
+        return;
+    }
+    ci = p - 1;
+    cdata_body_part(cc, body) = cdata_body_part(cc, body) / 10000 * 10000;
+    inv[ci].body_part = 0;
+    item_stack(cc, ci);
+}
+
+void equip_melee_weapon()
+{
+    attacknum = 0;
+    for (int cnt = 0; cnt < 30; ++cnt)
+    {
+        body = 100 + cnt;
+        if (cdata_body_part(cc, cnt) / 10000 != 5)
+        {
+            continue;
+        }
+        if (cdata_body_part(cc, cnt) % 10000 == 0)
+        {
+            continue;
+        }
+        cw = cdata_body_part(cc, cnt) % 10000 - 1;
+        if (inv[cw].dice_x == 0)
+        {
+            continue;
+        }
+        ++attacknum;
+        if (cdata[cc].equipment_type & 2)
+        {
+            if (inv[cw].weight >= 4000)
+            {
+                txt(lang(
+                    u8"装備中の"s + itemname(cw)
+                        + u8"は両手にしっくりとおさまる。"s,
+                    itemname(cw)
+                        + u8" fits well for two-hand fighting style."s));
+            }
+            else
+            {
+                txt(lang(
+                    u8"装備中の"s + itemname(cw)
+                        + u8"は両手持ちにはやや軽すぎる。"s,
+                    itemname(cw)
+                        + u8" is too light for two-hand fighting style."s));
+            }
+        }
+        if (cdata[cc].equipment_type & 4)
+        {
+            if (attacknum == 1)
+            {
+                if (inv[cw].weight >= 4000)
+                {
+                    txt(lang(
+                        u8"装備中の"s + itemname(cw)
+                            + u8"は利手で扱うにも重すぎる。"s,
+                        itemname(cw)
+                            + u8" is too heavy for two-wield fighting style."s));
+                }
+            }
+            else if (inv[cw].weight > 1500)
+            {
+                txt(lang(
+                    u8"装備中の"s + itemname(cw)
+                        + u8"は片手で扱うには重すぎる。"s,
+                    itemname(cw)
+                        + u8" is too heavy for two-wield fighting style."s));
+            }
+        }
+        if (cc == 0)
+        {
+            if (gdata_mount != 0)
+            {
+                if (inv[cw].weight >= 4000)
+                {
+                    txt(lang(
+                        u8"装備中の"s + itemname(cw)
+                            + u8"は乗馬中に扱うには重すぎる。"s,
+                        itemname(cw) + u8" is too heavy to use when riding."s));
+                }
+            }
+        }
+    }
+}
+
+
+
+
+void label_2196(int cc)
+{
+    for (int cnt = 100; cnt < 130; ++cnt)
+    {
+        if (cdata_body_part(cc, cnt) / 10000 == body)
+        {
+            p = cdata_body_part(cc, cnt) % 10000;
+            if (p == 0)
+            {
+                continue;
+            }
+            --p;
+            inv[p].body_part = 0;
+            cdata_body_part(cc, cnt) = cdata_body_part(cc, cnt) / 10000 * 10000;
+        }
+    }
+    return;
+}
+
+
 void equipinfo(int prm_529, int prm_530, int prm_531)
 {
     int p_at_m66 = 0;

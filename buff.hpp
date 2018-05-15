@@ -59,6 +59,9 @@ public:
 
 extern buff_db the_buff_db;
 
+int findbuff(int = 0, int = 0);
+void delbuff(int = 0, int = 0);
+int addbuff(int = 0, int = 0, int = 0, int = 0);
 
 
 // 1   "聖なる盾", "Holy Shield"

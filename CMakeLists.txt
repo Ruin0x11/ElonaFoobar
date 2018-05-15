@@ -42,6 +42,7 @@ set(CORE_SOURCES
     ability.cpp
     access_character_info.cpp
     access_item_db.cpp
+    action.cpp
     adventurer.cpp
     ai.cpp
     animation.cpp
@@ -65,6 +66,7 @@ set(CORE_SOURCES
     ctrl_file.cpp
     ctrl_inventory.cpp
     crafting.cpp
+    damage.cpp
     debug.cpp
     draw.cpp
     elonacore.cpp
@@ -76,6 +78,7 @@ set(CORE_SOURCES
     food.cpp
     foobar_save.cpp
     fov.cpp
+    gathering.cpp
     get_card_info.cpp
     get_random_item_id.cpp
     get_random_npc_id.cpp
@@ -98,10 +101,13 @@ set(CORE_SOURCES
     mef.cpp
     menu.cpp
     message.cpp
+    net.cpp
+    plant.cpp
     proc_event.cpp
     quest.cpp
     race.cpp
     random.cpp
+    random_event.cpp
     set_item_info.cpp
     set_option.cpp
     shop.cpp

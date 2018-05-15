@@ -34,5 +34,7 @@ turn_result_t do_open_command();
 turn_result_t do_offer_command();
 
 int ask_direction_to_close();
+int gene_check_add_ability();
+int gene_check_add_body_part();
 
 } // namespace elona

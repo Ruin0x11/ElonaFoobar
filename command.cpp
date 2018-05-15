@@ -494,7 +494,7 @@ turn_result_t do_search_command()
                 {
                     movx = cdata[cc].position.x;
                     movy = cdata[cc].position.y;
-                    label_2144();
+                    do_disarm_trap();
                 }
             }
         }
@@ -2596,7 +2596,7 @@ turn_result_t do_use_command()
         anic = rc;
         play_animation(20);
         {
-            int stat = label_2231();
+            int stat = gene_check_add_body_part();
             if (stat != -1)
             {
                 cdata_body_part(rc, stat) = rtval * 10000;
@@ -2612,7 +2612,7 @@ turn_result_t do_use_command()
             }
         }
         {
-            int stat = label_2230();
+            int stat = gene_check_add_ability();
             if (stat != 0)
             {
                 for (int cnt = 0; cnt < 2; ++cnt)
@@ -2722,6 +2722,148 @@ label_2229_internal:
     refresh_burden_state();
     return turn_result_t::turn_end;
 }
+
+int gene_check_add_ability()
+{
+    if (cdata[tc].splits() || cdata[tc].splits2())
+    {
+        return 0;
+    }
+    randomize(cdata[tc].id);
+    int dbmax = 0;
+    for (int cnt = 0; cnt < 100; ++cnt)
+    {
+        rtval = rnd(40) + 150;
+        if (sdata(rtval, rc) == 0)
+        {
+            if (sdata(rtval, tc) > 0)
+            {
+                dblist(0, dbmax) = rtval;
+                ++dbmax;
+            }
+        }
+    }
+    rtval(0) = dblist(0, 0);
+    rtval(1) = -1;
+    if (dbmax >= 2)
+    {
+        if (rnd(3) == 0)
+        {
+            for (int cnt = 1, cnt_end = cnt + (dbmax - 1); cnt < cnt_end; ++cnt)
+            {
+                if (dblist(0, cnt) != rtval)
+                {
+                    rtval(1) = dblist(0, cnt);
+                    break;
+                }
+            }
+        }
+    }
+    randomize();
+    return dbmax;
+}
+
+
+int gene_check_add_body_part()
+{
+    int dbmax = 0;
+    s(1) = chara_refstr(cdata[tc].id, 8);
+    if (strutil::contains(s(1), u8"/man/"))
+    {
+        return -1;
+    }
+    if (cdata[tc].splits() || cdata[tc].splits2())
+    {
+        return -1;
+    }
+    rtval(1) = -1;
+    for (int i = 0; i < 30; ++i)
+    {
+        if (cdata_body_part(rc, i) == 0)
+        {
+            rtval(1) = i + 100;
+        }
+    }
+    if (rtval(1) == -1)
+    {
+        return -1;
+    }
+    for (int cnt = 100; cnt < 130; ++cnt)
+    {
+        f = cdata_body_part(tc, cnt) / 10000;
+        if (f == 11 || f == 10 || f == 4)
+        {
+            continue;
+        }
+        if (f != 0)
+        {
+            dblist(0, dbmax) = f;
+            ++dbmax;
+        }
+    }
+    if (dbmax == 0)
+    {
+        return -1;
+    }
+    randomize(cdata[tc].id);
+    for (int cnt = 0; cnt < 3; ++cnt)
+    {
+        rtval = dblist(0, rnd(dbmax));
+        f = 0;
+        for (int i = 0; i < 30; ++i)
+        {
+            if (cdata_body_part(rc, i) == 0)
+            {
+                continue;
+            }
+            if (cdata_body_part(rc, i) / 10000 == rtval)
+            {
+                f = 1;
+            }
+        }
+        if (f)
+        {
+            break;
+        }
+    }
+    if (f == 0)
+    {
+        randomize();
+        return rtval(1);
+    }
+    DIM3(dblist, 2, 800);
+    for (int i = 0; i < 30; ++i)
+    {
+        ++dblist(0, cdata_body_part(tc, i) / 10000);
+    }
+    for (int cnt = 0; cnt < 25; ++cnt)
+    {
+        rtval = rnd(15) + 1;
+        f = 0;
+        for (int i = 0; i < 30; ++i)
+        {
+            if (cdata_body_part(rc, i) / 10000 == rtval)
+            {
+                ++f;
+            }
+        }
+        if (f < dblist(0, rtval))
+        {
+            f = -1;
+            break;
+        }
+    }
+    randomize();
+    if (f == -1)
+    {
+        return rtval(1);
+    }
+    else
+    {
+        return -1;
+    }
+}
+
 
 turn_result_t do_open_command()
 {
@@ -3277,7 +3419,7 @@ turn_result_t do_movement_command()
                         cdata[tc].continuous_action_turn = 0;
                     }
                 }
-                label_2206();
+                show_item_on_ground_info();
                 return turn_result_t::turn_end;
             }
         }
@@ -3520,7 +3662,7 @@ turn_result_t do_fire_command()
     tc = cdata[0].enemy_id;
     if (cdata[tc].relationship >= 0)
     {
-        int stat = label_2073();
+        int stat = prompt_really_attack();
         if (stat == 0)
         {
             return turn_result_t::pc_turn_user_error;
@@ -3822,7 +3964,7 @@ turn_result_t do_exit_command()
         if (gdata_current_map != 35)
         {
             snd(44);
-            save_game();
+            do_save_game();
             txt(lang(
                 u8"無事に記録された。"s,
                 u8"Your game has been saved successfully."s));

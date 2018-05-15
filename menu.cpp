@@ -6800,7 +6800,7 @@ label_1961_internal:
                 {
                     tc = i;
                     {
-                        int stat = label_2231();
+                        int stat = gene_check_add_body_part();
                         if (stat == -1)
                         {
                             s = lang(u8"なし"s, u8"None"s);
@@ -6812,7 +6812,7 @@ label_1961_internal:
                     }
                     s += u8"/"s;
                     {
-                        int stat = label_2230();
+                        int stat = gene_check_add_ability();
                         if (stat == 0)
                         {
                             s += lang(u8"なし"s, u8"None"s);

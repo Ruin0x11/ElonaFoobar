@@ -204,6 +204,60 @@ int access_race_info(int dbmode, const std::string& dbidn)
     return 0;
 }
 
+void gain_race_feat()
+{
+    if (cdatan(2, 0) == u8"dwarf"s)
+    {
+        trait(152) = 2;
+        trait(155) = 1;
+    }
+    if (cdatan(2, 0) == u8"elea"s)
+    {
+        trait(168) = 1;
+        trait(156) = 1;
+    }
+    if (cdatan(2, 0) == u8"eulderna"s)
+    {
+        trait(153) = 1;
+    }
+    if (cdatan(2, 0) == u8"lich"s)
+    {
+        trait(151) = 1;
+        trait(155) = 2;
+        trait(152) = 1;
+    }
+    if (cdatan(2, 0) == u8"golem"s)
+    {
+        trait(157) = 1;
+        trait(152) = 2;
+    }
+    if (cdatan(2, 0) == u8"yerles"s)
+    {
+        trait(154) = 1;
+    }
+    if (cdatan(2, 0) == u8"juere"s)
+    {
+        trait(158) = 1;
+        trait(159) = 1;
+    }
+    if (cdatan(2, 0) == u8"goblin"s)
+    {
+        trait(155) = 1;
+        trait(159) = 1;
+    }
+    if (cdatan(2, 0) == u8"mutant"s)
+    {
+        trait(0) = 1;
+    }
+    if (cdatan(2, 0) == u8"fairy"s)
+    {
+        trait(160) = 1;
+        trait(161) = 1;
+    }
+    return;
+}
+
+
 
 
 } // namespace elona

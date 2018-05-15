@@ -1000,7 +1000,7 @@ int magic()
                         rowactend(cc);
                         ccprev = cc;
                         cc = tc;
-                        label_21452();
+                        activate_trap();
                         cc = ccprev;
                         if (tc == 0)
                         {
@@ -1706,7 +1706,7 @@ label_2181_internal:
                 rnd(the_ability_db[efid]->cost / 2 + 1)
                     + the_ability_db[efid]->cost / 2 + 1);
         }
-        label_2146();
+        do_perform();
         break;
     case 184:
         if (sdata(184, 0) == 0)
@@ -4567,6 +4567,41 @@ the_end:
     efstatus = curse_state_t::none;
     efsource = 0;
     return 1;
+}
+
+int calcmagiccontrol(int prm_1076, int prm_1077)
+{
+    if (sdata(188, prm_1076) != 0)
+    {
+        if ((cdata[prm_1076].relationship >= 0
+             && cdata[prm_1077].relationship >= 0)
+            || (cdata[prm_1076].relationship <= -1
+                && cdata[prm_1077].relationship <= -1))
+        {
+            if (sdata(188, prm_1076) * 5 > rnd(dmg + 1))
+            {
+                dmg = 0;
+            }
+            else
+            {
+                dmg = rnd(dmg * 100 / (100 + sdata(188, prm_1076) * 10) + 1);
+            }
+            if (dmg < 1)
+            {
+                if (is_in_fov(prm_1077))
+                {
+                    txt(lang(
+                        name(prm_1077) + u8"は巻き込みを免れた。"s,
+                        u8"The spell passes through "s + name(prm_1077)
+                            + u8"."s));
+                }
+                skillexp(188, prm_1076, 8, 4);
+                return 1;
+            }
+            skillexp(188, prm_1076, 30, 2);
+        }
+    }
+    return 0;
 }
 
 

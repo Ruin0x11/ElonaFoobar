@@ -601,6 +601,18 @@ void prompt_ally_staying()
     }
 }
 
+void removeworker(int map_id)
+{
+    for (int i = 1; i < 16; ++i)
+    {
+        if (cdata[i].current_map == map_id)
+        {
+            cdata[i].current_map = 0;
+        }
+    }
+}
+
+
 void try_extend_shop()
 {
     txtnew();
@@ -1444,5 +1456,326 @@ void update_ranch()
     }
     return;
 }
+
+void label_1754()
+{
+    if (gdata_current_map == 33)
+    {
+        if (gdata_released_fire_giant == 1)
+        {
+            if (cdata[gdata_fire_giant].state == 1)
+            {
+                if (gdata_other_character_count < 30)
+                {
+                    if (rnd(4) == 0)
+                    {
+                        flt();
+                        objlv = 1;
+                        chara_create(-1, 204, -3, 0);
+                    }
+                    if (rnd(10) == 0)
+                    {
+                        flt();
+                        objlv = 1;
+                        chara_create(-1, 185, -3, 0);
+                    }
+                }
+            }
+        }
+    }
+    if (gdata_executing_immediate_quest_type == 1008)
+    {
+        if (qdata(8, gdata_executing_immediate_quest) != 3)
+        {
+            if (gdata_other_character_count
+                < gdata_left_minutes_of_executing_quest / 600)
+            {
+                dbid = 0;
+                if (rnd(4) == 0)
+                {
+                    dbid = 204;
+                }
+                if (rnd(10) == 0)
+                {
+                    dbid = 185;
+                }
+                if (dbid != 0)
+                {
+                    flt();
+                    objlv = 1;
+                    int stat = chara_create(-1, dbid, -3, 0);
+                    if (stat != 0)
+                    {
+                        cdata[rc].relationship = -1;
+                        cdata[rc].original_relationship = -1;
+                        cdata[rc].hate = 100;
+                        cdata[rc].enemy_id =
+                            qdata(13, gdata_executing_immediate_quest);
+                    }
+                }
+            }
+        }
+    }
+    if (gdata_current_map == 16)
+    {
+        if (rnd(5) == 0)
+        {
+            r = sdata(50, 0) / 50;
+            if (r < 6)
+            {
+                dmg = (6 - r) * (6 - r) * 2;
+                txtef(3);
+                txt(lang(u8"熱い！"s, u8"It's hot!"s));
+                dmghp(cc, dmg, -9);
+            }
+        }
+        return;
+    }
+    if (gdata_current_map == 11)
+    {
+        if (gdata_current_dungeon_level == 25)
+        {
+            ++gdata_duration_of_kamikaze_attack;
+            x = 1;
+            y = rnd(mdata(1));
+            if (rnd(4) == 0)
+            {
+                x = mdata(0) - 2;
+                y = rnd(mdata(1));
+            }
+            if (rnd(5) == 0)
+            {
+                x = rnd(mdata(0));
+                y = 1;
+            }
+            if (rnd(6) == 0)
+            {
+                x = rnd(mdata(0));
+                y = mdata(1) - 2;
+            }
+            p = 237;
+            if (gdata_duration_of_kamikaze_attack > 50)
+            {
+                if (rnd(10) == 0)
+                {
+                    p = 245;
+                }
+            }
+            if (gdata_duration_of_kamikaze_attack > 100)
+            {
+                if (rnd(10) == 0)
+                {
+                    p = 244;
+                }
+            }
+            if (gdata_duration_of_kamikaze_attack > 150)
+            {
+                if (rnd(10) == 0)
+                {
+                    p = 244;
+                }
+            }
+            if (gdata_duration_of_kamikaze_attack == 250)
+            {
+                snd(44);
+                txtef(2);
+                txt(lang(
+                    u8"ジャーナルが更新された。"s,
+                    u8"Your journal has been updated."s));
+                gdata_kamikaze_attack = 3;
+                txtef(9);
+                txt(lang(
+                    u8"伝令「パルミア軍の撤退が完了しました！これ以上ここに留まる必要はありません。機を見て地下から退却してください！」"s,
+                    u8"The messenger "s
+                        + u8"\"The retreat of our army is over now. You don't need to fight them any more. Please leave at once!\""s));
+                txt(lang(u8"階段が現れた。"s, u8"Suddenly, stairs appear."s));
+                cell_featset(18, 9, tile_downstairs, 11, 1);
+            }
+            flt();
+            chara_create(-1, p, x, y);
+            cdata[rc].hate = 1000;
+            cdata[rc].enemy_id = 0;
+            return;
+        }
+    }
+    if (gdata_current_map == 41)
+    {
+        if (rnd(50) == 0)
+        {
+            if (cdata[0].karma < -30)
+            {
+                txt(lang(
+                    u8"あなたは罪を悔いた。"s, u8"You repent of your sin."s));
+                modify_karma(0, 1);
+                p = rnd(8) + 10;
+                if (sdata.get(p, 0).original_level >= 10)
+                {
+                    skillmod(p, 0, -300);
+                }
+            }
+        }
+        if (cdata[0].karma >= -30)
+        {
+            if (rnd(1000) == 0)
+            {
+                cell_featread(29, 6);
+                if (feat(1) == 21)
+                {
+                    txt(lang(
+                        u8"あなたはガードの足音が近づいてくるのに気付いた。"s,
+                        u8"You hear footsteps coming towards your cell."s));
+                    txt(lang(
+                        u8"「そこのお前、もう反省したころだろう。出てもいいぞ」"s,
+                        u8"\"Hey punk, our boss says you can leave the jail now. Do not come back, okay?\""s));
+                    txt(lang(
+                        u8"ガードは面倒くさそうにあなたの牢の扉を開けた。"s,
+                        u8"A guard unenthusiastically unlocks your cell."s));
+                    cell_featset(29, 6, tile_dooropen, 20, 0, -1);
+                    snd(48);
+                }
+            }
+        }
+    }
+    if (gdata_current_map == 30)
+    {
+        if (gdata_weather == 2 || gdata_weather == 4 || gdata_weather == 1)
+        {
+            if (cdata[0].nutrition < 5000)
+            {
+                if (cdata[0].has_anorexia() == 0)
+                {
+                    snd(18);
+                    txt(lang(
+                        u8"シェルターの貯蔵食品を食べた。"s,
+                        u8"You eat stored food."s));
+                    cdata[cc].nutrition += 5000;
+                    label_2162();
+                }
+            }
+            if (gdata_continuous_active_hours >= 15)
+            {
+                gdata_continuous_active_hours = 13;
+            }
+            mdata(9) = 1000000;
+        }
+        else if (mdata(9) == 1000000)
+        {
+            mdata(9) = 10000;
+            for (int cnt = 0; cnt < ELONA_MAX_CHARACTERS; ++cnt)
+            {
+                cdata[cnt].turn_cost = 0;
+            }
+            txt(lang(
+                u8"もうシェルターの中にいる必要は無い。"s,
+                u8"You don't need to stay in the shelter any longer."s));
+        }
+    }
+    if (adata(16, gdata_current_map) == 101)
+    {
+        if (gdata_other_character_count > 0)
+        {
+            if (rnd(25) == 0)
+            {
+                txtef(9);
+                txt(lang(u8" *ざわざわ* "s, u8"*noise*"s),
+                    lang(u8"「ふむ…悪くないな」"s, u8"\"Hmm. Not bad.\""s),
+                    lang(u8"「何だろう、これは」"s, u8"\"What's this?\""s),
+                    lang(u8"「ほほう…」"s, u8"\"Ohh...\""s),
+                    lang(
+                        u8"「私も死んだらはく製に…」"s,
+                        u8"\"I want to be stuffed...\""s),
+                    lang(
+                        u8"「ここが噂の…」"s,
+                        u8"\"So this is the famous...\""s));
+            }
+            if (rnd(25) == 0)
+            {
+                txtef(9);
+                txt(lang(u8" *がやがや* "s, u8"*murmur*"s),
+                    lang(
+                        u8"「やだっ気持ち悪い」"s, u8"\"Gross! Disgusting.\""s),
+                    lang(
+                        u8"「ねーねーこれ死んでるんでしょ？」"s,
+                        u8"\"Hey. Is it really dead?\""s),
+                    lang(u8"「かわ、いー♪」"s, u8"\"Scut!\""s),
+                    lang(
+                        u8"「今日はとことん見るぜ」"s,
+                        u8"\"Absolutely amazing.\""s),
+                    lang(u8"「触ってもいいの？」"s, u8"\"Can I touch?\""s));
+            }
+            if (rnd(15) == 0)
+            {
+                txtef(9);
+                for (int cnt = 0; cnt < 1; ++cnt)
+                {
+                    if (en)
+                    {
+                        break;
+                    }
+                    if (gdata(123) > 8000)
+                    {
+                        txt(u8"「退屈ぅー」"s,
+                            u8"「あまり見るものがないな」"s,
+                            u8"「こんなので見物料とるの？」"s,
+                            u8"館内は少し寂しい…"s);
+                        break;
+                    }
+                    if (gdata(123) > 5000)
+                    {
+                        txt(u8"「いいんじゃない〜」"s,
+                            u8"「まあ、普通の博物館だ」"s,
+                            u8"「恋人を連れてくればよかったかも」"s,
+                            u8"まあまあの客足だ。"s);
+                        break;
+                    }
+                    if (gdata(123) > 2500)
+                    {
+                        txt(u8"「この雰囲気好きだなぁ」"s,
+                            u8"「もう一度来ようよ」"s,
+                            u8"「時間が経つのを忘れるね！」"s,
+                            u8"館内はなかなか賑わっている。"s);
+                        break;
+                    }
+                    if (gdata(123) > 500)
+                    {
+                        txt(u8"「来て良かった♪」"s,
+                            u8"「よくこんなに集めたなあ」"s,
+                            u8"「むぅ…興味深い」"s,
+                            u8"客足が全く絶えない盛況ぶりだ。"s);
+                        break;
+                    }
+                    txt(u8"「素晴らしいコレクションだ！」"s,
+                        u8"「感動した」"s,
+                        u8"「帰りたくないわ♪」"s,
+                        u8"来客は食い入るように展示物を眺めている。"s);
+                }
+            }
+            return;
+        }
+    }
+    if (adata(16, gdata_current_map) == 102)
+    {
+        if (gdata_other_character_count > 0)
+        {
+            if (rnd(25) == 0)
+            {
+                txtef(9);
+                txt(lang(u8" *ざわざわ* "s, u8"*murmur*"s),
+                    lang(
+                        u8"「これ欲しい〜」"s,
+                        u8"\"I want this! I want this!\""s),
+                    lang(u8"「何だろう、これは」"s, u8"\"Oh what's this?\""s),
+                    lang(u8"「お買い物♪」"s, u8"\"I'm just watching\""s),
+                    lang(u8"「金が足りん…」"s, u8"\"My wallet is empty...\""s),
+                    lang(
+                        u8"「ここが噂の…」"s,
+                        u8"\"So this is the famous....\""s));
+            }
+            return;
+        }
+    }
+    return;
+}
+
 
 } // namespace elona

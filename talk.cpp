@@ -1056,7 +1056,7 @@ talk_result_t talk_house_visitor()
                     return talk_result_t::talk_end;
                 }
             }
-            label_2147();
+            do_thing_that_feels_good();
             return talk_result_t::talk_end;
         }
         listmax = 0;
@@ -1103,7 +1103,7 @@ talk_result_t talk_house_visitor()
                     return talk_result_t::talk_end;
                 }
             }
-            label_2147();
+            do_thing_that_feels_good();
             return talk_result_t::talk_end;
         }
         listmax = 0;

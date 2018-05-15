@@ -12,5 +12,6 @@ int event_find(int = 0);
 turn_result_t event_start_proc();
 
 void proc_event();
+void initialize_economy();
 
 } // namespace elona

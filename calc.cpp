@@ -1553,5 +1553,49 @@ void calcpartyscore2()
 }
 
 
+int calcincome(int prm_1036)
+{
+    int p_at_m176 = 0;
+    p_at_m176 = 100 - gdata((120 + prm_1036)) / 100;
+    if (p_at_m176 == 99)
+    {
+        p_at_m176 = p_at_m176 * 70;
+    }
+    else
+    {
+        p_at_m176 = p_at_m176 * 50;
+    }
+    if (prm_1036 == 2)
+    {
+        p_at_m176 = p_at_m176 * 120 / 100;
+    }
+    if (prm_1036 == 4)
+    {
+        p_at_m176 = p_at_m176 * 60 / 100;
+    }
+    if (prm_1036 == 0)
+    {
+        p_at_m176 = p_at_m176 * 80 / 100;
+    }
+    if (prm_1036 == 1)
+    {
+        p_at_m176 = p_at_m176 * 70 / 100;
+    }
+    if (prm_1036 == 6)
+    {
+        p_at_m176 = p_at_m176 * 25 / 100;
+    }
+    if (prm_1036 == 5)
+    {
+        p_at_m176 = p_at_m176 * 20 / 100;
+    }
+    if (prm_1036 == 8)
+    {
+        p_at_m176 = p_at_m176 * 15 / 100;
+    }
+    return p_at_m176;
+}
+
+
 
 } // namespace elona

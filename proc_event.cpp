@@ -959,6 +959,104 @@ void proc_event()
     }
 }
 
+void initialize_economy()
+{
+    elona_vector1<int> bkdata;
+    if (initeco)
+    {
+        gdata(815) = 15;
+    }
+    bkdata(0) = gdata_current_map;
+    bkdata(1) = gdata_current_dungeon_level;
+    bkdata(2) = cdata[0].position.x;
+    bkdata(3) = cdata[0].position.y;
+    snd(44);
+    do_save_game();
+    mode = 11;
+    cdata[0].position.x = 0;
+    cdata[0].position.y = 0;
+    scx = cdata[0].position.x;
+    scy = cdata[0].position.y;
+    for (int cnt = 0; cnt < 500; ++cnt)
+    {
+        if (adata(16, cnt) == 0)
+        {
+            continue;
+        }
+        if (adata(28, cnt) == 0)
+        {
+            continue;
+        }
+        gdata_current_map = adata(16, cnt);
+        gdata_current_dungeon_level = 1;
+        if (gdata_current_map != bkdata(0)
+            || gdata_current_dungeon_level != bkdata(1))
+        {
+            initialize_map();
+        }
+        p = adata(28, cnt);
+        if (initeco)
+        {
+            if (p == 1)
+            {
+                podata(100, p) = 1500 + rnd(200);
+                podata(101, p) = 0;
+                addbuilding(p, 1, 27, 22);
+                addbuilding(p, 1, 28, 23);
+            }
+            if (p == 2)
+            {
+                podata(100, p) = 80 + rnd(20);
+                podata(101, p) = 0;
+                addbuilding(p, 2, 42, 31);
+                addbuilding(p, 2, 43, 33);
+            }
+            if (p == 3)
+            {
+                podata(100, p) = 6500 + rnd(500);
+                podata(101, p) = 0;
+            }
+            if (p == 4)
+            {
+                podata(100, p) = 1100 + rnd(150);
+                podata(101, p) = 0;
+                addbuilding(p, 5, 12, 34);
+            }
+            if (p == 5)
+            {
+                podata(100, p) = 3500 + rnd(300);
+                podata(101, p) = 0;
+                addbuilding(p, 6, 4, 16);
+            }
+            if (p == 6)
+            {
+                podata(100, p) = 800 + rnd(200);
+                podata(101, p) = 0;
+            }
+            if (p == 7)
+            {
+                podata(100, p) = 2600 + rnd(300);
+                podata(101, p) = 0;
+                addbuilding(p, 3, 60, 33);
+            }
+            podata(200, p) = podata(100, p) * 5 + rnd(1000);
+        }
+        label_1739();
+    }
+    gdata_current_map = bkdata(0);
+    gdata_current_dungeon_level = bkdata(1);
+    cdata[0].position.x = bkdata(2);
+    cdata[0].position.y = bkdata(3);
+    gdata(79) = 1;
+    mode = 3;
+    mapsubroutine = 1;
+    initialize_map();
+    initeco = 0;
+    msgtemp = "";
+    return;
+}
+
+
 
 
 } // namespace elona

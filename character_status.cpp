@@ -356,6 +356,192 @@ void label_1456(int cc)
     }
 }
 
+void refresh_speed_correction_value(int cc)
+{
+    int number_of_body_parts = 0;
+    for (int i = 0; i < 30; ++i)
+    {
+        if (cdata_body_part(cc, i) != 0)
+        {
+            ++number_of_body_parts;
+        }
+    }
+    if (number_of_body_parts > 13)
+    {
+        cdata[cc].speed_correction_value = (number_of_body_parts - 13) * 5;
+    }
+    else
+    {
+        cdata[cc].speed_correction_value = 0;
+    }
+}
+
+
+
+void gain_new_body_part(int cc)
+{
+    for (int i = 0; i < 30; ++i)
+    {
+        if (cdata_body_part(cc, i) != 0)
+        {
+            continue;
+        }
+        if (rnd(7) == 0)
+        {
+            cdata_body_part(cc, i) = 20000;
+            if (cm)
+            {
+                break;
+            }
+            else
+            {
+                txt(lang(
+                    name(cc) + u8"の身体から新たな"s
+                        + i18n::_(u8"ui", u8"body_part", u8"_2")
+                        + u8"が生えてきた！"s,
+                    name(cc) + u8" grow"s + _s(cc) + u8" a new "s
+                        + i18n::_(u8"ui", u8"body_part", u8"_2") + u8"!"s));
+                break;
+            }
+        }
+        if (rnd(9) == 0)
+        {
+            cdata_body_part(cc, i) = 30000;
+            if (cm)
+            {
+                break;
+            }
+            else
+            {
+                txt(lang(
+                    name(cc) + u8"の身体から新たな"s
+                        + i18n::_(u8"ui", u8"body_part", u8"_3")
+                        + u8"が生えてきた！"s,
+                    name(cc) + u8" grow"s + _s(cc) + u8" a new "s
+                        + i18n::_(u8"ui", u8"body_part", u8"_3") + u8"!"s));
+                break;
+            }
+        }
+        if (rnd(8) == 0)
+        {
+            cdata_body_part(cc, i) = 50000;
+            if (cm)
+            {
+                break;
+            }
+            else
+            {
+                txt(lang(
+                    name(cc) + u8"の身体から新たな"s
+                        + i18n::_(u8"ui", u8"body_part", u8"_5")
+                        + u8"が生えてきた！"s,
+                    name(cc) + u8" grow"s + _s(cc) + u8" a new "s
+                        + i18n::_(u8"ui", u8"body_part", u8"_5") + u8"!"s));
+                break;
+            }
+        }
+        if (rnd(4) == 0)
+        {
+            cdata_body_part(cc, i) = 60000;
+            if (cm)
+            {
+                break;
+            }
+            else
+            {
+                txt(lang(
+                    name(cc) + u8"の身体から新たな"s
+                        + i18n::_(u8"ui", u8"body_part", u8"_6")
+                        + u8"が生えてきた！"s,
+                    name(cc) + u8" grow"s + _s(cc) + u8" a new "s
+                        + i18n::_(u8"ui", u8"body_part", u8"_6") + u8"!"s));
+                break;
+            }
+        }
+        if (rnd(6) == 0)
+        {
+            cdata_body_part(cc, i) = 70000;
+            if (cm)
+            {
+                break;
+            }
+            else
+            {
+                txt(lang(
+                    name(cc) + u8"の身体から新たな"s
+                        + i18n::_(u8"ui", u8"body_part", u8"_7")
+                        + u8"が生えてきた！"s,
+                    name(cc) + u8" grow"s + _s(cc) + u8" a new "s
+                        + i18n::_(u8"ui", u8"body_part", u8"_7") + u8"!"s));
+                break;
+            }
+        }
+        if (rnd(5) == 0)
+        {
+            cdata_body_part(cc, i) = 80000;
+            if (cm)
+            {
+                break;
+            }
+            else
+            {
+                txt(lang(
+                    name(cc) + u8"の身体から新たな"s
+                        + i18n::_(u8"ui", u8"body_part", u8"_8")
+                        + u8"が生えてきた！"s,
+                    name(cc) + u8" grow"s + _s(cc) + u8" a new "s
+                        + i18n::_(u8"ui", u8"body_part", u8"_8") + u8"!"s));
+                break;
+            }
+        }
+        if (rnd(5) == 0)
+        {
+            cdata_body_part(cc, i) = 90000;
+            if (cm)
+            {
+                break;
+            }
+            else
+            {
+                txt(lang(
+                    name(cc) + u8"の身体から新たな"s
+                        + i18n::_(u8"ui", u8"body_part", u8"_9")
+                        + u8"が生えてきた！"s,
+                    name(cc) + u8" grow"s + _s(cc) + u8" a new "s
+                        + i18n::_(u8"ui", u8"body_part", u8"_9") + u8"!"s));
+                break;
+            }
+        }
+        if (rnd(1) == 0)
+        {
+            cdata_body_part(cc, i) = 10000;
+            if (cm)
+            {
+                break;
+            }
+            else
+            {
+                txt(lang(
+                    name(cc) + u8"の身体から新たな"s
+                        + i18n::_(u8"ui", u8"body_part", u8"_1")
+                        + u8"が生えてきた！"s,
+                    name(cc) + u8" grow"s + _s(cc) + u8" a new "s
+                        + i18n::_(u8"ui", u8"body_part", u8"_1") + u8"!"s));
+                break;
+            }
+        }
+        break;
+    }
+    refresh_speed_correction_value(cc);
+}
+
+
+void modify_potential(int cc, int id, int delta)
+{
+    sdata.get(id, cc).potential =
+        clamp(sdata.get(id, cc).potential + delta, 2, 400);
+}
+
 
 
 

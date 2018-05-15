@@ -3500,6 +3500,1367 @@ label_1744_internal:
     return turn_result_t::turn_begin;
 }
 
+int initialize_world_map()
+{
+    p = 0;
+    for (int cnt = 450; cnt < 500; ++cnt)
+    {
+        if (adata(16, cnt) == 8)
+        {
+            if (adata(20, cnt) != -1)
+            {
+                ++p;
+            }
+        }
+    }
+    p = 40 - p;
+    if (p < 1)
+    {
+        p = 1;
+    }
+    for (int cnt = 0, cnt_end = (p); cnt < cnt_end; ++cnt)
+    {
+        cxinit = rnd(mdata(0));
+        cyinit = rnd(mdata(1));
+        label_1753();
+    }
+    label_1749();
+    return 1;
+}
+
+
+
+void label_1748()
+{
+    if (gdata(79) == 1)
+    {
+        initialize_adata();
+        label_1749();
+        for (int cnt = 450; cnt < 500; ++cnt)
+        {
+            adata(16, cnt) = 0;
+        }
+    }
+    p = 0;
+    for (int cnt = 450; cnt < 500; ++cnt)
+    {
+        if (adata(16, cnt) == 0)
+        {
+            continue;
+        }
+        if (adata(16, cnt) == 8)
+        {
+            if (adata(20, cnt) != -1)
+            {
+                ++p;
+            }
+        }
+    }
+    if (p <= 25 || rnd(150) == 0 || gdata_diastrophism_flag != 0 || gdata(79))
+    {
+        gdata_diastrophism_flag = 0;
+        msgtemp += lang(
+            u8"この大陸に大きな地殻変動が起こった。"s,
+            u8"A sudden diastrophism hits the continent."s);
+        for (int cnt = 450; cnt < 500; ++cnt)
+        {
+            if (adata(16, cnt) == 8)
+            {
+                if (rnd(5) == 0 || adata(20, cnt) == -1)
+                {
+                    adata(16, cnt) = 0;
+                }
+            }
+        }
+        initialize_world_map();
+        label_1749();
+    }
+    gdata(79) = 0;
+    return;
+}
+
+
+
+void label_1749()
+{
+    label_1751();
+    label_1750();
+    return;
+}
+
+
+
+void label_1750()
+{
+    initialize_map_chip();
+    for (int cnt = 0; cnt < 20; ++cnt)
+    {
+        int cnt2 = cnt;
+        if (gdata(850) != 4)
+        {
+            break;
+        }
+        for (int cnt = 0; cnt < 10; ++cnt)
+        {
+            if (bddata(0, cnt2, cnt) != 0)
+            {
+                p = bddata(0, cnt2, cnt);
+                cell_featset(
+                    bddata(1, cnt2, cnt),
+                    bddata(2, cnt2, cnt),
+                    bddata(3, cnt2, cnt),
+                    34,
+                    cnt2,
+                    cnt);
+            }
+        }
+    }
+    for (int cnt = 0; cnt < 500; ++cnt)
+    {
+        if (adata(16, cnt) == 0 || adata(15, cnt) == 0)
+        {
+            continue;
+        }
+        if (adata(30, cnt) != gdata(850))
+        {
+            continue;
+        }
+        if (adata(16, cnt) == 900)
+        {
+            adata(16, cnt) = 40;
+            continue;
+        }
+        if (adata(16, cnt) >= 900)
+        {
+            adata(16, cnt) -= 800;
+            continue;
+        }
+        if (adata(1, cnt) <= 0 || adata(2, cnt) <= 0
+            || adata(1, cnt) >= mdata(0) || adata(2, cnt) >= mdata(1))
+        {
+            adata(1, cnt) = mdata(0) / 2;
+            adata(2, cnt) = mdata(1) / 2;
+        }
+        p = cnt;
+        if (chipm(7, map(adata(1, cnt), adata(2, cnt), 0)) & 4
+            || map(adata(1, cnt), adata(2, cnt), 6) != 0)
+        {
+            for (int cnt = 0;; ++cnt)
+            {
+                await();
+                dx = clamp(rnd(cnt / 4 + 1) + 1, 1, mdata(0));
+                dy = clamp(rnd(cnt / 4 + 1) + 1, 1, mdata(1));
+                x = adata(1, p) + rnd(dx) - rnd(dx);
+                y = adata(2, p) + rnd(dy) - rnd(dy);
+                if (x <= 0 || y <= 0 || x >= mdata(0) - 1 || y >= mdata(1) - 1)
+                {
+                    continue;
+                }
+                if (33 <= map(x, y, 0) && map(x, y, 0) < 66)
+                {
+                    continue;
+                }
+                if (chipm(7, map(x, y, 0)) & 4)
+                {
+                    continue;
+                }
+                if (map(x, y, 6) != 0)
+                {
+                    continue;
+                }
+                adata(1, p) = x;
+                adata(2, p) = y;
+                break;
+            }
+        }
+        if ((33 > map(adata(1, cnt), adata(2, cnt), 0)
+             || map(adata(1, cnt), adata(2, cnt), 0) >= 66)
+            && chipm(0, map(adata(1, cnt), adata(2, cnt), 0)) != 4
+            && chipm(1, map(adata(1, cnt), adata(2, cnt), 0)) != 9)
+        {
+            map(adata(1, cnt), adata(2, cnt), 0) = 33;
+        }
+        cell_featset(
+            adata(1, cnt),
+            adata(2, cnt),
+            adata(15, cnt),
+            15,
+            cnt % 100,
+            cnt / 100);
+        if (adata(0, cnt) == 3 || adata(0, cnt) == 2)
+        {
+            map(adata(1, cnt), adata(2, cnt), 9) = 11;
+        }
+    }
+    return;
+}
+
+
+
+void label_1751()
+{
+    for (int cnt = 0, cnt_end = (mdata(1)); cnt < cnt_end; ++cnt)
+    {
+        y = cnt;
+        for (int cnt = 0, cnt_end = (mdata(0)); cnt < cnt_end; ++cnt)
+        {
+            x = cnt;
+            cell_featread(x, y);
+            if (feat(1) < 24 || feat(1) > 28)
+            {
+                map(x, y, 6) = 0;
+            }
+            map(x, y, 9) = 0;
+        }
+    }
+    return;
+}
+
+
+
+void initialize_adata()
+{
+    p = 47;
+    adata(16, p) = 47;
+    adata(15, p) = 0;
+    adata(0, p) = 1;
+    adata(1, p) = 26;
+    adata(2, p) = 23;
+    adata(3, p) = 6;
+    adata(4, p) = 2;
+    adata(18, p) = 1;
+    adata(9, p) = 50000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 2;
+    adata(11, p) = 1;
+    adata(12, p) = 0;
+    adata(30, p) = 47;
+    p = 48;
+    adata(16, p) = 48;
+    adata(15, p) = 158;
+    adata(0, p) = 2;
+    adata(1, p) = 28;
+    adata(2, p) = 1;
+    adata(3, p) = 8;
+    adata(4, p) = 1;
+    adata(18, p) = 2;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(30, p) = 47;
+    p = 44;
+    adata(16, p) = 44;
+    adata(15, p) = 0;
+    adata(0, p) = 1;
+    adata(1, p) = 26;
+    adata(2, p) = 23;
+    adata(3, p) = 6;
+    adata(4, p) = 2;
+    adata(18, p) = 1;
+    adata(9, p) = 50000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 2;
+    adata(11, p) = 1;
+    adata(12, p) = 0;
+    adata(30, p) = 44;
+    p = 45;
+    adata(16, p) = 45;
+    adata(15, p) = 158;
+    adata(0, p) = 2;
+    adata(1, p) = 42;
+    adata(2, p) = 1;
+    adata(3, p) = 8;
+    adata(4, p) = 1;
+    adata(18, p) = 2;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(30, p) = 44;
+    p = 46;
+    adata(16, p) = 46;
+    adata(15, p) = 159;
+    adata(0, p) = 2;
+    adata(1, p) = 39;
+    adata(2, p) = 13;
+    adata(3, p) = 8;
+    adata(4, p) = 1;
+    adata(18, p) = 2;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(30, p) = 44;
+    p = 4;
+    adata(16, p) = 4;
+    adata(15, p) = 0;
+    adata(0, p) = 1;
+    adata(1, p) = 26;
+    adata(2, p) = 23;
+    adata(3, p) = 6;
+    adata(4, p) = 2;
+    adata(18, p) = 1;
+    adata(9, p) = 50000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 2;
+    adata(11, p) = 1;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 5;
+    adata(16, p) = 5;
+    adata(15, p) = 132;
+    adata(0, p) = 3;
+    adata(1, p) = 26;
+    adata(2, p) = 23;
+    adata(3, p) = 3;
+    adata(4, p) = 1;
+    adata(18, p) = 2;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 999;
+    adata(21, p) = 2;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(28, p) = 1;
+    adata(30, p) = 4;
+    p = 12;
+    adata(16, p) = 12;
+    adata(15, p) = 142;
+    adata(0, p) = 3;
+    adata(1, p) = 43;
+    adata(2, p) = 32;
+    adata(3, p) = 3;
+    adata(4, p) = 1;
+    adata(18, p) = 2;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 999;
+    adata(21, p) = 2;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(28, p) = 2;
+    adata(30, p) = 4;
+    p = 15;
+    adata(16, p) = 15;
+    adata(15, p) = 136;
+    adata(0, p) = 3;
+    adata(1, p) = 53;
+    adata(2, p) = 24;
+    adata(3, p) = 3;
+    adata(4, p) = 1;
+    adata(18, p) = 2;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 2;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(28, p) = 3;
+    adata(30, p) = 4;
+    p = 14;
+    adata(16, p) = 14;
+    adata(15, p) = 142;
+    adata(0, p) = 3;
+    adata(1, p) = 14;
+    adata(2, p) = 35;
+    adata(3, p) = 3;
+    adata(4, p) = 1;
+    adata(18, p) = 2;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 999;
+    adata(21, p) = 2;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(28, p) = 4;
+    adata(30, p) = 4;
+    p = 11;
+    adata(16, p) = 11;
+    adata(15, p) = 132;
+    adata(0, p) = 3;
+    adata(1, p) = 3;
+    adata(2, p) = 15;
+    adata(3, p) = 3;
+    adata(4, p) = 1;
+    adata(18, p) = 2;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 999;
+    adata(21, p) = 2;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(28, p) = 5;
+    adata(30, p) = 4;
+    p = 33;
+    adata(16, p) = 33;
+    adata(15, p) = 156;
+    adata(0, p) = 3;
+    adata(1, p) = 89;
+    adata(2, p) = 14;
+    adata(3, p) = 3;
+    adata(4, p) = 1;
+    adata(18, p) = 2;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 2;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(28, p) = 6;
+    adata(30, p) = 4;
+    p = 36;
+    adata(16, p) = 36;
+    adata(15, p) = 132;
+    adata(0, p) = 3;
+    adata(1, p) = 61;
+    adata(2, p) = 32;
+    adata(3, p) = 3;
+    adata(4, p) = 1;
+    adata(18, p) = 2;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 999;
+    adata(21, p) = 2;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(28, p) = 7;
+    adata(30, p) = 4;
+    p = 2;
+    adata(16, p) = 2;
+    adata(15, p) = 0;
+    adata(0, p) = 4;
+    adata(1, p) = 0;
+    adata(2, p) = 0;
+    adata(3, p) = 4;
+    adata(4, p) = 1;
+    adata(18, p) = 4;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 2;
+    adata(11, p) = 0;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 7;
+    adata(16, p) = 7;
+    adata(0, p) = 5;
+    adata(3, p) = 8;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 10;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    if (gdata_home_scale == 0)
+    {
+        adata(15, p) = 138;
+        adata(1, p) = 22;
+        adata(2, p) = 21;
+        adata(4, p) = 1;
+        adata(18, p) = 3;
+        adata(30, p) = 4;
+    }
+    p = 35;
+    adata(16, p) = 35;
+    adata(0, p) = 7;
+    adata(3, p) = 8;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 1;
+    adata(11, p) = 0;
+    adata(12, p) = 1;
+    adata(15, p) = 158;
+    adata(1, p) = 35;
+    adata(2, p) = 27;
+    adata(4, p) = 1;
+    adata(18, p) = 3;
+    adata(30, p) = 4;
+    p = 6;
+    adata(16, p) = 6;
+    adata(15, p) = 0;
+    adata(0, p) = 7;
+    adata(1, p) = 22;
+    adata(2, p) = 21;
+    adata(3, p) = 4;
+    adata(4, p) = 1;
+    adata(18, p) = 100;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 1;
+    adata(11, p) = 0;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 40;
+    adata(16, p) = 40;
+    adata(15, p) = 0;
+    adata(0, p) = 7;
+    adata(1, p) = 23;
+    adata(2, p) = 21;
+    adata(3, p) = 1;
+    adata(4, p) = 1;
+    adata(18, p) = 100;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 1;
+    adata(11, p) = 0;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 13;
+    adata(16, p) = 13;
+    adata(15, p) = 0;
+    adata(0, p) = 7;
+    adata(1, p) = 22;
+    adata(2, p) = 21;
+    adata(3, p) = 4;
+    adata(4, p) = 1;
+    adata(18, p) = 100;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 2;
+    adata(11, p) = 0;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 3;
+    adata(16, p) = 3;
+    adata(15, p) = 139;
+    adata(0, p) = 20;
+    adata(1, p) = 23;
+    adata(2, p) = 29;
+    adata(3, p) = 1;
+    adata(4, p) = 1;
+    adata(18, p) = 0;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 45;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 42;
+    adata(16, p) = 42;
+    adata(15, p) = 139;
+    adata(0, p) = 20;
+    adata(1, p) = 81;
+    adata(2, p) = 51;
+    adata(3, p) = 1;
+    adata(4, p) = 1;
+    adata(18, p) = 0;
+    adata(9, p) = 10000;
+    adata(17, p) = 50;
+    adata(10, p) = 99999999;
+    adata(21, p) = 1;
+    adata(11, p) = 0;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 16;
+    adata(16, p) = 16;
+    adata(15, p) = 145;
+    adata(0, p) = 21;
+    adata(1, p) = 43;
+    adata(2, p) = 4;
+    adata(3, p) = 1;
+    adata(4, p) = 1;
+    adata(18, p) = 0;
+    adata(9, p) = 10000;
+    adata(17, p) = 15;
+    adata(10, p) = 18;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 17;
+    adata(16, p) = 17;
+    adata(15, p) = 141;
+    adata(0, p) = 20;
+    adata(1, p) = 37;
+    adata(2, p) = 20;
+    adata(3, p) = 1;
+    adata(4, p) = 1;
+    adata(18, p) = 0;
+    adata(9, p) = 10000;
+    adata(17, p) = 25;
+    adata(10, p) = 30;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 18;
+    adata(16, p) = 18;
+    adata(15, p) = 144;
+    adata(0, p) = 23;
+    adata(1, p) = 26;
+    adata(2, p) = 44;
+    adata(3, p) = 1;
+    adata(4, p) = 1;
+    adata(18, p) = 0;
+    adata(9, p) = 10000;
+    adata(17, p) = 17;
+    adata(10, p) = 22;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 19;
+    adata(16, p) = 19;
+    adata(15, p) = 146;
+    adata(0, p) = 20;
+    adata(1, p) = 13;
+    adata(2, p) = 32;
+    adata(3, p) = 1;
+    adata(4, p) = 1;
+    adata(18, p) = 0;
+    adata(9, p) = 10000;
+    adata(17, p) = 30;
+    adata(10, p) = 33;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 26;
+    adata(16, p) = 26;
+    adata(15, p) = 146;
+    adata(0, p) = 20;
+    adata(1, p) = 64;
+    adata(2, p) = 43;
+    adata(3, p) = 2;
+    adata(4, p) = 1;
+    adata(18, p) = 0;
+    adata(9, p) = 10000;
+    adata(17, p) = 25;
+    adata(10, p) = 29;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 27;
+    adata(16, p) = 27;
+    adata(15, p) = 146;
+    adata(0, p) = 20;
+    adata(1, p) = 29;
+    adata(2, p) = 24;
+    adata(3, p) = 1;
+    adata(4, p) = 1;
+    adata(18, p) = 0;
+    adata(9, p) = 10000;
+    adata(17, p) = 2;
+    adata(10, p) = 5;
+    adata(21, p) = 1;
+    adata(11, p) = 0;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 38;
+    adata(16, p) = 38;
+    adata(15, p) = 146;
+    adata(0, p) = 20;
+    adata(1, p) = 43;
+    adata(2, p) = 39;
+    adata(3, p) = 1;
+    adata(4, p) = 1;
+    adata(18, p) = 0;
+    adata(9, p) = 10000;
+    adata(17, p) = 23;
+    adata(10, p) = 27;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 28;
+    adata(16, p) = 28;
+    adata(15, p) = 146;
+    adata(0, p) = 20;
+    adata(1, p) = 38;
+    adata(2, p) = 31;
+    adata(3, p) = 1;
+    adata(4, p) = 1;
+    adata(18, p) = 0;
+    adata(9, p) = 10000;
+    adata(17, p) = 5;
+    adata(10, p) = 5;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 37;
+    adata(16, p) = 37;
+    adata(15, p) = 160;
+    adata(0, p) = 20;
+    adata(1, p) = 4;
+    adata(2, p) = 11;
+    adata(3, p) = 1;
+    adata(4, p) = 1;
+    adata(18, p) = 0;
+    adata(9, p) = 10000;
+    adata(17, p) = 20;
+    adata(10, p) = 21;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 10;
+    adata(16, p) = 10;
+    adata(15, p) = 141;
+    adata(0, p) = 6;
+    adata(1, p) = 74;
+    adata(2, p) = 31;
+    adata(3, p) = 3;
+    adata(4, p) = 1;
+    adata(18, p) = 4;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 2;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(30, p) = 4;
+    p = 20;
+    adata(16, p) = 20;
+    adata(15, p) = 147;
+    adata(0, p) = 6;
+    adata(1, p) = 51;
+    adata(2, p) = 9;
+    adata(3, p) = 3;
+    adata(4, p) = 1;
+    adata(18, p) = 4;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 2;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(30, p) = 4;
+    p = 41;
+    adata(16, p) = 41;
+    adata(15, p) = 161;
+    adata(0, p) = 6;
+    adata(1, p) = 28;
+    adata(2, p) = 37;
+    adata(3, p) = 1;
+    adata(4, p) = 1;
+    adata(18, p) = 12;
+    adata(9, p) = 100000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 1;
+    adata(11, p) = 0;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    p = 21;
+    adata(16, p) = 21;
+    adata(15, p) = 148;
+    adata(0, p) = 2;
+    adata(1, p) = 21;
+    adata(2, p) = 27;
+    adata(3, p) = 8;
+    adata(4, p) = 1;
+    adata(18, p) = 8;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(30, p) = 4;
+    p = 25;
+    adata(16, p) = 25;
+    adata(15, p) = 142;
+    adata(0, p) = 2;
+    adata(1, p) = 64;
+    adata(2, p) = 47;
+    adata(3, p) = 3;
+    adata(4, p) = 1;
+    adata(18, p) = 9;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 2;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(30, p) = 4;
+    p = 34;
+    adata(16, p) = 34;
+    adata(15, p) = 157;
+    adata(0, p) = 2;
+    adata(1, p) = 88;
+    adata(2, p) = 25;
+    adata(3, p) = 8;
+    adata(4, p) = 1;
+    adata(18, p) = 2;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 2;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(30, p) = 4;
+    p = 29;
+    adata(16, p) = 29;
+    adata(15, p) = 162;
+    adata(0, p) = 6;
+    adata(1, p) = 18;
+    adata(2, p) = 2;
+    adata(3, p) = 8;
+    adata(4, p) = 1;
+    adata(18, p) = 2;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 2;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(30, p) = 4;
+    p = 32;
+    adata(16, p) = 32;
+    adata(15, p) = 155;
+    adata(0, p) = 2;
+    adata(1, p) = 53;
+    adata(2, p) = 21;
+    adata(3, p) = 8;
+    adata(4, p) = 1;
+    adata(18, p) = 2;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(30, p) = 4;
+    p = 43;
+    adata(16, p) = 43;
+    adata(15, p) = 158;
+    adata(0, p) = 2;
+    adata(1, p) = 27;
+    adata(2, p) = 52;
+    adata(3, p) = 8;
+    adata(4, p) = 1;
+    adata(18, p) = 2;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 1;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(30, p) = 4;
+    p = 22;
+    adata(16, p) = 22;
+    adata(15, p) = 149;
+    adata(0, p) = 6;
+    adata(1, p) = 13;
+    adata(2, p) = 43;
+    adata(3, p) = 8;
+    adata(4, p) = 1;
+    adata(18, p) = 100;
+    adata(9, p) = 10000;
+    adata(17, p) = 33;
+    adata(10, p) = 33;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(30, p) = 4;
+    p = 23;
+    adata(16, p) = 23;
+    adata(15, p) = 149;
+    adata(0, p) = 6;
+    adata(1, p) = 51;
+    adata(2, p) = 32;
+    adata(3, p) = 8;
+    adata(4, p) = 1;
+    adata(18, p) = 100;
+    adata(9, p) = 10000;
+    adata(17, p) = 33;
+    adata(10, p) = 33;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(30, p) = 4;
+    p = 24;
+    adata(16, p) = 24;
+    adata(15, p) = 149;
+    adata(0, p) = 6;
+    adata(1, p) = 35;
+    adata(2, p) = 10;
+    adata(3, p) = 8;
+    adata(4, p) = 1;
+    adata(18, p) = 100;
+    adata(9, p) = 10000;
+    adata(17, p) = 33;
+    adata(10, p) = 33;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(30, p) = 4;
+    p = 30;
+    adata(16, p) = 30;
+    adata(15, p) = 0;
+    adata(0, p) = 5;
+    adata(1, p) = 35;
+    adata(2, p) = 10;
+    adata(3, p) = 1;
+    adata(4, p) = 1;
+    adata(18, p) = 100;
+    adata(9, p) = 1000000;
+    adata(17, p) = -999999;
+    adata(10, p) = 999999;
+    adata(21, p) = 1;
+    adata(11, p) = 1;
+    adata(12, p) = 1;
+    adata(30, p) = 4;
+    p = 9;
+    adata(16, p) = 9;
+    adata(15, p) = 0;
+    adata(0, p) = 6;
+    adata(1, p) = 20;
+    adata(2, p) = 20;
+    adata(3, p) = 4;
+    adata(4, p) = 1;
+    adata(18, p) = 4;
+    adata(9, p) = 10000;
+    adata(17, p) = 1;
+    adata(10, p) = 45;
+    adata(21, p) = 2;
+    adata(11, p) = 0;
+    adata(12, p) = 0;
+    adata(30, p) = 4;
+    return;
+}
+
+
+
+int label_1753()
+{
+    for (int cnt = 450; cnt < 500; ++cnt)
+    {
+        if (adata(16, cnt) != 0)
+        {
+            continue;
+        }
+        f = -1;
+        for (int cnt = 0; cnt < 1000; ++cnt)
+        {
+            x = cxinit + rnd((cnt + 1)) - rnd((cnt + 1));
+            y = cyinit + rnd((cnt + 1)) - rnd((cnt + 1));
+            if (x <= 5 || y <= 5 || x >= mdata(0) - 6 || y >= mdata(1) - 6)
+            {
+                continue;
+            }
+            if (33 <= map(x, y, 0) && map(x, y, 0) < 66)
+            {
+                continue;
+            }
+            if (map(x, y, 0) > 19)
+            {
+                continue;
+            }
+            if (map(x, y, 6) % 1000 != 0)
+            {
+                continue;
+            }
+            p = 1;
+            for (int cnt = 0; cnt < 500; ++cnt)
+            {
+                if (adata(16, cnt) == 0)
+                {
+                    continue;
+                }
+                if (x >= adata(1, cnt) - 2 && x <= adata(1, cnt) + 2)
+                {
+                    if (y >= adata(2, cnt) - 2 && y <= adata(2, cnt) + 2)
+                    {
+                        p = 0;
+                        break;
+                    }
+                }
+            }
+            if (p == 0)
+            {
+                continue;
+            }
+            f = 1;
+            break;
+        }
+        if (f == -1)
+        {
+            p = -1;
+            break;
+        }
+        p = cnt;
+        area = p;
+        ctrl_file(file_operation_t::_13);
+        adata(0, p) = 20 + rnd(4);
+        adata(16, p) = 8;
+        adata(15, p) = 133;
+        adata(1, p) = x;
+        adata(2, p) = y;
+        adata(3, p) = 1;
+        adata(4, p) = 1;
+        adata(18, p) = 1;
+        adata(9, p) = 10000;
+        adata(21, p) = 1;
+        adata(30, p) = gdata(850);
+        if (rnd(3))
+        {
+            adata(17, p) = rnd(cdata[0].level + 5) + 1;
+        }
+        else
+        {
+            adata(17, p) = rnd(50) + 1;
+            if (rnd(5) == 0)
+            {
+                adata(17, p) *= rnd(3) + 1;
+            }
+        }
+        adata(10, p) = adata(17, p) + rnd(4) + 2;
+        adata(11, p) = 1;
+        adata(12, p) = 0;
+        adata(20, p) = 0;
+        adata(5, p) = rnd(length(mapnamerd));
+        map(x, y, 6) = 1;
+        if (adata(0, p) == 20)
+        {
+            adata(15, p) = 133;
+            adata(18, p) = 0;
+        }
+        if (adata(0, p) == 21)
+        {
+            adata(15, p) = 137;
+            adata(18, p) = 100;
+        }
+        if (adata(0, p) == 23)
+        {
+            adata(15, p) = 140;
+            adata(18, p) = 200;
+        }
+        if (adata(0, p) == 22)
+        {
+            adata(15, p) = 135;
+            adata(18, p) = 300;
+        }
+        break;
+    }
+    return p;
+}
+
+
+
+
+void label_1755()
+{
+    for (const auto& cnt : items(-1))
+    {
+        if (inv[cnt].id == 555 || inv[cnt].id == 600)
+        {
+            continue;
+        }
+        inv[cnt].number = 0;
+        cell_refresh(inv[cnt].position.x, inv[cnt].position.y);
+    }
+    if (adata(29, gdata_current_map) == 1)
+    {
+        flt();
+        int stat = itemcreate(-1, 763, 29, 16, 0);
+        if (stat != 0)
+        {
+            inv[ci].own_state = 1;
+        }
+        {
+            flt();
+            int stat = itemcreate(-1, 686, 29, 16, 0);
+            if (stat != 0)
+            {
+                inv[ci].own_state = 1;
+            }
+        }
+        {
+            flt();
+            int stat = itemcreate(-1, 171, 29, 17, 0);
+            if (stat != 0)
+            {
+                inv[ci].param1 = 6;
+                inv[ci].own_state = 1;
+            }
+        }
+        {
+            flt();
+            int stat = itemcreate(-1, 756, 29, 17, 0);
+            if (stat != 0)
+            {
+                inv[ci].own_state = 5;
+            }
+        }
+        {
+            flt();
+            int stat = chara_create(-1, 345, 48, 19);
+            if (stat != 0)
+            {
+                cdata[rc].character_role = 3;
+                cdata[rc].only_christmas() = true;
+            }
+        }
+        {
+            flt();
+            int stat = chara_create(-1, 348, 30, 17);
+            if (stat != 0)
+            {
+                cdata[rc].character_role = 3;
+                cdata[rc].only_christmas() = true;
+            }
+        }
+        {
+            flt();
+            int stat = chara_create(-1, 174, 38, 19);
+            if (stat != 0)
+            {
+                cdata[rc].only_christmas() = true;
+                cdata[rc].is_hung_on_sand_bag() = true;
+                cdatan(0, rc) =
+                    lang(u8"オパートスの信者"s, u8"Opatos Fanatic"s);
+                if (rnd(2))
+                {
+                    cdatan(0, rc) = lang(u8"マニの信者"s, u8"Mani Fanatic"s);
+                }
+                else
+                {
+                    cdatan(0, rc) =
+                        lang(u8"エヘカトルの信者"s, u8"Ehekatl Fanatic"s);
+                }
+            }
+        }
+        {
+            flt();
+            int stat = chara_create(-1, 347, 35, 19);
+            if (stat != 0)
+            {
+                cdata[rc].only_christmas() = true;
+            }
+        }
+        {
+            flt();
+            int stat = chara_create(-1, 347, 37, 18);
+            if (stat != 0)
+            {
+                cdata[rc].only_christmas() = true;
+            }
+        }
+        {
+            flt();
+            int stat = chara_create(-1, 347, 37, 21);
+            if (stat != 0)
+            {
+                cdata[rc].only_christmas() = true;
+            }
+        }
+        {
+            flt();
+            int stat = chara_create(-1, 347, 39, 20);
+            if (stat != 0)
+            {
+                cdata[rc].only_christmas() = true;
+            }
+        }
+        {
+            flt();
+            int stat = chara_create(-1, 347, 38, 21);
+            if (stat != 0)
+            {
+                cdata[rc].only_christmas() = true;
+            }
+        }
+        {
+            flt();
+            int stat = chara_create(-1, 70, 17, 8);
+            if (stat != 0)
+            {
+                cdata[rc].ai_calm = 3;
+                cdata[rc].only_christmas() = true;
+                cdata[rc].character_role = 1002;
+                cdata[rc].shop_rank = 10;
+                cdatan(0, rc) = snfood(cdatan(0, rc));
+            }
+        }
+        {
+            flt();
+            int stat = chara_create(-1, 239, 25, 8);
+            if (stat != 0)
+            {
+                cdata[rc].ai_calm = 3;
+                cdata[rc].relationship = 0;
+                cdata[rc].original_relationship = 0;
+                cdata[rc].only_christmas() = true;
+                cdata[rc].character_role = 1018;
+                cdata[rc].shop_rank = 30;
+                cdatan(0, rc) = randomname();
+                cdatan(0, rc) = lang(
+                    u8"おみやげ屋の"s + cdatan(0, rc),
+                    sncnv(cdatan(0, rc)) + u8"the souvenir vendor"s);
+            }
+        }
+        {
+            flt();
+            int stat = chara_create(-1, 271, 24, 22);
+            if (stat != 0)
+            {
+                cdata[rc].ai_calm = 3;
+                cdata[rc].relationship = 0;
+                cdata[rc].original_relationship = 0;
+                cdata[rc].only_christmas() = true;
+                cdata[rc].character_role = 1018;
+                cdata[rc].shop_rank = 30;
+                cdatan(0, rc) = randomname();
+                cdatan(0, rc) = lang(
+                    u8"おみやげ屋の"s + cdatan(0, rc),
+                    sncnv(cdatan(0, rc)) + u8"the souvenir vendor"s);
+            }
+        }
+        {
+            flt();
+            int stat = chara_create(-1, 1, 38, 12);
+            if (stat != 0)
+            {
+                cdata[rc].ai_calm = 3;
+                cdata[rc].character_role = 1007;
+                cdata[rc].shop_rank = 10;
+                cdatan(0, rc) = snblack(cdatan(0, rc));
+                cdata[rc].only_christmas() = true;
+            }
+        }
+        {
+            flt();
+            int stat = chara_create(-1, 271, 28, 9);
+            if (stat != 0)
+            {
+                cdata[rc].ai_calm = 3;
+                cdata[rc].relationship = 0;
+                cdata[rc].original_relationship = 0;
+                cdata[rc].only_christmas() = true;
+                cdata[rc].character_role = 1022;
+                cdata[rc].shop_rank = 30;
+                cdatan(0, rc) = randomname();
+                cdatan(0, rc) = lang(
+                    u8"屋台商人の"s + cdatan(0, rc),
+                    sncnv(cdatan(0, rc)) + u8"the street vendor"s);
+            }
+        }
+        {
+            flt();
+            int stat = chara_create(-1, 271, 29, 24);
+            if (stat != 0)
+            {
+                cdata[rc].ai_calm = 3;
+                cdata[rc].relationship = 0;
+                cdata[rc].original_relationship = 0;
+                cdata[rc].only_christmas() = true;
+                cdata[rc].character_role = 1022;
+                cdata[rc].shop_rank = 30;
+                cdatan(0, rc) = randomname();
+                cdatan(0, rc) = lang(
+                    u8"屋台商人屋の"s + cdatan(0, rc),
+                    sncnv(cdatan(0, rc)) + u8"the street vendor"s);
+            }
+        }
+        for (int cnt = 0; cnt < 20; ++cnt)
+        {
+            flt();
+            int stat = chara_create(-1, 349, -3, 0);
+            if (stat != 0)
+            {
+                cdata[rc].only_christmas() = true;
+            }
+            flt();
+            {
+                int stat = chara_create(-1, 350, -3, 0);
+                if (stat != 0)
+                {
+                    cdata[rc].only_christmas() = true;
+                }
+            }
+        }
+        for (int cnt = 0; cnt < 15; ++cnt)
+        {
+            flt();
+            int stat = chara_create(-1, 326, -3, 0);
+            if (stat != 0)
+            {
+                cdata[rc].only_christmas() = true;
+            }
+        }
+        for (int cnt = 0; cnt < 7; ++cnt)
+        {
+            flt();
+            int stat = chara_create(-1, 335, -3, 0);
+            if (stat != 0)
+            {
+                cdata[rc].only_christmas() = true;
+            }
+            {
+                flt();
+                int stat = chara_create(-1, 185, -3, 0);
+                if (stat != 0)
+                {
+                    cdata[rc].only_christmas() = true;
+                }
+            }
+            {
+                flt();
+                int stat = chara_create(-1, 274, -3, 0);
+                if (stat != 0)
+                {
+                    cdata[rc].only_christmas() = true;
+                }
+            }
+            {
+                flt();
+                int stat = chara_create(-1, 174, -3, 0);
+                if (stat != 0)
+                {
+                    cdata[rc].only_christmas() = true;
+                }
+            }
+        }
+        for (int cnt = 0; cnt < 3; ++cnt)
+        {
+            flt();
+            int stat = chara_create(-1, 332, -3, 0);
+            if (stat != 0)
+            {
+                cdata[rc].only_christmas() = true;
+            }
+            {
+                flt();
+                int stat = chara_create(-1, 185, -3, 0);
+                if (stat != 0)
+                {
+                    cdata[rc].only_christmas() = true;
+                }
+            }
+        }
+    }
+    else
+    {
+        for (int cnt = ELONA_MAX_PARTY_CHARACTERS; cnt < ELONA_MAX_CHARACTERS;
+             ++cnt)
+        {
+            if (cdata[cnt].only_christmas() == 1)
+            {
+                chara_vanquish(cnt);
+            }
+        }
+    }
+    return;
+}
+
 
 
 } // namespace elona

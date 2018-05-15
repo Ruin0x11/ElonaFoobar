@@ -61,6 +61,7 @@ int calcspellcoststock(int = 0, int = 0);
 int calcscore();
 void calcpartyscore();
 void calcpartyscore2();
+int calcincome(int = 0);
 
 
 } // namespace elona

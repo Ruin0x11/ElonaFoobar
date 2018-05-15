@@ -69,6 +69,7 @@ extern race_db the_race_db;
 
 
 int access_race_info(int dbmode, const std::string& dbidn);
+void gain_race_feat();
 
 
 } // namespace elona

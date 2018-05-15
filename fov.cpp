@@ -20,6 +20,55 @@ int qy_at_modfov = 0;
 int m_at_modfov = 0;
 int qx_at_modfov = 0;
 
+void initialize_fovmap_and_fovlist()
+{
+    elona_vector2<int> fovmap;
+    DIM3(fovlist, 2, 15);
+    DIM3(fovmap, 34, 30);
+    if (cdata[0].vision_distance < 1)
+    {
+        cdata[0].vision_distance = 1;
+    }
+    if (cdata[0].vision_distance >= 15)
+    {
+        cdata[0].vision_distance = 14;
+    }
+    for (int cnt = 0; cnt < 15; ++cnt)
+    {
+        y = cnt;
+        for (int cnt = 0; cnt < 19; ++cnt)
+        {
+            x = cnt;
+            if (dist(x * 10 / 12, y, 7, 7) < 7)
+            {
+                fovmap(x, y) = 1;
+            }
+        }
+    }
+    for (int cnt = 0; cnt < 15; ++cnt)
+    {
+        y = cnt;
+        p(1) = 0;
+        for (int cnt = 0; cnt < 19; ++cnt)
+        {
+            x = cnt;
+            p = fovmap(x, y);
+            if (p != 0 && p(1) == 0)
+            {
+                fovlist(0, y) = x;
+                p(1) = 1;
+            }
+            if (p == 0 && p(1) == 1)
+            {
+                fovlist(1, y) = x;
+                break;
+            }
+        }
+    }
+    return;
+}
+
+
 bool is_in_fov(const position_t& pos)
 {
     return mapsync(pos.x, pos.y) == msync;

@@ -136,7 +136,7 @@ int access_item_db(int dbmode)
     case 783:
         if (dbmode == 13)
         {
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -195,7 +195,7 @@ int access_item_db(int dbmode)
         {
             efid = 1147;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -204,7 +204,7 @@ int access_item_db(int dbmode)
         {
             efid = 1146;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -308,7 +308,7 @@ int access_item_db(int dbmode)
         }
         if (dbmode == 13)
         {
-            read_normal_book();
+            do_read_normal_book();
             return -1;
         }
         break;
@@ -364,7 +364,7 @@ int access_item_db(int dbmode)
         }
         if (dbmode == 13)
         {
-            read_normal_book();
+            do_read_normal_book();
             return -1;
         }
         break;
@@ -443,7 +443,7 @@ int access_item_db(int dbmode)
         {
             efid = 1116;
             efp = 250;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -472,7 +472,7 @@ int access_item_db(int dbmode)
         {
             efid = 464;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -486,7 +486,7 @@ int access_item_db(int dbmode)
         {
             efid = 463;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -692,7 +692,7 @@ int access_item_db(int dbmode)
         {
             efid = 1144;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -706,7 +706,7 @@ int access_item_db(int dbmode)
         {
             efid = 462;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -746,7 +746,7 @@ int access_item_db(int dbmode)
         {
             efid = 1143;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -770,7 +770,7 @@ int access_item_db(int dbmode)
         {
             efid = 1130;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -813,7 +813,7 @@ int access_item_db(int dbmode)
         {
             efid = 1142;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -827,7 +827,7 @@ int access_item_db(int dbmode)
         {
             efid = 459;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -841,7 +841,7 @@ int access_item_db(int dbmode)
         {
             efid = 460;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -909,7 +909,7 @@ int access_item_db(int dbmode)
         }
         if (dbmode == 13)
         {
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -1162,7 +1162,7 @@ int access_item_db(int dbmode)
         }
         if (dbmode == 13)
         {
-            read_normal_book();
+            do_read_normal_book();
             return -1;
         }
         break;
@@ -1242,7 +1242,7 @@ int access_item_db(int dbmode)
         {
             efid = 418;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -1370,7 +1370,7 @@ int access_item_db(int dbmode)
         {
             efid = 458;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -1404,7 +1404,7 @@ int access_item_db(int dbmode)
         {
             efid = 1139;
             efp = 500;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -1460,7 +1460,7 @@ int access_item_db(int dbmode)
         {
             efid = 1135;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -1551,7 +1551,7 @@ int access_item_db(int dbmode)
         {
             efid = 1103;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -1572,7 +1572,7 @@ int access_item_db(int dbmode)
         {
             efid = 457;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -1600,7 +1600,7 @@ int access_item_db(int dbmode)
         {
             efid = 1133;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -1615,7 +1615,7 @@ int access_item_db(int dbmode)
         {
             efid = 1101;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -1662,7 +1662,7 @@ int access_item_db(int dbmode)
         {
             efid = 456;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -1685,7 +1685,7 @@ int access_item_db(int dbmode)
         {
             efid = 1116;
             efp = 250;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -1712,7 +1712,7 @@ int access_item_db(int dbmode)
         {
             efid = 455;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -1723,7 +1723,7 @@ int access_item_db(int dbmode)
         }
         if (dbmode == 13)
         {
-            read_normal_book();
+            do_read_normal_book();
             return -1;
         }
         break;
@@ -1744,7 +1744,7 @@ int access_item_db(int dbmode)
         {
             efid = 1131;
             efp = 200;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -1831,7 +1831,7 @@ int access_item_db(int dbmode)
         {
             efid = 405;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -1854,7 +1854,7 @@ int access_item_db(int dbmode)
         {
             efid = 404;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -1868,7 +1868,7 @@ int access_item_db(int dbmode)
         {
             efid = 438;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -1948,7 +1948,7 @@ int access_item_db(int dbmode)
         {
             efid = 1108;
             efp = 150;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -1983,7 +1983,7 @@ int access_item_db(int dbmode)
         {
             efid = 1103;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -2230,7 +2230,7 @@ int access_item_db(int dbmode)
         {
             efid = 436;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2260,7 +2260,7 @@ int access_item_db(int dbmode)
         {
             efid = 435;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2338,7 +2338,7 @@ int access_item_db(int dbmode)
         {
             efid = 454;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2347,7 +2347,7 @@ int access_item_db(int dbmode)
         {
             efid = 1121;
             efp = 200;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -2356,7 +2356,7 @@ int access_item_db(int dbmode)
         {
             efid = 454;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -2383,7 +2383,7 @@ int access_item_db(int dbmode)
         {
             efid = 1118;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -2511,7 +2511,7 @@ int access_item_db(int dbmode)
         {
             efid = 430;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2600,7 +2600,7 @@ int access_item_db(int dbmode)
         {
             efid = 453;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2614,7 +2614,7 @@ int access_item_db(int dbmode)
         {
             efid = 452;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2638,7 +2638,7 @@ int access_item_db(int dbmode)
         {
             efid = 1116;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -2692,7 +2692,7 @@ int access_item_db(int dbmode)
         {
             efid = 407;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2706,7 +2706,7 @@ int access_item_db(int dbmode)
         {
             efid = 406;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2742,7 +2742,7 @@ int access_item_db(int dbmode)
         {
             efid = 451;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2751,7 +2751,7 @@ int access_item_db(int dbmode)
         {
             efid = 449;
             efp = 250;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -2765,7 +2765,7 @@ int access_item_db(int dbmode)
         {
             efid = 450;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2779,7 +2779,7 @@ int access_item_db(int dbmode)
         {
             efid = 449;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2788,7 +2788,7 @@ int access_item_db(int dbmode)
         {
             efid = 448;
             efp = 250;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -2802,7 +2802,7 @@ int access_item_db(int dbmode)
         {
             efid = 448;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2824,7 +2824,7 @@ int access_item_db(int dbmode)
         {
             efid = 447;
             efp = 400;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -2833,7 +2833,7 @@ int access_item_db(int dbmode)
         {
             efid = 446;
             efp = 250;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -2847,7 +2847,7 @@ int access_item_db(int dbmode)
         {
             efid = 447;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2861,7 +2861,7 @@ int access_item_db(int dbmode)
         {
             efid = 446;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2870,7 +2870,7 @@ int access_item_db(int dbmode)
         {
             efid = 445;
             efp = 250;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -2884,7 +2884,7 @@ int access_item_db(int dbmode)
         {
             efid = 445;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2893,7 +2893,7 @@ int access_item_db(int dbmode)
         {
             efid = 444;
             efp = 300;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -2907,7 +2907,7 @@ int access_item_db(int dbmode)
         {
             efid = 444;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2916,7 +2916,7 @@ int access_item_db(int dbmode)
         {
             efid = 443;
             efp = 400;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -2930,7 +2930,7 @@ int access_item_db(int dbmode)
         {
             efid = 443;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2957,7 +2957,7 @@ int access_item_db(int dbmode)
         {
             efid = 442;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -2966,7 +2966,7 @@ int access_item_db(int dbmode)
         {
             efid = 442;
             efp = 200;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -3380,7 +3380,7 @@ int access_item_db(int dbmode)
         {
             efid = 441;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3398,7 +3398,7 @@ int access_item_db(int dbmode)
         {
             efid = 1113;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -3407,7 +3407,7 @@ int access_item_db(int dbmode)
         {
             efid = 440;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -3416,7 +3416,7 @@ int access_item_db(int dbmode)
         {
             efid = 439;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -3430,7 +3430,7 @@ int access_item_db(int dbmode)
         {
             efid = 433;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3444,7 +3444,7 @@ int access_item_db(int dbmode)
         {
             efid = 434;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3458,7 +3458,7 @@ int access_item_db(int dbmode)
         {
             efid = 432;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3472,7 +3472,7 @@ int access_item_db(int dbmode)
         {
             efid = 431;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3486,7 +3486,7 @@ int access_item_db(int dbmode)
         {
             efid = 423;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3500,7 +3500,7 @@ int access_item_db(int dbmode)
         {
             efid = 422;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3520,7 +3520,7 @@ int access_item_db(int dbmode)
         {
             efid = 416;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3534,7 +3534,7 @@ int access_item_db(int dbmode)
         {
             efid = 417;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3548,7 +3548,7 @@ int access_item_db(int dbmode)
         {
             efid = 415;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3557,7 +3557,7 @@ int access_item_db(int dbmode)
         {
             efid = 1108;
             efp = 200;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -3602,7 +3602,7 @@ int access_item_db(int dbmode)
         {
             efid = 414;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3633,7 +3633,7 @@ int access_item_db(int dbmode)
         {
             efid = 1102;
             efp = 200;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -3647,7 +3647,7 @@ int access_item_db(int dbmode)
         {
             efid = 403;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3661,7 +3661,7 @@ int access_item_db(int dbmode)
         {
             efid = 402;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3675,7 +3675,7 @@ int access_item_db(int dbmode)
         {
             efid = 401;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3689,7 +3689,7 @@ int access_item_db(int dbmode)
         {
             efid = 400;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3703,7 +3703,7 @@ int access_item_db(int dbmode)
         {
             efid = 428;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3717,7 +3717,7 @@ int access_item_db(int dbmode)
         {
             efid = 413;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3731,7 +3731,7 @@ int access_item_db(int dbmode)
         {
             efid = 429;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -3962,7 +3962,7 @@ int access_item_db(int dbmode)
         {
             efid = 1102;
             efp = 500;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -4388,7 +4388,7 @@ int access_item_db(int dbmode)
         {
             efid = 424;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -4402,7 +4402,7 @@ int access_item_db(int dbmode)
         {
             efid = 410;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -4473,7 +4473,7 @@ int access_item_db(int dbmode)
         {
             efid = 403;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -4482,7 +4482,7 @@ int access_item_db(int dbmode)
         {
             efid = 402;
             efp = 300;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -4491,7 +4491,7 @@ int access_item_db(int dbmode)
         {
             efid = 402;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -4512,7 +4512,7 @@ int access_item_db(int dbmode)
         {
             efid = 401;
             efp = 400;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -4521,7 +4521,7 @@ int access_item_db(int dbmode)
         {
             efid = 401;
             efp = 300;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -4530,7 +4530,7 @@ int access_item_db(int dbmode)
         {
             efid = 401;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -4539,7 +4539,7 @@ int access_item_db(int dbmode)
         {
             efid = 400;
             efp = 300;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -4548,7 +4548,7 @@ int access_item_db(int dbmode)
         {
             efid = 400;
             efp = 100;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -4741,7 +4741,7 @@ int access_item_db(int dbmode)
         {
             efid = 421;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -4755,7 +4755,7 @@ int access_item_db(int dbmode)
         {
             efid = 420;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -4769,7 +4769,7 @@ int access_item_db(int dbmode)
         {
             efid = 419;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -4778,7 +4778,7 @@ int access_item_db(int dbmode)
         {
             efid = 1102;
             efp = 300;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -4787,7 +4787,7 @@ int access_item_db(int dbmode)
         {
             efid = 1112;
             efp = 200;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -4796,7 +4796,7 @@ int access_item_db(int dbmode)
         {
             efid = 1110;
             efp = 200;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -4805,7 +4805,7 @@ int access_item_db(int dbmode)
         {
             efid = 1109;
             efp = 150;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -4814,7 +4814,7 @@ int access_item_db(int dbmode)
         {
             efid = 1111;
             efp = 200;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -4822,7 +4822,7 @@ int access_item_db(int dbmode)
         if (dbmode == 15)
         {
             efid = 1130;
-            drink_potion();
+            do_drink_potion();
             return -1;
         }
         break;
@@ -4834,7 +4834,7 @@ int access_item_db(int dbmode)
         if (dbmode == 13)
         {
             inv[ci].param1 = 2;
-            read_normal_book();
+            do_read_normal_book();
             return -1;
         }
         break;
@@ -4845,7 +4845,7 @@ int access_item_db(int dbmode)
         }
         if (dbmode == 13)
         {
-            read_normal_book();
+            do_read_normal_book();
             return -1;
         }
         break;
@@ -4857,7 +4857,7 @@ int access_item_db(int dbmode)
         if (dbmode == 13)
         {
             inv[ci].param1 = 1;
-            read_normal_book();
+            do_read_normal_book();
             return -1;
         }
         break;
@@ -4871,7 +4871,7 @@ int access_item_db(int dbmode)
         {
             efid = 412;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -4885,7 +4885,7 @@ int access_item_db(int dbmode)
         {
             efid = 411;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;
@@ -4899,7 +4899,7 @@ int access_item_db(int dbmode)
         {
             efid = 408;
             efp = 100;
-            decode_book();
+            do_decode_book();
             return -1;
         }
         break;

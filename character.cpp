@@ -2139,6 +2139,37 @@ int chara_armor_class(int cc)
 
 
 
+int new_ally_joins()
+{
+    f = chara_get_free_slot_ally();
+    if (f == 0)
+    {
+        txt(lang(
+            u8"仲間の最大数に達しているため、仲間にできなかった…"s,
+            u8"Your party is already full. You can't invite someone anymore."s));
+        return -1;
+    }
+    int stat = chara_relocate(rc, f);
+    oc = stat;
+    cdata[rc].relationship = 10;
+    cdata[rc].original_relationship = 10;
+    cdata[rc].character_role = 0;
+    cdata[rc].is_quest_target() = false;
+    cdata[rc].does_not_search_enemy() = false;
+    cdata[rc].is_hung_on_sand_bag() = false;
+    cdata[rc].is_temporary() = false;
+    cdata[rc].only_christmas() = false;
+    snd(64);
+    txtef(5);
+    txt(lang(
+        cdatan(0, rc) + u8"が仲間に加わった！"s,
+        cdatan(0, rc) + u8" join"s + _s(rc) + u8" your party!"s));
+    return 1;
+}
+
+
+
+
 
 std::string chara_refstr(int prm_0258, int prm_0259)
 {
