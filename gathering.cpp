@@ -1,6 +1,16 @@
 #include "gathering.hpp"
+#include "ability.hpp"
 #include "action.hpp"
+#include "animation.hpp"
+#include "audio.hpp"
+#include "calc.hpp"
 #include "character.hpp"
+#include "config.hpp"
+#include "fish.hpp"
+#include "item.hpp"
+#include "itemgen.hpp"
+#include "map_cell.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 
 namespace elona

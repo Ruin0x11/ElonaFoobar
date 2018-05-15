@@ -309,7 +309,7 @@ void show_damage_popups(int inf_ver)
         const auto& cc = cdata[damage_popup.character];
         if (gdata(20) != 40)
         {
-            if (!is_in_fov(cc.position))
+            if (!fov_player_sees(cc.position))
             {
                 ++damage_popup.frame;
                 continue;

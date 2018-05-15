@@ -7,6 +7,7 @@
 #include "character_status.hpp"
 #include "config.hpp"
 #include "ctrl_file.hpp"
+#include "damage.hpp"
 #include "debug.hpp"
 #include "elona.hpp"
 #include "enchantment.hpp"
@@ -127,7 +128,7 @@ int magic()
                         {
                             cdata[tc].birth_year = gdata_year - 12;
                         }
-                        if (is_in_fov(tc))
+                        if (fov_player_sees(tc))
                         {
                             txtef(2);
                             txt(lang(
@@ -142,7 +143,7 @@ int magic()
                     if (is_cursed(efstatus))
                     {
                         cdata[tc].birth_year -= rnd(3) + 1;
-                        if (is_in_fov(tc))
+                        if (fov_player_sees(tc))
                         {
                             txtef(8);
                             txt(lang(
@@ -254,7 +255,7 @@ int magic()
                             {
                                 continue;
                             }
-                            if (is_in_fov(tc))
+                            if (fov_player_sees(tc))
                             {
                                 if (tc >= 16)
                                 {
@@ -355,7 +356,7 @@ int magic()
                             if (f == 1)
                             {
                                 play_animation(11);
-                                if (is_in_fov(tc))
+                                if (fov_player_sees(tc))
                                 {
                                     txt(lang(
                                         name(tc) + u8"は回復した。"s,
@@ -426,7 +427,7 @@ int magic()
                             }
                             if (efid == 644)
                             {
-                                if (is_in_fov(tc))
+                                if (fov_player_sees(tc))
                                 {
                                     if (tc >= 16)
                                     {
@@ -454,7 +455,7 @@ int magic()
                                     continue;
                                 }
                             }
-                            else if (is_in_fov(tc))
+                            else if (fov_player_sees(tc))
                             {
                                 if (tc >= 16)
                                 {
@@ -517,7 +518,7 @@ int magic()
             case 2:
                 play_animation(1);
                 dmg = roll(dice1, dice2, bonus);
-                if (is_in_fov(tc))
+                if (fov_player_sees(tc))
                 {
                     if (tc >= 16)
                     {
@@ -539,7 +540,7 @@ int magic()
             case 4:
                 if (efid == 400)
                 {
-                    if (is_in_fov(tc))
+                    if (fov_player_sees(tc))
                     {
                         txt(lang(
                             name(tc) + u8"の傷はふさがった。"s,
@@ -549,7 +550,7 @@ int magic()
                 }
                 if (efid == 401 || efid == 405)
                 {
-                    if (is_in_fov(tc))
+                    if (fov_player_sees(tc))
                     {
                         txt(lang(
                             name(tc) + u8"は回復した。"s,
@@ -558,7 +559,7 @@ int magic()
                 }
                 if (efid == 402)
                 {
-                    if (is_in_fov(tc))
+                    if (fov_player_sees(tc))
                     {
                         txt(lang(
                             name(tc) + u8"の身体に生命力がみなぎった。"s,
@@ -568,7 +569,7 @@ int magic()
                 }
                 if (efid == 403)
                 {
-                    if (is_in_fov(tc))
+                    if (fov_player_sees(tc))
                     {
                         txt(lang(
                             name(tc) + u8"は完全に回復した。"s,
@@ -587,7 +588,7 @@ int magic()
             case 6:
                 if (cdata[cc].special_attack_type != 0)
                 {
-                    if (is_in_fov(cc))
+                    if (fov_player_sees(cc))
                     {
                         if (cc == 0)
                         {
@@ -631,7 +632,7 @@ int magic()
                 }
                 else if (efid == 601)
                 {
-                    if (is_in_fov(cc))
+                    if (fov_player_sees(cc))
                     {
                         if (tc >= 16)
                         {
@@ -650,7 +651,7 @@ int magic()
                         }
                     }
                 }
-                else if (is_in_fov(cc))
+                else if (fov_player_sees(cc))
                 {
                     if (tc >= 16)
                     {
@@ -700,7 +701,7 @@ int magic()
                 if (efid == 614)
                 {
                     cdata[tc].nutrition -= 800;
-                    if (is_in_fov(tc))
+                    if (fov_player_sees(tc))
                     {
                         txtef(8);
                         txt(lang(
@@ -727,7 +728,7 @@ int magic()
                             i = i * efp / 2000 + 1;
                             cdata[tc].attr_adjs[p] -= i;
                         }
-                        if (is_in_fov(tc))
+                        if (fov_player_sees(tc))
                         {
                             txtef(8);
                             txt(lang(
@@ -815,7 +816,7 @@ int magic()
                         }
                     }
                 }
-                if (is_in_fov(cc))
+                if (fov_player_sees(cc))
                 {
                     txt(lang(
                         u8"魔法でモンスターが召喚された。"s,
@@ -859,7 +860,7 @@ int magic()
                 if (gdata_current_map == 40 || mdata(6) == 1
                     || gdata_current_map == 37 || gdata_current_map == 41)
                 {
-                    if (is_in_fov(tc))
+                    if (fov_player_sees(tc))
                     {
                         txt(lang(
                             u8"魔法の力がテレポートを防いだ。"s,
@@ -869,7 +870,7 @@ int magic()
                 }
                 if (efid != 619 && encfind(tc, 22) != -1)
                 {
-                    if (is_in_fov(tc))
+                    if (fov_player_sees(tc))
                     {
                         txt(lang(
                             u8"魔法の力がテレポートを防いだ。"s,
@@ -881,7 +882,7 @@ int magic()
                 {
                     if (tc == cc)
                     {
-                        if (is_in_fov(tc))
+                        if (fov_player_sees(tc))
                         {
                             txt(lang(
                                 u8"魔法の力がテレポートを防いだ。"s,
@@ -919,7 +920,7 @@ int magic()
                         }
                     }
                 }
-                if (is_in_fov(tc))
+                if (fov_player_sees(tc))
                 {
                     snd(72);
                 }
@@ -962,7 +963,7 @@ int magic()
                     {
                         if (efidprev == 619)
                         {
-                            if (is_in_fov(cc))
+                            if (fov_player_sees(cc))
                             {
                                 txt(lang(
                                     name(cc) + u8"は"s + cdatan(0, tcprev)
@@ -974,14 +975,14 @@ int magic()
                         }
                         else if (efidprev == 620)
                         {
-                            if (is_in_fov(cc))
+                            if (fov_player_sees(cc))
                             {
                                 txt(lang(
                                     name(tc) + u8"は引き寄せられた。"s,
                                     name(tc) + u8" "s + is(tc) + u8" drawn."s));
                             }
                         }
-                        else if (is_in_fov(cc))
+                        else if (fov_player_sees(cc))
                         {
                             if (efidprev == 635)
                             {
@@ -1028,7 +1029,7 @@ int magic()
                 {
                     valn = lang(""s, u8"breath"s);
                 }
-                if (is_in_fov(cc))
+                if (fov_player_sees(cc))
                 {
                     txt(lang(
                         name(cc) + u8"は"s + valn + u8"ブレスを吐いた。"s,
@@ -1078,7 +1079,7 @@ int magic()
                         if (cc != tc)
                         {
                             dmg = roll(dice1, dice2, bonus);
-                            if (is_in_fov(tc))
+                            if (fov_player_sees(tc))
                             {
                                 if (tc >= 16)
                                 {
@@ -1312,7 +1313,7 @@ label_2181_internal:
         dmgcon(tc, 7, 500);
         break;
     case 654:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             txt(lang(
                 name(cc) + u8"は"s + name(tc)
@@ -1329,7 +1330,7 @@ label_2181_internal:
         label_1964();
         break;
     case 1101:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             snd(107);
             if (is_cursed(efstatus))
@@ -1377,7 +1378,7 @@ label_2181_internal:
         animeload(15, tc);
         break;
     case 1102:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             if (is_cursed(efstatus))
             {
@@ -1405,7 +1406,7 @@ label_2181_internal:
         eatstatus(efstatus, tc);
         break;
     case 1116:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             if (tc == 0)
             {
@@ -1418,7 +1419,7 @@ label_2181_internal:
         if (cdata[tc].is_pregnant())
         {
             cdata[tc].is_pregnant() = false;
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txt(lang(
                     name(tc) + u8"の体内のエイリアンは溶けた。"s,
@@ -1429,7 +1430,7 @@ label_2181_internal:
         dmghp(tc, efp * efstatusfix(500, 400, 100, 50) / 1000, -15, 63, efp);
         break;
     case 1103:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             if (tc == 0)
             {
@@ -1445,7 +1446,7 @@ label_2181_internal:
         sickifcursed(efstatus, tc, 1);
         break;
     case 1146:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             txt(lang(u8"*シュワワ* 刺激的！"s, u8"*quaff* Juicy!"s));
             txt(lang(
@@ -1456,7 +1457,7 @@ label_2181_internal:
         sickifcursed(efstatus, tc, 1);
         break;
     case 1147:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             txt(lang(u8"*ごくり*"s, u8"*quaff*"s));
             txt(lang(
@@ -1469,7 +1470,7 @@ label_2181_internal:
     case 1142:
         if (cdatan(2, tc) == u8"snail"s)
         {
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txtef(3);
                 txt(lang(
@@ -1486,14 +1487,14 @@ label_2181_internal:
                 dmghp(tc, rnd(20000), -15);
             }
         }
-        else if (is_in_fov(tc))
+        else if (fov_player_sees(tc))
         {
             txtef(9);
             txt(lang(u8"「しょっぱ〜」"s, u8"\"Salty!\""s));
         }
         break;
     case 1130:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             if (tc == 0)
             {
@@ -1679,7 +1680,7 @@ label_2181_internal:
         }
         if (sdata(183, cc) == 0)
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(
                     name(cc) + u8"は演奏のやり方を知らない。"s,
@@ -1862,7 +1863,7 @@ label_2181_internal:
     case 407:
         if (is_cursed(efstatus))
         {
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txt(lang(
                     name(tc) + u8"は悪魔が笑う声を聞いた。"s,
@@ -2071,7 +2072,7 @@ label_2181_internal:
         }
         if (is_cursed(efstatus))
         {
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txt(lang(u8"これは呪われている！"s, u8"It's cursed!"s));
             }
@@ -2174,7 +2175,7 @@ label_2181_internal:
             }
             if (bonus < rnd(100))
             {
-                if (is_in_fov(cc))
+                if (fov_player_sees(cc))
                 {
                     txt(lang(
                         name(cc) + u8"の力は冥界に及ばなかった。"s,
@@ -2212,7 +2213,7 @@ label_2181_internal:
     case 412:
         if (efstatus == curse_state_t::none)
         {
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txt(lang(
                     name(tc) + u8"の装備品は白い光に包まれた。"s,
@@ -2222,7 +2223,7 @@ label_2181_internal:
         }
         if (efstatus == curse_state_t::blessed)
         {
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txt(lang(
                     name(tc) + u8"は聖なる光に包み込まれた。"s,
@@ -2232,7 +2233,7 @@ label_2181_internal:
         }
         if (is_cursed(efstatus))
         {
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txt(lang(
                     name(tc) + u8"は悪魔が笑う声を聞いた。"s,
@@ -2288,7 +2289,7 @@ label_2181_internal:
         {
             if (p(1) != 0)
             {
-                if (is_in_fov(tc))
+                if (fov_player_sees(tc))
                 {
                     txt(lang(
                         u8"幾つかのアイテムが浄化された。"s,
@@ -2298,7 +2299,7 @@ label_2181_internal:
         }
         else if (p(1) != 0)
         {
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txt(lang(
                     u8"身に付けている装備の幾つかが浄化された。"s,
@@ -2308,7 +2309,7 @@ label_2181_internal:
         }
         if (p(2) != 0)
         {
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txt(lang(
                     u8"幾つかのアイテムは抵抗した。"s,
@@ -2448,7 +2449,7 @@ label_2181_internal:
             cdata[tc].experience = cdata[tc].required_experience;
             r2 = 0;
             gain_level(tc);
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 snd(60);
             }
@@ -2506,7 +2507,7 @@ label_2181_internal:
                         }
                     }
                     skillgain(tc, p, 1);
-                    if (is_in_fov(tc))
+                    if (fov_player_sees(tc))
                     {
                         snd(24);
                         txtef(2);
@@ -2528,7 +2529,7 @@ label_2181_internal:
                     {
                         continue;
                     }
-                    if (is_in_fov(tc))
+                    if (fov_player_sees(tc))
                     {
                         snd(38);
                         txt(lang(u8"これは呪われている！"s, u8"It's cursed!"s));
@@ -2626,7 +2627,7 @@ label_2181_internal:
                     }
                     if (!is_cursed(efstatus))
                     {
-                        if (is_in_fov(tc))
+                        if (fov_player_sees(tc))
                         {
                             snd(24);
                             txtef(2);
@@ -2646,7 +2647,7 @@ label_2181_internal:
                                     + u8" skill increases."s));
                         }
                     }
-                    else if (is_in_fov(tc))
+                    else if (fov_player_sees(tc))
                     {
                         snd(117);
                         txtef(3);
@@ -2829,7 +2830,7 @@ label_2181_internal:
         {
             break;
         }
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             snd(105);
             txtef(3);
@@ -2857,7 +2858,7 @@ label_2181_internal:
     case 439:
         if (efid == 439)
         {
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 if (is_cursed(efstatus))
                 {
@@ -2891,7 +2892,7 @@ label_2181_internal:
         }
         if (efid == 440)
         {
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 if (is_cursed(efstatus))
                 {
@@ -3042,7 +3043,7 @@ label_2181_internal:
         break;
     case 621:
         healmp(tc, efp / 2 + rnd((efp / 2 + 1)));
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             txt(lang(
                 name(tc) + u8"のマナが回復した。"s,
@@ -3052,7 +3053,7 @@ label_2181_internal:
         break;
     case 624:
         healmp(tc, roll(dice1, dice2, bonus));
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             txt(lang(
                 name(tc) + u8"は周囲からマナを吸い取った。"s,
@@ -3061,7 +3062,7 @@ label_2181_internal:
         }
         break;
     case 1108:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             txt(lang(
                 name(tc) + u8"は毒を浴びた！"s,
@@ -3070,7 +3071,7 @@ label_2181_internal:
         if (cdata[tc].is_pregnant())
         {
             cdata[tc].is_pregnant() = false;
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txt(lang(
                     name(tc) + u8"の体内のエイリアンは溶けた。"s,
@@ -3081,7 +3082,7 @@ label_2181_internal:
         dmgcon(tc, 1, efp);
         break;
     case 1111:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             txt(lang(
                 name(tc) + u8"は墨を浴びた！"s,
@@ -3090,7 +3091,7 @@ label_2181_internal:
         dmgcon(tc, 4, efp);
         break;
     case 1109:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             txt(lang(
                 name(tc) + u8"はひどい頭痛におそわれた！"s,
@@ -3100,7 +3101,7 @@ label_2181_internal:
         dmgcon(tc, 5, efp);
         break;
     case 1110:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             txt(lang(
                 name(tc) + u8"は痺れた！"s,
@@ -3109,7 +3110,7 @@ label_2181_internal:
         dmgcon(tc, 3, efp);
         break;
     case 1112:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             txt(lang(
                 name(tc) + u8"は甘い液体を浴びた！"s,
@@ -3122,7 +3123,7 @@ label_2181_internal:
     label_2183_internal:
         if (efid == 645)
         {
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txt(lang(
                     name(cc) + u8"は"s + name(tc)
@@ -3202,7 +3203,7 @@ label_2181_internal:
             {
                 inv[i].curse_state = curse_state_t::cursed;
             }
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txt(lang(
                     name(tc) + u8"の"s + valn + u8"は黒く輝いた。"s,
@@ -4152,7 +4153,7 @@ label_2181_internal:
             break;
         }
         cell_featset(cdata[cc].position.x, cdata[cc].position.y, 0, 14, 7, cc);
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 name(cc) + u8"は何かを投下した。"s,
@@ -4182,7 +4183,7 @@ label_2181_internal:
             {
                 continue;
             }
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txt(lang(
                     name(tc) + u8"は重力を感じた。"s,
@@ -4244,7 +4245,7 @@ label_2181_internal:
         }
         break;
     case 656:
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 name(cc) + u8"は仲間を鼓舞した。"s,
@@ -4284,7 +4285,7 @@ label_2181_internal:
             {
                 continue;
             }
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txtef(4);
                 txt(lang(
@@ -4335,7 +4336,7 @@ label_2181_internal:
     case 648:
         if (efid == 648)
         {
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txt(lang(
                     name(cc) + u8"は"s + name(tc) + u8"を罵倒した。"s,
@@ -4393,7 +4394,7 @@ label_2181_internal:
         dmgcon(tc, 7, 200);
         break;
     case 652:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             txt(lang(
                 name(cc) + u8"は"s + name(tc) + u8"を睨み付けた。"s,
@@ -4403,7 +4404,7 @@ label_2181_internal:
         dmgmp(tc, rnd(20) + 1);
         break;
     case 1133:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             txt(lang(
                 name(tc) + u8"は炎に包まれた。"s,
@@ -4420,7 +4421,7 @@ label_2181_internal:
         mapitem_fire(cdata[tc].position.x, cdata[tc].position.y);
         return 0;
     case 651:
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             txt(lang(
                 name(cc) + u8"は"s + name(tc) + u8"のバックパックを漁った。"s,
@@ -4467,7 +4468,7 @@ label_2181_internal:
         ci = p;
         if (ibit(6, ci))
         {
-            if (is_in_fov(tc))
+            if (fov_player_sees(tc))
             {
                 txt(lang(
                     name(cc) + u8"は"s + itemname(ci, 1)
@@ -4479,7 +4480,7 @@ label_2181_internal:
             break;
         }
         rowact_item(ci);
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             snd(18);
             txt(lang(
@@ -4588,7 +4589,7 @@ int calcmagiccontrol(int prm_1076, int prm_1077)
             }
             if (dmg < 1)
             {
-                if (is_in_fov(prm_1077))
+                if (fov_player_sees(prm_1077))
                 {
                     txt(lang(
                         name(prm_1077) + u8"は巻き込みを免れた。"s,

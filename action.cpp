@@ -1,7 +1,32 @@
 #include "action.hpp"
+#include "ability.hpp"
+#include "audio.hpp"
+#include "calc.hpp"
+#include "character.hpp"
+#include "character_status.hpp"
+#include "config.hpp"
+#include "damage.hpp"
+#include "draw.hpp"
+#include "fov.hpp"
+#include "gathering.hpp"
+#include "i18n.hpp"
+#include "input.hpp"
+#include "item.hpp"
+#include "item_db.hpp"
+#include "itemgen.hpp"
+#include "log.hpp"
+#include "macro.hpp"
+#include "map_cell.hpp"
+#include "ui.hpp"
+#include "variables.hpp"
 
 namespace elona
 {
+
+int r3 = 0;
+int extraattack = 0;
+int attackitem = 0;
+int inumbk = 0;
 
 void do_thing_that_feels_good()
 {
@@ -14,7 +39,7 @@ void do_thing_that_feels_good()
         cdata[tc].continuous_action_id = 11;
         cdata[tc].continuous_action_turn = cdata[cc].continuous_action_turn * 2;
         cdata[tc].continuous_action_target = cc + 10000;
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 name(cc) + u8"は服を脱ぎ始めた。"s,
@@ -32,7 +57,7 @@ void do_thing_that_feels_good()
     }
     if (cdata[tc].state != 1 || cdata[tc].continuous_action_id != 11)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 u8"「そ、その"s
@@ -64,7 +89,7 @@ void do_thing_that_feels_good()
         {
             if (cdata[cc].continuous_action_turn % 5 == 0)
             {
-                if (is_in_fov(cc))
+                if (fov_player_sees(cc))
                 {
                     txtef(9);
                     if (jp)
@@ -127,7 +152,7 @@ void do_thing_that_feels_good()
         skillexp(17, c, 250 + (c >= 57) * 1000);
     }
     sexvalue = sdata(17, cc) * (50 + rnd(50)) + 100;
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(9);
         if (jp)
@@ -155,7 +180,7 @@ void do_thing_that_feels_good()
     {
         if (cdata[tc].gold >= sexvalue)
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(
                     u8"！さあ、小遣いを受け取って"s + _kure(3) + u8"」"s,
@@ -164,7 +189,7 @@ void do_thing_that_feels_good()
         }
         else
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(
                     u8"！これが"s + _ore(3) + u8"の財布の中身の全て"s + _da()
@@ -231,7 +256,7 @@ int do_decode_book()
         }
         if (cdata[cc].blind != 0)
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(
                     name(cc) + u8"は何も見えない。"s,
@@ -254,7 +279,7 @@ int do_decode_book()
         }
         cdata[cc].continuous_action_turn = p / (2 + sdata(150, 0)) + 1;
         cdata[cc].continuous_action_item = ci;
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 npcn(cc) + itemname(ci, 1) + u8"を読み始めた。"s,
@@ -313,7 +338,7 @@ int do_decode_book()
                 {
                     refresh_burden_state();
                 }
-                if (is_in_fov(cc))
+                if (fov_player_sees(cc))
                 {
                     txt(lang(
                         itemname(ci, 1) + u8"は塵となって崩れ落ちた。"s,
@@ -323,7 +348,7 @@ int do_decode_book()
         }
         return 0;
     }
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txt(lang(
             npcn(cc) + itemname(ci, 1) + u8"を読み終えた。"s,
@@ -341,7 +366,7 @@ int do_decode_book()
         ++recipememory(inv[ci].subname);
         item_identify(inv[ci], identification_state_t::partly_identified);
         removeitem(ci, 1);
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 itemname(ci, 1) + u8"は塵となって崩れ落ちた。"s,
@@ -387,7 +412,7 @@ int do_decode_book()
         if (inv[ci].count == 0)
         {
             removeitem(ci, 1);
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(
                     itemname(ci, 1) + u8"は塵となって崩れ落ちた。"s,
@@ -405,7 +430,7 @@ int do_read_normal_book()
 {
     if (cdata[cc].blind != 0)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 name(cc) + u8"は何も見えない。"s,
@@ -1536,7 +1561,7 @@ void open_new_year_gift()
     {
         if (rnd(3) == 0)
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(
                     u8"悪意を持った何かが袋から飛び出してきた！"s,
@@ -1551,7 +1576,7 @@ void open_new_year_gift()
         }
         if (rnd(3) == 0)
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(
                     u8"罠だ！お年玉袋は発火した。"s,
@@ -1571,7 +1596,7 @@ void open_new_year_gift()
             }
             return;
         }
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 u8"中には呪いの手紙が入っていた。"s,
@@ -1587,7 +1612,7 @@ void open_new_year_gift()
     {
         if (rnd(4) == 0)
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txtef(5);
                 txt(lang(u8" *チリリリリーン* "s, u8"*ring ring ring*"s));
@@ -1607,7 +1632,7 @@ void open_new_year_gift()
         }
         if (rnd(5) == 0)
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(
                     u8"妹が入っていた！"s,
@@ -1622,7 +1647,7 @@ void open_new_year_gift()
             }
             return;
         }
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 u8"何かが袋から出てきた。"s,
@@ -1639,7 +1664,7 @@ void open_new_year_gift()
     }
     if (rnd(3) == 0)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txtef(5);
             txt(lang(u8" *チリリリリーン* "s, u8"*ring ring ring*"s));
@@ -1662,7 +1687,7 @@ void open_new_year_gift()
     }
     if (rnd(50) == 0)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 u8"これは素晴らしい贈り物だ！"s,
@@ -1677,7 +1702,7 @@ void open_new_year_gift()
             1);
         return;
     }
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txt(lang(
             u8"何かが袋から出てきた。"s,
@@ -1740,7 +1765,7 @@ turn_result_t try_to_open_locked_door()
             gain_skill_experience_lock_picking(cc);
         }
         cell_featset(dx, dy, tile_dooropen, 20, 0, -1);
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 name(cc) + u8"は扉を開けた。"s,
@@ -1762,7 +1787,7 @@ turn_result_t try_to_open_locked_door()
     else
     {
         ++msgdup;
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             snd(22);
             txt(lang(
@@ -1938,7 +1963,7 @@ void try_to_melee_attack()
                 + cdata[cc].has_power_bash() * 5
             > rnd(100))
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(
                     name(cc) + u8"は盾で"s + name(tc) + u8"を殴りつけた。"s,
@@ -2066,7 +2091,7 @@ label_22191_internal:
                     s(1) = lang(""s, u8"The "s) + iknownnameref(inv[cw].id);
                 }
                 s(1) = lang(u8"『"s, u8"<"s) + s(1) + lang(u8"』"s, u8">"s);
-                if (is_in_fov(cc))
+                if (fov_player_sees(cc))
                 {
                     if (rnd(5) == 0)
                     {
@@ -2089,7 +2114,7 @@ label_22191_internal:
                 elep = cdata[cc].element_of_unarmed_attack % 100000;
             }
         }
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             if (extraattack)
             {
@@ -2413,7 +2438,7 @@ label_22191_internal:
                 {
                     if (p == 61)
                     {
-                        if (is_in_fov(cc))
+                        if (fov_player_sees(cc))
                         {
                             txtef(8);
                             txt(lang(
@@ -2431,7 +2456,7 @@ label_22191_internal:
                     }
                     if (p == 62)
                     {
-                        if (is_in_fov(cc))
+                        if (fov_player_sees(cc))
                         {
                             txtef(8);
                             txt(lang(
@@ -2466,7 +2491,7 @@ label_22191_internal:
                     tlocy = cdata[cc].position.y;
                     if (p == 63)
                     {
-                        if (is_in_fov(tc))
+                        if (fov_player_sees(tc))
                         {
                             txtef(8);
                             txt(lang(
@@ -2499,7 +2524,7 @@ label_22191_internal:
     }
     if (hit == -1)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             if (extraattack)
             {
@@ -2525,7 +2550,7 @@ label_22191_internal:
     }
     if (hit == -2)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             if (extraattack)
             {
@@ -3446,7 +3471,7 @@ label_1948_internal:
                 break;
             }
             rc = map(tlocx, tlocy, 1) - 1;
-            if (is_in_fov(rc) == 0)
+            if (fov_player_sees(rc) == 0)
             {
                 break;
             }
@@ -3915,7 +3940,7 @@ int do_cast_spell()
     }
     if (cdata[cc].confused != 0 || cdata[cc].dimmed != 0)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 name(cc) + u8"は混乱しながらも魔法の詠唱を試みた。"s,
@@ -3929,7 +3954,7 @@ int do_cast_spell()
             return 1;
         }
     }
-    else if (is_in_fov(cc))
+    else if (fov_player_sees(cc))
     {
         if (cc == 0)
         {
@@ -3962,7 +3987,7 @@ int do_cast_spell()
     }
     if (findbuff(cc, 2) != -1)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 u8"沈黙の霧が詠唱を阻止した。"s,
@@ -3973,7 +3998,7 @@ int do_cast_spell()
     }
     if (rnd(100) >= calcspellfail(efid, cc))
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 name(cc) + u8"は詠唱に失敗した。"s,
@@ -4587,7 +4612,7 @@ turn_result_t do_bash()
                 calcfixlv(2));
             flttypemajor = fsetbarrel(rnd(length(fsetbarrel)));
             itemcreate(-1, 0, x, y, 0);
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 snd(73);
                 txt(lang(
@@ -4647,7 +4672,7 @@ turn_result_t do_bash()
                     {
                         --cdata[cc].attr_adjs[0];
                         chara_refresh(cc);
-                        if (is_in_fov(cc))
+                        if (fov_player_sees(cc))
                         {
                             txtef(8);
                             txt(lang(
@@ -4663,7 +4688,7 @@ turn_result_t do_bash()
                     {
                         --feat(2);
                         cell_featset(x, y, feat(0), feat(1), feat(2), feat(3));
-                        if (is_in_fov(cc))
+                        if (fov_player_sees(cc))
                         {
                             txt(lang(
                                 u8"扉は少しだけ壊れた。"s,
@@ -4700,7 +4725,7 @@ int do_drink_potion()
     else
     {
         efstatus = inv[ci].curse_state;
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             snd(17);
             txt(lang(
@@ -4873,7 +4898,7 @@ int drink_well()
             {
                 break;
             }
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(
                     ""s + name(cc) + u8"は何かいけないものを飲み込んだ。"s,
@@ -4973,7 +4998,7 @@ int read_scroll()
     efsource = 2;
     if (cdata[cc].blind != 0)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 name(cc) + u8"は何も見えない。"s,
@@ -4986,7 +5011,7 @@ int read_scroll()
     {
         if (rnd(4) != 0)
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(
                     name(cc) + u8"はふらふらした。"s,
@@ -4996,7 +5021,7 @@ int read_scroll()
             return 0;
         }
     }
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txt(lang(
             npcn(cc) + itemname(ci, 1) + u8"を読んだ。"s,
@@ -5033,7 +5058,7 @@ int label_2172()
 {
     if (inv[ci].count <= 0)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 itemname(ci, 1) + u8"を振った。"s,
@@ -5059,7 +5084,7 @@ int label_2172()
         if ((stat == 0 && the_ability_db[efid]->sdataref3 / 1000 * 1000 == 2000)
             || noeffect == 1)
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(
                     itemname(ci, 1) + u8"を振った。"s,
@@ -5069,7 +5094,7 @@ int label_2172()
             goto label_2173_internal;
         }
     }
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txt(lang(
             itemname(ci, 1) + u8"を振った。"s,
@@ -5120,7 +5145,7 @@ int label_2172()
         }
         label_1469(cc);
     }
-    else if (is_in_fov(cc))
+    else if (fov_player_sees(cc))
     {
         txt(lang(
             name(cc) + u8"は杖をうまく使えなかった。"s,
@@ -5147,7 +5172,7 @@ void do_perform()
     int performtips = 0;
     if (cdata[cc].continuous_action_id == 0)
     {
-        if (is_in_fov(cc)) // TODO move rest to continuous action
+        if (fov_player_sees(cc)) // TODO move rest to continuous action
         {
             txt(lang(
                 name(cc) + u8"は"s + itemname(ci) + u8"の演奏をはじめた。"s,
@@ -5167,7 +5192,7 @@ void do_perform()
         ci = cdata[cc].continuous_action_item;
         if (cdata[cc].continuous_action_turn % 10 == 0)
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 if (rnd(10) == 0)
                 {
@@ -5196,7 +5221,7 @@ void do_perform()
                 {
                     cdata[cnt].interest = 100;
                 }
-                if (is_in_fov(cc))
+                if (fov_player_sees(cc))
                 {
                     if (cdata[cnt].vision_flag != msync)
                     {
@@ -5236,7 +5261,7 @@ void do_perform()
                 {
                     if (cdata[tc].hate == 0)
                     {
-                        if (is_in_fov(tc))
+                        if (fov_player_sees(tc))
                         {
                             txt(lang(
                                 name(tc) + u8"は激怒した。"s,
@@ -5255,7 +5280,7 @@ void do_perform()
                 }
                 if (cdata[tc].interest <= 0)
                 {
-                    if (is_in_fov(cc))
+                    if (fov_player_sees(cc))
                     {
                         txtef(9);
                         if (jp)
@@ -5279,7 +5304,7 @@ void do_perform()
                     if (rnd(3) == 0)
                     {
                         cdata[cc].quality_of_performance -= cdata[tc].level / 2;
-                        if (is_in_fov(cc))
+                        if (fov_player_sees(cc))
                         {
                             txtef(9);
                             if (jp)
@@ -5377,7 +5402,7 @@ void do_perform()
                 {
                     if (rnd(3) == 0)
                     {
-                        if (is_in_fov(cc))
+                        if (fov_player_sees(cc))
                         {
                             txtef(9);
                             if (jp)
@@ -5516,7 +5541,7 @@ void do_perform()
             if (gold != 0)
             {
                 cdata[cc].tip_gold += gold;
-                if (is_in_fov(cc))
+                if (fov_player_sees(cc))
                 {
                     snd(11);
                 }
@@ -5593,7 +5618,7 @@ void do_perform()
     }
     if (cdata[cc].tip_gold != 0)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 name(cc) + u8"は合計 "s + cdata[cc].tip_gold
@@ -5902,7 +5927,7 @@ void continuous_action_others()
                     }
                 }
                 p = rnd((i + 1))
-                    * (80 + (is_in_fov(cnt) == 0) * 50
+                    * (80 + (fov_player_sees(cnt) == 0) * 50
                        + dist(
                              cdata[cnt].position.x,
                              cdata[cnt].position.y,
@@ -5916,7 +5941,7 @@ void continuous_action_others()
                 }
                 if (rnd(sdata(13, cnt) + 1) > p)
                 {
-                    if (is_in_fov(cnt))
+                    if (fov_player_sees(cnt))
                     {
                         txt(lang(
                             name(cnt) + u8"は窃盗を見咎めた。"s,
@@ -6411,7 +6436,7 @@ int try_to_cast_spell()
     }
     if (rnd(4) == 0)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 name(cc) + u8"はマナを吸い取られた！"s,
@@ -6429,7 +6454,7 @@ int try_to_cast_spell()
     }
     if (rnd(4) == 0)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             if (cdata[cc].confused != 0)
             {
@@ -6447,7 +6472,7 @@ int try_to_cast_spell()
     }
     if (rnd(4) == 0)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 u8"魔力の渦が何かを召喚した！"s,
@@ -6469,7 +6494,7 @@ int try_to_cast_spell()
         }
         return 0;
     }
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txt(lang(
             name(cc) + u8"は奇妙な力に捻じ曲げられた！"s,

@@ -994,7 +994,7 @@ std::string name(int cc)
     {
         return lang(u8"あなた"s, u8"you"s);
     }
-    if (is_in_fov(cc) == 0)
+    if (fov_player_sees(cc) == 0)
     {
         return lang(u8"何か"s, u8"something"s);
     }
@@ -1027,7 +1027,7 @@ std::string aln(int cc)
     {
         return "";
     }
-    if (is_in_fov(cc) == 0)
+    if (fov_player_sees(cc) == 0)
     {
         return u8"それは";
     }
@@ -1042,7 +1042,7 @@ std::string npcn(int cc)
     {
         return "";
     }
-    if (is_in_fov(cc) == 0)
+    if (fov_player_sees(cc) == 0)
     {
         return u8"それは";
     }
@@ -1180,7 +1180,7 @@ std::string he(int cc, int prm_321)
     {
         return u8"it"s;
     }
-    if (is_in_fov(cc) == 0)
+    if (fov_player_sees(cc) == 0)
     {
         return u8"it"s;
     }
@@ -1233,7 +1233,7 @@ std::string his(int cc, int prm_323)
     {
         return u8"its"s;
     }
-    if (is_in_fov(cc) == 0)
+    if (fov_player_sees(cc) == 0)
     {
         return u8"its"s;
     }
@@ -1278,7 +1278,7 @@ std::string him(int cc, int prm_325)
     {
         return u8"it"s;
     }
-    if (is_in_fov(cc) == 0)
+    if (fov_player_sees(cc) == 0)
     {
         return u8"it"s;
     }
@@ -1316,7 +1316,7 @@ std::string yourself(int x)
     {
         return u8"itself"s;
     }
-    if (is_in_fov(x) == 0)
+    if (fov_player_sees(x) == 0)
     {
         return u8"itself"s;
     }
@@ -1335,7 +1335,7 @@ std::string yourself(int x)
 
 void stxt(int cc, const std::string& str)
 {
-    if (cc == 0 || (is_in_fov(cc) && cdata[0].blind == 0))
+    if (cc == 0 || (fov_player_sees(cc) && cdata[0].blind == 0))
     {
         txt(str);
     }

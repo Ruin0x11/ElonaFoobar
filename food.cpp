@@ -5,6 +5,7 @@
 #include "calc.hpp"
 #include "character.hpp"
 #include "character_status.hpp"
+#include 'damage.hpp'
 #include "elona.hpp"
 #include "event.hpp"
 #include "fov.hpp"
@@ -32,7 +33,7 @@ void continuous_action_eating()
         cdata[cc].continuous_action_id = 1;
         cdata[cc].continuous_action_turn = 8;
         cdata[cc].continuous_action_item = ci;
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             snd(18);
             if (inv[ci].own_state == 1 && cc < 16)
@@ -61,7 +62,7 @@ void continuous_action_eating()
     {
         return;
     }
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txt(lang(
             npcn(cc) + itemname(ci, 1) + u8"を食べ終えた。"s,
@@ -152,7 +153,7 @@ void continuous_action_eating_finish()
     chara_anorexia(cc);
     if ((inv[ci].id == 755 && rnd(3)) || (inv[ci].id == 756 && rnd(10) == 0))
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txtef(8);
             txt(lang(
@@ -298,30 +299,11 @@ void eat_rotten_food()
 }
 
 
-
-void cure_anorexia(int cc)
-{
-    if (cdata[cc].has_anorexia() == 0)
-        return;
-
-    cdata[cc].has_anorexia() = false;
-    if (is_in_fov(cc) || cc < 16)
-    {
-        txt(lang(
-            name(cc) + u8"の拒食症は治った。"s,
-            name(cc) + u8" manage"s + _s(cc)
-                + u8" to recover from anorexia."s));
-        snd(65);
-    }
-}
-
-
-
 void chara_vomit(int prm_876)
 {
     int p_at_m146 = 0;
     ++cdata[prm_876].anorexia_count;
-    if (is_in_fov(prm_876))
+    if (fov_player_sees(prm_876))
     {
         snd(104);
         txt(lang(
@@ -331,7 +313,7 @@ void chara_vomit(int prm_876)
     if (cdata[prm_876].is_pregnant())
     {
         cdata[prm_876].is_pregnant() = false;
-        if (is_in_fov(prm_876))
+        if (fov_player_sees(prm_876))
         {
             txt(lang(
                 name(prm_876) + u8"は体内のエイリアンを吐き出した！"s,
@@ -395,7 +377,7 @@ void chara_vomit(int prm_876)
             if (rnd(5) == 0)
             {
                 cdata[prm_876].has_anorexia() = true;
-                if (is_in_fov(prm_876))
+                if (fov_player_sees(prm_876))
                 {
                     txt(lang(
                         name(prm_876) + u8"は拒食症になった。"s,
@@ -432,7 +414,7 @@ void eatstatus(curse_state_t curse_state, int eater)
     if (is_cursed(curse_state))
     {
         cdata[eater].nutrition -= 1500;
-        if (is_in_fov(eater))
+        if (fov_player_sees(eater))
         {
             txt(lang(
                 name(eater) + u8"は嫌な感じがした。"s,
@@ -442,7 +424,7 @@ void eatstatus(curse_state_t curse_state, int eater)
     }
     else if (curse_state == curse_state_t::blessed)
     {
-        if (is_in_fov(eater))
+        if (fov_player_sees(eater))
         {
             txt(lang(
                 name(eater) + u8"は良い予感がした。"s,
@@ -455,6 +437,25 @@ void eatstatus(curse_state_t curse_state, int eater)
         healsan(eater, 2);
     }
 }
+
+
+
+void cure_anorexia(int cc)
+{
+    if (cdata[cc].has_anorexia() == 0)
+        return;
+
+    cdata[cc].has_anorexia() = false;
+    if (fov_player_sees(cc) || cc < 16)
+    {
+        txt(lang(
+            name(cc) + u8"の拒食症は治った。"s,
+            name(cc) + u8" manage"s + _s(cc)
+                + u8" to recover from anorexia."s));
+        snd(65);
+    }
+}
+
 
 
 
@@ -477,7 +478,7 @@ void sickifcursed(curse_state_t curse_state, int drinker, int prm_882)
 
     if (rnd(prm_882) == 0)
     {
-        if (is_in_fov(drinker))
+        if (fov_player_sees(drinker))
         {
             txt(lang(
                 name(drinker) + u8"は気分が悪くなった。"s,
@@ -1438,7 +1439,7 @@ void apply_general_eating_effect()
     }
     if (ibit(14, ci) == 1)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             txt(lang(
                 u8"これは毒されている！"s + name(cc)
@@ -1535,7 +1536,7 @@ void apply_general_eating_effect()
                     cc,
                     (inv[ci].enchantments[cnt].power / 50 + 1) * 100
                         * (1 + (cc != 0) * 5));
-                if (is_in_fov(cc))
+                if (fov_player_sees(cc))
                 {
                     if (inv[ci].enchantments[cnt].power / 50 + 1 >= 0)
                     {
@@ -1574,7 +1575,7 @@ void apply_general_eating_effect()
             }
             if (enc2 == 6)
             {
-                if (is_in_fov(cc))
+                if (fov_player_sees(cc))
                 {
                     txt(lang(
                         name(cc) + u8"の"s
@@ -1604,7 +1605,7 @@ void apply_general_eating_effect()
 
 void eating_effect_eat_iron()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(8);
         txt(lang(
@@ -1620,7 +1621,7 @@ void eating_effect_eat_iron()
 
 void eating_effect_insanity()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(8);
         txt(lang(
@@ -1636,7 +1637,7 @@ void eating_effect_insanity()
 
 void eating_effect_eat_horse()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(2);
         txt(lang(
@@ -1651,7 +1652,7 @@ void eating_effect_eat_horse()
 
 void eating_effect_eat_holy_one()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(2);
         txt(lang(
@@ -1670,7 +1671,7 @@ void eating_effect_eat_holy_one()
 
 void eating_effect_eat_at()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txt(lang(u8"＠を食べるなんて…"s, u8"You dare to eat @..."s));
     }
@@ -1685,7 +1686,7 @@ void eating_effect_eat_guard()
     {
         return;
     }
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(8);
         txt(lang(u8"ガード達はあなたを憎悪した。"s, u8"Guards hate you."s));
@@ -1698,7 +1699,7 @@ void eating_effect_eat_guard()
 
 void eating_effect_fire()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(2);
         txt(lang(
@@ -1713,7 +1714,7 @@ void eating_effect_fire()
 
 void eating_effect_insanity2()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(8);
         txt(lang(
@@ -1729,7 +1730,7 @@ void eating_effect_insanity2()
 
 void eating_effect_eat_cute_one()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(2);
         txt(lang(
@@ -1744,7 +1745,7 @@ void eating_effect_eat_cute_one()
 
 void eating_effect_eat_lovely_one()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(2);
         txt(lang(
@@ -1759,7 +1760,7 @@ void eating_effect_eat_lovely_one()
 
 void eating_effect_eat_poisonous_one()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(8);
         txt(lang(u8"これは有毒だ！"s, u8"Argh! It's poisonous!"s));
@@ -1772,7 +1773,7 @@ void eating_effect_eat_poisonous_one()
 
 void eating_effect_regeneration()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(2);
         txt(lang(
@@ -1787,7 +1788,7 @@ void eating_effect_regeneration()
 
 void eating_effect_eat_rotten_one()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(8);
         txt(lang(
@@ -1802,7 +1803,7 @@ void eating_effect_eat_rotten_one()
 
 void eating_effect_strength()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(2);
         txt(lang(u8"力が湧いてくるようだ。"s, u8"Mighty taste!"s));
@@ -1815,7 +1816,7 @@ void eating_effect_strength()
 
 void eating_effect_magic()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(2);
         txt(lang(
@@ -1830,7 +1831,7 @@ void eating_effect_magic()
 
 void eating_effect_insanity3()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(8);
         txt(lang(
@@ -1846,7 +1847,7 @@ void eating_effect_insanity3()
 
 void eating_effect_calm()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(2);
         txt(lang(
@@ -1861,7 +1862,7 @@ void eating_effect_calm()
 
 void eating_effect_insanity4()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(8);
         txt(lang(
@@ -1879,7 +1880,7 @@ void eating_effect_insanity4()
 
 void eating_effect_chaos()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(8);
         txt(lang(
@@ -1894,7 +1895,7 @@ void eating_effect_chaos()
 
 void eating_effect_lightning()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(8);
         txt(lang(
@@ -1913,7 +1914,7 @@ void eating_effect_eat_cat()
     {
         return;
     }
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txt(lang(u8"猫を食べるなんて！！"s, u8"How can you eat a cat!!"s));
     }
@@ -1929,7 +1930,7 @@ void eating_effect_ether()
     {
         return;
     }
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(8);
         txt(lang(
@@ -1944,7 +1945,7 @@ void eating_effect_ether()
 
 void eating_effect_constitution()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(2);
         txt(lang(
@@ -1958,7 +1959,7 @@ void eating_effect_constitution()
 
 void eating_effect_magic2()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(2);
         txt(lang(
@@ -1971,7 +1972,7 @@ void eating_effect_magic2()
 
 void eating_effect_strength2()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(2);
         txt(lang(
@@ -1984,7 +1985,7 @@ void eating_effect_strength2()
 
 void eating_effect_will()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(2);
         txt(lang(
@@ -1998,7 +1999,7 @@ void eating_effect_will()
 
 void eating_effect_quick()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txtef(2);
         txt(lang(
@@ -2014,7 +2015,7 @@ void eating_effect_quick()
 
 void eating_effect_pregnant()
 {
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txt(lang(
             u8"何かが"s + name(cc) + u8"の体内に入り込んだ。"s,

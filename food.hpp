@@ -8,10 +8,10 @@ enum class curse_state_t;
 void continuous_action_eating();
 void continuous_action_eating_finish();
 
-int chara_anorexia(int = 0);
 void chara_vomit(int = 0);
 void eatstatus(curse_state_t, int);
 void sickifcursed(curse_state_t, int, int);
+int chara_anorexia(int = 0);
 void cure_anorexia(int = 0);
 void label_2162();
 void eat_rotten_food();

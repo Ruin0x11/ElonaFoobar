@@ -1,8 +1,15 @@
-#include "variables.hpp"
-
-#include "character.hpp"
-#include "item.hpp"
 #include "ability.hpp"
+#include "audio.hpp"
+#include "character.hpp"
+#include "character_status.hpp"
+#include "damage.hpp"
+#include "event.hpp"
+#include "food.hpp"
+#include "item.hpp"
+#include "itemgen.hpp"
+#include "macro.hpp"
+#include "ui.hpp"
+#include "variables.hpp"
 
 namespace elona
 {

@@ -4,6 +4,7 @@
 #include "calc.hpp"
 #include "character.hpp"
 #include "character_status.hpp"
+#include "damage.hpp"
 #include "debug.hpp"
 #include "event.hpp"
 #include "i18n.hpp"
@@ -12,6 +13,7 @@
 #include "item_db.hpp"
 #include "itemgen.hpp"
 #include "map_cell.hpp"
+#include "net.hpp"
 #include "optional.hpp"
 #include "variables.hpp"
 

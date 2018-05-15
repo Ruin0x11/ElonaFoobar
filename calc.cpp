@@ -749,7 +749,7 @@ int calcattackdmg(int prm_894)
         if (cdata[cc].rate_to_pierce > rnd(100))
         {
             pierce = 100;
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txtef(5);
                 txt(lang(u8" *シャキーン* "s, u8"*vopal*"s));
@@ -761,7 +761,7 @@ int calcattackdmg(int prm_894)
         if (ammoproc == 2)
         {
             pierce = 60;
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txtef(5);
                 txt(lang(u8" *ズバシュッ* "s, u8"*vopal*"s));

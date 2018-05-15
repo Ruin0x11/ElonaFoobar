@@ -1,8 +1,17 @@
 #include "damage.hpp"
+#include "ability.hpp"
+#include "audio.hpp"
+#include "buff.hpp"
+#include "character.hpp"
+#include "item.hpp"
+#include "variables.hpp"
 
 
 namespace elona
 {
+
+int dmg_at_m141 = 0;
+int prm_853;
 
 int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
 {
@@ -130,7 +139,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
     cdata[prm_853].hp -= dmg_at_m141;
 
 
-    if (is_in_fov(prm_853))
+    if (fov_player_sees(prm_853))
     {
         add_damage_popup(std::to_string(dmg_at_m141), prm_853, {0, 0, 0});
     }
@@ -296,7 +305,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
         }
         if (dmglevel_at_m141 == 1)
         {
-            if (is_in_fov(prm_853))
+            if (fov_player_sees(prm_853))
             {
                 txtef(11);
                 txt(lang(
@@ -306,7 +315,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
         }
         if (dmglevel_at_m141 == 2)
         {
-            if (is_in_fov(prm_853))
+            if (fov_player_sees(prm_853))
             {
                 txtef(10);
                 txt(lang(
@@ -317,7 +326,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
         }
         if (dmglevel_at_m141 >= 3)
         {
-            if (is_in_fov(prm_853))
+            if (fov_player_sees(prm_853))
             {
                 txtef(3);
                 txt(lang(
@@ -332,7 +341,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
             {
                 cdata[prm_853].hp = cdata[prm_853].max_hp;
             }
-            if (is_in_fov(prm_853))
+            if (fov_player_sees(prm_853))
             {
                 txtef(4);
                 txt(lang(
@@ -369,7 +378,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                         if (f_at_m141)
                         {
                             cdata[prm_853].fear = rnd(20) + 5;
-                            if (is_in_fov(prm_853))
+                            if (fov_player_sees(prm_853))
                             {
                                 txtef(4);
                                 txt(lang(
@@ -557,7 +566,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                 {
                     if (rnd(20) == 0)
                     {
-                        if (is_in_fov(prm_853))
+                        if (fov_player_sees(prm_853))
                         {
                             txtef(4);
                             txt(lang(
@@ -1030,7 +1039,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
         }
         if (cdata[prm_853].breaks_into_debris())
         {
-            if (is_in_fov(prm_853))
+            if (fov_player_sees(prm_853))
             {
                 x = cdata[prm_853].position.x;
                 y = cdata[prm_853].position.y;
@@ -1350,7 +1359,7 @@ void end_dmghp()
 {
     if (cdata[prm_853].is_hung_on_sand_bag())
     {
-        if (is_in_fov(prm_853))
+        if (fov_player_sees(prm_853))
         {
             txt(u8"("s + dmg_at_m141 + u8")"s + lang(u8" "s, ""s));
             if (rnd(20) == 0)
@@ -1510,7 +1519,7 @@ int dmgcon(int prm_818, int prm_819, int prm_820)
             if (cdata[prm_818].blind == 0)
             {
                 cdata[prm_818].blind = p_at_con;
-                if (is_in_fov(prm_818))
+                if (fov_player_sees(prm_818))
                 {
                     txtef(8);
                     txt(lang(
@@ -1555,7 +1564,7 @@ int dmgcon(int prm_818, int prm_819, int prm_820)
             if (cdata[prm_818].confused == 0)
             {
                 cdata[prm_818].confused = p_at_con;
-                if (is_in_fov(prm_818))
+                if (fov_player_sees(prm_818))
                 {
                     txtef(8);
                     txt(lang(
@@ -1597,7 +1606,7 @@ int dmgcon(int prm_818, int prm_819, int prm_820)
             if (cdata[prm_818].paralyzed == 0)
             {
                 cdata[prm_818].paralyzed = p_at_con;
-                if (is_in_fov(prm_818))
+                if (fov_player_sees(prm_818))
                 {
                     txtef(8);
                     txt(lang(
@@ -1639,7 +1648,7 @@ int dmgcon(int prm_818, int prm_819, int prm_820)
             if (cdata[prm_818].poisoned == 0)
             {
                 cdata[prm_818].poisoned = p_at_con;
-                if (is_in_fov(prm_818))
+                if (fov_player_sees(prm_818))
                 {
                     txtef(8);
                     txt(lang(
@@ -1681,7 +1690,7 @@ int dmgcon(int prm_818, int prm_819, int prm_820)
             if (cdata[prm_818].sleep == 0)
             {
                 cdata[prm_818].sleep = p_at_con;
-                if (is_in_fov(prm_818))
+                if (fov_player_sees(prm_818))
                 {
                     txtef(8);
                     txt(lang(
@@ -1732,7 +1741,7 @@ int dmgcon(int prm_818, int prm_819, int prm_820)
             {
                 cdata[prm_818].fear = p_at_con;
             }
-            if (is_in_fov(prm_818))
+            if (fov_player_sees(prm_818))
             {
                 txt(lang(
                     name(prm_818) + u8"は恐怖に侵された。"s,
@@ -1766,7 +1775,7 @@ int dmgcon(int prm_818, int prm_819, int prm_820)
             if (cdata[prm_818].dimmed == 0)
             {
                 cdata[prm_818].dimmed = p_at_con;
-                if (is_in_fov(prm_818))
+                if (fov_player_sees(prm_818))
                 {
                     txtef(8);
                     txt(lang(
@@ -1794,7 +1803,7 @@ int dmgcon(int prm_818, int prm_819, int prm_820)
             if (cdata[prm_818].bleeding == 0)
             {
                 cdata[prm_818].bleeding = p_at_con;
-                if (is_in_fov(prm_818))
+                if (fov_player_sees(prm_818))
                 {
                     txtef(8);
                     txt(lang(
@@ -1819,7 +1828,7 @@ int dmgcon(int prm_818, int prm_819, int prm_820)
             if (cdata[prm_818].drunk == 0)
             {
                 cdata[prm_818].drunk = p_at_con;
-                if (is_in_fov(prm_818))
+                if (fov_player_sees(prm_818))
                 {
                     txt(lang(
                         name(prm_818) + u8"は酔っ払った。"s,
@@ -1842,7 +1851,7 @@ int dmgcon(int prm_818, int prm_819, int prm_820)
             if (cdata[prm_818].insane == 0)
             {
                 cdata[prm_818].insane = p_at_con;
-                if (is_in_fov(prm_818))
+                if (fov_player_sees(prm_818))
                 {
                     txtef(8);
                     txt(lang(
@@ -1867,7 +1876,7 @@ int dmgcon(int prm_818, int prm_819, int prm_820)
             if (cdata[prm_818].sick == 0)
             {
                 cdata[prm_818].sick = p_at_con;
-                if (is_in_fov(prm_818))
+                if (fov_player_sees(prm_818))
                 {
                     txtef(8);
                     txt(lang(
@@ -1953,7 +1962,7 @@ void healcon(int prm_827, int prm_828, int prm_829)
             if (cdata[prm_827].fear <= 0)
             {
                 cdata[prm_827].fear = 0;
-                if (is_in_fov(prm_827))
+                if (fov_player_sees(prm_827))
                 {
                     txt(lang(
                         name(prm_827) + u8"は恐怖から立ち直った。"s,
@@ -1979,7 +1988,7 @@ void healcon(int prm_827, int prm_828, int prm_829)
             if (cdata[prm_827].blind <= 0)
             {
                 cdata[prm_827].blind = 0;
-                if (is_in_fov(prm_827))
+                if (fov_player_sees(prm_827))
                 {
                     txt(lang(
                         name(prm_827) + u8"は盲目から回復した。"s,
@@ -2004,7 +2013,7 @@ void healcon(int prm_827, int prm_828, int prm_829)
             if (cdata[prm_827].confused <= 0)
             {
                 cdata[prm_827].confused = 0;
-                if (is_in_fov(prm_827))
+                if (fov_player_sees(prm_827))
                 {
                     txt(lang(
                         name(prm_827) + u8"は混乱から回復した。"s,
@@ -2030,7 +2039,7 @@ void healcon(int prm_827, int prm_828, int prm_829)
             if (cdata[prm_827].paralyzed <= 0)
             {
                 cdata[prm_827].paralyzed = 0;
-                if (is_in_fov(prm_827))
+                if (fov_player_sees(prm_827))
                 {
                     txt(lang(
                         name(prm_827) + u8"は麻痺から回復した。"s,
@@ -2056,7 +2065,7 @@ void healcon(int prm_827, int prm_828, int prm_829)
             if (cdata[prm_827].poisoned <= 0)
             {
                 cdata[prm_827].poisoned = 0;
-                if (is_in_fov(prm_827))
+                if (fov_player_sees(prm_827))
                 {
                     txt(lang(
                         name(prm_827) + u8"は毒から回復した。"s,
@@ -2082,7 +2091,7 @@ void healcon(int prm_827, int prm_828, int prm_829)
             if (cdata[prm_827].sleep <= 0)
             {
                 cdata[prm_827].sleep = 0;
-                if (is_in_fov(prm_827))
+                if (fov_player_sees(prm_827))
                 {
                     txt(lang(
                         name(prm_827) + u8"は心地よい眠りから覚めた。"s,
@@ -2108,7 +2117,7 @@ void healcon(int prm_827, int prm_828, int prm_829)
             if (cdata[prm_827].dimmed <= 0)
             {
                 cdata[prm_827].dimmed = 0;
-                if (is_in_fov(prm_827))
+                if (fov_player_sees(prm_827))
                 {
                     txt(lang(
                         name(prm_827) + u8"の意識ははっきりした。"s,
@@ -2133,7 +2142,7 @@ void healcon(int prm_827, int prm_828, int prm_829)
             if (cdata[prm_827].bleeding <= 0)
             {
                 cdata[prm_827].bleeding = 0;
-                if (is_in_fov(prm_827))
+                if (fov_player_sees(prm_827))
                 {
                     txt(lang(
                         name(prm_827) + u8"の出血は止まった。"s,
@@ -2157,7 +2166,7 @@ void healcon(int prm_827, int prm_828, int prm_829)
             if (cdata[prm_827].drunk <= 0)
             {
                 cdata[prm_827].drunk = 0;
-                if (is_in_fov(prm_827))
+                if (fov_player_sees(prm_827))
                 {
                     txt(lang(
                         name(prm_827) + u8"の酔いは覚めた。"s,
@@ -2182,7 +2191,7 @@ void healcon(int prm_827, int prm_828, int prm_829)
             if (cdata[prm_827].insane <= 0)
             {
                 cdata[prm_827].insane = 0;
-                if (is_in_fov(prm_827))
+                if (fov_player_sees(prm_827))
                 {
                     txt(lang(
                         name(prm_827) + u8"は正気に戻った。"s,
@@ -2207,7 +2216,7 @@ void healcon(int prm_827, int prm_828, int prm_829)
             if (cdata[prm_827].sick <= 0)
             {
                 cdata[prm_827].sick = 0;
-                if (is_in_fov(prm_827))
+                if (fov_player_sees(prm_827))
                 {
                     txt(lang(
                         name(prm_827) + u8"の病気は治った。"s,
@@ -2227,7 +2236,7 @@ void txteledmg(int type, int attacker, int target, int element)
     case 50:
         if (type == 0)
         {
-            if (is_in_fov(target))
+            if (fov_player_sees(target))
             {
                 txt(lang(
                     name(target) + u8"は燃え上がった。"s,
@@ -2251,7 +2260,7 @@ void txteledmg(int type, int attacker, int target, int element)
     case 51:
         if (type == 0)
         {
-            if (is_in_fov(target))
+            if (fov_player_sees(target))
             {
                 txt(lang(
                     name(target) + u8"は凍えた。"s,
@@ -2276,7 +2285,7 @@ void txteledmg(int type, int attacker, int target, int element)
     case 52:
         if (type == 0)
         {
-            if (is_in_fov(target))
+            if (fov_player_sees(target))
             {
                 txt(lang(
                     name(target) + u8"に電流が走った。"s,
@@ -2301,7 +2310,7 @@ void txteledmg(int type, int attacker, int target, int element)
     case 53:
         if (type == 0)
         {
-            if (is_in_fov(target))
+            if (fov_player_sees(target))
             {
                 txt(lang(
                     name(target) + u8"は闇の力で傷ついた。"s,
@@ -2327,7 +2336,7 @@ void txteledmg(int type, int attacker, int target, int element)
     case 58:
         if (type == 0)
         {
-            if (is_in_fov(target))
+            if (fov_player_sees(target))
             {
                 txt(lang(
                     name(target) + u8"の神経は傷ついた。"s,
@@ -2352,7 +2361,7 @@ void txteledmg(int type, int attacker, int target, int element)
     case 54:
         if (type == 0)
         {
-            if (is_in_fov(target))
+            if (fov_player_sees(target))
             {
                 txt(lang(
                     name(target) + u8"は狂気に襲われた。"s,
@@ -2378,7 +2387,7 @@ void txteledmg(int type, int attacker, int target, int element)
     case 59:
         if (type == 0)
         {
-            if (is_in_fov(target))
+            if (fov_player_sees(target))
             {
                 txt(lang(
                     name(target) + u8"は混沌の渦で傷ついた。"s,
@@ -2404,7 +2413,7 @@ void txteledmg(int type, int attacker, int target, int element)
     case 56:
         if (type == 0)
         {
-            if (is_in_fov(target))
+            if (fov_player_sees(target))
             {
                 txt(lang(
                     name(target) + u8"は冥界の冷気で傷ついた。"s,
@@ -2429,7 +2438,7 @@ void txteledmg(int type, int attacker, int target, int element)
     case 55:
         if (type == 0)
         {
-            if (is_in_fov(target))
+            if (fov_player_sees(target))
             {
                 txt(lang(
                     name(target) + u8"は吐き気を催した。"s,
@@ -2454,7 +2463,7 @@ void txteledmg(int type, int attacker, int target, int element)
     case 57:
         if (type == 0)
         {
-            if (is_in_fov(target))
+            if (fov_player_sees(target))
             {
                 txt(lang(
                     name(target) + u8"は轟音の衝撃を受けた。"s,
@@ -2480,7 +2489,7 @@ void txteledmg(int type, int attacker, int target, int element)
     case 63:
         if (type == 0)
         {
-            if (is_in_fov(target))
+            if (fov_player_sees(target))
             {
                 txt(lang(
                     name(target) + u8"は酸に焼かれた。"s,
@@ -2503,7 +2512,7 @@ void txteledmg(int type, int attacker, int target, int element)
     case 61:
         if (type == 0)
         {
-            if (is_in_fov(target))
+            if (fov_player_sees(target))
             {
                 txt(lang(
                     name(target) + u8"は切り傷を負った。"s,
@@ -2528,7 +2537,7 @@ void txteledmg(int type, int attacker, int target, int element)
     default:
         if (type == 0)
         {
-            if (is_in_fov(target))
+            if (fov_player_sees(target))
             {
                 txt(lang(
                     name(target) + u8"は傷ついた。"s,
@@ -2579,7 +2588,7 @@ void damage_apply_status_effects(int cc)
     {
         if (cdata[cc].choked % 3 == 0)
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(u8"「うぐぐ…！」"s, u8"\"Ughh...!\""s));
             }
@@ -2596,7 +2605,7 @@ void damage_apply_status_effects(int cc)
         --cdata[cc].gravity;
         if (cdata[cc].gravity == 0)
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(
                     name(cc) + u8"は重力から抜け出した。"s,
@@ -2610,7 +2619,7 @@ void damage_apply_status_effects(int cc)
         --cdata[cc].furious;
         if (cdata[cc].furious == 0)
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(
                     name(cc) + u8"はやや落ち着いた。"s,
@@ -2714,7 +2723,7 @@ void damage_apply_status_effects(int cc)
     }
     if (cdata[cc].insane > 0)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             if (rnd(3) == 0)
             {
@@ -2896,7 +2905,7 @@ void get_pregnant()
 {
     if (encfind(tc, 48) != -1)
     {
-        if (is_in_fov(tc))
+        if (fov_player_sees(tc))
         {
             txt(lang(
                 u8"しかしすぐに吐き出した。"s,
@@ -2921,7 +2930,7 @@ void get_pregnant()
 void wet(int cc, int turns)
 {
     cdata[cc].wet += turns;
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txt(lang(
             name(cc) + u8"は濡れた。"s,

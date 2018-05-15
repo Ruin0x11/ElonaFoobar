@@ -949,7 +949,7 @@ void cell_draw()
             if (map(x_, y, 1) != 0)
             {
                 const int c_ = map(x_, y, 1) - 1;
-                if (c_ != 0 && is_in_fov(c_)
+                if (c_ != 0 && fov_player_sees(c_)
                     && (cdata[c_].is_invisible() == 0
                         || cdata[0].can_see_invisible() == 1
                         || cdata[c_].wet != 0))

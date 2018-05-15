@@ -1,4 +1,8 @@
 #include "net.hpp"
+#include "audio.hpp"
+#include "config.hpp"
+#include "input.hpp"
+#include "macro.hpp"
 #include "variables.hpp"
 #include <string>
 

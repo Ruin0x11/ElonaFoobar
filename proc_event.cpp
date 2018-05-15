@@ -1,6 +1,8 @@
 #include "ability.hpp"
+#include "action.hpp"
 #include "animation.hpp"
 #include "audio.hpp"
+#include "building.hpp"
 #include "calc.hpp"
 #include "character.hpp"
 #include "character_status.hpp"

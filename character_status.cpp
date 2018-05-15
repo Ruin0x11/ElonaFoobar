@@ -4,6 +4,7 @@
 #include "character.hpp"
 #include "config.hpp"
 #include "fov.hpp"
+#include "i18n.hpp"
 #include "trait.hpp"
 #include "variables.hpp"
 
@@ -197,7 +198,7 @@ void modweight(int cc, int delta, bool force)
     {
         cdata[cc].weight = 1;
     }
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         if (delta >= 3)
         {
@@ -224,7 +225,7 @@ void modheight(int cc, int delta)
     {
         cdata[cc].height = 1;
     }
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         if (delta > 0)
         {

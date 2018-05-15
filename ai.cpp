@@ -1,10 +1,12 @@
 #include "ai.hpp"
 #include "ability.hpp"
+#include "action.hpp"
 #include "animation.hpp"
 #include "audio.hpp"
 #include "character.hpp"
 #include "character_status.hpp"
 #include "command.hpp"
+#include "damage.hpp"
 #include "item.hpp"
 #include "item_db.hpp"
 #include "itemgen.hpp"
@@ -425,7 +427,7 @@ turn_result_t proc_npc_movement_event(bool retreat)
             if (cdata[cc].enemy_id != tc)
             {
                 cell_swap(cc, tc);
-                if (is_in_fov(cc))
+                if (fov_player_sees(cc))
                 {
                     txt(lang(
                         name(cc) + u8"は"s + name(tc) + u8"を押しのけた。"s,
@@ -436,7 +438,7 @@ turn_result_t proc_npc_movement_event(bool retreat)
                 {
                     if (cdata[tc].continuous_action_turn > 0)
                     {
-                        if (is_in_fov(cc))
+                        if (fov_player_sees(cc))
                         {
                             txt(lang(
                                 name(tc) + u8"は"s + name(cc)
@@ -473,7 +475,7 @@ turn_result_t proc_npc_movement_event(bool retreat)
                                         snd(45);
                                         play_animation(14);
                                         spillfrag(x, y, 2);
-                                        if (is_in_fov(cc))
+                                        if (fov_player_sees(cc))
                                         {
                                             txt(lang(
                                                 name(cc)
@@ -675,7 +677,7 @@ turn_result_t ai_proc_misc_map_events()
     }
     if (cdata[cc].drunk != 0)
     {
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             if (cdatan(2, cc) == u8"cat"s)
             {
@@ -787,7 +789,7 @@ label_2692_internal:
             {
                 if (cdata[cc].id == 35 || cdata[cc].id == 211)
                 {
-                    if (is_in_fov(cc))
+                    if (fov_player_sees(cc))
                     {
                         if (chipm(
                                 0,
@@ -800,7 +802,7 @@ label_2692_internal:
                             {
                                 if (cdata[gdata_fire_giant].state == 1)
                                 {
-                                    if (is_in_fov(gdata_fire_giant))
+                                    if (fov_player_sees(gdata_fire_giant))
                                     {
                                         flt();
                                         int stat =
@@ -986,7 +988,7 @@ label_2692_internal:
         }
         if (cdata[cc].id == 320 || cdata[cc].id == 280)
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 tc = 0;
                 distance = dist(
@@ -1004,7 +1006,7 @@ label_2692_internal:
                         int stat = itemcreate(cc, 698, -1, -1, 0);
                         if (stat == 1)
                         {
-                            if (is_in_fov(cc))
+                            if (fov_player_sees(cc))
                             {
                                 txtef(9);
                                 txt(lang(

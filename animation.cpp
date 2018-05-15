@@ -28,7 +28,7 @@ elona_vector1<int> ay2;
 
 void play_animation_8(int anicol)
 {
-    if (is_in_fov(cc) == 0)
+    if (fov_player_sees(cc) == 0)
         return;
 
     prepare_item_image(10, anicol);
@@ -61,7 +61,7 @@ void play_animation_8(int anicol)
 
 void play_animation_6_5_7_11(int animeid, int anicol)
 {
-    if (is_in_fov(tc) == 0)
+    if (fov_player_sees(tc) == 0)
         return;
 
     if (animeid == 6)
@@ -383,7 +383,7 @@ void play_animation_0(int anicol, int anisound)
 
 void play_animation_15()
 {
-    if (is_in_fov(cc) == 0)
+    if (fov_player_sees(cc) == 0)
     {
         return;
     }
@@ -431,7 +431,7 @@ void play_animation_15()
 
 void play_animation_ranged_attack(int animeid, int anicol, int anisound)
 {
-    if (is_in_fov(cc) == 0)
+    if (fov_player_sees(cc) == 0)
     {
         return;
     }
@@ -646,7 +646,7 @@ void play_animation_12()
 void play_animation_20()
 {
     snd(107);
-    if (is_in_fov(anic) == 0)
+    if (fov_player_sees(anic) == 0)
     {
         return;
     }

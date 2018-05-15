@@ -69,12 +69,12 @@ void initialize_fovmap_and_fovlist()
 }
 
 
-bool is_in_fov(const position_t& pos)
+bool fov_player_sees(const position_t& pos)
 {
     return mapsync(pos.x, pos.y) == msync;
 }
 
-bool is_in_fov(int cc)
+bool fov_player_sees(int cc)
 {
     return cdata[cc].vision_flag == msync || cc == gdata_mount;
 }

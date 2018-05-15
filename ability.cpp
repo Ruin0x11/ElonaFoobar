@@ -1,6 +1,9 @@
 #include "ability.hpp"
+#include "audio.hpp"
 #include "cat.hpp"
 #include "character.hpp"
+#include "character_status.hpp"
+#include "fov.hpp"
 #include "i18n.hpp"
 #include "range.hpp"
 #include "variables.hpp"
@@ -561,6 +564,10 @@ void skillgain(int cc, int id, int initial_level, int stock)
 }
 
 
+int lv_at_m77 = 0;
+int exp_at_m77 = 0;
+int growth_at_m77 = 0;
+int lvchange_at_m77 = 0;
 
 int skillmod(int id, int cc, int experience)
 {
@@ -587,7 +594,7 @@ int skillmod(int id, int cc, int experience)
         sdata.get(id, cc).original_level = clamp(lv_at_m77, 0, 2000);
         sdata.get(id, cc).experience = exp_at_m77;
         sdata.get(id, cc).potential = growth_at_m77;
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             if (cc == 0 || cc < 16)
             {
@@ -628,7 +635,7 @@ int skillmod(int id, int cc, int experience)
         sdata.get(id, cc).potential = growth_at_m77;
         if (cc == 0 || cc < 16)
         {
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 if (lvchange_at_m77 != 0)
                 {
@@ -741,7 +748,7 @@ int skillexp(int id, int cc, int experience, int prm_572, int prm_573)
         sdata.get(id, cc).original_level = clamp(lv_at_m77, 0, 2000);
         sdata.get(id, cc).experience = exp_at_m77;
         sdata.get(id, cc).potential = growth_at_m77;
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             if (cc == 0 || cc < 16)
             {
@@ -781,7 +788,7 @@ int skillexp(int id, int cc, int experience, int prm_572, int prm_573)
         sdata.get(id, cc).original_level = clamp(lv_at_m77, 0, 2000);
         sdata.get(id, cc).experience = exp_at_m77;
         sdata.get(id, cc).potential = growth_at_m77;
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             if (cc == 0 || cc < 16)
             {

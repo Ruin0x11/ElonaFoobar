@@ -1637,7 +1637,7 @@ int item_fire(int prm_840, int prm_841)
                     {
                         if (prm_840 == -1)
                         {
-                            if (is_in_fov(inv[ci_at_m138].position))
+                            if (fov_player_sees(inv[ci_at_m138].position))
                             {
                                 txtef(11);
                                 txt(lang(
@@ -1654,7 +1654,7 @@ int item_fire(int prm_840, int prm_841)
                         }
                         if (prm_840 != -1)
                         {
-                            if (is_in_fov(prm_840))
+                            if (fov_player_sees(prm_840))
                             {
                                 txtef(11);
                                 txt(lang(
@@ -1710,7 +1710,7 @@ int item_fire(int prm_840, int prm_841)
                 {
                     if (inv[ti_at_m138].number > 0)
                     {
-                        if (is_in_fov(prm_840))
+                        if (fov_player_sees(prm_840))
                         {
                             txt(lang(
                                 itemname(ti_at_m138, 1) + u8"が"s
@@ -1727,7 +1727,7 @@ int item_fire(int prm_840, int prm_841)
                         else if (rnd(20) == 0)
                         {
                             --inv[ti_at_m138].number;
-                            if (is_in_fov(prm_840))
+                            if (fov_player_sees(prm_840))
                             {
                                 txt(lang(
                                     itemname(ti_at_m138, 1)
@@ -1745,7 +1745,7 @@ int item_fire(int prm_840, int prm_841)
                 {
                     if (inv[ci_at_m138].body_part != 0)
                     {
-                        if (is_in_fov(prm_840))
+                        if (fov_player_sees(prm_840))
                         {
                             txtef(8);
                             txt(lang(
@@ -1763,7 +1763,7 @@ int item_fire(int prm_840, int prm_841)
                         inv[ci_at_m138].body_part = 0;
                         chara_refresh(prm_840);
                     }
-                    else if (is_in_fov(prm_840))
+                    else if (fov_player_sees(prm_840))
                     {
                         txtef(8);
                         txt(lang(
@@ -1776,7 +1776,7 @@ int item_fire(int prm_840, int prm_841)
                                 + u8" to dust."s));
                     }
                 }
-                else if (is_in_fov(inv[ci_at_m138].position))
+                else if (fov_player_sees(inv[ci_at_m138].position))
                 {
                     txtef(8);
                     txt(lang(

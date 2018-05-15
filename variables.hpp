@@ -162,6 +162,13 @@ ELONA_EXTERN(int movy);
 ELONA_EXTERN(int dbg_freemove);
 ELONA_EXTERN(int ri);
 
+// action.cpp
+ELONA_EXTERN(int digx);
+ELONA_EXTERN(int digy);
+
+// random_event.cpp
+ELONA_EXTERN(elona_vector1<int> fsetremain);
+ELONA_EXTERN(int dbg_skipevent);
 
 ELONA_EXTERN(elona_vector1<int> _randcolor);
 ELONA_EXTERN(elona_vector1<int> aniref);
@@ -1075,6 +1082,7 @@ void label_2702();
 void show_game_help();
 turn_result_t show_chat_history();
 turn_result_t show_message_log();
+turn_result_t proc_movement_event();
 void initialize_jkey();
 void label_2720();
 void set_option();
@@ -1167,6 +1175,7 @@ void windowanimecorner(int = 0, int = 0, int = 0, int = 0, int = 0, int = 0);
 void cs_listbk();
 void cs_list(bool, const std::string&, int, int, int = 0, int = 0, int = 0);
 void cell_draw();
+void csvsort(elona_vector1<std::string>&, std::string, int);
 
 template <typename T>
 void txt()

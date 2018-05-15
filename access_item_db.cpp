@@ -1,4 +1,5 @@
 #include <unordered_map>
+#include "action.hpp"
 #include "character.hpp"
 #include "elona.hpp"
 #include "filesystem.hpp"

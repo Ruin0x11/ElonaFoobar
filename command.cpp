@@ -1,5 +1,6 @@
 #include "command.hpp"
 #include "ability.hpp"
+#include "action.hpp"
 #include "animation.hpp"
 #include "audio.hpp"
 #include "calc.hpp"
@@ -9,9 +10,11 @@
 #include "config.hpp"
 #include "crafting.hpp"
 #include "ctrl_file.hpp"
+#include "damage.hpp"
 #include "enchantment.hpp"
 #include "food.hpp"
 #include "fov.hpp"
+#include "gathering.hpp"
 #include "i18n.hpp"
 #include "input.hpp"
 #include "item.hpp"
@@ -546,7 +549,7 @@ turn_result_t do_pray_command()
 turn_result_t do_throw_command()
 {
     int ccthrowpotion = 0;
-    if (is_in_fov(cc))
+    if (fov_player_sees(cc))
     {
         txt(lang(
             name(cc) + u8"は"s + itemname(ci, 1) + u8"を投げた。"s,
@@ -674,7 +677,7 @@ turn_result_t do_throw_command()
     {
         if (inv[ci].id != 601)
         {
-            if (is_in_fov({tlocx, tlocy}))
+            if (fov_player_sees({tlocx, tlocy}))
             {
                 if (inv[ci].id == 587)
                 {
@@ -688,7 +691,7 @@ turn_result_t do_throw_command()
             if (map(tlocx, tlocy, 1) != 0)
             {
                 tc = map(tlocx, tlocy, 1) - 1;
-                if (is_in_fov(tc))
+                if (fov_player_sees(tc))
                 {
                     txt(lang(
                         name(tc) + u8"に見事に命中した！"s,
@@ -698,7 +701,7 @@ turn_result_t do_throw_command()
                 rowact_check(tc);
                 if (inv[ci].id == 587)
                 {
-                    if (is_in_fov(tc))
+                    if (fov_player_sees(tc))
                     {
                         if (tc != 0)
                         {
@@ -719,14 +722,14 @@ turn_result_t do_throw_command()
                 }
                 if (inv[ci].id == 772)
                 {
-                    if (is_in_fov(tc))
+                    if (fov_player_sees(tc))
                     {
                         txtef(4);
                         txt(lang(u8" *ぷちゅ* "s, u8"*crumble*"s));
                     }
                     if (inv[ci].param3 == -1)
                     {
-                        if (is_in_fov(tc))
+                        if (fov_player_sees(tc))
                         {
                             txtef(4);
                             txt(lang(
@@ -761,7 +764,7 @@ turn_result_t do_throw_command()
                         p = list(0, cnt);
                         if (inv[p].id == 541)
                         {
-                            if (is_in_fov({tlocx, tlocy}))
+                            if (fov_player_sees({tlocx, tlocy}))
                             {
                                 txt(lang(
                                     itemname(p, 1)
@@ -787,14 +790,14 @@ turn_result_t do_throw_command()
                 {
                     return turn_result_t::turn_end;
                 }
-                if (is_in_fov({tlocx, tlocy}))
+                if (fov_player_sees({tlocx, tlocy}))
                 {
                     txt(lang(
                         u8"それは地面に落ちて溶けた。"s,
                         u8"It falls on the ground and melts."s));
                 }
             }
-            else if (is_in_fov({tlocx, tlocy}))
+            else if (fov_player_sees({tlocx, tlocy}))
             {
                 txt(lang(
                     u8"それは地面に落ちて砕けた。"s,
@@ -802,7 +805,7 @@ turn_result_t do_throw_command()
             }
             if (inv[ci].id == 772)
             {
-                if (is_in_fov({tlocx, tlocy}))
+                if (fov_player_sees({tlocx, tlocy}))
                 {
                     txtef(4);
                     txt(lang(u8" *ぷちゅ* "s, u8"*crumble*"s));
@@ -835,7 +838,7 @@ turn_result_t do_throw_command()
             return turn_result_t::turn_end;
         }
     }
-    if (is_in_fov({tlocx, tlocy}))
+    if (fov_player_sees({tlocx, tlocy}))
     {
         txt(lang(
             u8"それは地面に落ちて砕けた。"s,
@@ -1916,7 +1919,7 @@ turn_result_t do_use_command()
         }
         flt();
         itemcreate(-1, 541, cdata[0].position.x, cdata[0].position.y, 0);
-        if (is_in_fov(cc))
+        if (fov_player_sees(cc))
         {
             snd(86);
             txt(lang(
@@ -3611,7 +3614,7 @@ turn_result_t do_eat_command()
         if (tc != cc)
         {
             rowactend(tc);
-            if (is_in_fov(cc))
+            if (fov_player_sees(cc))
             {
                 txt(lang(
                     name(cc) + u8"は"s + name(tc) + u8"の食べ物を横取りした。"s,

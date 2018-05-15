@@ -1,9 +1,16 @@
 #include "buff.hpp"
 #include "cat.hpp"
+#include "character.hpp"
+#include "fov.hpp"
+#include "elona.hpp"
+#include "ability.hpp"
+#include "random.hpp"
+#include "variables.hpp"
 
 #include <iostream>
 
 using namespace elona;
+using namespace std::string_literals;
 
 
 namespace elona
@@ -110,7 +117,7 @@ int addbuff(int prm_801, int prm_802, int prm_803, int prm_804)
     }
     if (p_at_m132 == -2)
     {
-        if (is_in_fov(prm_801))
+        if (fov_player_sees(prm_801))
         {
             txt(lang(
                 u8"しかし、効果はなかった。"s,
@@ -167,7 +174,7 @@ int addbuff(int prm_801, int prm_802, int prm_803, int prm_804)
         }
         if (f_at_m132 == 1)
         {
-            if (is_in_fov(prm_801))
+            if (fov_player_sees(prm_801))
             {
                 txt(lang(
                     name(prm_801) + u8"は抵抗した。"s,
@@ -182,7 +189,7 @@ int addbuff(int prm_801, int prm_802, int prm_803, int prm_804)
         }
     }
     if (the_buff_db[prm_802]->type != buff_data::type_t::food
-        && is_in_fov(prm_801))
+        && fov_player_sees(prm_801))
     {
         txt(lang(
             name(prm_801)
