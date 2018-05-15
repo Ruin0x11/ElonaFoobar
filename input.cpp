@@ -1,6 +1,7 @@
 #include "input.hpp"
 #include "audio.hpp"
 #include "blending.hpp"
+#include "character.hpp"
 #include "config.hpp"
 #include "elona.hpp"
 #include "variables.hpp"

@@ -6,6 +6,7 @@
 #include "calc.hpp"
 #include "character.hpp"
 #include "config.hpp"
+#include "damage.hpp"
 #include "fish.hpp"
 #include "item.hpp"
 #include "itemgen.hpp"

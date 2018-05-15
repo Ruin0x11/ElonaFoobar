@@ -1,4 +1,5 @@
 #include "ability.hpp"
+#include "action.hpp"
 #include "animation.hpp"
 #include "audio.hpp"
 #include "buff.hpp"
@@ -13,6 +14,7 @@
 #include "enchantment.hpp"
 #include "food.hpp"
 #include "fov.hpp"
+#include "gathering.hpp"
 #include "i18n.hpp"
 #include "input.hpp"
 #include "item.hpp"

@@ -83,9 +83,6 @@ namespace elona
 {
 
 
-int prm_518;
-int prm_818;
-int prm_820;
 
 elona_vector1<int> inhlist;
 
@@ -104,50 +101,15 @@ int x2_at_m105 = 0;
 int y2_at_m105 = 0;
 int dx_at_m133 = 0;
 elona_vector1<int> dy_at_m133;
-int f_at_con = 0;
-int res_at_con = 0;
-int p_at_con = 0;
 int dx_at_m136 = 0;
 int dy_at_m136 = 0;
-int rtdmg = 0;
-std::string ndeathcause;
-int catitem = 0;
-int rollanatomy = 0;
-std::string url_at_m147;
-std::string chatsendurl;
-std::string conurl_at_m147;
-elona_vector1<std::string> cgiurl3;
-std::string votesendurl;
-elona_vector1<std::string> cgiurl2;
-std::string chatnew;
-std::string textreadurl;
-std::string chatreadurl;
-std::string votereadurl;
-int chatturn = 0;
 int refdiff = 0;
-int pcnoise = 0;
 int traveldone = 0;
 elona_vector1<int> fsetincome;
-elona_vector1<int> fsetperform;
 elona_vector1<int> fsetrare;
-elona_vector1<int> fsetplantartifact;
-elona_vector1<int> fsetplantunknown;
-elona_vector1<int> fsetbarrel;
-elona_vector1<int> isetgiftminor;
-elona_vector1<int> isetgiftmajor;
-elona_vector1<int> isetgiftgrand;
 int cibk = 0;
 int n_at_m174 = 0;
 std::string s_at_m174;
-int cansee = 0;
-int kdx = 0;
-int kdy = 0;
-int mousex = 0;
-int mousey = 0;
-int findlocmode = 0;
-int tgloc = 0;
-int tglocx = 0;
-int tglocy = 0;
 std::string fileext;
 std::string filedsc;
 int lenhead = 0;
@@ -166,9 +128,6 @@ int cun = 0;
 elona_vector1<int> unaiactsubfreq;
 elona_vector1<int> bmpbuff;
 std::string usertitle;
-std::string dbm;
-int dbg_exitshowroom = 0;
-int noeffect = 0;
 int dirsub = 0;
 int ct = 0;
 

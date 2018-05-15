@@ -3,11 +3,21 @@
 #include "config.hpp"
 #include "input.hpp"
 #include "macro.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 #include <string>
 
 namespace elona
 {
+std::string url_at_m147;
+std::string chatsendurl;
+std::string conurl_at_m147;
+elona_vector1<std::string> cgiurl3;
+elona_vector1<std::string> cgiurl2;
+std::string votesendurl;
+std::string textreadurl;
+std::string chatreadurl;
+std::string votereadurl;
 
 int net_send(const std::string& prm_883, int prm_884)
 {

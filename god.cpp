@@ -1,7 +1,13 @@
 #include "god.hpp"
 #include <iostream>
+#include "ability.hpp"
+#include "animation.hpp"
+#include "audio.hpp"
+#include "character.hpp"
 #include "elona.hpp"
 #include "i18n.hpp"
+#include "item.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 
 

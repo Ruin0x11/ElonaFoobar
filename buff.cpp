@@ -1,9 +1,10 @@
 #include "buff.hpp"
+#include "ability.hpp"
 #include "cat.hpp"
 #include "character.hpp"
-#include "fov.hpp"
 #include "elona.hpp"
-#include "ability.hpp"
+#include "fov.hpp"
+#include "i18n.hpp"
 #include "random.hpp"
 #include "variables.hpp"
 

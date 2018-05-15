@@ -1,9 +1,18 @@
 #include "plant.hpp"
+#include "ability.hpp"
+#include "audio.hpp"
+#include "map.hpp"
+#include "character.hpp"
+#include "map_cell.hpp"
+#include "item.hpp"
+#include "itemgen.hpp"
+#include "ui.hpp"
+#include "variables.hpp"
 
 namespace elona
 {
 
-
+enum class turn_result_t;
 
 turn_result_t do_plant()
 {

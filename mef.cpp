@@ -2,6 +2,7 @@
 #include "ability.hpp"
 #include "audio.hpp"
 #include "character.hpp"
+#include "damage.hpp"
 #include "event.hpp"
 #include "fov.hpp"
 #include "item.hpp"

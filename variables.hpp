@@ -20,6 +20,7 @@ ELONA_EXTERN(int anic);
 ELONA_EXTERN(elona_vector1<int> ap);
 ELONA_EXTERN(int wishfilter);
 ELONA_EXTERN(int nooracle);
+
 // casino.cpp / casino_card.cpp
 ELONA_EXTERN(int atxthrough);
 ELONA_EXTERN(std::string atxbg);
@@ -165,10 +166,38 @@ ELONA_EXTERN(int ri);
 // action.cpp
 ELONA_EXTERN(int digx);
 ELONA_EXTERN(int digy);
+ELONA_EXTERN(int rtdmg);
+ELONA_EXTERN(elona_vector1<int> isetgiftminor);
+ELONA_EXTERN(elona_vector1<int> isetgiftmajor);
+ELONA_EXTERN(elona_vector1<int> isetgiftgrand);
+ELONA_EXTERN(int mousex);
+ELONA_EXTERN(int mousey);
+ELONA_EXTERN(int findlocmode);
+ELONA_EXTERN(int kdx);
+ELONA_EXTERN(int kdy);
+ELONA_EXTERN(int cansee);
+ELONA_EXTERN(int tgloc);
+ELONA_EXTERN(int tglocx);
+ELONA_EXTERN(int tglocy);
+ELONA_EXTERN(int noeffect);
+ELONA_EXTERN(elona_vector1<int> fsetperform);
+ELONA_EXTERN(elona_vector1<int> fsetplantartifact);
+ELONA_EXTERN(elona_vector1<int> fsetplantunknown);
+ELONA_EXTERN(elona_vector1<int> fsetbarrel);
+ELONA_EXTERN(int pcnoise);
 
 // random_event.cpp
 ELONA_EXTERN(elona_vector1<int> fsetremain);
 ELONA_EXTERN(int dbg_skipevent);
+
+// damage.cpp
+ELONA_EXTERN(std::string ndeathcause);
+ELONA_EXTERN(int rollanatomy);
+ELONA_EXTERN(int catitem);
+
+// net.cpp
+ELONA_EXTERN(int chatturn);
+ELONA_EXTERN(std::string chatnew);
 
 ELONA_EXTERN(elona_vector1<int> _randcolor);
 ELONA_EXTERN(elona_vector1<int> aniref);

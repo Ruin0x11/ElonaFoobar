@@ -5,6 +5,7 @@
 #include "character.hpp"
 #include "command.hpp"
 #include "config.hpp"
+#include "damage.hpp"
 #include "draw.hpp"
 #include "elona.hpp"
 #include "enums.hpp"

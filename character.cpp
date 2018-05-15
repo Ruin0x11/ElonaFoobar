@@ -2,6 +2,7 @@
 #include <cassert>
 #include <type_traits>
 #include "ability.hpp"
+#include "audio.hpp"
 #include "calc.hpp"
 #include "cat.hpp"
 #include "character_status.hpp"

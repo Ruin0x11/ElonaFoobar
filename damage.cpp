@@ -1,9 +1,21 @@
 #include "damage.hpp"
 #include "ability.hpp"
+#include "animation.hpp"
 #include "audio.hpp"
 #include "buff.hpp"
 #include "character.hpp"
+#include "character_status.hpp"
+#include "config.hpp"
+#include "debug.hpp"
+#include "draw.hpp"
+#include "enchantment.hpp"
+#include "event.hpp"
+#include "fov.hpp"
+#include "map_cell.hpp"
+#include "mef.hpp"
+#include "i18n.hpp"
 #include "item.hpp"
+#include "quest.hpp"
 #include "variables.hpp"
 
 
@@ -12,6 +24,11 @@ namespace elona
 
 int dmg_at_m141 = 0;
 int prm_853;
+int prm_818;
+int prm_820;
+int f_at_con = 0;
+int p_at_con = 0;
+int res_at_con = 0;
 
 int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
 {

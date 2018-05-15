@@ -2,7 +2,9 @@
 #include "ability.hpp"
 #include "action.hpp"
 #include "animation.hpp"
-#include "audio.hpp"
+#include "audio.hpp" // TODO separate entirely
+#include "buff.hpp"
+#include "building.hpp"
 #include "calc.hpp"
 #include "card.hpp"
 #include "character.hpp"
@@ -25,6 +27,7 @@
 #include "map_cell.hpp"
 #include "mef.hpp"
 #include "menu.hpp"
+#include "plant.hpp"
 #include "quest.hpp"
 #include "shop.hpp"
 #include "snail/application.hpp"

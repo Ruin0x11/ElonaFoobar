@@ -1,4 +1,5 @@
 #include "ability.hpp"
+#include "action.hpp"
 #include "audio.hpp"
 #include "building.hpp"
 #include "calc.hpp"

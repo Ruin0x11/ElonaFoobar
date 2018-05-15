@@ -1,12 +1,21 @@
 #include "action.hpp"
 #include "ability.hpp"
+#include "animation.hpp"
 #include "audio.hpp"
+#include "building.hpp"
+#include "buff.hpp"
 #include "calc.hpp"
 #include "character.hpp"
 #include "character_status.hpp"
 #include "config.hpp"
+#include "command.hpp" // TODO separate entirely
+#include "ctrl_file.hpp"
 #include "damage.hpp"
+#include "debug.hpp"
 #include "draw.hpp"
+#include "enchantment.hpp"
+#include "event.hpp"
+#include "food.hpp"
 #include "fov.hpp"
 #include "gathering.hpp"
 #include "i18n.hpp"
@@ -17,8 +26,12 @@
 #include "log.hpp"
 #include "macro.hpp"
 #include "map_cell.hpp"
+#include "mef.hpp"
+#include "menu.hpp"
+#include "quest.hpp"
 #include "ui.hpp"
 #include "variables.hpp"
+#include "version.hpp"
 
 namespace elona
 {
@@ -27,6 +40,8 @@ int r3 = 0;
 int extraattack = 0;
 int attackitem = 0;
 int inumbk = 0;
+std::string dbm;
+int dbg_exitshowroom = 0;
 
 void do_thing_that_feels_good()
 {
@@ -4791,7 +4806,7 @@ int drink_well()
         name(cc) + u8"は"s + valn + u8"の水をすくって飲んだ。"s,
         name(cc) + u8" draw"s + _s(cc) + u8" water from "s + valn + u8"."s));
     tc = cc;
-    cibk = ci;
+    int cibk = ci;
     p = rnd(100);
     for (int cnt = 0; cnt < 1; ++cnt)
     {

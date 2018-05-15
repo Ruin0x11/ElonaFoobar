@@ -29,6 +29,7 @@ int ti_at_m138 = 0;
 elona_vector1<int> list_at_m138;
 int f_at_m138 = 0;
 int a_at_m138 = 0;
+int prm_518;
 
 
 item::item()
