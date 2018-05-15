@@ -19,6 +19,7 @@
 #include "crafting.hpp"
 #include "ctrl_file.hpp"
 #include "debug.hpp"
+#include "dmgheal.hpp"
 #include "draw.hpp"
 #include "elona.hpp"
 #include "enchantment.hpp"

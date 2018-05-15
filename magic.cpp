@@ -7,6 +7,7 @@
 #include "character_status.hpp"
 #include "config.hpp"
 #include "ctrl_file.hpp"
+#include "dmgheal.hpp"
 #include "debug.hpp"
 #include "elona.hpp"
 #include "enchantment.hpp"

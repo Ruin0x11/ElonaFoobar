@@ -1,4 +1,15 @@
 #include "lua.hpp"
+#include "character.hpp"
+#include "dmgheal.hpp"
+#include "enchantment.hpp"
+#include "fov.hpp"
+#include "item.hpp"
+#include "log.hpp"
+#include "map.hpp"
+#include "map_cell.hpp"
+#include "position.hpp"
+#include "status_ailment.hpp"
+#include "variables.hpp"
 
 namespace elona
 {
@@ -10,59 +21,11 @@ namespace Chara {
 bool is_alive(const character&);
 bool is_player(const character&);
 bool is_ally(const character&);
-character player();
+character& player();
 
 void mut_damage_hp(character&, int, int);
-void mut_damage_con(character&, int, int);
+void mut_damage_con(character&, status_ailment_t, int);
 };
-
-namespace Skill {
-//int level();
-}
-
-namespace Pos {
-int dist(const position_t&, const position_t&);
-}
-
-namespace World {
-int time();
-};
-
-namespace Magic {
-void cast(int, int, const position_t&);
-}
-
-namespace Map {
-int blocked(const position_t&);
-position_t bound_within(const position_t&);
-bool can_access(const position_t&);
-position_t random_pos();
-}
-
-namespace Fov {
-bool los(const position_t&, const position_t&);
-bool can_see(const character&);
-};
-
-namespace Rand {
-int rnd(int);
-bool one_in(int);
-bool coinflip();
-};
-
-namespace Item {
-bool has_enchantment(const item&, int);
-}
-
-namespace GUI {
-void txt(const std::string&);
-};
-
-namespace Registry {
-void set_on_event(const std::string&, const sol::function&);
-void register_chara_init(const sol::function&);
-}
-
 
 bool Chara::is_alive(const character& chara)
 {
@@ -79,27 +42,35 @@ bool Chara::is_ally(const character& chara)
     return chara.id <= 16; // TODO
 }
 
-character Chara::player()
+character& Chara::player()
 {
     return elona::cdata[0];
 }
 
 void Chara::mut_damage_hp(character& chara, int damage, int type)
 {
-    elona::dmghp(chara.id, damage, type); // TODO
+    dmghp(chara.id, damage, type); // TODO
 }
 
-void Chara::mut_damage_con(character& chara, int damage, int type)
+void Chara::mut_damage_con(character& chara, status_ailment_t type, int power)
 {
-    elona::dmgcon(chara.id, damage, type); // TODO
+    dmgcon(chara.id, type, power); // TODO
 }
 
+
+namespace Pos {
+int dist(const position_t&, const position_t&);
+}
 
 int Pos::dist(const position_t& from, const position_t& to)
 {
     return elona::dist(from.x, from.y, to.x, to.y);
 }
 
+
+namespace World {
+int time();
+};
 
 int World::time()
 {
@@ -109,6 +80,10 @@ int World::time()
         + gdata_year * 24 * 30 * 12;
 }
 
+
+namespace Magic {
+void cast(int, int, const position_t&);
+}
 
 void Magic::cast(int efid, int efp, const position_t& pos)
 {
@@ -126,11 +101,18 @@ void Magic::cast(int efid, int efp, const position_t& pos)
 }
 
 
+namespace Map {
+int blocked(const position_t&);
+position_t bound_within(const position_t&);
+bool can_access(const position_t&);
+position_t random_pos();
+}
 
 int Map::blocked(const position_t& pos)
 {
     return elona::map(pos.x, pos.y, 0) == 0;
 }
+
 
 position_t Map::bound_within(const position_t& pos)
 {
@@ -161,6 +143,11 @@ position_t Map::random_pos()
 }
 
 
+namespace Fov {
+bool los(const position_t&, const position_t&);
+bool can_see(const character&);
+};
+
 bool Fov::los(const position_t& from, const position_t& to)
 {
     return elona::fov_los(from.x, from.y, to.x, to.y) == 1;
@@ -170,6 +157,13 @@ bool Fov::can_see(const character& chara)
 {
     return elona::is_in_fov(chara.id); // TODO
 }
+
+
+namespace Rand {
+int rnd(int);
+bool one_in(int);
+bool coinflip();
+};
 
 
 int Rand::rnd(int n)
@@ -188,18 +182,27 @@ bool Rand::coinflip()
 }
 
 
+namespace Item {
+bool has_enchantment(const item&, int);
+}
+
 bool Item::has_enchantment(const item& item, int id)
 {
     return elona::encfindspec(item.id, id); //TODO
 }
 
 
+namespace GUI {
+void txt(const std::string&);
+};
+
 void GUI::txt(const std::string& str)
 {
     elona::txt(str);
 }
 
-void init_api(sol::state& state)
+
+void init_api(std::unique_ptr<sol::state>& state)
 {
     state.get()->new_usertype<position_t>( "position",
                                          sol::constructors<position_t()>()
@@ -223,6 +226,7 @@ void init_api(sol::state& state)
     sol::table Rand = Elona.create_named("Rand");
     Rand.set_function("rnd", Rand::rnd);
     Rand.set_function("one_in", Rand::one_in);
+    Rand.set_function("coinflip", Rand::coinflip);
 
     sol::table Magic = Elona.create_named("Magic");
     Magic.set_function("cast", Magic::cast);

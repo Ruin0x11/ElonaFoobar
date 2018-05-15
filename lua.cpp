@@ -1,12 +1,7 @@
 #include "lua.hpp"
-#include "map.hpp"
-#include "damage.hpp"
 #include "elona.hpp"
-#include "character.hpp"
-#include "item.hpp"
-#include "position.hpp"
-#include "variables.hpp"
 #include "log.hpp"
+#include "variables.hpp"
 #include <vector>
 #include <map>
 
@@ -123,24 +118,31 @@ const sol::optional<sol::protected_function>& get_character_init_callback()
     return (*sol.get())["Global"]["Init"];
 }
 
-void initialize_mod_data_for_chara(int chara, const std::string& mod_name, sol::table& data_table)
+void report_error(sol::error err)
+{
+    std::string what = err.what();
+    ELONA_LOG(what);
+}
+
+void initialize_mod_data_for_chara(int chara, const std::string& mod_name, sol::table& data)
 {
     sol::optional<sol::protected_function> func = get_character_init_callback();
     if(func && func.value() != sol::nil) {
-        auto initial_mod_data = func.value()(id); // TODO except player/allies/respawnable characters
-        if (result.valid())
+        auto initial_mod_data = func.value()(chara); // TODO except player/allies/respawnable characters
+        if (initial_mod_data.valid())
         {
-            data[key]["Chara"][id] = initial_mod_data;
+            data[key]["Chara"][chara] = initial_mod_data;
         }
         else
         {
-            report_error(result);
+            sol::error error = initial_mod_data;
+            report_error(error);
         }
     }
 }
 
 // TODO mods_iterator
-sol::table& get_registry_data()
+auto& get_registry_data()
 {
     return (*sol.get())["Elona"]["Registry"]["Data"];
 }
@@ -162,19 +164,13 @@ void on_chara_creation(int chara_id)
     }
 }
 
-void report_error(sol::error err)
-{
-    sol::error err = result;
-    std::string what = err.what();
-    ELONA_LOG(what);
-}
-//
 // void on_item_creation(int id)
 // {
 //     // for each mod, init its extra data for the item
 //     // for each mod, run item creation callback
 // }
 //
+
 void on_chara_removal(int id)
 {
     ELONA_LOG("Character removed. Here is the data that was lost.\n")
@@ -195,7 +191,7 @@ void on_chara_removal(int id)
 // }
 
 
-void init_global(sol::state& state)
+void init_global(std::unique_ptr<sol::state>& state)
 {
     sol::table Global = sol.get()->create_named_table("Global");
     Global.create_named("Callbacks");

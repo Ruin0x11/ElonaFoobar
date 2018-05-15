@@ -92,6 +92,8 @@ set(CORE_SOURCES
     itemgen.cpp
     log.cpp
     lua.cpp
+    lua_api.cpp
+    lua_registry.cpp
     magic.cpp
     main.cpp
     main_menu.cpp
