@@ -38,6 +38,7 @@
 #include "log.hpp"
 #include "macro.hpp"
 #include "main.hpp"
+#include "magic.hpp"
 #include "map.hpp"
 #include "map_cell.hpp"
 #include "mapgen.hpp"
