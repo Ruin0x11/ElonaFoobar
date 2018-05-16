@@ -11,6 +11,7 @@
 #include "config.hpp"
 #include "crafting.hpp"
 #include "ctrl_file.hpp"
+#include "dmgheal.hpp"
 #include "enchantment.hpp"
 #include "food.hpp"
 #include "fov.hpp"
@@ -1147,7 +1148,7 @@ turn_result_t do_look_command()
     page = 0;
     pagesize = 16;
     cs_bk = -1;
-    label_2076();
+    label_2076(cc);
     if (listmax == 0)
     {
         ++msgdup;
@@ -3501,8 +3502,8 @@ turn_result_t do_zap_command()
 {
     dbid = inv[ci].id;
     item_db_result idb_result = access_item_db(item_db_query_t::zap);
-    magic_result result = zap_rod(idb_result.effect_id, idb_result.effect_power);
-    if (!result.turn_passed)
+    int stat = zap_rod(idb_result.effect_id, idb_result.effect_power);
+    if (stat == 0)
     {
         update_screen();
         return turn_result_t::pc_turn_user_error;
@@ -3519,7 +3520,7 @@ turn_result_t do_rest_command()
 turn_result_t do_fire_command()
 {
     cc = 0;
-    int stat = label_2072();
+    int stat = label_2072(cc);
     if (stat == 0)
     {
         return turn_result_t::pc_turn_user_error;
@@ -3714,10 +3715,10 @@ turn_result_t do_get_command()
     }
 }
 
-turn_result_t do_cast_command()
+turn_result_t do_cast_command(int efid)
 {
     tc = cc;
-    int stat = label_2167();
+    int stat = label_2167(efid);
     if (stat == 0)
     {
         return turn_result_t::pc_turn_user_error;
@@ -3746,10 +3747,10 @@ turn_result_t do_short_cut_command()
         assert(mr.turn_result != turn_result_t::none);
         return mr.turn_result;
     }
-    efid = gdata(40 + sc);
+    int efid = gdata(40 + sc);
     if (efid >= 300 && efid < 400)
     {
-        return do_use_magic();
+        return do_use_magic(efid);
     }
     if (efid >= 600)
     {
@@ -3774,7 +3775,7 @@ turn_result_t do_short_cut_command()
                 return turn_result_t::pc_turn_user_error;
             }
         }
-        return do_use_magic();
+        return do_use_magic(efid);
     }
     if (efid >= 400)
     {
@@ -3797,7 +3798,7 @@ turn_result_t do_short_cut_command()
             update_screen();
             return turn_result_t::pc_turn_user_error;
         }
-        return do_cast_command();
+        return do_cast_command(efid);
     }
     return turn_result_t::pc_turn_user_error;
 }

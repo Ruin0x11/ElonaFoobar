@@ -1,7 +1,9 @@
 #include "mef.hpp"
 #include "ability.hpp"
+#include "access_item_db.hpp"
 #include "audio.hpp"
 #include "character.hpp"
+#include "dmgheal.hpp"
 #include "event.hpp"
 #include "fov.hpp"
 #include "item.hpp"
@@ -219,7 +221,7 @@ void mef_proc(int tc)
                     }
                 }
                 int stat = dmghp(
-                    tc, rnd(mef(5, ef) / 25 + 5) + 1, -15, 63, mef(5, ef));
+                    tc, rnd(mef(5, ef) / 25 + 5) + 1, -15, element_t::acid, mef(5, ef));
                 if (stat == 0)
                 {
                     check_kill(mef(6, ef), tc);
@@ -244,7 +246,7 @@ void mef_proc(int tc)
             }
         }
         int stat =
-            dmghp(tc, rnd(mef(5, ef) / 15 + 5) + 1, -9, 50, mef(5, ef));
+            dmghp(tc, rnd(mef(5, ef) / 15 + 5) + 1, -9, element_t::fire, mef(5, ef));
         if (stat == 0)
         {
             check_kill(mef(6, ef), tc);

@@ -39,76 +39,55 @@ int randomele()
 }
 
 
-
-std::string elename(int prm_348)
+std::string elename(int effect_id, element_t element)
 {
-    if (efid == 614)
+    if (effect_id == 614)
     {
         return lang(u8"飢えた"s, u8"starving"s);
     }
-    if (efid == 613)
+    if (effect_id == 613)
     {
         return lang(u8"腐った"s, u8"rotten"s);
     }
-    if (efid == 617)
+    if (effect_id == 617)
     {
         return lang(u8"恐ろしい"s, u8"fearful"s);
     }
-    if (efid == 618)
+    if (effect_id == 618)
     {
         return lang(u8"柔らかい"s, u8"silky"s);
     }
-    if (prm_348 == 50)
+
+    switch(element)
     {
+    case element_t::fire:
         return lang(u8"燃える"s, u8"burning"s);
-    }
-    if (prm_348 == 51)
-    {
+    case element_t::cold:
         return lang(u8"冷たい"s, u8"icy"s);
-    }
-    if (prm_348 == 52)
-    {
+    case element_t::lightning:
         return lang(u8"放電する"s, u8"electric"s);
-    }
-    if (prm_348 == 54)
-    {
+    case element_t::mind:
         return lang(u8"霊的な"s, u8"psychic"s);
-    }
-    if (prm_348 == 58)
-    {
+    case element_t::nerve:
         return lang(u8"痺れる"s, u8"numb"s);
-    }
-    if (prm_348 == 57)
-    {
+    case element_t::sound:
         return lang(u8"震える"s, u8"shivering"s);
-    }
-    if (prm_348 == 55)
-    {
+    case element_t::poison:
         return lang(u8"毒の"s, u8"poisonous"s);
-    }
-    if (prm_348 == 56)
-    {
+    case element_t::nether:
         return lang(u8"地獄の"s, u8"infernal"s);
-    }
-    if (prm_348 == 59)
-    {
+    case element_t::chaos:
         return lang(u8"混沌の"s, u8"chaotic"s);
-    }
-    if (prm_348 == 53)
-    {
+    case element_t::darkness:
         return lang(u8"暗黒の"s, u8"gloomy"s);
-    }
-    if (prm_348 == 61)
-    {
+    case element_t::cut:
         return lang(u8"出血の"s, u8"cut"s);
-    }
-    if (prm_348 == 62)
-    {
+    case element_t::ether:
         return lang(u8"エーテルの"s, u8"ether"s);
     }
+
     return u8"?"s;
 }
-
 
 
 int eleinfo(int prm_754, int prm_755)

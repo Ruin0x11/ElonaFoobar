@@ -10,7 +10,7 @@ turn_result_t do_dig_command();
 turn_result_t do_bash_command();
 turn_result_t do_give_command();
 turn_result_t do_interact_command();
-turn_result_t do_cast_command();
+turn_result_t do_cast_command(int efid);
 turn_result_t do_get_command();
 turn_result_t do_fire_command();
 turn_result_t do_rest_command();

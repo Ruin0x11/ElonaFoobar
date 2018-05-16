@@ -86,13 +86,6 @@ enum ground_effect_t : int
     ether = 634,
 };
 
-enum potion_consume_t
-{
-    drunk,
-    thrown,
-    spilt
-};
-
 struct magic_data
 {
     skill_damage damage;
@@ -247,5 +240,4 @@ void magic_announce_touch(const magic_data&);
 void magic_effect_holy_aura(int);
 
 int efstatusfix(curse_state_t, int = 0, int = 0, int = 0, int = 0);
-std::string elename(const magic_data&);
 }

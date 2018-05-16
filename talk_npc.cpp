@@ -636,7 +636,7 @@ talk_result_t talk_npc()
         txt(lang(u8"なかなか美味しかった。"s, u8"It was tasty."s),
             lang(u8"悪くない。"s, u8"Not bad at all."s),
             lang(u8"あなたは舌鼓をうった。"s, u8"You smack your lips."s));
-        label_2162();
+        announce_hunger_status(cc);
         chara_anorexia(0);
         return talk_result_t::talk_npc;
     }

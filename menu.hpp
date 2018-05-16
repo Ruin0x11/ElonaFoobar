@@ -1,5 +1,6 @@
 #pragma once
 
+#include "optional.hpp"
 #include <string>
 
 namespace elona
@@ -53,11 +54,11 @@ void label_2276();
 void label_2280();
 void label_1886();
 void label_1958();
-void label_1964();
+void mirror_menu();
 int ctrl_ally();
 void label_2022();
 int change_npc_tone();
 
-menu_result ctrl_inventory();
+menu_result ctrl_inventory(optional<int> = none);
 
 } // namespace elona

@@ -1478,8 +1478,7 @@ label_2029_internal:
     if (p != -1)
     {
         menucycle = 0;
-        efid = p;
-        return do_cast_command();
+        return do_cast_command(p);
     }
     if (key == u8"sc"s)
     {
@@ -1585,15 +1584,15 @@ void label_2031()
         dice1 = damage->dice_x;
         dice2 = damage->dice_y;
         bonus = damage->damage_bonus;
-        ele = damage->element;
-        elep = damage->element_power;
+        element_t ele = damage->element;
+        // elep = damage->element_power;
         if (cc == 0)
         {
             if (trait(165) != 0)
             {
-                if (ele == 50 || ele == 51 || ele == 52)
+                if (ele == element_t::fire || ele == element_t::cold || ele == element_t::lightning)
                 {
-                    dice2 = dice2 * 125 / 100;
+                    dice2 = dice2 * 125 / 100; // TODO move this calculation
                 }
             }
         }
@@ -6952,7 +6951,7 @@ label_1961_internal:
 
 
 
-void label_1964()
+void mirror_menu()
 {
     // TODO: untranslated
     if (rc < 0)

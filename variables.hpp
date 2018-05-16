@@ -2,8 +2,10 @@
 
 #include "elona.hpp"
 #include "position.hpp"
+#include "calc.hpp"
 #include "enums.hpp"
 #include "element.hpp"
+#include "magic.hpp"
 #include "optional.hpp"
 #include "talk.hpp"
 
@@ -689,7 +691,7 @@ ELONA_EXTERN(std::string userfile);
 ELONA_EXTERN(std::string usermsg);
 int access_character_info();
 bool actionsp(int, int);
-int breath_list();
+int breath_list(int chara, int efid);
 int calcincome(int = 0);
 int calcmagiccontrol(int = 0, int = 0);
 int calcstartcard(int = 0);
@@ -709,7 +711,6 @@ int direction(int = 0, int = 0, int = 0, int = 0);
 int discsetmc();
 int dist(int = 0, int = 0, int = 0, int = 0);
 int dist_town();
-int dmghp(int = 0, int = 0, int = 0, int = 0, int = 0);
 void dmgmp(int, int);
 void damage_insanity(int, int);
 void dmgsp(int, int);
@@ -764,12 +765,15 @@ int decode_book(int efid, int power);
 int read_normal_book();
 int label_2167(int efid);
 int label_2168();
-int drink_potion();
+int drink_potion(int efid,
+                 int power,
+                 potion_consume_t consume_type,
+                 optional<curse_state_t> spilt_curse_state = none);
 int drink_well();
 int read_scroll(int efid, int power);
-int label_2172();
+int zap_rod(int efid, int power);
 int label_2174(int efid);
-int label_2175();
+magic_result label_2175(int efid, effect_source_t effect_source); // TODO move
 int pick_up_item();
 int drop_item();
 int equip_item(int);
@@ -803,6 +807,7 @@ int random_material(int = 0, int = 0);
 int randomele();
 int randskill();
 int relationbetween(int, int);
+int roll(const skill_damage&); // TODO move
 int roll(int, int, int);
 int roll_max(int, int, int);
 int roundmargin(int = 0, int = 0);
@@ -846,7 +851,6 @@ std::string cnvrank(int = 0);
 std::string cnvrare(int = 0);
 std::string cnvweight(int = 0);
 std::string does(int = 0);
-std::string elename(int = 0);
 std::string fixtxt(const std::string&, int = 0);
 std::string fltname(int = 0);
 std::string foodname(int, const std::string&, int = 0, int = 0);
@@ -990,7 +994,7 @@ void label_1579();
 void label_1580();
 void label_1581();
 void label_1583();
-void get_pregnant();
+void get_pregnant(int);
 void initialize_cell_object_data();
 void generate_random_nefia();
 void initialize_random_nefia_rdtype6();
@@ -1071,7 +1075,7 @@ void label_1935();
 turn_result_t step_into_gate();
 void label_1955();
 void label_1958();
-void label_1964();
+void mirror_menu();
 void deco_traits_menu();
 void list_adventurers();
 turn_result_t call_npc();
@@ -1086,7 +1090,7 @@ turn_result_t try_interact_with_npc();
 void sort_list_by_column1();
 void label_2057();
 void show_item_description();
-void label_2076();
+void label_2076(int chara);
 void prompt_stop_continuous_action();
 void label_2081();
 turn_result_t do_gatcha();
@@ -1109,7 +1113,7 @@ void initialize_fovmap_and_fovlist();
 turn_result_t do_debug_console();
 turn_result_t do_exit_debug_console();
 void label_2144();
-void label_21452();
+void activate_trap();
 void label_2146();
 void label_2147();
 void continuous_action_others();
@@ -1126,7 +1130,6 @@ void spot_digging();
 void spot_mining_or_wall();
 void label_2160();
 void label_2161();
-void label_2162();
 void label_2187();
 void label_2188();
 void unequip_item(int);
@@ -1138,7 +1141,7 @@ turn_result_t do_use_stairs_command(int);
 void open_box();
 void open_new_year_gift();
 turn_result_t try_to_open_locked_door();
-void try_to_melee_attack();
+void try_to_melee_attack(element_t ele = element_t::none, int elep = 0);
 void do_physical_attack(element_t, int = 0);
 void label_2220();
 void discover_trap();
@@ -1196,7 +1199,7 @@ void map_createroomdoor();
 void map_initcustom(const std::string&);
 void map_initialize();
 void matdelmain(int = 0, int = 0);
-turn_result_t do_use_magic();
+turn_result_t do_use_magic(int efid);
 void matgetmain(int = 0, int = 0, int = 0);
 void modrank(int = 0, int = 0, int = 0);
 void msg_clear();

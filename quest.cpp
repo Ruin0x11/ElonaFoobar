@@ -4,6 +4,7 @@
 #include "calc.hpp"
 #include "character.hpp"
 #include "character_status.hpp"
+#include "dmgheal.hpp"
 #include "event.hpp"
 #include "i18n.hpp"
 #include "item.hpp"
@@ -1119,13 +1120,17 @@ void quest_failed(int val0)
                                             u8" "s + name(tc) +
                                             u8" pours a bottole of molotov cocktail over "s +
                                             him(tc) + u8"self."s);
+
+                                    // TODO not sure where effect_power is being set before here...
+                                    int effect_power = 100;
+
                                     mef_add(
                                         cdata[0].position.x,
                                         cdata[0].position.y,
                                         5,
                                         24,
                                         rnd(15) + 25,
-                                        efp,
+                                        effect_power,
                                         0);
                                     mapitem_fire(
                                         cdata[tc].position.x,

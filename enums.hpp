@@ -28,6 +28,13 @@ enum class identification_state_t
     completely_identified,
 };
 
+enum potion_consume_t
+{
+    drunk,
+    thrown,
+    spilt
+};
+
 enum class turn_result_t
 {
     none,

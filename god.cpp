@@ -490,10 +490,7 @@ void label_1888()
                     + u8" is enraged."s));
             txtgod(cdata[0].god_id, 1);
             redraw();
-            efid = 622;
-            efp = 10000;
-            tc = 0;
-            magic();
+            magic(622, cc, 0, 10000);
             snd(63);
             mode = 0;
             await(500);

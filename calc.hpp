@@ -7,6 +7,7 @@
 namespace elona
 {
 
+enum class element_t;
 
 int calc_buff_duration(int id, int power);
 std::string get_buff_description(int id, int power);
@@ -17,7 +18,7 @@ struct skill_damage
     int dice_x;
     int dice_y;
     int damage_bonus;
-    int element;
+    element_t element;
     int element_power;
 };
 optional<skill_damage> calc_skill_damage(int, int, int);

@@ -23,8 +23,9 @@
 namespace elona
 {
 
+enum class element_t;
 
-int prm_853;
+int target;
 int dmg_at_m141 = 0;
 
 
@@ -62,9 +63,9 @@ void healsp(int cc, int delta)
 
 
 
-int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
+int dmghp(int target, int amount, int attacker, element_t element, int element_power)
 {
-    int ele_at_m141 = 0;
+    int ele_at_m141 = static_cast<int>(element);
     int c3_at_m141 = 0;
     int r_at_m141 = 0;
     int dmglevel_at_m141 = 0;
@@ -72,32 +73,31 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
     int se_at_m141 = 0;
     elona_vector1<int> p_at_m141;
     int exp_at_m141 = 0;
-    elona::prm_853 = prm_853;
-    ele_at_m141 = prm_856;
+    elona::target = target;
     if (txt3rd == 0)
     {
-        c3_at_m141 = prm_855;
+        c3_at_m141 = attacker;
     }
     else
     {
         c3_at_m141 = -1;
     }
-    if (cdata[prm_853].state != 1)
+    if (cdata[target].state != 1)
     {
         end_dmghp();
         return 0;
     }
-    dmg_at_m141 = prm_854 * (1 + (cdata[prm_853].furious > 0));
-    if (prm_855 >= 0)
+    dmg_at_m141 = amount * (1 + (cdata[target].furious > 0));
+    if (attacker >= 0)
     {
-        if (cdata[prm_855].furious > 0)
+        if (cdata[attacker].furious > 0)
         {
             dmg_at_m141 *= 2;
         }
     }
     if (ele_at_m141 != 0 && ele_at_m141 < 61)
     {
-        r_at_m141 = sdata(ele_at_m141, prm_853) / 50;
+        r_at_m141 = sdata(ele_at_m141, target) / 50;
         if (r_at_m141 < 3)
         {
             dmg_at_m141 =
@@ -111,9 +111,9 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
         {
             dmg_at_m141 = 0;
         }
-        dmg_at_m141 = dmg_at_m141 * 100 / (sdata(60, prm_853) / 2 + 50);
+        dmg_at_m141 = dmg_at_m141 * 100 / (sdata(60, target) / 2 + 50);
     }
-    if (prm_855 == 0)
+    if (attacker == 0)
     {
         if (critical)
         {
@@ -124,9 +124,9 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
             snd(2);
         }
     }
-    if (cdata[prm_853].wet > 0)
+    if (cdata[target].wet > 0)
     {
-        if (ele_at_m141 == 50 || prm_855 == -9)
+        if (ele_at_m141 == 50 || attacker == -9)
         {
             dmg_at_m141 = dmg_at_m141 / 3;
         }
@@ -139,22 +139,22 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
     {
         if (ele_at_m141 != 60)
         {
-            if (cdata[prm_853].is_immune_to_elemental_damage())
+            if (cdata[target].is_immune_to_elemental_damage())
             {
                 dmg_at_m141 = 0;
             }
         }
     }
-    if (cdata[prm_853].is_metal())
+    if (cdata[target].is_metal())
     {
         dmg_at_m141 = rnd(dmg_at_m141 / 10 + 2);
     }
-    if (cdata[prm_853].is_contracting_with_reaper())
+    if (cdata[target].is_contracting_with_reaper())
     {
-        if (cdata[prm_853].hp - dmg_at_m141 <= 0)
+        if (cdata[target].hp - dmg_at_m141 <= 0)
         {
             if (clamp(
-                    25 + cdata[prm_853].buffs[buff_find(prm_853, 18)].power / 17,
+                    25 + cdata[target].buffs[buff_find(target, 18)].power / 17,
                     25,
                     80)
                 >= rnd(100))
@@ -163,67 +163,67 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
             }
         }
     }
-    if (cdata[prm_853].nullify_damage > 0)
+    if (cdata[target].nullify_damage > 0)
     {
-        if (cdata[prm_853].nullify_damage > rnd(100))
+        if (cdata[target].nullify_damage > rnd(100))
         {
             dmg_at_m141 = 0;
         }
     }
     if (ele_at_m141 == 658)
     {
-        dmg_at_m141 = prm_854;
+        dmg_at_m141 = amount;
     }
     rtdmg = dmg_at_m141;
 
-    if (prm_853 == 0 && cdata[0].god_id == core_god::opatos)
+    if (target == 0 && cdata[0].god_id == core_god::opatos)
     {
         dmg_at_m141 = dmg_at_m141 * 90 / 100;
     }
 
-    if (debug::voldemort && prm_853 == 0)
+    if (debug::voldemort && target == 0)
     {
         dmg_at_m141 = 0;
     }
-    cdata[prm_853].hp -= dmg_at_m141;
+    cdata[target].hp -= dmg_at_m141;
 
 
-    if (is_in_fov(prm_853))
+    if (is_in_fov(target))
     {
-        add_damage_popup(std::to_string(dmg_at_m141), prm_853, {0, 0, 0});
+        add_damage_popup(std::to_string(dmg_at_m141), target, {0, 0, 0});
     }
 
 
     if (ele_at_m141 == 56)
     {
-        if (prm_855 >= 0)
+        if (attacker >= 0)
         {
             if (dmg_at_m141 > 0)
             {
                 healhp(
-                    prm_855,
+                    attacker,
                     clamp(
-                        rnd(dmg_at_m141 * (150 + prm_857 * 2) / 1000 + 10),
+                        rnd(dmg_at_m141 * (150 + element_power * 2) / 1000 + 10),
                         1,
-                        cdata[prm_855].max_hp / 10 + rnd(5)));
+                        cdata[attacker].max_hp / 10 + rnd(5)));
             }
         }
     }
-    if (prm_853 == 0)
+    if (target == 0)
     {
         gdata(30) = 0;
-        if (cdata[prm_853].hp < 0)
+        if (cdata[target].hp < 0)
         {
             if (event_id() != -1)
             {
                 if (event_id() != 21)
                 {
-                    cdata[prm_853].hp = 1;
+                    cdata[target].hp = 1;
                 }
             }
             if (gdata_current_map == 40)
             {
-                cdata[prm_853].hp = 1;
+                cdata[target].hp = 1;
             }
         }
     }
@@ -233,15 +233,15 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
     }
     else
     {
-        dmglevel_at_m141 = dmg_at_m141 * 6 / cdata[prm_853].max_hp;
+        dmglevel_at_m141 = dmg_at_m141 * 6 / cdata[target].max_hp;
     }
-    if (cdata[prm_853].hp < 0)
+    if (cdata[target].hp < 0)
     {
-        if (prm_853 < 16)
+        if (target < 16)
         {
             for (int cnt = 0; cnt < 16; ++cnt)
             {
-                if (prm_853 == cnt)
+                if (target == cnt)
                 {
                     continue;
                 }
@@ -265,43 +265,43 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                     name(cnt) + u8" shout"s + _s(cnt) + u8", "s
                         + u8"\"Lay hand!\""s));
                 txt(lang(
-                    name(prm_853) + u8"は回復した。"s,
-                    name(prm_853) + u8" "s + is(prm_853) + u8" healed."s));
-                cdata[prm_853].hp = cdata[prm_853].max_hp / 2;
-                animode = 100 + prm_853;
+                    name(target) + u8"は回復した。"s,
+                    name(target) + u8" "s + is(target) + u8" healed."s));
+                cdata[target].hp = cdata[target].max_hp / 2;
+                animode = 100 + target;
                 play_animation(19);
                 snd(120);
                 break;
             }
         }
-        else if (cdata[prm_853].is_hung_on_sand_bag())
+        else if (cdata[target].is_hung_on_sand_bag())
         {
-            cdata[prm_853].hp = cdata[prm_853].max_hp;
+            cdata[target].hp = cdata[target].max_hp;
         }
     }
-    if (cdata[prm_853].hp >= 0)
+    if (cdata[target].hp >= 0)
     {
         if (dmglevel_at_m141 > 1)
         {
             spillblood(
-                cdata[prm_853].position.x,
-                cdata[prm_853].position.y,
+                cdata[target].position.x,
+                cdata[target].position.y,
                 1 + rnd(2));
         }
         if (gdata(809) == 1)
         {
-            txteledmg(0, c3_at_m141, prm_853, ele_at_m141);
+            txteledmg(0, c3_at_m141, target, ele_at_m141);
             goto label_1369_internal;
         }
         if (dmglevel_at_m141 > 0)
         {
-            if (cdata[prm_853].max_hp / 2 > cdata[prm_853].hp)
+            if (cdata[target].max_hp / 2 > cdata[target].hp)
             {
                 ++dmglevel_at_m141;
-                if (cdata[prm_853].max_hp / 4 > cdata[prm_853].hp)
+                if (cdata[target].max_hp / 4 > cdata[target].hp)
                 {
                     ++dmglevel_at_m141;
-                    if (cdata[prm_853].max_hp / 10 > cdata[prm_853].hp)
+                    if (cdata[target].max_hp / 10 > cdata[target].hp)
                     {
                         ++dmglevel_at_m141;
                     }
@@ -322,7 +322,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                 txtef(5);
                 txt(lang(
                     u8"軽い傷を負わせた。"s,
-                    u8"slightly wound"s + _s(c3_at_m141) + u8" "s + him(prm_853)
+                    u8"slightly wound"s + _s(c3_at_m141) + u8" "s + him(target)
                         + u8"."s));
             }
             if (dmglevel_at_m141 == 1)
@@ -331,14 +331,14 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                 txt(lang(
                     u8"傷つけた。"s,
                     u8"moderately wound"s + _s(c3_at_m141) + u8" "s
-                        + him(prm_853) + u8"."s));
+                        + him(target) + u8"."s));
             }
             if (dmglevel_at_m141 == 2)
             {
                 txtef(10);
                 txt(lang(
                     u8"深い傷を負わせた。"s,
-                    u8"severely wound"s + _s(c3_at_m141) + u8" "s + him(prm_853)
+                    u8"severely wound"s + _s(c3_at_m141) + u8" "s + him(target)
                         + u8"."s));
             }
             if (dmglevel_at_m141 >= 3)
@@ -347,68 +347,68 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                 txt(lang(
                     u8"致命傷を与えた。"s,
                     u8"critically wound"s + _s(c3_at_m141) + u8" "s
-                        + him(prm_853) + u8"!"s));
+                        + him(target) + u8"!"s));
             }
-            rowact_check(prm_853);
+            rowact_check(target);
             goto label_1369_internal;
         }
         if (dmglevel_at_m141 == 1)
         {
-            if (is_in_fov(prm_853))
+            if (is_in_fov(target))
             {
                 txtef(11);
                 txt(lang(
-                    name(prm_853) + u8"は痛手を負った。"s,
-                    name(prm_853) + u8" scream"s + _s(prm_853) + u8"."s));
+                    name(target) + u8"は痛手を負った。"s,
+                    name(target) + u8" scream"s + _s(target) + u8"."s));
             }
         }
         if (dmglevel_at_m141 == 2)
         {
-            if (is_in_fov(prm_853))
+            if (is_in_fov(target))
             {
                 txtef(10);
                 txt(lang(
-                    name(prm_853) + u8"は苦痛にもだえた。"s,
-                    name(prm_853) + u8" writhe"s + _s(prm_853)
+                    name(target) + u8"は苦痛にもだえた。"s,
+                    name(target) + u8" writhe"s + _s(target)
                         + u8" in pain."s));
             }
         }
         if (dmglevel_at_m141 >= 3)
         {
-            if (is_in_fov(prm_853))
+            if (is_in_fov(target))
             {
                 txtef(3);
                 txt(lang(
-                    name(prm_853) + u8"は悲痛な叫び声をあげた。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
+                    name(target) + u8"は悲痛な叫び声をあげた。"s,
+                    name(target) + u8" "s + is(target)
                         + u8" severely hurt!"s));
             }
         }
         if (dmg_at_m141 < 0)
         {
-            if (cdata[prm_853].hp > cdata[prm_853].max_hp)
+            if (cdata[target].hp > cdata[target].max_hp)
             {
-                cdata[prm_853].hp = cdata[prm_853].max_hp;
+                cdata[target].hp = cdata[target].max_hp;
             }
-            if (is_in_fov(prm_853))
+            if (is_in_fov(target))
             {
                 txtef(4);
                 txt(lang(
-                    name(prm_853) + u8"は回復した。"s,
-                    name(prm_853) + u8" "s + is(prm_853) + u8" healed."s));
+                    name(target) + u8"は回復した。"s,
+                    name(target) + u8" "s + is(target) + u8" healed."s));
             }
         }
     label_1369_internal:
-        rowact_check(prm_853);
-        if (cdata[prm_853].hp < cdata[prm_853].max_hp / 5)
+        rowact_check(target);
+        if (cdata[target].hp < cdata[target].max_hp / 5)
         {
-            if (prm_853 != 0)
+            if (target != 0)
             {
-                if (cdata[prm_853].fear == 0)
+                if (cdata[target].fear == 0)
                 {
-                    if (cdata[prm_853].is_immune_to_fear() == 0)
+                    if (cdata[target].is_immune_to_fear() == 0)
                     {
-                        if (dmg_at_m141 * 100 / cdata[prm_853].max_hp + 10
+                        if (dmg_at_m141 * 100 / cdata[target].max_hp + 10
                             > rnd(200))
                         {
                             f_at_m141 = 1;
@@ -417,7 +417,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                         {
                             f_at_m141 = 0;
                         }
-                        if (prm_855 == 0)
+                        if (attacker == 0)
                         {
                             if (trait(44))
                             {
@@ -426,13 +426,13 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                         }
                         if (f_at_m141)
                         {
-                            cdata[prm_853].fear = rnd(20) + 5;
-                            if (is_in_fov(prm_853))
+                            cdata[target].fear = rnd(20) + 5;
+                            if (is_in_fov(target))
                             {
                                 txtef(4);
                                 txt(lang(
-                                    name(prm_853) + u8"は恐怖して逃げ出した。"s,
-                                    name(prm_853) + u8" run"s + _s(prm_853)
+                                    name(target) + u8"は恐怖して逃げ出した。"s,
+                                    name(target) + u8" run"s + _s(target)
                                         + u8" away in terror."s));
                             }
                         }
@@ -444,100 +444,100 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
         {
             if (ele_at_m141 == 59)
             {
-                if (rnd(10) < prm_857 / 75 + 4)
+                if (rnd(10) < element_power / 75 + 4)
                 {
-                    dmgcon(prm_853, status_ailment_t::blinded, rnd(prm_857 / 3 * 2 + 1));
+                    dmgcon(target, status_ailment_t::blinded, rnd(element_power / 3 * 2 + 1));
                 }
-                if (rnd(20) < prm_857 / 50 + 4)
+                if (rnd(20) < element_power / 50 + 4)
                 {
-                    dmgcon(prm_853, status_ailment_t::paralyzed, rnd(prm_857 / 3 * 2 + 1));
+                    dmgcon(target, status_ailment_t::paralyzed, rnd(element_power / 3 * 2 + 1));
                 }
-                if (rnd(20) < prm_857 / 50 + 4)
+                if (rnd(20) < element_power / 50 + 4)
                 {
-                    dmgcon(prm_853, status_ailment_t::confused, rnd(prm_857 / 3 * 2 + 1));
+                    dmgcon(target, status_ailment_t::confused, rnd(element_power / 3 * 2 + 1));
                 }
-                if (rnd(20) < prm_857 / 50 + 4)
+                if (rnd(20) < element_power / 50 + 4)
                 {
-                    dmgcon(prm_853, status_ailment_t::poisoned, rnd(prm_857 / 3 * 2 + 1));
+                    dmgcon(target, status_ailment_t::poisoned, rnd(element_power / 3 * 2 + 1));
                 }
-                if (rnd(20) < prm_857 / 50 + 4)
+                if (rnd(20) < element_power / 50 + 4)
                 {
-                    dmgcon(prm_853, status_ailment_t::sleep, rnd(prm_857 / 3 * 2 + 1));
+                    dmgcon(target, status_ailment_t::sleep, rnd(element_power / 3 * 2 + 1));
                 }
             }
             if (ele_at_m141 == 52)
             {
-                if (rnd(3 + (cdata[prm_853].quality >= 4) * 3) == 0)
+                if (rnd(3 + (cdata[target].quality >= 4) * 3) == 0)
                 {
-                    ++cdata[prm_853].paralyzed;
+                    ++cdata[target].paralyzed;
                 }
             }
             if (ele_at_m141 == 53)
             {
-                dmgcon(prm_853, status_ailment_t::blinded, rnd(prm_857 + 1));
+                dmgcon(target, status_ailment_t::blinded, rnd(element_power + 1));
             }
             if (ele_at_m141 == 58)
             {
-                dmgcon(prm_853, status_ailment_t::paralyzed, rnd(prm_857 + 1));
+                dmgcon(target, status_ailment_t::paralyzed, rnd(element_power + 1));
             }
             if (ele_at_m141 == 54)
             {
-                dmgcon(prm_853, status_ailment_t::confused, rnd(prm_857 + 1));
+                dmgcon(target, status_ailment_t::confused, rnd(element_power + 1));
             }
             if (ele_at_m141 == 57)
             {
-                dmgcon(prm_853, status_ailment_t::confused, rnd(prm_857 + 1));
+                dmgcon(target, status_ailment_t::confused, rnd(element_power + 1));
             }
             if (ele_at_m141 == 55)
             {
-                dmgcon(prm_853, status_ailment_t::poisoned, rnd(prm_857 + 1));
+                dmgcon(target, status_ailment_t::poisoned, rnd(element_power + 1));
             }
             if (ele_at_m141 == 61)
             {
-                dmgcon(prm_853, status_ailment_t::bleeding, rnd(prm_857 + 1));
+                dmgcon(target, status_ailment_t::bleeding, rnd(element_power + 1));
             }
             if (ele_at_m141 == 62)
             {
-                if (prm_853 == 0)
+                if (target == 0)
                 {
-                    modcorrupt(rnd(prm_857 + 1));
+                    modcorrupt(rnd(element_power + 1));
                 }
             }
             if (ele_at_m141 == 63)
             {
-                if (prm_853 == 0 || rnd(3) == 0)
+                if (target == 0 || rnd(3) == 0)
                 {
-                    item_acid(prm_853, -1);
+                    item_acid(target, -1);
                 }
             }
         }
-        if ((ele_at_m141 == 50 || prm_855 == -9) && cdata[prm_853].wet == 0)
+        if ((ele_at_m141 == 50 || attacker == -9) && cdata[target].wet == 0)
         {
-            item_fire(prm_853, -1);
+            item_fire(target, -1);
         }
         if (ele_at_m141 == 51)
         {
-            item_cold(prm_853, -1);
+            item_cold(target, -1);
         }
-        if (cdata[prm_853].sleep != 0)
+        if (cdata[target].sleep != 0)
         {
             if (ele_at_m141 != 54 && ele_at_m141 != 58 && ele_at_m141 != 59)
             {
-                cdata[prm_853].sleep = 0;
+                cdata[target].sleep = 0;
                 txt(lang(
-                    name(prm_853) + u8"は眠りを妨げられた。"s,
-                    name(prm_853) + your(prm_853) + u8" sleep "s + is(prm_853)
+                    name(target) + u8"は眠りを妨げられた。"s,
+                    name(target) + your(target) + u8" sleep "s + is(target)
                         + u8" disturbed."s));
             }
         }
-        if (prm_855 == 0)
+        if (attacker == 0)
         {
-            hostileaction(0, prm_853);
-            gdata(94) = prm_853;
+            hostileaction(0, target);
+            gdata(94) = target;
         }
-        if (prm_853 == 0)
+        if (target == 0)
         {
-            if (cdata[prm_853].max_hp / 4 > cdata[prm_853].hp)
+            if (cdata[target].max_hp / 4 > cdata[target].hp)
             {
                 if (config::instance().sound)
                 {
@@ -551,55 +551,55 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                 }
             }
         }
-        if (cdata[prm_853].explodes())
+        if (cdata[target].explodes())
         {
             if (rnd(3) == 0)
             {
-                cdata[prm_853].will_explode_soon() = true;
+                cdata[target].will_explode_soon() = true;
                 txtef(9);
                 txt(lang(u8" *カチッ* "s, u8"*click*"s));
             }
         }
-        if (cdata[prm_853].splits())
+        if (cdata[target].splits())
         {
             if (gdata(809) != 1)
             {
-                if (dmg_at_m141 > cdata[prm_853].max_hp / 20 || rnd(10) == 0)
+                if (dmg_at_m141 > cdata[target].max_hp / 20 || rnd(10) == 0)
                 {
                     if (mdata(6) != 1)
                     {
-                        int stat = chara_copy(prm_853);
+                        int stat = chara_copy(target);
                         if (stat == 1)
                         {
                             txt(lang(
-                                name(prm_853) + u8"は分裂した！"s,
-                                name(prm_853) + u8" split"s + _s(prm_853)
+                                name(target) + u8"は分裂した！"s,
+                                name(target) + u8" split"s + _s(target)
                                     + u8"!"s));
                         }
                     }
                 }
             }
         }
-        if (cdata[prm_853].splits2())
+        if (cdata[target].splits2())
         {
             if (gdata(809) != 1)
             {
                 if (rnd(3) == 0)
                 {
-                    if (cdata[prm_853].confused == 0
-                        && cdata[prm_853].dimmed == 0
-                        && cdata[prm_853].poisoned == 0
-                        && cdata[prm_853].paralyzed == 0
-                        && cdata[prm_853].blind == 0)
+                    if (cdata[target].confused == 0
+                        && cdata[target].dimmed == 0
+                        && cdata[target].poisoned == 0
+                        && cdata[target].paralyzed == 0
+                        && cdata[target].blind == 0)
                     {
                         if (mdata(6) != 1)
                         {
-                            int stat = chara_copy(prm_853);
+                            int stat = chara_copy(target);
                             if (stat == 1)
                             {
                                 txt(lang(
-                                    name(prm_853) + u8"は分裂した！"s,
-                                    name(prm_853) + u8" split"s + _s(prm_853)
+                                    name(target) + u8"は分裂した！"s,
+                                    name(target) + u8" split"s + _s(target)
                                         + u8"!"s));
                             }
                         }
@@ -607,50 +607,50 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                 }
             }
         }
-        if (cdata[prm_853].is_quick_tempered())
+        if (cdata[target].is_quick_tempered())
         {
             if (gdata(809) != 1)
             {
-                if (cdata[prm_853].furious == 0)
+                if (cdata[target].furious == 0)
                 {
                     if (rnd(20) == 0)
                     {
-                        if (is_in_fov(prm_853))
+                        if (is_in_fov(target))
                         {
                             txtef(4);
                             txt(lang(
-                                name(prm_853) + u8"は怒りに体を奮わせた！"s,
-                                name(prm_853) + u8" "s + is(prm_853)
+                                name(target) + u8"は怒りに体を奮わせた！"s,
+                                name(target) + u8" "s + is(target)
                                     + u8" engulfed in fury!"s));
                         }
-                        cdata[prm_853].furious += rnd(30) + 15;
+                        cdata[target].furious += rnd(30) + 15;
                     }
                 }
             }
         }
-        if (prm_855 >= 0)
+        if (attacker >= 0)
         {
             f_at_m141 = 0;
-            if (cdata[prm_853].relationship <= -3)
+            if (cdata[target].relationship <= -3)
             {
-                if (cdata[prm_855].original_relationship > -3)
+                if (cdata[attacker].original_relationship > -3)
                 {
-                    if (cdata[prm_853].hate == 0 || rnd(4) == 0)
+                    if (cdata[target].hate == 0 || rnd(4) == 0)
                     {
                         f_at_m141 = 1;
                     }
                 }
             }
-            else if (cdata[prm_855].original_relationship <= -3)
+            else if (cdata[attacker].original_relationship <= -3)
             {
-                if (cdata[prm_853].hate == 0 || rnd(4) == 0)
+                if (cdata[target].hate == 0 || rnd(4) == 0)
                 {
                     f_at_m141 = 1;
                 }
             }
-            if (prm_855 != 0)
+            if (attacker != 0)
             {
-                if (cdata[prm_855].enemy_id == prm_853)
+                if (cdata[attacker].enemy_id == target)
                 {
                     if (rnd(3) == 0)
                     {
@@ -660,23 +660,23 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
             }
             if (f_at_m141)
             {
-                if (prm_853 != 0)
+                if (target != 0)
                 {
-                    cdata[prm_853].enemy_id = prm_855;
-                    if (cdata[prm_853].hate == 0)
+                    cdata[target].enemy_id = attacker;
+                    if (cdata[target].hate == 0)
                     {
-                        cdata[prm_853].emotion_icon = 218;
-                        cdata[prm_853].hate = 20;
+                        cdata[target].emotion_icon = 218;
+                        cdata[target].hate = 20;
                     }
                     else
                     {
-                        cdata[prm_853].hate += 2;
+                        cdata[target].hate += 2;
                     }
                 }
             }
         }
     }
-    if (cdata[prm_853].hp < 0)
+    if (cdata[target].hp < 0)
     {
         se_at_m141 = eleinfo(ele_at_m141, 1);
         if (se_at_m141)
@@ -684,18 +684,18 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
             snd(se_at_m141, false, false);
         }
         txtef(3);
-        if (prm_855 >= 0)
+        if (attacker >= 0)
         {
             if (ele_at_m141)
             {
-                if (prm_853 >= 16 && gdata(809) == 2)
+                if (target >= 16 && gdata(809) == 2)
                 {
                     txtcontinue();
-                    txteledmg(1, c3_at_m141, prm_853, ele_at_m141);
+                    txteledmg(1, c3_at_m141, target, ele_at_m141);
                 }
                 else
                 {
-                    txteledmg(2, c3_at_m141, prm_853, ele_at_m141);
+                    txteledmg(2, c3_at_m141, target, ele_at_m141);
                 }
             }
             else
@@ -703,74 +703,74 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                 p_at_m141 = rnd(4);
                 if (p_at_m141 == 0)
                 {
-                    if (prm_853 >= 16 && gdata(809) == 2)
+                    if (target >= 16 && gdata(809) == 2)
                     {
                         txtcontinue();
                         txt(lang(
                             u8"粉々の肉片に変えた。"s,
                             u8"transform"s + _s(c3_at_m141) + u8" "s
-                                + him(prm_853)
+                                + him(target)
                                 + u8" into several pieces of meat."s));
                     }
                     else
                     {
                         txt(lang(
-                            name(prm_853) + u8"は粉々の肉片に変えられた。"s,
-                            name(prm_853) + u8" "s + is(prm_853)
+                            name(target) + u8"は粉々の肉片に変えられた。"s,
+                            name(target) + u8" "s + is(target)
                                 + u8" transformed into several pieces of meat."s));
                     }
                 }
                 if (p_at_m141 == 1)
                 {
-                    if (prm_853 >= 16 && gdata(809) == 2)
+                    if (target >= 16 && gdata(809) == 2)
                     {
                         txtcontinue();
                         txt(lang(
                             u8"破壊した。"s,
                             u8"destroy"s + _s(c3_at_m141) + u8" "s
-                                + him(prm_853) + u8"."s));
+                                + him(target) + u8"."s));
                     }
                     else
                     {
                         txt(lang(
-                            name(prm_853) + u8"は破壊された。"s,
-                            name(prm_853) + u8" "s + is(prm_853)
+                            name(target) + u8"は破壊された。"s,
+                            name(target) + u8" "s + is(target)
                                 + u8" killed."s));
                     }
                 }
                 if (p_at_m141 == 2)
                 {
-                    if (prm_853 >= 16 && gdata(809) == 2)
+                    if (target >= 16 && gdata(809) == 2)
                     {
                         txtcontinue();
                         txt(lang(
                             u8"ミンチにした。"s,
-                            u8"mince"s + _s(c3_at_m141) + u8" "s + him(prm_853)
+                            u8"mince"s + _s(c3_at_m141) + u8" "s + him(target)
                                 + u8"."s));
                     }
                     else
                     {
                         txt(lang(
-                            name(prm_853) + u8"はミンチにされた。"s,
-                            name(prm_853) + u8" "s + is(prm_853)
+                            name(target) + u8"はミンチにされた。"s,
+                            name(target) + u8" "s + is(target)
                                 + u8" minced."s));
                     }
                 }
                 if (p_at_m141 == 3)
                 {
-                    if (prm_853 >= 16 && gdata(809) == 2)
+                    if (target >= 16 && gdata(809) == 2)
                     {
                         txtcontinue();
                         txt(lang(
                             u8"殺した。"s,
-                            u8"kill"s + _s(c3_at_m141) + u8" "s + him(prm_853)
+                            u8"kill"s + _s(c3_at_m141) + u8" "s + him(target)
                                 + u8"."s));
                     }
                     else
                     {
                         txt(lang(
-                            name(prm_853) + u8"は殺された。"s,
-                            name(prm_853) + u8" "s + is(prm_853)
+                            name(target) + u8"は殺された。"s,
+                            name(target) + u8" "s + is(target)
                                 + u8" slain."s));
                     }
                 }
@@ -781,249 +781,249 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
         }
         else
         {
-            if (prm_855 == -11)
+            if (attacker == -11)
             {
                 txt(lang(
-                    name(prm_853) + u8"は見えざる手に葬られた。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
+                    name(target) + u8"は見えざる手に葬られた。"s,
+                    name(target) + u8" "s + is(target)
                         + u8" assassinated by the unseen hand."s));
-                if (prm_853 == 0)
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         u8"見えざる手に葬られた。"s,
                         u8"got assassinated by the unseen hand"s);
                 }
             }
-            if (prm_855 == -1)
+            if (attacker == -1)
             {
                 txt(lang(
-                    name(prm_853) + u8"は罠にかかって死んだ。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
-                        + u8" caught in a trap and die"s + _s(prm_853)
+                    name(target) + u8"は罠にかかって死んだ。"s,
+                    name(target) + u8" "s + is(target)
+                        + u8" caught in a trap and die"s + _s(target)
                         + u8"."s));
-                if (prm_853 == 0)
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         u8"罠にかかって死んだ。"s,
                         u8"got caught in a trap and died"s);
                 }
             }
-            if (prm_855 == -2)
+            if (attacker == -2)
             {
                 txt(lang(
-                    name(prm_853) + u8"はマナの反動で死んだ。"s,
-                    name(prm_853) + u8" die"s + _s(prm_853)
+                    name(target) + u8"はマナの反動で死んだ。"s,
+                    name(target) + u8" die"s + _s(target)
                         + u8" from over-casting."s));
-                if (prm_853 == 0)
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         u8"マナの反動で消滅した。"s,
                         u8"was completely wiped by magic reaction"s);
                 }
             }
-            if (prm_855 == -3)
+            if (attacker == -3)
             {
                 txt(lang(
-                    name(prm_853) + u8"は餓死した。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
+                    name(target) + u8"は餓死した。"s,
+                    name(target) + u8" "s + is(target)
                         + u8" starved to death."s));
-                if (prm_853 == 0)
+                if (target == 0)
                 {
                     ndeathcause =
                         lang(u8"飢え死にした。"s, u8"was starved to death"s);
                 }
             }
-            if (prm_855 == -4)
+            if (attacker == -4)
             {
                 txt(lang(
-                    name(prm_853) + u8"は毒に蝕まれ死んだ。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
+                    name(target) + u8"は毒に蝕まれ死んだ。"s,
+                    name(target) + u8" "s + is(target)
                         + u8" killed with poison."s));
-                if (prm_853 == 0)
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         u8"毒にもがき苦しみながら死んだ。"s,
                         u8"miserably died from poison"s);
                 }
             }
-            if (prm_855 == -13)
+            if (attacker == -13)
             {
                 txt(lang(
-                    name(prm_853) + u8"は出血多量で死んだ。"s,
-                    name(prm_853) + u8" die"s + _s(prm_853)
+                    name(target) + u8"は出血多量で死んだ。"s,
+                    name(target) + u8" die"s + _s(target)
                         + u8" from loss of blood"s));
-                if (prm_853 == 0)
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         u8"血を流しすぎて死んだ。"s,
                         u8"died from loss of blood"s);
                 }
             }
-            if (prm_855 == -5)
+            if (attacker == -5)
             {
                 txt(lang(
-                    name(prm_853) + u8"は呪いの力で死んだ。"s,
-                    name(prm_853) + u8" die"s + _s(prm_853)
+                    name(target) + u8"は呪いの力で死んだ。"s,
+                    name(target) + u8" die"s + _s(target)
                         + u8" from curse."s));
-                if (prm_853 == 0)
+                if (target == 0)
                 {
                     ndeathcause =
                         lang(u8"呪い殺された。"s, u8"died from curse"s);
                 }
             }
-            if (prm_855 == -7)
+            if (attacker == -7)
             {
                 txt(lang(
-                    name(prm_853) + u8"は階段から転げ落ちて死んだ。"s,
-                    name(prm_853) + u8" tumble"s + _s(prm_853)
-                        + u8" from stairs and die"s + _s(prm_853) + u8"."s));
-                if (prm_853 == 0)
+                    name(target) + u8"は階段から転げ落ちて死んだ。"s,
+                    name(target) + u8" tumble"s + _s(target)
+                        + u8" from stairs and die"s + _s(target) + u8"."s));
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         u8"階段から転げ落ちて亡くなった。"s,
                         u8"tumbled from stairs and died"s);
                 }
             }
-            if (prm_855 == -8)
+            if (attacker == -8)
             {
                 txt(lang(
-                    name(prm_853) + u8"は聴衆に殺された。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
+                    name(target) + u8"は聴衆に殺された。"s,
+                    name(target) + u8" "s + is(target)
                         + u8" killed by an audience."s));
-                if (prm_853 == 0)
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         u8"演奏中に激怒した聴衆に殺された。"s,
                         u8"was killed by an audience"s);
                 }
             }
-            if (prm_855 == -9)
+            if (attacker == -9)
             {
                 txt(lang(
-                    name(prm_853) + u8"は焼け死んだ。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
+                    name(target) + u8"は焼け死んだ。"s,
+                    name(target) + u8" "s + is(target)
                         + u8" burnt and turned into ash."s));
-                if (prm_853 == 0)
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         u8"焼けて消滅した。"s,
                         u8"was burnt and turned into ash"s);
                 }
             }
-            if (prm_855 == -12)
+            if (attacker == -12)
             {
                 txt(lang(
-                    name(prm_853) + u8"は食中毒で死んだ。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
+                    name(target) + u8"は食中毒で死んだ。"s,
+                    name(target) + u8" "s + is(target)
                         + u8" killed by food poisoning."s));
-                if (prm_853 == 0)
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         u8"食中毒で倒れた。"s,
                         u8"got killed by food poisoning"s);
                 }
             }
-            if (prm_855 == -14)
+            if (attacker == -14)
             {
                 txt(lang(
-                    name(prm_853) + u8"はエーテルに侵食され死んだ。"s,
-                    name(prm_853) + u8" die"s + _s(prm_853)
+                    name(target) + u8"はエーテルに侵食され死んだ。"s,
+                    name(target) + u8" die"s + _s(target)
                         + u8" of the Ether disease."s));
-                if (prm_853 == 0)
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         u8"エーテルの病に倒れた。"s,
                         u8"died of the Ether disease"s);
                 }
             }
-            if (prm_855 == -15)
+            if (attacker == -15)
             {
                 txt(lang(
-                    name(prm_853) + u8"は溶けて液体になった。"s,
-                    name(prm_853) + u8" melt"s + _s(prm_853) + u8" down."s));
-                if (prm_853 == 0)
+                    name(target) + u8"は溶けて液体になった。"s,
+                    name(target) + u8" melt"s + _s(target) + u8" down."s));
+                if (target == 0)
                 {
                     ndeathcause =
                         lang(u8"溶けて液体になった。"s, u8"melted down"s);
                 }
             }
-            if (prm_855 == -16)
+            if (attacker == -16)
             {
                 txt(lang(
-                    name(prm_853) + u8"はバラバラになった。"s,
-                    name(prm_853) + u8" shatter"s + _s(prm_853) + u8"."s));
-                if (prm_853 == 0)
+                    name(target) + u8"はバラバラになった。"s,
+                    name(target) + u8" shatter"s + _s(target) + u8"."s));
+                if (target == 0)
                 {
                     ndeathcause = lang(u8"自殺した。"s, u8"committed suicide"s);
                 }
             }
-            if (prm_855 == -17)
+            if (attacker == -17)
             {
                 txt(lang(
-                    name(prm_853) + u8"は核爆発に巻き込まれて塵となった。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
+                    name(target) + u8"は核爆発に巻き込まれて塵となった。"s,
+                    name(target) + u8" "s + is(target)
                         + u8" turned into atoms."s));
-                if (prm_853 == 0)
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         u8"核爆発に巻き込まれて死んだ。"s,
                         u8"was killed by an atomic bomb"s);
                 }
             }
-            if (prm_855 == -18)
+            if (attacker == -18)
             {
                 txt(lang(
-                    name(prm_853)
+                    name(target)
                         + u8"はアイアンメイデンの中で串刺しになって果てた。"s,
-                    name(prm_853) + u8" step"s + _s(prm_853)
-                        + u8" in an iron maiden and die"s + _s(prm_853)
+                    name(target) + u8" step"s + _s(target)
+                        + u8" in an iron maiden and die"s + _s(target)
                         + u8"."s));
-                if (prm_853 == 0)
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         u8"アイアンメイデンにはさまれて死んだ。"s,
                         u8"stepped in an iron maiden and died"s);
                 }
             }
-            if (prm_855 == -19)
+            if (attacker == -19)
             {
                 txt(lang(
-                    name(prm_853) + u8"はギロチンで首をちょんぎられて死んだ。"s,
-                    name(prm_853) + u8" "s + is(prm_853)
-                        + u8" guillotined and die"s + _s(prm_853) + u8"."s));
-                if (prm_853 == 0)
+                    name(target) + u8"はギロチンで首をちょんぎられて死んだ。"s,
+                    name(target) + u8" "s + is(target)
+                        + u8" guillotined and die"s + _s(target) + u8"."s));
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         u8"ギロチンで首を落とされて死んだ。"s,
                         u8"was guillotined"s);
                 }
             }
-            if (prm_855 == -20)
+            if (attacker == -20)
             {
                 txt(lang(
-                    name(prm_853) + u8"は首を吊った。"s,
-                    name(prm_853) + u8" hang"s + _s(prm_853) + u8" "s
-                        + his(prm_853) + u8"self."s));
-                if (prm_853 == 0)
+                    name(target) + u8"は首を吊った。"s,
+                    name(target) + u8" hang"s + _s(target) + u8" "s
+                        + his(target) + u8"self."s));
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         u8"首を吊った。"s, u8"commited suicide by hanging"s);
                 }
             }
-            if (prm_855 == -21)
+            if (attacker == -21)
             {
                 txt(lang(
-                    name(prm_853) + u8"はもちを喉に詰まらせて死んだ。"s,
-                    name(prm_853) + u8" choke"s + _s(prm_853)
+                    name(target) + u8"はもちを喉に詰まらせて死んだ。"s,
+                    name(target) + u8" choke"s + _s(target)
                         + u8" on mochi and die."s));
-                if (prm_853 == 0)
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         u8"もちを喉に詰まらせて死んだ。"s,
                         u8"ate mochi and died"s);
                 }
             }
-            if (prm_855 == -6)
+            if (attacker == -6)
             {
                 p_at_m141(0) = -1;
                 p_at_m141(1) = 0;
@@ -1048,11 +1048,11 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                     rtvaln = itemname(p_at_m141);
                 }
                 txt(lang(
-                    name(prm_853) + u8"は"s + rtvaln
+                    name(target) + u8"は"s + rtvaln
                         + u8"の重さに耐え切れず死んだ。"s,
-                    name(prm_853) + u8" "s + is(prm_853) + u8" squashed by "s
+                    name(target) + u8" "s + is(target) + u8" squashed by "s
                         + rtvaln + u8"."s));
-                if (prm_853 == 0)
+                if (target == 0)
                 {
                     ndeathcause = lang(
                         rtvaln + u8"の重さに耐え切れず潰れた。"s,
@@ -1060,134 +1060,134 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                 }
             }
         }
-        if (prm_855 == -9 || ele_at_m141 == 50)
+        if (attacker == -9 || ele_at_m141 == 50)
         {
             mef_add(
-                cdata[prm_853].position.x,
-                cdata[prm_853].position.y,
+                cdata[target].position.x,
+                cdata[target].position.y,
                 5,
                 24,
                 rnd(10) + 5,
                 100,
-                prm_855);
+                attacker);
         }
         if (ele_at_m141 == 56)
         {
-            if (prm_855 >= 0)
+            if (attacker >= 0)
             {
                 if (dmg_at_m141 > 0)
                 {
-                    healhp(cc, rnd(dmg_at_m141 * (200 + prm_857) / 1000 + 5));
+                    healhp(cc, rnd(dmg_at_m141 * (200 + element_power) / 1000 + 5));
                 }
             }
         }
-        if (gdata_mount != prm_853 || prm_853 == 0)
+        if (gdata_mount != target || target == 0)
         {
             cell_removechara(
-                cdata[prm_853].position.x, cdata[prm_853].position.y);
+                cdata[target].position.x, cdata[target].position.y);
         }
-        if (cdata[prm_853].breaks_into_debris())
+        if (cdata[target].breaks_into_debris())
         {
-            if (is_in_fov(prm_853))
+            if (is_in_fov(target))
             {
-                x = cdata[prm_853].position.x;
-                y = cdata[prm_853].position.y;
+                x = cdata[target].position.x;
+                y = cdata[target].position.y;
                 snd(45, false, false);
-                animeblood(prm_853, 1, ele_at_m141);
+                animeblood(target, 1, ele_at_m141);
             }
-            spillfrag(cdata[prm_853].position.x, cdata[prm_853].position.y, 3);
+            spillfrag(cdata[target].position.x, cdata[target].position.y, 3);
         }
         else
         {
             snd(8 + rnd(2), false, false);
-            animeblood(prm_853, 0, ele_at_m141);
-            spillblood(cdata[prm_853].position.x, cdata[prm_853].position.y, 4);
+            animeblood(target, 0, ele_at_m141);
+            spillblood(cdata[target].position.x, cdata[target].position.y, 4);
         }
-        if (cdata[prm_853].character_role == 0)
+        if (cdata[target].character_role == 0)
         {
-            cdata[prm_853].state = 0;
+            cdata[target].state = 0;
         }
-        else if (cdata[prm_853].character_role == 13)
+        else if (cdata[target].character_role == 13)
         {
-            cdata[prm_853].state = 4;
-            cdata[prm_853].time_to_revive = gdata_hour + gdata_day * 24
+            cdata[target].state = 4;
+            cdata[target].time_to_revive = gdata_hour + gdata_day * 24
                 + gdata_month * 24 * 30 + gdata_year * 24 * 30 * 12 + 24
                 + rnd(12);
         }
         else
         {
-            cdata[prm_853].state = 2;
-            cdata[prm_853].time_to_revive = gdata_hour + gdata_day * 24
+            cdata[target].state = 2;
+            cdata[target].time_to_revive = gdata_hour + gdata_day * 24
                 + gdata_month * 24 * 30 + gdata_year * 24 * 30 * 12 + 48;
         }
-        if (prm_853 != 0)
+        if (target != 0)
         {
-            if (prm_853 < 16)
+            if (target < 16)
             {
-                chara_mod_impression(prm_853, -10);
-                cdata[prm_853].state = 6;
-                cdata[prm_853].current_map = 0;
-                if (cdata[prm_853].is_escorted() == 1)
+                chara_mod_impression(target, -10);
+                cdata[target].state = 6;
+                cdata[target].current_map = 0;
+                if (cdata[target].is_escorted() == 1)
                 {
-                    event_add(15, cdata[prm_853].id);
-                    cdata[prm_853].state = 0;
+                    event_add(15, cdata[target].id);
+                    cdata[target].state = 0;
                 }
-                if (cdata[prm_853].is_escorted_in_sub_quest() == 1)
+                if (cdata[target].is_escorted_in_sub_quest() == 1)
                 {
-                    cdata[prm_853].state = 0;
+                    cdata[target].state = 0;
                 }
             }
         }
-        if (prm_853 == 0)
+        if (target == 0)
         {
             ++gdata_death_count;
         }
-        if (prm_853 == gdata(94))
+        if (target == gdata(94))
         {
             gdata(94) = 0;
         }
-        if (prm_855 >= 0)
+        if (attacker >= 0)
         {
-            if (prm_855 != 0)
+            if (attacker != 0)
             {
-                chara_custom_talk(prm_855, 103);
+                chara_custom_talk(attacker, 103);
             }
-            exp_at_m141 = clamp(cdata[prm_853].level, 1, 200)
-                    * clamp((cdata[prm_853].level + 1), 1, 200)
-                    * clamp((cdata[prm_853].level + 2), 1, 200) / 20
+            exp_at_m141 = clamp(cdata[target].level, 1, 200)
+                    * clamp((cdata[target].level + 1), 1, 200)
+                    * clamp((cdata[target].level + 2), 1, 200) / 20
                 + 8;
-            if (cdata[prm_853].level > cdata[prm_855].level)
+            if (cdata[target].level > cdata[attacker].level)
             {
                 exp_at_m141 /= 4;
             }
-            if (cdata[prm_853].splits() || cdata[prm_853].splits2())
+            if (cdata[target].splits() || cdata[target].splits2())
             {
                 exp_at_m141 /= 20;
             }
-            cdata[prm_855].experience += exp_at_m141;
-            if (prm_855 == 0)
+            cdata[attacker].experience += exp_at_m141;
+            if (attacker == 0)
             {
                 gdata_sleep_experience += exp_at_m141;
             }
-            cdata[prm_855].hate = 0;
-            if (prm_855 < 16)
+            cdata[attacker].hate = 0;
+            if (attacker < 16)
             {
-                cdata[prm_855].enemy_id = 0;
+                cdata[attacker].enemy_id = 0;
                 cdata[0].enemy_id = 0;
                 gdata(94) = 0;
             }
         }
-        if (prm_853 != 0)
+        if (target != 0)
         {
             if (gdata_current_map != 35)
             {
                 if (gdata_current_map != 42)
                 {
-                    if (cdata[prm_853].id == 2)
+                    if (cdata[target].id == 2)
                     {
                         event_add(1);
                     }
-                    if (cdata[prm_853].id == 141)
+                    if (cdata[target].id == 141)
                     {
                         txtef(2);
                         txt(lang(
@@ -1196,7 +1196,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                         snd(51);
                         gdata_magic_stone_of_fool = 1;
                     }
-                    if (cdata[prm_853].id == 143)
+                    if (cdata[target].id == 143)
                     {
                         txtef(2);
                         txt(lang(
@@ -1205,7 +1205,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                         snd(51);
                         gdata_magic_stone_of_king = 1;
                     }
-                    if (cdata[prm_853].id == 144)
+                    if (cdata[target].id == 144)
                     {
                         txtef(2);
                         txt(lang(
@@ -1214,7 +1214,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                         snd(51);
                         gdata_magic_stone_of_sage = 1;
                     }
-                    if (cdata[prm_853].id == 242)
+                    if (cdata[target].id == 242)
                     {
                         if (gdata_novice_knight < 1000)
                         {
@@ -1226,7 +1226,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                                 u8"Your journal has been updated."s));
                         }
                     }
-                    if (cdata[prm_853].id == 257)
+                    if (cdata[target].id == 257)
                     {
                         if (gdata_pyramid_trial < 1000)
                         {
@@ -1242,7 +1242,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                             snd(51);
                         }
                     }
-                    if (cdata[prm_853].id == 300)
+                    if (cdata[target].id == 300)
                     {
                         if (gdata_minotaur_king < 1000)
                         {
@@ -1254,14 +1254,14 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                                 u8"Your journal has been updated."s));
                         }
                     }
-                    if (cdata[prm_853].id == 318)
+                    if (cdata[target].id == 318)
                     {
                         event_add(
                             27,
-                            cdata[prm_853].position.x,
-                            cdata[prm_853].position.y);
+                            cdata[target].position.x,
+                            cdata[target].position.y);
                     }
-                    if (cdata[prm_853].id == 319)
+                    if (cdata[target].id == 319)
                     {
                         ++gdata_kill_count_of_little_sister;
                         txtef(3);
@@ -1280,39 +1280,39 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                             == adata(10, gdata_current_map)
                         || gdata_current_map == 42)
                     {
-                        if (adata(20, gdata_current_map) == prm_853
-                            && cdata[prm_853].is_lord_of_dungeon() == 1)
+                        if (adata(20, gdata_current_map) == target
+                            && cdata[target].is_lord_of_dungeon() == 1)
                         {
                             event_add(5);
                         }
                     }
-                    if (cdata[prm_853].id == 331)
+                    if (cdata[target].id == 331)
                     {
                         if (rnd(4) == 0)
                         {
                             event_add(
                                 28,
-                                cdata[prm_853].position.x,
-                                cdata[prm_853].position.y);
+                                cdata[target].position.x,
+                                cdata[target].position.y);
                         }
                     }
                     quest_check();
                 }
                 else if (gdata_current_map == 42)
                 {
-                    if (adata(20, gdata_current_map) == prm_853
-                        && cdata[prm_853].is_lord_of_dungeon() == 1)
+                    if (adata(20, gdata_current_map) == target
+                        && cdata[target].is_lord_of_dungeon() == 1)
                     {
                         event_add(5);
                     }
                 }
             }
         }
-        if (prm_853 != 0)
+        if (target != 0)
         {
-            ++npcmemory(0, cdata[prm_853].id);
-            chara_custom_talk(prm_853, 102);
-            if (prm_853 < 16)
+            ++npcmemory(0, cdata[target].id);
+            chara_custom_talk(target, 102);
+            if (target < 16)
             {
                 txt(lang(
                     u8"あなたは悲しくなった。"s,
@@ -1322,35 +1322,35 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
         --gdata_other_character_count;
         if (gdata_mount)
         {
-            if (prm_853 == gdata_mount)
+            if (target == gdata_mount)
             {
                 txt(lang(
-                    name(0) + u8"は"s + name(prm_853) + u8"の死体から降りた。"s,
-                    name(0) + u8" get off the corpse of "s + name(prm_853)
+                    name(0) + u8"は"s + name(target) + u8"の死体から降りた。"s,
+                    name(0) + u8" get off the corpse of "s + name(target)
                         + u8"."s));
                 ride_end();
             }
         }
-        check_kill(prm_855, prm_853);
+        check_kill(attacker, target);
         catitem = 0;
         rollanatomy = 0;
         if (rnd(60) == 0)
         {
             rollanatomy = 1;
         }
-        if (prm_855 >= 0)
+        if (attacker >= 0)
         {
-            if (cdata[prm_855].id == 260)
+            if (cdata[attacker].id == 260)
             {
-                catitem = prm_855;
+                catitem = attacker;
             }
-            if (int(std::sqrt(sdata(161, prm_855))) > rnd(150))
+            if (int(std::sqrt(sdata(161, attacker))) > rnd(150))
             {
                 rollanatomy = 1;
             }
-            skillexp(161, prm_855, 10 + rollanatomy * 4);
+            skillexp(161, attacker, 10 + rollanatomy * 4);
         }
-        rc = prm_853;
+        rc = target;
         label_1573();
         if (gdata_current_map == 40)
         {
@@ -1359,7 +1359,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                 snd(69);
             }
         }
-        if (cdata[prm_853].is_death_master() == 1)
+        if (cdata[target].is_death_master() == 1)
         {
             txt(lang(
                 u8"死の宣告は無効になった。"s, u8"The death word breaks."s));
@@ -1385,7 +1385,7 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
                 }
             }
         }
-        if (prm_855 == 0)
+        if (attacker == 0)
         {
             if (gdata_catches_god_signal)
             {
@@ -1406,9 +1406,9 @@ int dmghp(int prm_853, int prm_854, int prm_855, int prm_856, int prm_857)
 
 void end_dmghp()
 {
-    if (cdata[prm_853].is_hung_on_sand_bag())
+    if (cdata[target].is_hung_on_sand_bag())
     {
-        if (is_in_fov(prm_853))
+        if (is_in_fov(target))
         {
             txt(u8"("s + dmg_at_m141 + u8")"s + lang(u8" "s, ""s));
             if (rnd(20) == 0)

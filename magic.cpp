@@ -1,14 +1,20 @@
 #include "magic.hpp"
 #include "ability.hpp"
+#include "audio.hpp"
 #include "access_item_db.hpp"
 #include "animation.hpp"
 #include "buff.hpp"
 #include "calc.hpp"
 #include "character.hpp"
+#include "character_status.hpp"
 #include "config.hpp"
 #include "ctrl_file.hpp"
+#include "dmgheal.hpp"
 #include "debug.hpp"
+#include "enchantment.hpp"
+#include "element.hpp"
 #include "elona.hpp"
+#include "fov.hpp"
 #include "i18n.hpp"
 #include "input.hpp"
 #include "item.hpp"
@@ -106,9 +112,9 @@ magic_result magic(magic_data m)
             {
                 if (trait(165))
                 {
-                    if (m.damage.element == element_t::burning
-                        || m.damage.element == element_t::icy
-                        || m.damage.element == element_t::electric)
+                    if (m.damage.element == element_t::fire
+                        || m.damage.element == element_t::cold
+                        || m.damage.element == element_t::lightning)
                     {
                         m.damage.dice_y = m.damage.dice_y * 125 / 100;
                     }
@@ -557,7 +563,7 @@ void magic_add_buff(const magic_data& m, magic_result& result)
             }
         }
     }
-    addbuff(result.selected_target, p, m.power, calc_buff_duration(p, m.power));
+    buff_add(result.selected_target, p, m.power, calc_buff_duration(p, m.power));
     if (m.effect_id == 447)
     {
         if (m.curse_state == curse_state_t::blessed)
@@ -660,11 +666,11 @@ void magic_bolt(const magic_data& m, magic_result& result)
         {
             continue;
         }
-        if (m.damage.element == element_t::burning)
+        if (m.damage.element == element_t::fire)
         {
             mapitem_fire(dx, dy);
         }
-        if (m.damage.element == element_t::icy)
+        if (m.damage.element == element_t::cold)
         {
             mapitem_cold(dx, dy);
         }
@@ -852,11 +858,11 @@ void magic_aoe(const magic_data& m, magic_result& result)
                         }
                     }
                 }
-                if (current_damage.element == element_t::burning)
+                if (current_damage.element == element_t::fire)
                 {
                     mapitem_fire(dx, dy);
                 }
-                if (current_damage.element == element_t::icy)
+                if (current_damage.element == element_t::cold)
                 {
                     mapitem_cold(dx, dy);
                 }
@@ -1051,7 +1057,7 @@ void magic_summon(const magic_data& m, magic_result& result, summon_t type)
             dbid = 176;
             break;
         }
-        characreate(
+        chara_create(
             -1, dbid, cdata[m.target].position.x, cdata[m.target].position.y);
         if (type != summon_t::other)
         {
@@ -1317,11 +1323,11 @@ void magic_breath(const magic_data& m, magic_result& result)
                 }
             }
         }
-        if (m.damage.element == element_t::burning)
+        if (m.damage.element == element_t::fire)
         {
             mapitem_fire(dx, dy);
         }
-        if (m.damage.element == element_t::icy)
+        if (m.damage.element == element_t::cold)
         {
             mapitem_cold(dx, dy);
         }
@@ -1520,7 +1526,7 @@ void magic_love_potion(const magic_data& m, magic_result& result)
                      u8"This love potion is cursed. "s + name(m.target) + u8" look"s
                      + _s(m.target) + u8" at "s + name(0)
                      + u8" with a contemptuous glance."s));
-            modimp(m.target, -15);
+            chara_mod_impression(m.target, -15);
         }
         result.obvious = false;
         return;
@@ -1532,7 +1538,7 @@ void magic_love_potion(const magic_data& m, magic_result& result)
             txt(lang(
                      name(m.target) + u8"は恋の予感がした。"s,
                      name(m.target) + u8" sense"s + _s(m.target) + u8" a sigh of love,"s));
-            modimp(m.target, clamp(m.power / 15, 0, 15));
+            chara_mod_impression(m.target, clamp(m.power / 15, 0, 15));
             dmgcon(m.target, 7, 100);
             lovemiracle(m.target);
             return;
@@ -1549,7 +1555,7 @@ void magic_love_potion(const magic_data& m, magic_result& result)
                  name(m.target) + u8" give"s + _s(m.target) + u8" "s + name(0)
                  + u8" the eye."s));
         lovemiracle(m.target);
-        modimp(m.target, clamp(m.power / 4, 0, 25));
+        chara_mod_impression(m.target, clamp(m.power / 4, 0, 25));
     }
     dmgcon(m.target, 7, 500);
 }
@@ -1564,7 +1570,7 @@ void magic_pregnancy(const magic_data& m, magic_result& result)
                  name(m.caster) + u8" put"s + _s(m.caster) + u8" something into "s + name(m.target)
                  + your(m.target) + u8" body!"s));
     }
-    get_pregnant(m.caster, m.target);
+    get_pregnant(m.target);
 }
 
 void magic_mirror(const magic_data& m, magic_result& result)
@@ -1619,8 +1625,7 @@ void magic_milk(const magic_data& m, magic_result& result)
     cdata[m.target].nutrition += 1000 * (m.power / 100);
     if (m.target == 0)
     {
-        // TODO de-globalize
-        label_2162();
+        announce_hunger_status(m.target);
     }
     eatstatus(m.curse_state, m.target);
     animeload(15, m.target);
@@ -2187,7 +2192,7 @@ void magic_remove_hex(const magic_data& m, magic_result& result, bool is_vanquis
             continue;
         }
     }
-    addbuff(m.target, 10, m.power, 5 + m.power / 30);
+    buff_add(m.target, 10, m.power, 5 + m.power / 30);
     animeload(11, m.target);
 }
 
@@ -2418,12 +2423,12 @@ void magic_announce_touch(const magic_data& m)
     {
         gdata(809) = 2;
         txt(lang(
-                aln(m.caster) + name(m.target) + u8"を"s + elename(m)
+                aln(m.caster) + name(m.target) + u8"を"s + elename(m.effect_id, m.damage.element)
                 + _melee(2, cdata[m.caster].melee_attack_type)
                 + u8"で"s
                 + _melee(0, cdata[m.caster].melee_attack_type),
                 name(m.caster) + u8" touch"s + _s(m.caster) + u8" "s + name(m.target)
-                + u8" with "s + his(m.caster) + u8" "s + elename(m)
+                + u8" with "s + his(m.caster) + u8" "s + elename(m.effect_id, m.damage.element)
                 + u8" "s
                 + _melee(2, cdata[m.caster].melee_attack_type)
                 + u8" and"s));
@@ -2432,12 +2437,12 @@ void magic_announce_touch(const magic_data& m)
     {
         txt(lang(
                 name(m.target) + u8"は"s + name(m.caster) + u8"に"s
-                + elename(m)
+                + elename(m.effect_id, m.damage.element)
                 + _melee(2, cdata[m.caster].melee_attack_type)
                 + u8"で"s
                 + _melee(1, cdata[m.caster].melee_attack_type),
                 name(m.caster) + u8" touch"s + _s(m.caster) + u8" "s + name(m.target)
-                + u8" with "s + his(m.caster) + u8" "s + elename(m)
+                + u8" with "s + his(m.caster) + u8" "s + elename(m.effect_id, m.damage.element)
                 + u8" "s
                 + _melee(2, cdata[m.caster].melee_attack_type)
                 + u8"."s));
@@ -2799,7 +2804,7 @@ void magic_resurrection(const magic_data& m, magic_result& result)
         {
             flt(calcobjlv(cdata[0].level), calcfixlv(3));
             fltn(u8"undead"s);
-            characreate(-1, 0, cdata[0].position.x, cdata[0].position.y);
+            chara_create(-1, 0, cdata[0].position.x, cdata[0].position.y);
         }
         result.obvious = false;
         return;
@@ -2843,7 +2848,7 @@ void magic_resurrection(const magic_data& m, magic_result& result)
     cdata[rc].emotion_icon = 317;
     if (m.caster == 0)
     {
-        modimp(rc, 15);
+        chara_mod_impression(rc, 15);
         if (rc >= 16)
         {
             modify_karma(0, 2);
@@ -3971,7 +3976,7 @@ void magic_ally(const magic_data& m, magic_result& result, ally_t type)
         p = 211;
     }
     novoidlv = 1;
-    characreate(56, p, -3, 0);
+    chara_create(56, p, -3, 0);
     rc = 56;
     new_ally_joins();
 }
@@ -4587,7 +4592,7 @@ void magic_change_creature(const magic_data& m, magic_result& result)
                  name(tc) + u8"は変化した。"s,
                  name(tc) + u8" change"s + _s(tc) + u8"."s));
         flt(calcobjlv(cdata[tc].level + 3), 2);
-        characreate(56, 0, -3, 0);
+        chara_create(56, 0, -3, 0);
         relocate_chara(56, tc, 1);
         cdata[tc].enemy_id = cc;
         cdata[tc].is_quest_target() = false;
@@ -4958,9 +4963,9 @@ void magic_cheer(const magic_data& m, magic_result& result)
                      name(result.selected_target) + u8"は興奮した！"s,
                      name(result.selected_target) + u8" "s + is(result.selected_target) + u8" excited!"s));
         }
-        addbuff(result.selected_target, 5, sdata(17, m.caster) * 5 + 50, 15);
-        addbuff(result.selected_target, 7, sdata(17, m.caster) * 5 + 100, 60);
-        addbuff(result.selected_target, 18, 1500, 30);
+        buff_add(result.selected_target, 5, sdata(17, m.caster) * 5 + 50, 15);
+        buff_add(result.selected_target, 7, sdata(17, m.caster) * 5 + 100, 60);
+        buff_add(result.selected_target, 18, 1500, 30);
     }
 }
 
@@ -5262,56 +5267,5 @@ int efstatusfix(curse_state_t efstatus, int doomed, int cursed, int none, int bl
     default: assert(0);
     }
 }
-
-std::string elename(const magic_data& m)
-{
-    if (m.effect_id == 614)
-    {
-        return lang(u8"飢えた"s, u8"starving"s);
-    }
-    if (m.effect_id == 613)
-    {
-        return lang(u8"腐った"s, u8"rotten"s);
-    }
-    if (m.effect_id == 617)
-    {
-        return lang(u8"恐ろしい"s, u8"fearful"s);
-    }
-    if (m.effect_id == 618)
-    {
-        return lang(u8"柔らかい"s, u8"silky"s);
-    }
-
-    switch(m.damage.element)
-    {
-    case element_t::burning:
-        return lang(u8"燃える"s, u8"burning"s);
-    case element_t::icy:
-        return lang(u8"冷たい"s, u8"icy"s);
-    case element_t::electric:
-        return lang(u8"放電する"s, u8"electric"s);
-    case element_t::psychic:
-        return lang(u8"霊的な"s, u8"psychic"s);
-    case element_t::numb:
-        return lang(u8"痺れる"s, u8"numb"s);
-    case element_t::shivering:
-        return lang(u8"震える"s, u8"shivering"s);
-    case element_t::poisonous:
-        return lang(u8"毒の"s, u8"poisonous"s);
-    case element_t::infernal:
-        return lang(u8"地獄の"s, u8"infernal"s);
-    case element_t::chaotic:
-        return lang(u8"混沌の"s, u8"chaotic"s);
-    case element_t::gloomy:
-        return lang(u8"暗黒の"s, u8"gloomy"s);
-    case element_t::cut:
-        return lang(u8"出血の"s, u8"cut"s);
-    case element_t::ether:
-        return lang(u8"エーテルの"s, u8"ether"s);
-    }
-
-    return u8"?"s;
-}
-
 
 } // namespace elona

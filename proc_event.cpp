@@ -5,6 +5,7 @@
 #include "character.hpp"
 #include "character_status.hpp"
 #include "config.hpp"
+#include "dmgheal.hpp"
 #include "element.hpp"
 #include "elona.hpp"
 #include "event.hpp"
@@ -804,7 +805,7 @@ void proc_event()
         aniref = range_;
         anix = tlocx;
         aniy = tlocy;
-        play_animation(17, element_t::chaotic);
+        play_animation(17, element_t::chaos);
         update_screen();
         for (int i = 0; i < range_ * 2 + 1; ++i)
         {

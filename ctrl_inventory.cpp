@@ -22,7 +22,7 @@
 namespace elona
 {
 
-menu_result ctrl_inventory()
+menu_result ctrl_inventory(optional<int> effect_power)
 {
     menu_result result = { false, false, turn_result_t::none };
     int mainweapon = 0;
@@ -1230,16 +1230,19 @@ label_2061_internal:
                         goto label_2060_internal;
                     }
                 }
-                if (invctrl(1) == 5)
+                if (invctrl(1) == 5) // four dimensional pocket
                 {
-                    if (inv[ci].weight >= efp * 100)
+                    // effect_power is set when opening four dimensional pocket.
+                    assert(effect_power);
+
+                   if (inv[ci].weight >= *effect_power * 100)
                     {
                         snd(27);
                         txt(lang(
-                            u8"重さが"s + cnvweight(efp * 100)
+                            u8"重さが"s + cnvweight(*effect_power * 100)
                                 + u8"以上の物は入らない。"s,
                             u8"The container can only hold items weight less than "s
-                                + cnvweight(efp * 100) + u8"."s));
+                                + cnvweight(*effect_power * 100) + u8"."s));
                         goto label_2060_internal;
                     }
                     if (inv[ci].weight <= 0)
@@ -1250,9 +1253,6 @@ label_2061_internal:
                             u8"The container cannot hold cargos"s));
                         goto label_2060_internal;
                     }
-                }
-                if (invctrl(1) == 5)
-                {
                     if (!actionsp(0, 10))
                     {
                         txt(lang(
@@ -1781,11 +1781,14 @@ label_2061_internal:
                     + itemname(ci, 1) + u8"."s));
             goto label_2060_internal;
         }
-        if (invctrl == 13)
+        if (invctrl == 13) // identify
         {
+            // effect_power will have been set by now.
+            assert(effect_power);
+
             screenupdate = -1;
             update_screen();
-            const auto identify_result = item_identify(inv[ci], efp);
+            const auto identify_result = item_identify(inv[ci], *effect_power);
             if (identify_result == identification_state_t::unidentified)
             {
                 txt(lang(

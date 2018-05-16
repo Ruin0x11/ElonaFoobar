@@ -5,6 +5,7 @@
 #include "calc.hpp"
 #include "character.hpp"
 #include "character_status.hpp"
+#include "dmgheal.hpp"
 #include "elona.hpp"
 #include "event.hpp"
 #include "fov.hpp"
@@ -100,7 +101,7 @@ void continuous_action_eating_finish()
     }
     if (cc == 0)
     {
-        label_2162();
+        announce_hunger_status(cc);
     }
     else
     {
@@ -168,7 +169,7 @@ void continuous_action_eating_finish()
 
 
 
-void label_2162()
+void announce_hunger_status(int cc)
 {
     txtef(2);
     if (cdata[cc].nutrition >= 12000)
@@ -2022,7 +2023,7 @@ void eating_effect_pregnant()
             u8"Something gets into "s + name(cc) + your(cc) + u8" body."s));
     }
     tc = cc;
-    get_pregnant();
+    get_pregnant(cc);
     return;
 }
 

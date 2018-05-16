@@ -12,7 +12,7 @@ void update_screen();
 void show_race_or_class_info(int, int);
 
 extern int prm_518;
-extern int prm_853;
+extern int target;
 
 extern elona_vector1<int> inhlist;
 
