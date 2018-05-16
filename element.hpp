@@ -11,6 +11,7 @@ namespace elona
 // TODO: they shouldn't be linked to specific magic numbers.
 enum class element_t
 {
+    none = 0,
     fire = 50,
     cold = 51,
     lightning = 52,

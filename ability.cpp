@@ -614,13 +614,6 @@ void gain_fishing_experience(int cc)
 
 
 
-void gain_memorization_experience(int cc)
-{
-    skillexp(165, cc, 10 + the_ability_db[efid]->sdataref4 / 5);
-}
-
-
-
 void gain_crafting_experience(int skill)
 {
     skillexp(skill, 0, 50 + r2 * 20);

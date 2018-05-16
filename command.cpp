@@ -811,7 +811,7 @@ turn_result_t do_throw_command()
                 }
                 return turn_result_t::turn_end;
             }
-            efp = 50 + sdata(111, cc) * 10;
+            int efp = 50 + sdata(111, cc) * 10;
             if (inv[ci].id == 392)
             {
                 mef_add(tlocx, tlocy, 3, 19, rnd(15) + 5, efp, cc);
@@ -2306,8 +2306,6 @@ turn_result_t do_use_command()
         txt(lang(
             u8"ジュア「べ、別にあんたのためにするんじゃないからね。バカっ！」"s,
             u8"A voice echoes, "s + u8"\"I-I'm not doing for you! Silly!\""s));
-        efid = 637;
-        efp = 5000;
         magic(637, cc, tc, 5000);
         goto label_2229_internal;
     case 43:
@@ -3426,7 +3424,28 @@ turn_result_t do_read_command()
     }
     efid = 0;
     dbid = inv[ci].id;
-    access_item_db(13);
+    item_db_result result = access_item_db(item_db_query_t::read);
+
+    switch(result.read_item)
+    {
+    case read_item_t::normal_book:
+        read_normal_book();
+        break;
+    case read_item_t::decodable_book:
+        decode_book(result.effect_id, result.effect_power);
+        break;
+    case read_item_t::scroll:
+        read_scroll(result.effect_id, result.effect_power);
+        break;
+    case read_item_t::deed:
+        assert(result.effect_id == 1115);
+        build_new_building();
+        break;
+    case read_item_t::none:
+    default:
+        assert(0);
+    }
+
     if (efid == 1115)
     {
         return build_new_building();
@@ -3475,16 +3494,17 @@ turn_result_t do_eat_command()
 turn_result_t do_drink_command()
 {
     dbid = inv[ci].id;
-    access_item_db(15);
+    item_db_result result = access_item_db(item_db_query_t::drink);
+    drink_potion(result.effect_id, result.effect_power, potion_consume_t::drunk);
     return turn_result_t::turn_end;
 }
 
 turn_result_t do_zap_command()
 {
     dbid = inv[ci].id;
-    access_item_db(14);
-    int stat = label_2172();
-    if (stat == 0)
+    item_db_result idb_result = access_item_db(item_db_query_t::zap);
+    magic_result result = zap_rod(idb_result.effect_id, idb_result.effect_power);
+    if (!result.turn_passed)
     {
         update_screen();
         return turn_result_t::pc_turn_user_error;

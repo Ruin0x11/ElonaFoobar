@@ -124,7 +124,6 @@ void gain_investing_experience(int cc);
 void gain_weight_lifting_experience(int cc);
 void gain_magic_device_experience(int cc);
 void gain_fishing_experience(int cc);
-void gain_memorization_experience(int cc);
 void gain_crafting_experience(int skill);
 void gain_disarm_trap_experience();
 

@@ -1,5 +1,6 @@
 #include "ability.hpp"
 #include "adventurer.hpp"
+#include "access_item_db.hpp"
 #include "ai.hpp"
 #include "animation.hpp"
 #include "audio.hpp"
@@ -12413,8 +12414,8 @@ void show_item_description()
     reftype = the_item_db[inv[ci].id]->category;
     getinheritance(ci, inhlist, inhmax);
     dbid = inv[ci].id;
-    access_item_db(2);
-    access_item_db(17);
+    access_item_db(item_db_query_t::charge_level);
+    access_item_db(item_db_query_t::identified);
     if (inv[ci].identification_state
         == identification_state_t::completely_identified)
     {
@@ -16874,7 +16875,7 @@ void spot_mining_or_wall()
 
 
 
-int decode_book()
+int decode_book(int efid)
 {
     int cibkread = 0;
     if (cdata[cc].continuous_action_id == 0)
@@ -17030,7 +17031,7 @@ int decode_book()
             (rnd(51) + 50) * (90 + sdata(165, cc) + (sdata(165, cc) > 0) * 20)
                     / clamp((100 + spell((efid - 400)) / 2), 50, 1000)
                 + 1);
-        gain_memorization_experience(0);
+        skillexp(165, cc, 10 + the_ability_db[efid]->sdataref4 / 5); // memorization
         if (itemmemory(2, inv[ci].id) == 0)
         {
             itemmemory(2, inv[ci].id) = 1;
@@ -17146,7 +17147,7 @@ int calcmagiccontrol(int prm_1076, int prm_1077)
 
 
 
-int label_2167()
+int label_2167(int efid)
 {
     int spellbk = 0;
     spellbk = efid;
@@ -17352,8 +17353,15 @@ int label_2168(int efid)
 
 
 
-int drink_potion(int efid, potion_consume_t consume_type)
+int drink_potion(int efid, potion_consume_t consume_type, optional<curse_state_t> spilt_curse_state)
 {
+    if(effect_id == -1)
+    {
+        // Temporary hack to get the around the fact that access_item_db might call drink_well()
+        // When this happens effect_id is set to -1.
+        // In all other cases effect_id is set to something else.
+        return drink_well();
+    }
     tc = cc;
     magic_data data(efid, cc, tc, efp);
     data.effect_source = effect_source_t::potion;
@@ -17362,9 +17370,15 @@ int drink_potion(int efid, potion_consume_t consume_type)
     {
         if (consume_type == potion_consume_t::thrown)
         {
-            // originally efp * (potionthrow / 100), but potionthrow was only ever being set to 1
-            data.effect_power = data.effect_power * 1 / 100;
+            // potionthrow was always either 100 or 0
+            int potionthrow = 100;
+            data.power = data.power * potionthrow / 100;
             data.curse_state = inv[ci].curse_state;
+        }
+        else
+        {
+            // should have been set by pass_one_turn
+            data.curse_state = *spilt_curse_state;
         }
     }
     else
@@ -23890,7 +23904,8 @@ turn_result_t pc_turn(bool advance_time)
                 && the_item_db[inv[ci].id]->category == 52000)
             {
                 dbid = inv[ci].id;
-                access_item_db(15);
+                item_db_result result = access_item_db(item_db_query_t::drink);
+                drink_potion(result.effect_id, result.effect_power, potion_consume_t::drunk);
             }
         }
         if (trait(214) != 0 && rnd(250) == 0 && mdata(6) != 1)

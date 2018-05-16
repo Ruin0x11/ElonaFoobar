@@ -1,5 +1,6 @@
 #include "itemgen.hpp"
 #include "ability.hpp"
+#include "access_item_db.hpp"
 #include "calc.hpp"
 #include "character.hpp"
 #include "enchantment.hpp"
@@ -180,8 +181,8 @@ int do_create_item(int slot, int x, int y)
         dbid = 501;
     }
 
-    access_item_db(3);
-    access_item_db(2);
+    access_item_db(item_db_query_t::initialize);
+    access_item_db(item_db_query_t::charge_level);
 
     inv[ci].color = icolref(inv[ci].id);
     if (inv[ci].color == 1)
@@ -669,7 +670,7 @@ void change_item_material()
     }
     originalvalue = inv[ci].value * 100 / the_item_material_db[p]->value;
     dbid = inv[ci].id;
-    access_item_db(10);
+    access_item_db(item_db_query_t::fixmaterial);
     inv[ci].value = originalvalue;
     if (fixmaterial != 0)
     {

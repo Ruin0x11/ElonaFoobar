@@ -12,6 +12,7 @@
 #include "itemgen.hpp"
 #include "item_db.hpp"
 #include "macro.hpp"
+#include "magic.hpp"
 #include "map.hpp"
 #include "map_cell.hpp"
 #include "race.hpp"
@@ -382,7 +383,6 @@ void start_home_map_mode()
         }
         else
         {
-            efid = 438;
             magic_data data(438, cc, tc); // TODO test
             data.target_loc = {tlocx, tlocy};
             magic(data);

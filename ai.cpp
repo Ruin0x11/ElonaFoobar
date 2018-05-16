@@ -9,6 +9,7 @@
 #include "item_db.hpp"
 #include "itemgen.hpp"
 #include "fov.hpp"
+#include "magic.hpp"
 #include "map.hpp"
 #include "map_cell.hpp"
 #include "random.hpp"
@@ -208,7 +209,7 @@ turn_result_t ai_proc_basic()
     {
         if (act < 467)
         {
-            efid = act;
+            int efid = act;
             if (cdata[cc].mp < cdata[cc].max_mp / 7)
             {
                 if (rnd(3) || cc < 16 || cdata[cc].quality >= 4
@@ -219,7 +220,7 @@ turn_result_t ai_proc_basic()
                 }
             }
             npccostmp = 1;
-            int stat = label_2167();
+            int stat = label_2167(efid);
             if (stat == 1)
             {
                 return turn_result_t::turn_end;
@@ -229,7 +230,7 @@ turn_result_t ai_proc_basic()
     if (act >= 600)
     {
         efid = act;
-        int stat = label_2174();
+        int stat = label_2174(efid);
         if (stat == 1)
         {
             return turn_result_t::turn_end;

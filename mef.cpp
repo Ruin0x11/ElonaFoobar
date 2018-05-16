@@ -269,10 +269,12 @@ void mef_proc(int tc)
                     hostileaction(0, tc);
                 }
             }
-            potionspill = 1;
-            efstatus = static_cast<curse_state_t>(mef(8, ef)); // TODO
+            curse_state_t efstatus = static_cast<curse_state_t>(mef(8, ef));
             dbid = mef(7, ef);
-            access_item_db(15);
+
+            item_db_result result = access_item_db(item_db_query_t::drink);
+            drink_potion(result.effect_id, result.effect_power, potion_consume_t::spilt, efstatus);
+
             if (cdata[tc].state == 0)
             {
                 check_kill(mef(6, ef), tc);
