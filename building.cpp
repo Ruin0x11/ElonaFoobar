@@ -383,7 +383,9 @@ void start_home_map_mode()
         else
         {
             efid = 438;
-            magic();
+            magic_data data(438, cc, tc); // TODO test
+            data.target_loc = {tlocx, tlocy};
+            magic(data);
         }
         tlocinitx = tlocx;
         tlocinity = tlocy;

@@ -5200,8 +5200,7 @@ label_1978_internal:
         tc = qdata(0, p);
         rq = p;
         client = tc;
-        efid = 619;
-        magic();
+        magic(619, cc, tc);
         tc = client;
         questteleport = 1;
         talk_to_npc();

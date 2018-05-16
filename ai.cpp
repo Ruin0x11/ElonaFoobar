@@ -980,8 +980,7 @@ label_2692_internal:
         {
             if (rnd(5) == 0)
             {
-                efid = 183;
-                magic();
+                magic(183, cc, tc);
                 return turn_result_t::turn_end;
             }
         }

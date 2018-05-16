@@ -662,10 +662,7 @@ talk_result_t talk_house_visitor()
                     name(tc)
                         + u8"は色々なものが詰まった袋を、あなたに手渡した。"s,
                     name(tc) + u8" gives you a bag full of materials."s));
-                efid = 1117;
-                efp = 100;
-                tc = 0;
-                magic();
+                magic(1117, cc, 0, 100);
                 return talk_result_t::talk_end;
             }
         }

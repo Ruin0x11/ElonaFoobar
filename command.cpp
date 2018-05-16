@@ -19,6 +19,7 @@
 #include "item_db.hpp"
 #include "itemgen.hpp"
 #include "macro.hpp"
+#include "magic.hpp"
 #include "map.hpp"
 #include "map_cell.hpp"
 #include "mef.hpp"
@@ -1893,16 +1894,13 @@ turn_result_t do_use_command()
         return turn_result_t::pc_turn_user_error;
         break;
     case 15:
-        efid = 184;
-        magic();
+        magic(184, cc, tc);
         goto label_2229_internal;
     case 16:
-        efid = 185;
-        magic();
+        magic(185, cc, tc);
         goto label_2229_internal;
     case 17:
-        efid = 183;
-        magic();
+        magic(183, cc, tc);
         goto label_2229_internal;
     case 14:
         if (cc == 0)
@@ -2235,9 +2233,7 @@ turn_result_t do_use_command()
         inv[ci].weight += 100;
         goto label_2229_internal;
     case 20:
-        efid = 458;
-        efp = 400;
-        magic();
+        magic(458, cc, tc, 400);
         goto label_2229_internal;
     case 47:
         txt(lang(u8"それは鈍く輝いた。"s, u8"It glows dully."s));
@@ -2270,9 +2266,7 @@ turn_result_t do_use_command()
             itemname(ci, 1) + u8"を振った。"s,
             u8"You swing "s + itemname(ci, 1) + u8"."s));
         snd(58);
-        efid = 49;
-        efp = 100;
-        magic();
+        magic(49, cc, tc, 100);
         goto label_2229_internal;
     case 21:
         txt(lang(
@@ -2282,9 +2276,7 @@ turn_result_t do_use_command()
         --inv[ci].number;
         cell_refresh(inv[ci].position.x, inv[ci].position.y);
         fixmaterial = inv[ci].material;
-        efid = 21;
-        efp = 500;
-        magic();
+        magic(21, cc, tc, 500);
         goto label_2229_internal;
     case 25:
         txt(lang(
@@ -2292,9 +2284,7 @@ turn_result_t do_use_command()
             u8"You hold "s + itemname(ci, 1) + u8" up high."s));
         --inv[ci].number;
         cell_refresh(inv[ci].position.x, inv[ci].position.y);
-        efid = 637;
-        efp = 500;
-        magic();
+        magic(637, cc, tc, 500);
         goto label_2229_internal;
     case 26:
         txt(lang(
@@ -2318,7 +2308,7 @@ turn_result_t do_use_command()
             u8"A voice echoes, "s + u8"\"I-I'm not doing for you! Silly!\""s));
         efid = 637;
         efp = 5000;
-        magic();
+        magic(637, cc, tc, 5000);
         goto label_2229_internal;
     case 43:
         txt(lang(
@@ -2442,11 +2432,9 @@ turn_result_t do_use_command()
         txt(lang(
             itemname(ci, 1) + u8"を始動させた。"s,
             u8"You activate "s + itemname(ci, 1) + u8"."s));
-        efid = inv[ci].param1;
-        efp = inv[ci].param2;
-        tc = cc;
-        efstatus = curse_state_t::none;
-        magic();
+        magic_data data(inv[ci].param1, cc, cc, inv[ci].param2);
+        data.curse_state = curse_state_t::none;
+        magic(data);
         goto label_2229_internal;
     case 41:
         if (gdata_next_level_minus_one_kumiromis_experience_becomes_available

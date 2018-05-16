@@ -703,16 +703,16 @@ talk_result_t talk_npc()
         }
         else
         {
+            int effect_power = 0;
             if (chatval == 14)
             {
-                efp = 250;
+                effect_power = 250;
             }
             else
             {
-                efp = 1000;
+                effect_power = 1000;
             }
-            efid = 411;
-            magic();
+            magic(411, cc, tc, effect_power); // TODO is this correct?
             if (efcancel == 1)
             {
                 buff = lang(u8"冷やかし"s + _ka(1), u8"You kidding? "s);
@@ -762,13 +762,8 @@ talk_result_t talk_npc()
             {
                 continue;
             }
-            tc = cnt;
-            efid = 439;
-            efp = 100;
-            magic();
-            efid = 440;
-            efp = 100;
-            magic();
+            magic(439, cc, cnt, 100);
+            magic(440, cc, cnt, 100);
         }
         tc = tcbk;
         talk_start();

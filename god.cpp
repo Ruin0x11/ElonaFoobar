@@ -586,14 +586,8 @@ turn_result_t do_pray()
     animode = 100;
     play_animation(19);
     snd(120);
-    efid = 1120;
-    efp = 100;
-    tc = 0;
-    magic();
-    efid = 451;
-    efp = 200;
-    tc = 0;
-    magic();
+    magic(1120, cc, 0, 100);
+    magic(451, cc, 0, 200);
     cdata[0].praying_point = 0;
     cdata[0].piety_point = cdata[0].piety_point * 85 / 100;
     if (gdata_god_rank % 2 == 1)

@@ -193,7 +193,6 @@ std::string dbm;
 int dbg_exitshowroom = 0;
 int digx = 0;
 int digy = 0;
-int noeffect = 0;
 int inumbk = 0;
 int dirsub = 0;
 int attackitem = 0;
@@ -4668,9 +4667,7 @@ int try_to_cast_spell()
             name(cc) + u8"は奇妙な力に捻じ曲げられた！"s,
             u8"A dimension door opens in front of you."s));
     }
-    tc = cc;
-    efid = 408;
-    magic();
+    magic(408, cc, cc);
     return 0;
 }
 
@@ -6774,9 +6771,7 @@ void label_1577()
     {
         if (rnd(10 - clamp(cdata[cc].curse_power / 10, 0, 9)) == 0)
         {
-            efid = 408;
-            tc = cc;
-            magic();
+            magic(408, cc, cc);
             return;
         }
     }
@@ -6889,9 +6884,7 @@ void label_1579()
                               1,
                               25))
                     {
-                        efid = 408;
-                        tc = cc;
-                        magic();
+                        magic(408, cc, cc);
                         continue;
                     }
                 }
@@ -10015,24 +10008,18 @@ void exittempinv()
 
 void label_1892()
 {
-    efid = 1114;
-    efp = 500;
-    tc = 0;
-    magic();
+    magic(1114, cc, 0, 500);
     if (rnd(2))
     {
         efid = 622;
         efp = 250;
         tc = 0;
-        magic();
+        magic(622, cc, 0, 250);
         snd(63);
     }
     if (rnd(2))
     {
-        efid = 1106;
-        efp = 100;
-        tc = 0;
-        magic();
+        magic(1106, cc, 0, 100);
     }
     return;
 }
@@ -10282,9 +10269,7 @@ label_1894_internal:
         show_random_event_window(u8"bg_re8");
         break;
     case 24:
-        efid = 1113;
-        tc = 0;
-        magic();
+        magic(1113, cc, 0);
         s = lang(u8"才能の開花"s, u8"Your Potential"s);
         buff = lang(
             u8"突然あなたの才能は開花した！"s,
@@ -10310,20 +10295,14 @@ label_1894_internal:
         buff = lang(
             u8"石ころにつまずいて転んだ拍子に、あなたは幾つかのマテリアルを見つけた。"s,
             u8"You stumble over a stone and find some materials on the ground. "s);
-        efid = 1117;
-        efp = 100;
-        tc = 0;
-        magic();
+        magic(1117, cc, 0, 100);
         list(0, listmax) = 1;
         listn(0, listmax) = lang(u8"よし"s, u8"Nice."s);
         ++listmax;
         show_random_event_window(u8"bg_re3");
         break;
     case 23:
-        efid = 1117;
-        efp = 200;
-        tc = 0;
-        magic();
+        magic(1117, cc, 0, 200);
         s = lang(u8"夢の中の収穫"s, u8"Dream Harvest"s);
         buff = lang(
             u8"夢の中で、あなたはのんきにマテリアルを採取していた"s,
@@ -10360,10 +10339,7 @@ label_1894_internal:
         break;
     case 4:
         snd(116);
-        efid = 1118;
-        efp = 100;
-        tc = 0;
-        magic();
+        magic(1118, cc, 0, 100);
         s = lang(u8"不気味な夢"s, u8"Creepy Dream"s);
         buff = lang(
             u8"あなたは不気味な夢をみた。陰気な幾つもの瞳があなたを凝視し、どこからともなく笑い声がこだました。「ケラケラケラ…ミツケタヨ…ケラケラ」あなたが二度寝返りをうった後、その夢は終わった。"s,
@@ -10375,10 +10351,7 @@ label_1894_internal:
         break;
     case 22:
         snd(116);
-        efid = 454;
-        efp = 100;
-        tc = 0;
-        magic();
+        magic(454, cc, 0, 100);
         s = lang(u8"怪物の夢"s, u8"Monster Dream"s);
         buff = lang(
             u8"あなたは怪物と戦っていた。醜い化け物に斬りかかろうとした時、怪物は悲鳴をあげた。「オレハオマエダ！オマエハオレダ！」あなたは自分の呻き声に起こされた。"s,
@@ -10450,9 +10423,7 @@ label_1894_internal:
             }
             if (f)
             {
-                efid = 1114;
-                efp = 200;
-                magic();
+                magic(1114, cc, tc, 200);
             }
             else if (event_id() == -1)
             {
@@ -10539,10 +10510,7 @@ label_1894_internal:
         }
         break;
     case 2:
-        efid = 1104;
-        efp = 100;
-        tc = 0;
-        magic();
+        magic(1104, cc, 0, 100);
         s = lang(u8"魔法使いの夢"s, u8"Wizard's Dream"s);
         buff = lang(
             u8"夢の中であなたは赤い髪の魔術師に出会った。「誰じゃ、お主は？ふむ、間違った者の夢に現れてしまったようじゃ。すまぬな。お詫びといってはなんじゃが…」魔法使いは指をくるりと回した。あなたは軽い頭痛を覚えた。"s,
@@ -10553,10 +10521,7 @@ label_1894_internal:
         show_random_event_window(u8"bg_re6");
         break;
     case 3:
-        efid = 1119;
-        efp = 100;
-        tc = 0;
-        magic();
+        magic(1119, cc, 0, 100);
         s = lang(u8"成長のきざし"s, u8"Development"s);
         buff = lang(
             u8"長年の鍛錬の成果が実ったようだ。なかなか眠りにつけず考えごとをしていたあなたは、ふと、自らの技術に関する新しいアイデアを思いついた。"s,
@@ -10615,10 +10580,7 @@ label_1894_internal:
         show_random_event_window(u8"bg_re1");
         break;
     case 17:
-        efid = 451;
-        efp = 800;
-        tc = 0;
-        magic();
+        magic(451, cc, 0, 800);
         s = lang(u8"辻プリースト"s, u8"Wandering Priest"s);
         buff = lang(
             u8"突然、向かいからやって来た一人の神官が、すれ違いざまにあなたに魔法をかけた。「ノープロブレム」"s,
@@ -17202,12 +17164,16 @@ int label_2167()
 
 
 
-int label_2168()
+int label_2168(int efid)
 {
     int mp = 0;
-    efsource = 3;
-    efstatus = curse_state_t::none;
-    efp = calcspellpower(efid, cc);
+    magic_data data = {};
+    data.caster = cc;
+    data.target = tc;
+    data.effect_id = efid;
+    data.effect_source = effect_source_t::magic;
+    data.curse_state = curse_state_t::none;
+    data.effect_power = calcspellpower(efid, cc);
     if (cc == 0)
     {
         if (calcspellcostmp(efid, cc) > cdata[cc].mp)
@@ -17220,7 +17186,6 @@ int label_2168()
             if (rtval != 0)
             {
                 update_screen();
-                efsource = 0;
                 return 0;
             }
         }
@@ -17230,7 +17195,6 @@ int label_2168()
     int stat = label_2175();
     if (stat == 0)
     {
-        efsource = 0;
         return 0;
     }
     if (cc != 0)
@@ -17239,12 +17203,10 @@ int label_2168()
         {
             if (cdata[cc].relationship == 10 || gdata_current_map == 40)
             {
-                efsource = 0;
                 return 0;
             }
             if (gdata_play_turns % 10 > 4)
             {
-                efsource = 0;
                 return 0;
             }
         }
@@ -17270,7 +17232,6 @@ int label_2168()
         dmgmp(cc, mp);
         if (cdata[cc].state != 1)
         {
-            efsource = 0;
             return 1;
         }
     }
@@ -17286,7 +17247,6 @@ int label_2168()
         int stat = try_to_cast_spell();
         if (stat == 0)
         {
-            efsource = 0;
             return 1;
         }
     }
@@ -17329,7 +17289,6 @@ int label_2168()
                 u8"沈黙の霧が詠唱を阻止した。"s,
                 u8"The mist of silence interrupts a spell."s));
         }
-        efsource = 0;
         return 1;
     }
     if (rnd(100) >= calcspellfail(efid, cc))
@@ -17341,20 +17300,18 @@ int label_2168()
                 name(cc) + u8" fail"s + _s(cc) + u8" to cast a spell."s));
             play_animation(8);
         }
-        efsource = 0;
         return 1;
     }
     if (noeffect == 1)
     {
         txt(lang(u8"何もおきない… "s, u8"Nothing happens..."s));
-        efsource = 0;
         return 1;
     }
-    efp = calcspellpower(efid, cc);
+    data.effect_power = calcspellpower(efid, cc);
     p = encfind(cc, 34);
     if (p != -1)
     {
-        efp = efp * (100 + p / 10) / 100;
+        data.effect_power = data.effect_power * (100 + p / 10) / 100;
     }
     rapidmagic = 0;
     if (cdata[cc].can_cast_rapid_magic()
@@ -17366,18 +17323,18 @@ int label_2168()
     {
         for (int cnt = 0, cnt_end = (rapidmagic); cnt < cnt_end; ++cnt)
         {
-            magic();
-            if (cdata[tc].state != 1)
+            magic_result result = magic(data);
+            if (cdata[result.selected_target].state != 1)
             {
-                int stat = label_2072();
+                int stat = label_2072(data.caster);
                 if (stat == 0)
                 {
                     break;
                 }
                 else
                 {
-                    tc = cdata[cc].enemy_id;
-                    if (relationbetween(cc, tc) != -3)
+                    data.target = cdata[data.caster].enemy_id; // TODO test
+                    if (relationbetween(data.caster, data.target) != -3)
                     {
                         break;
                     }
@@ -17388,28 +17345,31 @@ int label_2168()
     }
     else
     {
-        magic();
+        magic(data);
     }
     return 1;
 }
 
 
 
-int drink_potion()
+int drink_potion(int efid, potion_consume_t consume_type)
 {
     tc = cc;
-    efsource = 4;
-    if (potionspill || potionthrow)
+    magic_data data(efid, cc, tc, efp);
+    data.effect_source = effect_source_t::potion;
+    data.potion_consume_type = boost::in_place(consume_type);
+    if (consume_type != potion_consume_t::drunk)
     {
-        if (potionthrow)
+        if (consume_type == potion_consume_t::thrown)
         {
-            efp = efp * potionthrow / 100;
-            efstatus = inv[ci].curse_state;
+            // originally efp * (potionthrow / 100), but potionthrow was only ever being set to 1
+            data.effect_power = data.effect_power * 1 / 100;
+            data.curse_state = inv[ci].curse_state;
         }
     }
     else
     {
-        efstatus = inv[ci].curse_state;
+        data.curse_state = inv[ci].curse_state;
         if (is_in_fov(tc))
         {
             snd(17);
@@ -17419,15 +17379,10 @@ int drink_potion()
                     + u8"."s));
         }
     }
-    magic();
-    if (potionspill || potionthrow)
+    magic_result result = magic(data);
+    if(consume_type == potion_consume_t::drunk)
     {
-        potionspill = 0;
-        potionthrow = 0;
-    }
-    else
-    {
-        if (obvious == 1)
+        if (result.obvious)
         {
             if (tc == 0)
             {
@@ -17509,8 +17464,7 @@ int drink_well()
         {
             if (rnd(2) == 0)
             {
-                efid = 1113;
-                magic();
+                magic(1113, cc, tc);
                 break;
             }
         }
@@ -17519,37 +17473,27 @@ int drink_well()
             p = rnd(5);
             if (p == 0)
             {
-                efid = 1112;
-                efp = 100;
-                magic();
+                magic(1112, cc, tc, 100);
                 break;
             }
             if (p == 1)
             {
-                efid = 1110;
-                efp = 100;
-                magic();
+                magic(1110, cc, tc, 100);
                 break;
             }
             if (p == 2)
             {
-                efid = 1111;
-                efp = 100;
-                magic();
+                magic(1111, cc, tc, 100);
                 break;
             }
             if (p == 3)
             {
-                efid = 1109;
-                efp = 100;
-                magic();
+                magic(1109, cc, tc, 100);
                 break;
             }
             if (p == 4)
             {
-                efid = 1108;
-                efp = 100;
-                magic();
+                magic(1108, cc, tc, 100);
                 break;
             }
         }
@@ -17607,14 +17551,12 @@ int drink_well()
         }
         if (p > 33)
         {
-            efid = 1113;
-            magic();
+            magic(1113, cc, tc);
             break;
         }
         if (p > 20)
         {
-            efid = 454;
-            magic();
+            magic(454, cc, tc);
             break;
         }
         if (p == 0)
@@ -17628,8 +17570,7 @@ int drink_well()
                 break;
             }
             ++gdata_wish_count;
-            efid = 441;
-            magic();
+            magic(441, cc, tc);
             break;
         }
         if (cc == 0)
@@ -17674,13 +17615,15 @@ int drink_well()
 
 
 
-int read_scroll()
+int read_scroll(int efid, int efp)
 {
     tc = cc;
+    magic_data data(efid, cc, tc, efp);
     tlocx = cdata[cc].position.x;
     tlocy = cdata[cc].position.y;
-    efstatus = inv[ci].curse_state;
-    efsource = 2;
+    data.target_loc = {tlocx, tlocy};
+    data.curse_state = inv[ci].curse_state;
+    data.effect_source = effect_source_t::scroll;
     if (cdata[cc].blind != 0)
     {
         if (is_in_fov(cc))
@@ -17689,7 +17632,6 @@ int read_scroll()
                 name(cc) + u8"は何も見えない。"s,
                 name(cc) + u8" can see nothing."s));
         }
-        efsource = 0;
         return 0;
     }
     if (cdata[cc].dimmed != 0 || cdata[cc].confused != 0)
@@ -17702,7 +17644,6 @@ int read_scroll()
                     name(cc) + u8"はふらふらした。"s,
                     name(cc) + u8" stagger"s + _s(cc) + u8"."s));
             }
-            efsource = 0;
             return 0;
         }
     }
@@ -17726,7 +17667,7 @@ int read_scroll()
         }
         skillexp(150, cc, 25, 2);
     }
-    magic();
+    magic(data);
     if (cc == 0)
     {
         if (obvious == 1)
@@ -17739,8 +17680,9 @@ int read_scroll()
 
 
 
-int label_2172()
+int label_2172(int efid, int efp)
 {
+    magic_data data(efid, cc, tc, efp);
     if (inv[ci].count <= 0)
     {
         if (is_in_fov(cc))
@@ -17752,16 +17694,15 @@ int label_2172()
         }
         return 0;
     }
-    efstatus = inv[ci].curse_state;
-    if (efstatus == curse_state_t::blessed)
+    data.curse_state = inv[ci].curse_state;
+    if (data.curse_state == curse_state_t::blessed)
     {
-        efstatus = curse_state_t::none;
+        data.curse_state = curse_state_t::none;
     }
-    efsource = 1;
-    int stat = label_2175();
+    data.effect_source = effect_source_t::rod;
+    int stat = label_2175(); // TODO noeffect
     if (stat == 0)
     {
-        efsource = 0;
         return 0;
     }
     if (efid >= 400 && efid < 467)
@@ -17785,7 +17726,7 @@ int label_2172()
             itemname(ci, 1) + u8"を振った。"s,
             u8"You zap "s + itemname(ci, 1) + u8"."s));
     }
-    efp = efp
+    data.effect_power = data.effect_power
         * (100 + sdata(174, cc) * 10 + sdata(16, cc) / 2 + sdata(13, cc) / 2)
         / 100;
     if (efid >= 400 && efid < 467)
@@ -17819,10 +17760,10 @@ int label_2172()
     }
     if (f == 1 || inv[ci].id == 290 || cc != 0)
     {
-        magic();
+        magic_result result = magic(data);
         if (cc == 0)
         {
-            if (obvious == 1)
+            if (result.obvious)
             {
                 item_identify(
                     inv[ci], identification_state_t::partly_identified);
@@ -17837,7 +17778,6 @@ int label_2172()
             name(cc) + u8" fail to use the power of the rod."s));
     }
 label_2173_internal:
-    efsource = 0;
     if (inv[ci].number == 0)
     {
         if (ci >= 5080)
@@ -17853,8 +17793,9 @@ label_2173_internal:
 
 
 
-int label_2174()
+int label_2174(int efid)
 {
+    magic_data data(efid, cc, tc);
     if (efid == 646)
     {
         if (cdata[tc].is_sentenced_daeth() == 1)
@@ -17923,7 +17864,7 @@ int label_2174()
             skillexp(the_ability_db[efid]->related_basic_attribute, cc, 25);
         }
     }
-    efp = calcspellpower(efid, cc);
+    data.effect_power = calcspellpower(efid, cc);
     if (noeffect == 1)
     {
         if (efid != 300)
@@ -17933,8 +17874,8 @@ int label_2174()
         }
     }
     {
-        int stat = magic();
-        if (stat == 0)
+        magic_result result = magic(data);
+        if (!result.turn_passed) // TODO test
         {
             return 0;
         }
@@ -18886,17 +18827,11 @@ turn_result_t do_bash()
                 }
                 if (rnd(4) == 0)
                 {
-                    tc = cc;
-                    efid = 1109;
-                    efp = 200;
-                    magic();
+                    magic(1109, cc, cc, 200);
                 }
                 if (rnd(3) == 0)
                 {
-                    tc = cc;
-                    efid = 1110;
-                    efp = 200;
-                    magic();
+                    magic(1110, cc, cc, 200);
                 }
                 if (rnd(3) == 0)
                 {
@@ -19634,11 +19569,8 @@ void open_box()
     ri = ci;
     if (inv[ri].id == 394)
     {
-        tc = cc;
-        efid = 1117;
-        efp = 100 + inv[ri].param1 * 10;
         inv[ri].param1 = 0;
-        magic();
+        magic(1117, cc, cc, 100 + inv[ri].param1 * 10);
         return;
     }
     p = 3 + rnd(5);
@@ -19848,10 +19780,7 @@ void open_new_year_gift()
                 u8"中には呪いの手紙が入っていた。"s,
                 u8"You find a cursed letter inside."s));
         }
-        efid = 1114;
-        efp = 1000;
-        tc = 0;
-        magic();
+        magic(1114, cc, 0, 1000);
         return;
     }
     if (inv[ri].param3 < 200)
@@ -20154,11 +20083,9 @@ int label_2217()
     }
     if (ammoproc == 1)
     {
-        tlocx = ammox;
-        tlocy = ammoy;
-        efid = 460;
-        efp = sdata(attackskill, cc) * 8 + 10;
-        magic();
+        magic_data data(460, cc, tc, sdata(attackskill, cc) * 8 + 10);
+        data.target_loc = {ammox, ammoy};
+        magic(data);
     }
     attackvar = 0;
     ammoproc = -1;
@@ -20744,9 +20671,7 @@ label_22191_internal:
                                 u8"酸が飛び散った。"s,
                                 u8"Acids spread over the ground."s));
                         }
-                        efid = 455;
-                        efp = cdata[tc].damage_reaction_info / 1000;
-                        magic();
+                        magic(455, cc, tc, cdata[tc].damage_reaction_info / 1000);
                         break;
                     }
                 }
@@ -21000,10 +20925,10 @@ void label_2220()
                 tlocy = cdata[tc].position.y;
                 if (rnd(100) < p)
                 {
-                    efid = enc;
-                    efp = inv[cw].enchantments[cnt].power
-                        + sdata(attackskill, cc) * 10;
-                    magic();
+                    magic_data data(enc, cc, tc, inv[cw].enchantments[cnt].power
+                        + sdata(attackskill, cc) * 10);
+                    data.target_loc = {tlocx, tlocy};
+                    magic(data);
                 }
                 tc = tcbk;
                 continue;
@@ -21968,9 +21893,7 @@ turn_result_t npc_turn()
                                             + u8" the leash."s));
                                 }
                             }
-                            tc = 0;
-                            efid = 619;
-                            magic();
+                            magic(619, cc, 0);
                             return turn_result_t::turn_end;
                         }
                     }
@@ -21980,10 +21903,9 @@ turn_result_t npc_turn()
     }
     if (cdata[cc].will_explode_soon())
     {
-        tlocx = cdata[cc].position.x;
-        tlocy = cdata[cc].position.y;
-        efid = 644;
-        magic();
+        magic_data data(644, cc, tc);
+        data.target_loc = cdata[cc].position;
+        magic(data);
         return turn_result_t::turn_end;
     }
     if (cdata[cc].relationship >= 10)
@@ -23293,10 +23215,7 @@ turn_result_t pass_one_turn(bool label_2738_flg)
                 {
                     if (rnd(2000) == 0)
                     {
-                        efid = 454;
-                        efp = 100;
-                        tc = cc;
-                        magic();
+                        magic(454, cc, cc, 100);
                     }
                 }
             }
@@ -23976,8 +23895,7 @@ turn_result_t pc_turn(bool advance_time)
         }
         if (trait(214) != 0 && rnd(250) == 0 && mdata(6) != 1)
         {
-            efid = 408;
-            magic();
+            magic(408, cc, tc);
         }
         if (cdata[cdata[0].enemy_id].is_invisible() == 1
             && cdata[0].can_see_invisible() == 0

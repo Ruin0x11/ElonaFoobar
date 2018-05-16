@@ -48,6 +48,12 @@ magic_result magic(magic_data m)
     bool is_negative_effect = false;
     efcancel = 0;
 
+    // TODO until everything is de-globalized
+    elona::cc = m.caster;
+    elona::tc = m.target;
+    elona::tlocx = m.target_loc.x;
+    elona::tlocy = m.target_loc.y;
+
     bool from_item = m.effect_source == effect_source_t::potion
         || m.effect_source == effect_source_t::rod
         || m.effect_source == effect_source_t::scroll;
@@ -197,10 +203,10 @@ magic_result magic(magic_data m)
 
 the_end:
     // TODO until everything is de-globalized
-    tc = result.selected_target;
-    f = result.succeeded ? 1 : 0;
-    tlocx = m.target_loc.x;
-    tlocy = m.target_loc.y;
+    elona::tc = result.selected_target;
+    elona::f = result.succeeded ? 1 : 0;
+    elona::tlocx = m.target_loc.x;
+    elona::tlocy = m.target_loc.y;
     return result;
 }
 
