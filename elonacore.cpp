@@ -16875,7 +16875,7 @@ void spot_mining_or_wall()
 
 
 
-int decode_book(int efid)
+int decode_book(int efid, int power)
 {
     int cibkread = 0;
     if (cdata[cc].continuous_action_id == 0)

@@ -1,5 +1,6 @@
 #include "command.hpp"
 #include "ability.hpp"
+#include "access_item_db.hpp"
 #include "animation.hpp"
 #include "audio.hpp"
 #include "buff.hpp"
@@ -2430,9 +2431,11 @@ turn_result_t do_use_command()
         txt(lang(
             itemname(ci, 1) + u8"を始動させた。"s,
             u8"You activate "s + itemname(ci, 1) + u8"."s));
-        magic_data data(inv[ci].param1, cc, cc, inv[ci].param2);
-        data.curse_state = curse_state_t::none;
-        magic(data);
+        {
+            magic_data data(inv[ci].param1, cc, cc, inv[ci].param2);
+            data.curse_state = curse_state_t::none;
+            magic(data);
+        }
         goto label_2229_internal;
     case 41:
         if (gdata_next_level_minus_one_kumiromis_experience_becomes_available
@@ -3422,7 +3425,6 @@ turn_result_t do_read_command()
             return turn_result_t::turn_end;
         }
     }
-    efid = 0;
     dbid = inv[ci].id;
     item_db_result result = access_item_db(item_db_query_t::read);
 
@@ -3439,17 +3441,13 @@ turn_result_t do_read_command()
         break;
     case read_item_t::deed:
         assert(result.effect_id == 1115);
-        build_new_building();
+        build_new_building(); // TODO test
         break;
     case read_item_t::none:
     default:
         assert(0);
     }
 
-    if (efid == 1115)
-    {
-        return build_new_building();
-    }
     return turn_result_t::turn_end;
 }
 

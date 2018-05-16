@@ -3,6 +3,7 @@
 #include "elona.hpp"
 #include "position.hpp"
 #include "enums.hpp"
+#include "element.hpp"
 #include "optional.hpp"
 #include "talk.hpp"
 
@@ -759,15 +760,15 @@ int can_do_ranged_attack();
 int label_2083();
 int ask_direction();
 int label_2143();
-int decode_book(int);
+int decode_book(int efid, int power);
 int read_normal_book();
-int label_2167();
+int label_2167(int efid);
 int label_2168();
 int drink_potion();
 int drink_well();
-int read_scroll();
+int read_scroll(int efid, int power);
 int label_2172();
-int label_2174();
+int label_2174(int efid);
 int label_2175();
 int pick_up_item();
 int drop_item();

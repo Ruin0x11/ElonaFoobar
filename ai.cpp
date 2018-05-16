@@ -229,8 +229,7 @@ turn_result_t ai_proc_basic()
     }
     if (act >= 600)
     {
-        efid = act;
-        int stat = label_2174(efid);
+        int stat = label_2174(act);
         if (stat == 1)
         {
             return turn_result_t::turn_end;
