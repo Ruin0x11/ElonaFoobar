@@ -70,46 +70,46 @@ void continuous_action_eating()
             name(cc) + u8" "s + have(cc) + u8" finished eating "s
                 + itemname(ci, 1) + u8"."s));
     }
-    continuous_action_eating_finish();
+    continuous_action_eating_finish(cc);
     rowactend(cc);
     return;
 }
 
 
 
-void continuous_action_eating_finish()
+void continuous_action_eating_finish(int chara)
 {
     cieat = ci;
     apply_general_eating_effect();
     ci = cieat;
-    if (cc == 0)
+    if (chara == 0)
     {
         item_identify(inv[ci], identification_state_t::partly_identified);
     }
     if (chara_unequip(ci))
     {
-        chara_refresh(cc);
+        chara_refresh(chara);
     }
     --inv[ci].number;
     if (ci >= 5080)
     {
         cell_refresh(inv[ci].position.x, inv[ci].position.y);
     }
-    else if (cc == 0)
+    else if (chara == 0)
     {
         refresh_burden_state();
     }
-    if (cc == 0)
+    if (chara == 0)
     {
-        announce_hunger_status(cc);
+        announce_hunger_status(chara);
     }
     else
     {
-        if (ci == cdata[cc].item_which_will_be_used)
+        if (ci == cdata[chara].item_which_will_be_used)
         {
-            cdata[cc].item_which_will_be_used = 0;
+            cdata[chara].item_which_will_be_used = 0;
         }
-        if (cdata[cc].was_passed_item_by_you_just_now())
+        if (cdata[chara].was_passed_item_by_you_just_now())
         {
             if (inv[ci].material == 35)
             {
@@ -133,10 +133,10 @@ void continuous_action_eating_finish()
                             u8"\"Are you teasing me?\""s,
                             u8"\"You fool!\""s);
                     }
-                    dmghp(cc, 999, -12);
-                    if (cdata[cc].state != 1)
+                    dmghp(chara, 999, -12);
+                    if (cdata[chara].state != 1)
                     {
-                        if (cdata[cc].relationship > 0)
+                        if (cdata[chara].relationship > 0)
                         {
                             modify_karma(0, -5);
                         }
@@ -151,18 +151,18 @@ void continuous_action_eating_finish()
             }
         }
     }
-    chara_anorexia(cc);
+    chara_anorexia(chara);
     if ((inv[ci].id == 755 && rnd(3)) || (inv[ci].id == 756 && rnd(10) == 0))
     {
-        if (is_in_fov(cc))
+        if (is_in_fov(chara))
         {
             txtef(8);
             txt(lang(
-                name(cc) + u8"はもちを喉につまらせた！"s,
-                name(cc) + u8" choke"s + _s(cc) + u8" on mochi!"s));
+                name(chara) + u8"はもちを喉につまらせた！"s,
+                name(chara) + u8" choke"s + _s(chara) + u8" on mochi!"s));
             txt(lang(u8"「むがっ」"s, u8"\"Mm-ghmm\""s));
         }
-        ++cdata[cc].choked;
+        ++cdata[chara].choked;
     }
     return;
 }
@@ -492,22 +492,22 @@ void sickifcursed(curse_state_t curse_state, int drinker, int prm_882)
 
 
 
-void cook()
+void cook(int chara)
 {
     snd(25);
     item_separate(ci);
     s = itemname(ci);
-    p = rnd(sdata(184, cc) + 6) + rnd((inv[cooktool].param1 / 50 + 1));
-    if (p > sdata(184, cc) / 5 + 7)
+    p = rnd(sdata(184, chara) + 6) + rnd((inv[cooktool].param1 / 50 + 1));
+    if (p > sdata(184, chara) / 5 + 7)
     {
-        p = sdata(184, cc) / 5 + 7;
+        p = sdata(184, chara) / 5 + 7;
     }
     p = rnd(p + 1);
     if (p > 3)
     {
         p = rnd(p);
     }
-    if (sdata(184, cc) >= 5)
+    if (sdata(184, chara) >= 5)
     {
         if (p < 3)
         {
@@ -517,7 +517,7 @@ void cook()
             }
         }
     }
-    if (sdata(184, cc) >= 10)
+    if (sdata(184, chara) >= 10)
     {
         if (p < 3)
         {
@@ -545,7 +545,7 @@ void cook()
     int rank = inv[ci].param2;
     if (rank > 2)
     {
-        skillexp(184, cc, 30 + rank * 5);
+        skillexp(184, chara, 30 + rank * 5);
     }
     refresh_burden_state();
     return;

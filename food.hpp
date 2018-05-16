@@ -6,7 +6,7 @@ namespace elona
 enum class curse_state_t;
 
 void continuous_action_eating();
-void continuous_action_eating_finish();
+void continuous_action_eating_finish(int chara);
 
 int chara_anorexia(int = 0);
 void chara_vomit(int = 0);
@@ -16,7 +16,7 @@ void cure_anorexia(int = 0);
 void announce_hunger_status(int cc);
 void eat_rotten_food();
 
-void cook();
+void cook(int chara);
 
 void make_dish(int, int);
 

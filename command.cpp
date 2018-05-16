@@ -518,7 +518,7 @@ turn_result_t do_search_command()
         }
         if (feat(1) == 26)
         {
-            spot_fishing();
+            spot_fishing(cc);
         }
         if (feat(1) == 25)
         {

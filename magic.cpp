@@ -14,10 +14,12 @@
 #include "enchantment.hpp"
 #include "element.hpp"
 #include "elona.hpp"
+#include "food.hpp"
 #include "fov.hpp"
 #include "i18n.hpp"
 #include "input.hpp"
 #include "item.hpp"
+#include "itemgen.hpp"
 #include "item_db.hpp"
 #include "macro.hpp"
 #include "map.hpp"
@@ -27,6 +29,7 @@
 #include "quest.hpp"
 #include "status_ailment.hpp"
 #include "trait.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 #include "wish.hpp"
 
@@ -1539,7 +1542,7 @@ void magic_love_potion(const magic_data& m, magic_result& result)
                      name(m.target) + u8"は恋の予感がした。"s,
                      name(m.target) + u8" sense"s + _s(m.target) + u8" a sigh of love,"s));
             chara_mod_impression(m.target, clamp(m.power / 15, 0, 15));
-            dmgcon(m.target, 7, 100);
+            dmgcon(m.target, status_ailment_t::dimmed, 100);
             lovemiracle(m.target);
             return;
         }
@@ -1557,7 +1560,7 @@ void magic_love_potion(const magic_data& m, magic_result& result)
         lovemiracle(m.target);
         chara_mod_impression(m.target, clamp(m.power / 4, 0, 25));
     }
-    dmgcon(m.target, 7, 500);
+    dmgcon(m.target, status_ailment_t::dimmed, 500);
 }
 
 void magic_pregnancy(const magic_data& m, magic_result& result)
@@ -1657,7 +1660,7 @@ void magic_alcohol(const magic_data& m, magic_result& result)
                 lang(u8"「んまっ♪」"s, u8"\"Awesome.\""s));
         }
     }
-    dmgcon(m.target, 8, m.power);
+    dmgcon(m.target, status_ailment_t::drunk, m.power);
     eatstatus(m.curse_state, m.target);
 }
 
@@ -1983,7 +1986,7 @@ void magic_perform(const magic_data& m, magic_result& result)
               rnd(the_ability_db[m.effect_id]->cost / 2 + 1)
               + the_ability_db[m.effect_id]->cost / 2 + 1);
     }
-    do_performance(m.caster);
+    do_perform(m.caster);
 }
 
 void magic_cook(const magic_data& m, magic_result& result)
@@ -2000,8 +2003,8 @@ void magic_cook(const magic_data& m, magic_result& result)
     invctrl = 16;
     snd(100);
     {
-        int stat = ctrl_inventory();
-        if (stat == 0)
+        menu_result mr = ctrl_inventory();
+        if (!mr.succeeded) // TODO verify
         {
             result.turn_passed = false;
             return;
@@ -2144,7 +2147,7 @@ void magic_fish(const magic_data& m, magic_result& result)
     item_separate(ci);
     --inv[ci].count;
     rowactre = 0;
-    fishing(m.caster);
+    spot_fishing(m.caster); // TODO verify
 }
 
 void magic_remove_hex(const magic_data& m, magic_result& result, bool is_vanquish)
@@ -2186,7 +2189,7 @@ void magic_remove_hex(const magic_data& m, magic_result& result, bool is_vanquis
         }
         if (rnd(m.power * 2 + 1) > rnd(cdata[m.target].buffs[i].power + 1))
         {
-            delbuff(m.target, i);
+            buff_delete(m.target, i);
             ++p;
             --cnt;
             continue;
@@ -2459,13 +2462,13 @@ void magic_disassembly(const magic_data& m, magic_result& result)
 void magic_touch_of_fear(const magic_data& m, magic_result& result)
 {
     dmghp(m.target, roll(m.damage), m.caster, m.damage.element, m.damage.element_power);
-    dmgcon(m.target, 6, m.damage.element_power);
+    dmgcon(m.target, status_ailment_t::fear, m.damage.element_power);
 }
 
 void magic_touch_of_sleep(const magic_data& m, magic_result& result)
 {
     dmghp(m.target, roll(m.damage), m.caster, m.damage.element, m.damage.element_power);
-    dmgcon(m.target, 2, m.damage.element_power);
+    dmgcon(m.target, status_ailment_t::sleep, m.damage.element_power);
 }
 
 void magic_hunger(const magic_data& m, magic_result& result)
@@ -2508,7 +2511,7 @@ void magic_weaken(const magic_data& m, magic_result& result)
                      name(m.target) + u8"は弱くなった。"s,
                      name(m.target) + u8" "s + is(m.target) + u8" weakened."s));
         }
-        refresh_character(m.target);
+        chara_refresh(m.target);
     }
 }
 
@@ -2530,8 +2533,8 @@ void magic_flying(const magic_data& m, magic_result& result)
     invctrl(1) = 6;
     snd(100);
     {
-        int stat = ctrl_inventory();
-        if (stat == 1)
+        menu_result mr = ctrl_inventory();
+        if (mr.succeeded)
         {
             autosave = 1 * (gdata_current_map != 35);
             animeload(8, m.caster);
@@ -2583,7 +2586,7 @@ void magic_flying(const magic_data& m, magic_result& result)
             result.obvious = false;
         }
     }
-    refresh_character(m.caster);
+    chara_refresh(m.caster);
 }
 
 void magic_mutate(const magic_data& m, magic_result& result, mutation_t type)
@@ -2700,7 +2703,7 @@ void magic_do_mutation(const magic_data& m, magic_result& result, mutation_t typ
         txt(lang(u8"何もおきない… "s, u8"Nothing happens..."s));
         result.obvious = false;
     }
-    refresh_character(0);
+    chara_refresh(0);
 }
 
 void magic_cure_mutation(const magic_data& m, magic_result& result)
@@ -2770,7 +2773,7 @@ void magic_cure_mutation(const magic_data& m, magic_result& result)
         txt(lang(u8"何もおきない… "s, u8"Nothing happens..."s));
         result.obvious = false;
     }
-    refresh_character(0);
+    chara_refresh(0);
 }
 
 void magic_identify(const magic_data& m, magic_result& result)
@@ -2811,11 +2814,11 @@ void magic_resurrection(const magic_data& m, magic_result& result)
     }
     allyctrl = 2;
     {
-        int stat = label_1980();
+        int stat = show_hire_menu();
         if (stat == -1)
         {
             txt(lang(u8"何もおきない… "s, u8"Nothing happens..."s));
-            result.obvious = false;;
+            result.obvious = false; // TODO test in testsuite
             return;
         }
         if (bonus < rnd(100))
@@ -2834,7 +2837,7 @@ void magic_resurrection(const magic_data& m, magic_result& result)
     label_1538();
     cxinit = cdata[m.caster].position.x;
     cyinit = cdata[m.caster].position.y;
-    place_character();
+    chara_place();
     cdata[rc].current_map = 0;
     txtef(5);
     txt(cnven(cdatan(0, rc))
@@ -2973,7 +2976,7 @@ void magic_vanquish_curse(const magic_data& m, magic_result& result)
     {
         animeload(10, m.target);
     }
-    refresh_character(m.target);
+    chara_refresh(m.target);
 }
 
 void magic_oracle(const magic_data& m, magic_result& result)
@@ -3118,7 +3121,7 @@ void magic_descent(const magic_data& m, magic_result& result)
         }
         --cdata[m.target].level;
         cdata[m.target].experience = 0;
-        refresh_required_exp(m.target);
+        label_1456(m.target); // TODO verify
         txtef(8);
         txt(lang(
                 name(m.target) + u8"のレベルが下がった…"s,
@@ -3142,7 +3145,7 @@ void magic_descent(const magic_data& m, magic_result& result)
         }
         animeload(8, m.target);
     }
-    refresh_character(m.target);
+    chara_refresh(m.target);
 }
 
 void magic_gain_attribute(const magic_data& m, magic_result& result)
@@ -3195,7 +3198,7 @@ void magic_gain_attribute(const magic_data& m, magic_result& result)
             }
         }
     }
-    refresh_character(m.target);
+    chara_refresh(m.target);
     autosave = 1 * (gdata_current_map != 35);
 }
 
@@ -3255,7 +3258,7 @@ void magic_faith(const magic_data& m, magic_result& result)
             6,
             1000);
     }
-    refresh_character(tc);
+    chara_refresh(tc);
 }
 
 void magic_growth(const magic_data& m, magic_result& result)
@@ -3326,7 +3329,7 @@ void magic_growth(const magic_data& m, magic_result& result)
             }
         }
     }
-    refresh_character(m.target);
+    chara_refresh(m.target);
     autosave = 1 * (gdata_current_map != 35);
 }
 
@@ -3335,7 +3338,7 @@ void magic_failed_altar_takeover(const magic_data& m, magic_result& result)
     i = rnd(10) + 10;
     skillexp(i, tc, efstatusfix(m.curse_state, -2000, -2000, -1000, -250));
     play_animation(6, m.damage.element);
-    refresh_character(tc);
+    chara_refresh(tc);
 }
 
 void magic_hermes_blood(const magic_data& m, magic_result& result)
@@ -3351,7 +3354,7 @@ void magic_hermes_blood(const magic_data& m, magic_result& result)
         txtef(2);
         txt(lang(u8"あつつ！"s, u8"It really burns!"s));
     }
-    refresh_character(tc);
+    chara_refresh(tc);
 }
 
 void magic_gain_potential(const magic_data& m, magic_result& result)
@@ -3622,7 +3625,7 @@ void magic_restore(const magic_data& m, magic_result& result, bool is_restore_bo
                 sdata.get(p(cnt), tc).original_level / 10 + 5;
         }
     }
-    refresh_character(tc);
+    chara_refresh(tc);
 }
 
 void magic_wish(const magic_data& m, magic_result& result)
@@ -3649,7 +3652,7 @@ void magic_escape(const magic_data& m, magic_result& result)
     }
     else
     {
-        int stat = label_2080();
+        int stat = quest_is_return_forbidden();
         if (stat == 1)
         {
             txt(lang(
@@ -3763,7 +3766,7 @@ void magic_poison(const magic_data& m, magic_result& result)
                     + his(m.target) + u8" stomach."s));
         }
     }
-    dmgcon(m.target, 1, m.power);
+    dmgcon(m.target, status_ailment_t::poisoned, m.power);
 }
 
 void magic_dye(const magic_data& m, magic_result& result)
@@ -3774,7 +3777,7 @@ void magic_dye(const magic_data& m, magic_result& result)
                 name(m.target) + u8"は墨を浴びた！"s,
                 u8"Ink squirts into "s + name(m.target) + your(m.target) + u8" face!"s));
     }
-    dmgcon(m.target, 4, m.power);
+    dmgcon(m.target, status_ailment_t::blinded, m.power);
 }
 
 void magic_confusion(const magic_data& m, magic_result& result)
@@ -3786,7 +3789,7 @@ void magic_confusion(const magic_data& m, magic_result& result)
                 u8"A foul stench floods "s + name(m.target) + your(m.target)
                 + u8" nostrils!"s));
     }
-    dmgcon(m.target, 5, m.power);
+    dmgcon(m.target, status_ailment_t::confused, m.power);
 }
 
 void magic_potion_numbness(const magic_data& m, magic_result& result)
@@ -3797,7 +3800,7 @@ void magic_potion_numbness(const magic_data& m, magic_result& result)
                 name(m.target) + u8"は痺れた！"s,
                 name(m.target) + u8" get"s + _s(m.target) + u8" numbness!"s));
     }
-    dmgcon(m.target, 3, m.power);
+    dmgcon(m.target, status_ailment_t::paralyzed, m.power);
 }
 
 void magic_juice(const magic_data& m, magic_result& result)
@@ -3808,7 +3811,7 @@ void magic_juice(const magic_data& m, magic_result& result)
                 name(m.target) + u8"は甘い液体を浴びた！"s,
                 u8"Strange sweet liquid splashes onto "s + name(m.target) + u8"!"s));
     }
-    dmgcon(m.target, 2, m.power);
+    dmgcon(m.target, status_ailment_t::sleep, m.power);
 }
 
 void magic_curse(const magic_data& m, magic_result& result, bool is_attack)
@@ -3901,7 +3904,7 @@ void magic_curse(const magic_data& m, magic_result& result, bool is_attack)
                      name(m.target) + u8"の"s + valn + u8"は黒く輝いた。"s,
                      name(m.target) + your(m.target) + u8" "s + valn + u8" glows black."s));
         }
-        refresh_character(m.target);
+        chara_refresh(m.target);
         snd(117);
         animeload(14, m.target);
         item_stack(m.target, i, 1);
@@ -3938,7 +3941,7 @@ void magic_weaken_resistance(const magic_data& m, magic_result& result)
     {
         snd(38);
     }
-    refresh_character(tc);
+    chara_refresh(tc);
 }
 
 void magic_ally(const magic_data& m, magic_result& result, ally_t type)
@@ -4020,7 +4023,7 @@ void magic_domination(const magic_data& m, magic_result& result)
     {
         rc = tc;
         new_ally_joins();
-        check_quest();
+        quest_check();
     }
     else if (!result.succeeded)
     {
@@ -4107,24 +4110,24 @@ void magic_place_ground_effect(const magic_data& m, magic_result& result, ground
         }
         if (type == ground_effect_t::ether)
         {
-            addmef(x, y, 4, 20, rnd(4) + 2, m.power, cc);
+            mef_add(x, y, 4, 20, rnd(4) + 2, m.power, cc);
         }
         if (type == ground_effect_t::acid)
         {
-            addmef(x, y, 3, 19, rnd(10) + 5, m.power, cc);
+            mef_add(x, y, 3, 19, rnd(10) + 5, m.power, cc);
         }
         if (type == ground_effect_t::fire)
         {
-            addmef(x, y, 5, 24, rnd(10) + 5, m.power, cc);
+            mef_add(x, y, 5, 24, rnd(10) + 5, m.power, cc);
             mapitem_fire(x, y);
         }
         if (type == ground_effect_t::web)
         {
-            addmef(x, y, 1, 11, -1, m.power * 2);
+            mef_add(x, y, 1, 11, -1, m.power * 2);
         }
         if (type == ground_effect_t::fog)
         {
-            addmef(x, y, 2, 30, 8 + rnd((15 + m.power / 25)), m.power);
+            mef_add(x, y, 2, 30, 8 + rnd((15 + m.power / 25)), m.power);
         }
     }
 }
@@ -4185,8 +4188,8 @@ void magic_superior_material(const magic_data& m, magic_result& result)
     invctrl(1) = 7;
     snd(100);
     {
-        int stat = ctrl_inventory();
-        f = stat;
+        menu_result mr = ctrl_inventory();
+        f = mr.succeeded ? 1 : 0;
     }
     if (inv[ci].quality >= 4 || ibit(10, ci) == 1)
     {
@@ -4210,10 +4213,10 @@ void magic_superior_material(const magic_data& m, magic_result& result)
     for (int cnt = 0, cnt_end = (p); cnt < cnt_end; ++cnt)
     {
         randomize(inv[efcibk].param1);
-        encadd(
+        enchantment_add(
                ci,
-               randomenc(randomenclv(egolv)),
-               randomencp() + (fixlv == 5) * 100 + (ibit(15, ci) == 1) * 100,
+               enchantment_generate(enchantment_gen_level(egolv)),
+               enchantment_gen_p() + (fixlv == 5) * 100 + (ibit(15, ci) == 1) * 100,
                20 - (fixlv == 5) * 10 - (ibit(15, ci) == 1) * 20);
     }
     randomize();
@@ -4226,7 +4229,7 @@ void magic_superior_material(const magic_data& m, magic_result& result)
             cdata_body_part(cc, equip) / 10000 * 10000 + ci + 1;
         inv[ci].body_part = equip;
     }
-    refresh_character(cc);
+    chara_refresh(cc);
     fixmaterial = 0;
     objfix = 0;
     ci = efcibk;
@@ -4250,8 +4253,8 @@ void magic_change_material(const magic_data& m, magic_result& result, bool is_ma
     invctrl(1) = 0;
     snd(100);
     {
-        int stat = ctrl_inventory();
-        f = stat;
+        menu_result result = ctrl_inventory(); // TODO test
+        f = result.succeeded ? 1 : 0;
     }
     if (inv[ci].quality == 5 || ibit(10, ci) == 1)
     {
@@ -4316,7 +4319,7 @@ void magic_change_material(const magic_data& m, magic_result& result, bool is_ma
             cdata_body_part(cc, equip) / 10000 * 10000 + ci + 1;
         inv[ci].body_part = equip;
     }
-    refresh_character(cc);
+    chara_refresh(cc);
     fixmaterial = 0;
     objfix = 0;
 }
@@ -4363,8 +4366,8 @@ void magic_enchant(const magic_data& m, magic_result& result, bool is_armor)
     }
     snd(100);
     {
-        int stat = ctrl_inventory();
-        if (stat == 1)
+        menu_result mr = ctrl_inventory();
+        if (mr.succeeded)
         {
             if (inv[ci].enhancement < m.power / 100)
             {
@@ -4382,7 +4385,7 @@ void magic_enchant(const magic_data& m, magic_result& result, bool is_armor)
                          itemname(ci) + u8" resist"s + _s2(inv[ci].number)
                          + u8"."s));
             }
-            refresh_character(cc);
+            chara_refresh(cc);
         }
         else
         {
@@ -4419,8 +4422,8 @@ void magic_recharge(const magic_data& m, magic_result& result, bool is_fill_char
     invctrl(1) = 3;
     snd(100);
     {
-        int stat = ctrl_inventory();
-        if (stat == 1)
+        menu_result mr = ctrl_inventory();
+        if (mr.succeeded)
         {
             dbid = inv[ci].id;
             access_item_db(item_db_query_t::charge_level);
@@ -4517,8 +4520,8 @@ void magic_draw_charge(const magic_data& m, magic_result& result)
     invctrl(1) = 5;
     snd(100);
     {
-        int stat = ctrl_inventory();
-        if (stat == 1)
+        menu_result result = ctrl_inventory();
+        if (result.succeeded)
         {
             dbid = inv[ci].id;
             access_item_db(item_db_query_t::charge_level);
@@ -4593,10 +4596,10 @@ void magic_change_creature(const magic_data& m, magic_result& result)
                  name(tc) + u8" change"s + _s(tc) + u8"."s));
         flt(calcobjlv(cdata[tc].level + 3), 2);
         chara_create(56, 0, -3, 0);
-        relocate_chara(56, tc, 1);
+        chara_relocate(56, tc, 1);
         cdata[tc].enemy_id = cc;
         cdata[tc].is_quest_target() = false;
-        check_quest();
+        quest_check();
     }
     else if (!result.succeeded)
     {
@@ -4627,8 +4630,8 @@ void magic_alchemy(const magic_data& m, magic_result& result)
     invctrl(1) = 4;
     snd(100);
     {
-        int stat = ctrl_inventory();
-        f = stat;
+        menu_result mr = ctrl_inventory();
+        f = mr.succeeded ? 1 : 0;
     }
     if (f)
     {
@@ -4902,13 +4905,13 @@ void magic_meteorite(const magic_data& m, magic_result& result)
             }
             if (rnd(40) == 0)
             {
-                addmef(dx, dy, 5, 24, rnd(4) + 3, 50);
+                mef_add(dx, dy, 5, 24, rnd(4) + 3, 50);
             }
             if (map(dx, dy, 1) != 0)
             {
                 result.selected_target = map(dx, dy, 1) - 1;
                 dmg = sdata(16, m.caster) * m.power / 10;
-                dmghp(result.selected_target, dmg, m.caster, element_t::burning, 1000);
+                dmghp(result.selected_target, dmg, m.caster, element_t::fire, 1000);
             }
         }
     }
@@ -5015,7 +5018,7 @@ void magic_aggro(const magic_data& m, magic_result& result, bool is_insult)
     {
         magic_insult(m, result);
     }
-    dmgcon(m.target, 7, 200);
+    dmgcon(m.target, status_ailment_t::dimmed, 200);
 }
 
 void magic_insult(const magic_data& m, magic_result& result)
@@ -5096,7 +5099,7 @@ void magic_molotov(const magic_data& m, magic_result& result)
                  name(m.target) + u8"は炎に包まれた。"s,
                  name(m.target) + u8" "s + is(m.target) + u8" surrounded by flames."s));
     }
-    addmef(
+    mef_add(
            cdata[m.target].position.x,
            cdata[m.target].position.y,
            5,
@@ -5178,7 +5181,7 @@ void magic_loot(const magic_data& m, magic_result& result)
     }
     healhp(m.caster, cdata[m.caster].max_hp / 3);
     // TODO de-globalize ci
-    do_eaten_effect(m.caster);
+    continuous_action_eating_finish(m.caster);
     refresh_burden_state();
 }
 

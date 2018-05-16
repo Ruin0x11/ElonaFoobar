@@ -764,7 +764,7 @@ int label_2143();
 int decode_book(int efid, int power);
 int read_normal_book();
 int label_2167(int efid);
-int label_2168();
+int label_2168(int efid);
 int drink_potion(int efid,
                  int power,
                  potion_consume_t consume_type,
@@ -1113,8 +1113,8 @@ void initialize_fovmap_and_fovlist();
 turn_result_t do_debug_console();
 turn_result_t do_exit_debug_console();
 void label_2144();
-void activate_trap();
-void label_2146();
+void activate_trap(int target);
+void do_perform(int chara);
 void label_2147();
 void continuous_action_others();
 void label_2149();
@@ -1122,14 +1122,13 @@ void label_2150();
 void label_2151();
 void do_rest();
 void label_2153();
-void label_2154();
-void label_2155();
-void spot_fishing();
+void fish_generate();
+void fish_catch();
+void spot_fishing(int chara);
 void spot_material();
 void spot_digging();
 void spot_mining_or_wall();
 void label_2160();
-void label_2161();
 void label_2187();
 void label_2188();
 void unequip_item(int);
