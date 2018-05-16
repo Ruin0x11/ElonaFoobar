@@ -66,7 +66,9 @@ set(CORE_SOURCES
     ctrl_inventory.cpp
     crafting.cpp
     debug.cpp
+    dmgheal.cpp
     draw.cpp
+    element.cpp
     elonacore.cpp
     enchantment.cpp
     equipment.cpp
@@ -105,6 +107,7 @@ set(CORE_SOURCES
     set_item_info.cpp
     set_option.cpp
     shop.cpp
+    status_ailment.cpp
     std.cpp
     talk.cpp
     talk_npc.cpp
