@@ -19985,7 +19985,8 @@ int label_2217()
     int ammoy = 0;
     attackrange = 1;
     attacknum = 0;
-    ele = 0;
+    element_t ele = element_t::none;
+    // TODO is elep set?
     ammoproc = -1;
     ammox = cdata[tc].position.x;
     ammoy = cdata[tc].position.y;
@@ -20027,9 +20028,8 @@ int label_2217()
         for (int cnt = 0; cnt < 3; ++cnt)
         {
             can_do_ranged_attack();
-            ele = 0;
             extraattack = 0;
-            do_physical_attack();
+            do_physical_attack(element_t::none);
             if (cdata[tc].state != 1)
             {
                 int stat = label_2072();
@@ -20073,13 +20073,13 @@ int label_2217()
                 continue;
             }
             extraattack = 0;
-            do_physical_attack();
+            do_physical_attack(element_t::none);
         }
     }
     else
     {
         extraattack = 0;
-        do_physical_attack();
+        do_physical_attack(ele);
     }
     if (ammoproc == 1)
     {
@@ -20094,7 +20094,7 @@ int label_2217()
 
 
 
-void try_to_melee_attack()
+void try_to_melee_attack(element_t ele, int elep)
 {
     if (cc != 0)
     {
@@ -20184,7 +20184,7 @@ void try_to_melee_attack()
 
 
 
-void do_physical_attack()
+void do_physical_attack(element_t ele, int elep)
 {
     int attackdmg;
     int expmodifer = 0;
@@ -20216,7 +20216,7 @@ label_22191_internal:
     if (attackrange == 1)
     {
         aniref = cw;
-        play_animation(attackskill);
+        play_animation(attackskill, ele);
     }
     if (attacknum > 1 || cc != 0)
     {

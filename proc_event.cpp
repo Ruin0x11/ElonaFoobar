@@ -5,6 +5,7 @@
 #include "character.hpp"
 #include "character_status.hpp"
 #include "config.hpp"
+#include "element.hpp"
 #include "elona.hpp"
 #include "event.hpp"
 #include "item.hpp"
@@ -800,11 +801,10 @@ void proc_event()
         tlocx = evdata1(evnum - (evnum != 0) * 1);
         tlocy = evdata2(evnum - (evnum != 0) * 1);
         range_ = 31;
-        ele = 59;
         aniref = range_;
         anix = tlocx;
         aniy = tlocy;
-        play_animation(17);
+        play_animation(17, element_t::chaotic);
         update_screen();
         for (int i = 0; i < range_ * 2 + 1; ++i)
         {
