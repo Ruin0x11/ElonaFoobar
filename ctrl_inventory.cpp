@@ -344,8 +344,8 @@ label_20591:
             {
                 dbid = inv[cnt].id;
                 dbspec = 12;
-                int is_offerable = access_item_db(16);
-                if (is_offerable == 0)
+                item_db_result result = access_item_db(item_db_query_t::is_offerable);
+                if (!result.is_offerable) // TODO test
                 {
                     continue;
                 }

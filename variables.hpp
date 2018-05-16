@@ -728,7 +728,6 @@ int getworker(int = 0, int = 0);
 int iequiploc(int = 0);
 int imeget();
 int key_direction();
-int access_item_db(int);
 int get_required_craft_materials();
 int voting_box();
 int try_to_cast_spell();

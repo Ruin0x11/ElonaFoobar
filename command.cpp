@@ -746,12 +746,17 @@ turn_result_t do_throw_command()
                 {
                     hostileaction(cc, tc);
                 }
-                ccthrowpotion = cc;
+
+                int ccthrowpotion = cc;
                 potionthrow = 100;
                 cc = tc;
                 dbid = inv[ci].id;
-                access_item_db(15);
+
+                item_db_result result = access_item_db(item_db_query_t::drink);
+                drink_potion(result.effect_id, result.effect_power, potion_consume_t::thrown);
+
                 cc = ccthrowpotion;
+
                 return turn_result_t::turn_end;
             }
             if (inv[ci].id == 587)
