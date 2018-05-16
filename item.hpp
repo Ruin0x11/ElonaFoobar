@@ -37,6 +37,7 @@ struct item
     item();
 
 
+    int idx = 0;
     int number = 0;
     int value = 0;
     int image = 0;

@@ -142,10 +142,6 @@ void initialize_mod_data_for_chara(int chara, const std::string& mod_name, sol::
 }
 
 // TODO mods_iterator
-auto& get_registry_data()
-{
-    return (*sol.get())["Elona"]["Registry"]["Data"];
-}
 
 void on_chara_creation(int chara_id)
 {
@@ -156,7 +152,7 @@ void on_chara_creation(int chara_id)
 
     //callback("chara_created", {{"cc", id}});
 
-    sol::table registry_data = get_registry_data();
+    sol::table registry_data = (*sol.get())["Elona"]["Registry"]["Data"];
     for(const auto& pair : registry_data)
     {
         const std::string mod_name = pair.first.as<std::string>();
