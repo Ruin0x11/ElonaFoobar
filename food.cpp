@@ -101,7 +101,7 @@ void continuous_action_eating_finish()
     }
     if (cc == 0)
     {
-        label_2162();
+        show_eating_message();
     }
     else
     {
@@ -169,7 +169,7 @@ void continuous_action_eating_finish()
 
 
 
-void label_2162()
+void show_eating_message()
 {
     txtef(2);
     if (cdata[cc].nutrition >= 12000)
