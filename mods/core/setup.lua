@@ -1,1 +1,1 @@
-Elona.Debug.inspect = require "core/mods/inspect"
+Elona.Debug.inspect = require "mods/core/inspect"

@@ -1,8 +1,7 @@
-require "mods/core/setup.lua"
+require "mods/core/setup"
 
 local Defines = require 'mods/core/defines'
 local Event = require 'mods/core/event'
-local Storage = Elona.Registry.Data["core"]
 
 function hoge()
    Elona.GUI.txt("hoge ")
@@ -14,21 +13,6 @@ function hoge()
    end
 end
 
-
-local function dump(o)
-   if type(o) == 'table' then
-      local s = '{ '
-      for k,v in pairs(o) do
-         if type(k) ~= 'number' then k = '"'..k..'"' end
-         s = s .. '['..k..'] = ' .. dump(v) .. ','
-      end
-      return s .. '} '
-   else
-      return tostring(o)
-   end
-end
-
-
 function foo()
    Elona.GUI.txt("foo ")
    if Elona.Rand.one_in(10) then
@@ -37,21 +21,20 @@ function foo()
    end
 end
 
-local function my_movement_handler(chara_idx)
-   Elona.GUI.txt(dump(Storage))
-   local data = Storage.Chara[chara_idx]
-   local asd = data.steps
-   Storage.Chara[chara_idx].steps = asd + 1
-   Elona.GUI.txt("Steps taken by " .. chara_idx .. ": " .. Storage.Chara[chara_idx].steps .. " ")
+local function my_movement_handler(args)
+   local chara_idx = args.chara_idx
+   Elona.log(Elona.Debug.inspect(Elona))
+   Elona.log("It is " .. chara_idx)
+   local data = Elona.Registry.Data["core"].Chara[chara_idx]
+   Elona.Registry.Data["core"].Chara[chara_idx].steps = data.steps + 1
+   Elona.GUI.txt("Steps taken by " .. chara_idx .. ": " .. Elona.Registry.Data["core"].Chara[chara_idx].steps .. " ")
 end
 
 local function my_character_init()
-  --  Elona.log("Initing char " .. id)
-  -- local defaults = {
-  --   steps = 0
-  -- }
-  -- return defaults
-   return {}
+  local defaults = {
+    steps = 0
+  }
+  return defaults
 end
 
 Elona.Registry.register_chara_init(my_character_init)

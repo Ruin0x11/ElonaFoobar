@@ -19,6 +19,12 @@ namespace lua
 
 std::unique_ptr<sol::state> sol;
 
+void report_error(sol::error err)
+{
+	std::string what = err.what();
+	ELONA_LOG(what);
+}
+
 void reload()
 {
     // TODO more sophisticated reloading
@@ -50,7 +56,13 @@ void load_mod(const std::string& name)
     sol::table Global = modlocal.create_named("Global");
     // run various mod loading stages (like defining custom fields for all prototypes in the game?)
     // evaluate init.lua to load defines
-    sol.get()->script_file("mods/"s + name + "/init.lua"s);
+	auto result = sol.get()->safe_script_file("mods/"s + name + "/init.lua"s);
+	if (!result.valid())
+	{
+		sol::error err = result;
+		report_error(err);
+		throw new std::runtime_error("Failed initializing mod "s + name);
+	}
     // determine mod overrides inside .json files
     // merge overrides, new things, and locale configs into global database
     // add reference to global API table as Elona so the mod can use it
@@ -122,15 +134,9 @@ void callback(const std::string& event_id, const std::map<std::string, int> args
 // }
 //
 
-void report_error(sol::error err)
-{
-    std::string what = err.what();
-    ELONA_LOG(what);
-}
-
 void initialize_mod_data_for_chara(int chara, const std::string& mod_name, sol::table& data)
 {
-    sol::table inits = (*sol.get())["Registry"]["Inits"]["Chara"];
+    sol::table inits = (*sol.get())["Elona"]["Registry"]["Inits"]["Chara"];
 
     for(const auto& pair : inits)
     {
@@ -153,7 +159,7 @@ void initialize_mod_data_for_chara(int chara, const std::string& mod_name, sol::
 
 void initialize_mod_data_for_map(const std::string& mod_name, sol::table& data)
 {
-    sol::table inits = (*sol.get())["Registry"]["Inits"]["Map"];
+    sol::table inits = (*sol.get())["Elona"]["Registry"]["Inits"]["Map"];
 
     for(const auto& pair : inits)
     {
@@ -225,8 +231,12 @@ void on_chara_removal(int id)
     for(auto& pair : data)
     {
         const std::string mod_name = pair.first.as<std::string>();
-        data[mod_name]["Chara"][id] = sol::nullopt; // TODO except player/allies/respawnable characters
+        if (data[mod_name]["Chara"][id])
+        {
+            data[mod_name]["Chara"][id] = sol::nullopt; // TODO except player/allies/respawnable characters
+        }
     }
+    ELONA_LOG("Done.");
 
     // for each mod, invalidate global chara state
     // for each mod, run chara removal callback
@@ -248,7 +258,8 @@ void init_global(std::unique_ptr<sol::state>& state)
 
 void dump_state()
 {
-    sol.get()->script("if Elona.Debug and Elona.Debug.inspect then Elona.Debug.inspect(Elona) end");
+    ELONA_LOG("==== State ====");
+    sol.get()->script("if Elona.Debug and Elona.Debug.inspect then Elona.log(Elona.Debug.inspect(Elona)) end");
 }
 
 void init()
@@ -258,11 +269,13 @@ void init()
                               sol::lib::package,
                               sol::lib::table,
                               sol::lib::debug,
-                              sol::lib::string);
+                              sol::lib::string,
+	                          sol::lib::math);
 
     init_api(sol);
     init_registry(sol);
     init_global(sol);
+	dump_state();
 
     // prevent usage of some tables during mod loading, since calling things like GUI.txt at the top level before starting the game is dangerous
     // load core mod first

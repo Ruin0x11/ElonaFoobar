@@ -14,19 +14,6 @@ function table.find(tbl, func, ...)
     return nil
 end
 
-local function dump(o)
-   if type(o) == 'table' then
-      local s = '{ '
-      for k,v in pairs(o) do
-         if type(k) ~= 'number' then k = '"'..k..'"' end
-         s = s .. '['..k..'] = ' .. dump(v) .. ','
-      end
-      return s .. '} '
-   else
-      return tostring(o)
-   end
-end
-
 local function is_valid_id(event_id)
     if not (type(event_id) == "string") then
         error("Invalid Event Id, Must be string. Passed in "..event_id, 3)
@@ -75,9 +62,9 @@ function Event.dispatch(event_id, args)
    if _registry then
       for idx, handler in ipairs(_registry) do
          Elona.log("Handler for " .. event_id .. ": " .. idx)
-         local status, err = xpcall(handler, function(a) return debug.traceback(a) end, table.unpack(args))
+         local status, err = xpcall(handler, function(a) return debug.traceback(a) end, args)
          if not status then
-            error("Error dispatching " .. event_id .. ": " .. dump(err))
+            error("Error dispatching " .. event_id .. ": " .. Elona.Debug.inspect(err))
          end
       end
    end

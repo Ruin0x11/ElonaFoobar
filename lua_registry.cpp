@@ -23,13 +23,13 @@ void Registry::set_on_event(const std::string& event_id, const sol::function& ca
 
 void Registry::register_chara_init(const sol::function& func)
 {
-    sol::table inits = (*sol.get())["Registry"]["Inits"]["Chara"];
+	sol::table inits = (*sol.get())["Elona"]["Registry"]["Inits"]["Chara"];
     inits.add(func);
 }
 
 void Registry::register_map_init(const sol::function& func)
 {
-    sol::table inits = (*sol.get())["Registry"]["Inits"]["Map"];
+    sol::table inits = (*sol.get())["Elona"]["Registry"]["Inits"]["Map"];
     inits.add(func);
 }
 
