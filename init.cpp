@@ -585,7 +585,21 @@ void start_elona()
     gdata_hour = 16;
     gdata_minute = 10;
     quickpage = 1;
-    if (defload != ""s)
+    if (config::instance().noadebug)
+    {
+        mode = 4;
+        initialize_game();
+        main_loop();
+        return;
+    }
+    else if (config::instance().startup_script != ""s)
+    {
+        mode = 6;
+        initialize_game();
+        main_loop();
+        return;
+    }
+    else if (defload != ""s)
     {
         if (!fs::exists(filesystem::dir::save(defload) / u8"header.txt"))
         {
@@ -785,6 +799,342 @@ int run()
     return 0;
 }
 
+void initialize_debug_globals()
+{
+    for (int cnt = 0; cnt < 9; ++cnt)
+    {
+        gdata(120 + cnt) = 5000;
+    }
+    gdata_version = 1220;
+    gdata(41) = 424;
+    gdata(42) = 300;
+    gdata(43) = 631;
+    gdata_next_inventory_serial_id = 1000;
+    gdata_next_shelter_serial_id = 100;
+    gdata_pc_home_x = 22;
+    gdata_pc_home_y = 21;
+    gdata_previous_map = -1;
+    gdata_random_seed = rnd(800) + 2;
+    gdata(9) = rnd(200) + 2;
+    gdata_current_map = 4;
+    gdata_current_dungeon_level = 0;
+    gdata_entrance_type = 7;
+    mapstartx = 22;
+    mapstarty = 21;
+    gdata_current_map = 5;
+    gdata_current_dungeon_level = 1;
+    gdata_entrance_type = 7;
+    mapstartx = 10;
+    mapstarty = 23;
+    initlv = 50;
+    rc = 0;
+    flt(100);
+    chara_create(0, 84, -3, 0);
+    initialize_pc_character();
+    gdata_year = 517;
+    gdata_month = 12;
+    gdata_day = 30;
+    gdata_hour = 1;
+    gdata_minute = 10;
+    gdata_played_scene = 50;
+    gdata_has_not_been_to_vernis = 1;
+    adata(30, 7) = 4;
+    gdata(850) = adata(30, gdata_current_map);
+    gdata_acquirable_feat_count = 2;
+    gdata_save_count_of_little_sister = 1000;
+    gdata_rights_to_succeed_to = 1000;
+    gdata_home_scale = 0;
+    gdata_number_of_waiting_guests = 2;
+    gdata_charge_power = 1000;
+    cdata[0].god_id = core_god::int2godid(2);
+    cdata[0].piety_point = 1000;
+    cdata[0].praying_point = 1000;
+    gdata_pael_and_her_mom = 1000;
+    cdata[0].gold += 1000000;
+    cdata[0].platinum_coin = 30;
+    cdata[0].fame = 65000;
+    gdata_main_quest_flag = 100;
+    chara_refresh(0);
+
+    cdata[0].can_cast_rapid_magic() = true;
+    mode = 0;
+    refresh_burden_state();
+    for (int cnt = 0; cnt < 55; ++cnt)
+    {
+        mat(cnt) = 200;
+    }
+    create_all_adventurers();
+    create_pcpic(0, true);
+    cdatan(1, 0) = random_title();
+    cdatan(0, 0) = randomname();
+}
+
+void initialize_noa_items()
+{
+    flt();
+    itemcreate(0, 284, -1, -1, 0);
+    inv[ci].number = 20;
+    inv[ci].curse_state = curse_state_t::blessed;
+    flt();
+    itemcreate(0, 127, -1, -1, 0);
+    inv[ci].number = 20;
+    inv[ci].curse_state = curse_state_t::blessed;
+    flt();
+    itemcreate(0, 617, -1, -1, 0);
+    inv[ci].number = 20;
+    flt();
+    itemcreate(0, 671, -1, -1, 0);
+    inv[ci].number = 10;
+    flt();
+    itemcreate(0, 749, -1, -1, 0);
+    inv[ci].number = 10;
+    flt();
+    itemcreate(0, 748, -1, -1, 0);
+    inv[ci].number = 10;
+    flt();
+    itemcreate(0, 601, -1, -1, 0);
+    inv[ci].number = 10;
+    flt();
+    itemcreate(0, 342, -1, -1, 0);
+    inv[ci].number = 12;
+    flt();
+    itemcreate(0, 343, -1, -1, 0);
+    inv[ci].number = 50;
+    flt();
+    itemcreate(0, 519, -1, -1, 0);
+    inv[ci].number = 50;
+    inv[ci].color = 4;
+    flt();
+    itemcreate(0, 622, -1, -1, 0);
+    inv[ci].number = 50000;
+    flt();
+    itemcreate(0, 603, -1, -1, 0);
+    inv[ci].number = 5;
+    flt();
+    itemcreate(0, 620, -1, -1, 0);
+    inv[ci].number = 5;
+    flt();
+    itemcreate(0, 736, -1, -1, 0);
+    inv[ci].number = 5;
+    flt();
+    itemcreate(0, 566, -1, -1, 0);
+    inv[ci].number = 5;
+    flt();
+    itemcreate(0, 516, -1, -1, 0);
+    inv[ci].number = 5;
+    inv[ci].curse_state = curse_state_t::blessed;
+    flt();
+    itemcreate(0, 262, -1, -1, 0);
+    inv[ci].number = 5;
+    flt();
+    itemcreate(0, 632, -1, -1, 0);
+    inv[ci].number = 10;
+    inv[ci].curse_state = curse_state_t::cursed;
+    flt();
+    itemcreate(0, 632, -1, -1, 0);
+    inv[ci].number = 10;
+    inv[ci].curse_state = curse_state_t::none;
+    flt();
+    itemcreate(0, 204, -1, -1, 0);
+    inv[ci].subname = 330;
+    inv[ci].number = 10;
+    flt();
+    itemcreate(0, 636, -1, -1, 0);
+    inv[ci].number = 3;
+    inv[ci].curse_state = curse_state_t::none;
+    flt();
+    itemcreate(0, 342, -1, -1, 0);
+    inv[ci].count = 100;
+    flt();
+    itemcreate(0, 350, -1, -1, 0);
+    inv[ci].number = 20;
+    flt();
+    itemcreate(0, 707, -1, -1, 0);
+    flt();
+    itemcreate(0, 719, -1, -1, 0);
+    flt();
+    itemcreate(0, 666, -1, -1, 0);
+    flt();
+    itemcreate(0, 686, -1, -1, 0);
+    flt();
+    itemcreate(0, 721, -1, -1, 0);
+    flt();
+    itemcreate(0, 772, -1, -1, 0);
+    flt();
+    itemcreate(0, 773, -1, -1, 0);
+    flt();
+    itemcreate(0, 774, -1, -1, 0);
+    flt();
+    itemcreate(0, 775, -1, -1, 0);
+    flt();
+    itemcreate(0, 776, -1, -1, 0);
+    flt();
+    itemcreate(0, 777, -1, -1, 0);
+    flt();
+    itemcreate(0, 778, -1, -1, 0);
+    flt();
+    itemcreate(0, 779, -1, -1, 0);
+    flt();
+    itemcreate(0, 780, -1, -1, 0);
+    flt();
+    itemcreate(0, 781, -1, -1, 0);
+    flt();
+    itemcreate(0, 782, -1, -1, 0);
+    flt();
+    itemcreate(0, 784, -1, -1, 0);
+    flt();
+    itemcreate(0, 785, -1, -1, 0);
+    inv[ci].number = 10;
+    flt();
+    itemcreate(0, 786, -1, -1, 0);
+    inv[ci].number = 10;
+    flt();
+    itemcreate(0, 787, -1, -1, 0);
+    flt();
+    itemcreate(0, 788, -1, -1, 0);
+    flt();
+    itemcreate(0, 789, -1, -1, 0);
+    flt();
+    itemcreate(0, 790, -1, -1, 0);
+    flt();
+    itemcreate(0, 791, -1, -1, 0);
+    flt();
+    itemcreate(0, 792, -1, -1, 0);
+    flt();
+    itemcreate(0, 260, -1, -1, 0);
+    inv[ci].number = 100;
+    gdata(41) = 140789;
+    gdata(42) = 140790;
+    for (int cnt = 0; cnt < 1200; ++cnt)
+    {
+        recipememory(cnt) = 1;
+    }
+    flt();
+    itemcreate(0, 783, -1, -1, 0);
+    flt();
+    itemcreate(0, 783, -1, -1, 0);
+    flt();
+    itemcreate(0, 783, -1, -1, 0);
+    inv[ci].subname = 1187;
+    flt();
+    itemcreate(0, 783, -1, -1, 0);
+    inv[ci].subname = 955;
+    itemcreate(0, 672, -1, -1, 0);
+    inv[ci].param1 = 164;
+    flt();
+    itemcreate(0, 566, -1, -1, 0);
+    inv[ci].number = 10;
+    inv[ci].curse_state = curse_state_t::blessed;
+    flt();
+    itemcreate(0, 566, -1, -1, 0);
+    inv[ci].number = 10;
+    inv[ci].curse_state = curse_state_t::cursed;
+    flt();
+    itemcreate(0, 566, -1, -1, 0);
+    inv[ci].number = 10;
+    flt();
+    itemcreate(0, 55, -1, -1, 0);
+    inv[ci].number = 10;
+    flt();
+    itemcreate(0, 385, -1, -1, 0);
+    inv[ci].number = 10;
+    flt();
+    itemcreate(0, 672, -1, -1, 0);
+    inv[ci].number = 10;
+    inv[ci].param1 = 169;
+    flt();
+    itemcreate(0, 672, -1, -1, 0);
+    inv[ci].number = 10;
+    inv[ci].param1 = 162;
+    flt();
+    itemcreate(0, 771, -1, -1, 0);
+    inv[ci].number = 100;
+    flt();
+    itemcreate(0, 761, -1, -1, 0);
+    flt();
+    itemcreate(0, 769, -1, -1, 0);
+    flt();
+    itemcreate(0, 763, -1, -1, 0);
+    flt();
+    itemcreate(0, 764, -1, -1, 0);
+    flt();
+    itemcreate(0, 768, -1, -1, 0);
+    flt();
+    itemcreate(0, 766, -1, -1, 0);
+    flt();
+    {
+        int stat = itemcreate(0, 752, -1, -1, 0);
+        if (stat != 0)
+        {
+            inv[ci].param3 = 240;
+            inv[ci].number = 50;
+        }
+    }
+    flt();
+    {
+        int stat = itemcreate(0, 755, -1, -1, 0);
+        if (stat != 0)
+        {
+            inv[ci].param3 = 240;
+            inv[ci].number = 50;
+        }
+    }
+    flt();
+    {
+        int stat = itemcreate(0, 756, -1, -1, 0);
+        if (stat != 0)
+        {
+            inv[ci].param3 = 240;
+            inv[ci].number = 50;
+        }
+    }
+    for (int cnt = 0; cnt < 40; ++cnt)
+    {
+        flt(50, 5);
+        flttypemajor = 56000;
+        itemcreate(0, -1, -1, -1, 0);
+        flt(50, 5);
+        flttypemajor = 34000;
+        itemcreate(0, -1, -1, -1, 0);
+        flt(50, 5);
+        flttypemajor = 32000;
+        itemcreate(0, -1, -1, -1, 0);
+    }
+}
+
+
+void initialize_world()
+{
+    gdata_year = 517;
+    gdata_month = 8;
+    gdata_day = 12;
+    gdata_hour = 1;
+    gdata_minute = 10;
+    gdata_pc_home_x = 22;
+    gdata_pc_home_y = 21;
+    gdata_previous_map = -1;
+    gdata(850) = 4;
+    ghelp = 1;
+    gdata_current_map = 7;
+    gdata_current_dungeon_level = 1;
+    gdata_entrance_type = 4;
+    gdata_version = 1220;
+    gdata_home_scale = 0;
+    initialize_adata();
+    gdata_weather = 3;
+    gdata_hours_until_weather_changes = 6;
+    for (int cnt = 0; cnt < 20; ++cnt)
+    {
+        gdata(120 + cnt) = 10000;
+    }
+}
+
+void initialize_testbed()
+{
+    gdata_current_map = 9999;
+    gdata_current_dungeon_level = 2;
+}
+
 void initialize_game()
 {
     autopick::instance().load(playerid);
@@ -798,333 +1148,28 @@ void initialize_game()
     }
     if (mode == 4)
     {
-        for (int cnt = 0; cnt < 9; ++cnt)
-        {
-            gdata(120 + cnt) = 5000;
-        }
-        gdata_version = 1220;
-        gdata(41) = 424;
-        gdata(42) = 300;
-        gdata(43) = 631;
-        gdata_next_inventory_serial_id = 1000;
-        gdata_next_shelter_serial_id = 100;
         playerid = u8"sav_noa"s;
-        gdata_pc_home_x = 22;
-        gdata_pc_home_y = 21;
-        gdata_previous_map = -1;
-        gdata_random_seed = rnd(800) + 2;
-        gdata(9) = rnd(200) + 2;
-        gdata_current_map = 4;
-        gdata_current_dungeon_level = 0;
-        gdata_entrance_type = 7;
-        mapstartx = 22;
-        mapstarty = 21;
-        gdata_current_map = 5;
-        gdata_current_dungeon_level = 1;
-        gdata_entrance_type = 7;
-        mapstartx = 10;
-        mapstarty = 23;
-        initlv = 50;
-        rc = 0;
-        flt(100);
-        chara_create(0, 84, -3, 0);
-        initialize_pc_character();
-        gdata_year = 517;
-        gdata_month = 12;
-        gdata_day = 30;
-        gdata_hour = 1;
-        gdata_minute = 10;
-        gdata_played_scene = 50;
-        gdata_has_not_been_to_vernis = 1;
-        adata(30, 7) = 4;
-        gdata(850) = adata(30, gdata_current_map);
-        gdata_acquirable_feat_count = 2;
-        gdata_save_count_of_little_sister = 1000;
-        gdata_rights_to_succeed_to = 1000;
-        gdata_home_scale = 0;
-        gdata_number_of_waiting_guests = 2;
-        gdata_charge_power = 1000;
-        cdata[0].god_id = core_god::int2godid(2);
-        cdata[0].piety_point = 1000;
-        cdata[0].praying_point = 1000;
-        gdata_pael_and_her_mom = 1000;
-        cdata[0].gold += 1000000;
-        cdata[0].platinum_coin = 30;
-        cdata[0].fame = 65000;
-        gdata_main_quest_flag = 100;
-        chara_refresh(0);
-        flt();
-        itemcreate(0, 284, -1, -1, 0);
-        inv[ci].number = 20;
-        inv[ci].curse_state = curse_state_t::blessed;
-        flt();
-        itemcreate(0, 127, -1, -1, 0);
-        inv[ci].number = 20;
-        inv[ci].curse_state = curse_state_t::blessed;
-        flt();
-        itemcreate(0, 617, -1, -1, 0);
-        inv[ci].number = 20;
-        flt();
-        itemcreate(0, 671, -1, -1, 0);
-        inv[ci].number = 10;
-        flt();
-        itemcreate(0, 749, -1, -1, 0);
-        inv[ci].number = 10;
-        flt();
-        itemcreate(0, 748, -1, -1, 0);
-        inv[ci].number = 10;
-        flt();
-        itemcreate(0, 601, -1, -1, 0);
-        inv[ci].number = 10;
-        flt();
-        itemcreate(0, 342, -1, -1, 0);
-        inv[ci].number = 12;
-        flt();
-        itemcreate(0, 343, -1, -1, 0);
-        inv[ci].number = 50;
-        flt();
-        itemcreate(0, 519, -1, -1, 0);
-        inv[ci].number = 50;
-        inv[ci].color = 4;
-        flt();
-        itemcreate(0, 622, -1, -1, 0);
-        inv[ci].number = 50000;
-        flt();
-        itemcreate(0, 603, -1, -1, 0);
-        inv[ci].number = 5;
-        flt();
-        itemcreate(0, 620, -1, -1, 0);
-        inv[ci].number = 5;
-        flt();
-        itemcreate(0, 736, -1, -1, 0);
-        inv[ci].number = 5;
-        flt();
-        itemcreate(0, 566, -1, -1, 0);
-        inv[ci].number = 5;
-        flt();
-        itemcreate(0, 516, -1, -1, 0);
-        inv[ci].number = 5;
-        inv[ci].curse_state = curse_state_t::blessed;
-        flt();
-        itemcreate(0, 262, -1, -1, 0);
-        inv[ci].number = 5;
-        flt();
-        itemcreate(0, 632, -1, -1, 0);
-        inv[ci].number = 10;
-        inv[ci].curse_state = curse_state_t::cursed;
-        flt();
-        itemcreate(0, 632, -1, -1, 0);
-        inv[ci].number = 10;
-        inv[ci].curse_state = curse_state_t::none;
-        flt();
-        itemcreate(0, 204, -1, -1, 0);
-        inv[ci].subname = 330;
-        inv[ci].number = 10;
-        flt();
-        itemcreate(0, 636, -1, -1, 0);
-        inv[ci].number = 3;
-        inv[ci].curse_state = curse_state_t::none;
-        flt();
-        itemcreate(0, 342, -1, -1, 0);
-        inv[ci].count = 100;
-        flt();
-        itemcreate(0, 350, -1, -1, 0);
-        inv[ci].number = 20;
-        flt();
-        itemcreate(0, 707, -1, -1, 0);
-        flt();
-        itemcreate(0, 719, -1, -1, 0);
-        flt();
-        itemcreate(0, 666, -1, -1, 0);
-        flt();
-        itemcreate(0, 686, -1, -1, 0);
-        flt();
-        itemcreate(0, 721, -1, -1, 0);
-        flt();
-        itemcreate(0, 772, -1, -1, 0);
-        flt();
-        itemcreate(0, 773, -1, -1, 0);
-        flt();
-        itemcreate(0, 774, -1, -1, 0);
-        flt();
-        itemcreate(0, 775, -1, -1, 0);
-        flt();
-        itemcreate(0, 776, -1, -1, 0);
-        flt();
-        itemcreate(0, 777, -1, -1, 0);
-        flt();
-        itemcreate(0, 778, -1, -1, 0);
-        flt();
-        itemcreate(0, 779, -1, -1, 0);
-        flt();
-        itemcreate(0, 780, -1, -1, 0);
-        flt();
-        itemcreate(0, 781, -1, -1, 0);
-        flt();
-        itemcreate(0, 782, -1, -1, 0);
-        flt();
-        itemcreate(0, 784, -1, -1, 0);
-        flt();
-        itemcreate(0, 785, -1, -1, 0);
-        inv[ci].number = 10;
-        flt();
-        itemcreate(0, 786, -1, -1, 0);
-        inv[ci].number = 10;
-        flt();
-        itemcreate(0, 787, -1, -1, 0);
-        flt();
-        itemcreate(0, 788, -1, -1, 0);
-        flt();
-        itemcreate(0, 789, -1, -1, 0);
-        flt();
-        itemcreate(0, 790, -1, -1, 0);
-        flt();
-        itemcreate(0, 791, -1, -1, 0);
-        flt();
-        itemcreate(0, 792, -1, -1, 0);
-        flt();
-        itemcreate(0, 260, -1, -1, 0);
-        inv[ci].number = 100;
-        gdata(41) = 140789;
-        gdata(42) = 140790;
-        for (int cnt = 0; cnt < 1200; ++cnt)
-        {
-            recipememory(cnt) = 1;
-        }
-        flt();
-        itemcreate(0, 783, -1, -1, 0);
-        flt();
-        itemcreate(0, 783, -1, -1, 0);
-        flt();
-        itemcreate(0, 783, -1, -1, 0);
-        inv[ci].subname = 1187;
-        flt();
-        itemcreate(0, 783, -1, -1, 0);
-        inv[ci].subname = 955;
-        itemcreate(0, 672, -1, -1, 0);
-        inv[ci].param1 = 164;
-        flt();
-        itemcreate(0, 566, -1, -1, 0);
-        inv[ci].number = 10;
-        inv[ci].curse_state = curse_state_t::blessed;
-        flt();
-        itemcreate(0, 566, -1, -1, 0);
-        inv[ci].number = 10;
-        inv[ci].curse_state = curse_state_t::cursed;
-        flt();
-        itemcreate(0, 566, -1, -1, 0);
-        inv[ci].number = 10;
-        flt();
-        itemcreate(0, 55, -1, -1, 0);
-        inv[ci].number = 10;
-        flt();
-        itemcreate(0, 385, -1, -1, 0);
-        inv[ci].number = 10;
-        flt();
-        itemcreate(0, 672, -1, -1, 0);
-        inv[ci].number = 10;
-        inv[ci].param1 = 169;
-        flt();
-        itemcreate(0, 672, -1, -1, 0);
-        inv[ci].number = 10;
-        inv[ci].param1 = 162;
-        flt();
-        itemcreate(0, 771, -1, -1, 0);
-        inv[ci].number = 100;
-        flt();
-        itemcreate(0, 761, -1, -1, 0);
-        flt();
-        itemcreate(0, 769, -1, -1, 0);
-        flt();
-        itemcreate(0, 763, -1, -1, 0);
-        flt();
-        itemcreate(0, 764, -1, -1, 0);
-        flt();
-        itemcreate(0, 768, -1, -1, 0);
-        flt();
-        itemcreate(0, 766, -1, -1, 0);
-        flt();
-        {
-            int stat = itemcreate(0, 752, -1, -1, 0);
-            if (stat != 0)
-            {
-                inv[ci].param3 = 240;
-                inv[ci].number = 50;
-            }
-        }
-        flt();
-        {
-            int stat = itemcreate(0, 755, -1, -1, 0);
-            if (stat != 0)
-            {
-                inv[ci].param3 = 240;
-                inv[ci].number = 50;
-            }
-        }
-        flt();
-        {
-            int stat = itemcreate(0, 756, -1, -1, 0);
-            if (stat != 0)
-            {
-                inv[ci].param3 = 240;
-                inv[ci].number = 50;
-            }
-        }
-        for (int cnt = 0; cnt < 40; ++cnt)
-        {
-            flt(50, 5);
-            flttypemajor = 56000;
-            itemcreate(0, -1, -1, -1, 0);
-            flt(50, 5);
-            flttypemajor = 34000;
-            itemcreate(0, -1, -1, -1, 0);
-            flt(50, 5);
-            flttypemajor = 32000;
-            itemcreate(0, -1, -1, -1, 0);
-        }
-        cdata[0].can_cast_rapid_magic() = true;
-        mode = 0;
-        refresh_burden_state();
-        for (int cnt = 0; cnt < 55; ++cnt)
-        {
-            mat(cnt) = 200;
-        }
-        create_all_adventurers();
-        create_pcpic(0, true);
-        cdatan(1, 0) = random_title();
-        cdatan(0, 0) = randomname();
+        initialize_debug_globals();
+        initialize_noa_items();
         mode = 2;
     }
     if (mode == 5)
     {
-        gdata_year = 517;
-        gdata_month = 8;
-        gdata_day = 12;
-        gdata_hour = 1;
-        gdata_minute = 10;
-        gdata_pc_home_x = 22;
-        gdata_pc_home_y = 21;
-        gdata_previous_map = -1;
-        gdata(850) = 4;
-        ghelp = 1;
-        gdata_current_map = 7;
-        gdata_current_dungeon_level = 1;
-        gdata_entrance_type = 4;
-        gdata_version = 1220;
-        gdata_home_scale = 0;
-        initialize_adata();
-        gdata_weather = 3;
-        gdata_hours_until_weather_changes = 6;
-        for (int cnt = 0; cnt < 20; ++cnt)
-        {
-            gdata(120 + cnt) = 10000;
-        }
+        initialize_world();
         create_all_adventurers();
         mode = 2;
         event_add(2);
         event_add(24);
         sceneid = 0;
         do_play_scene();
+    }
+    if (mode == 6)
+    {
+        playerid = u8"sav_ruin"s;
+        initialize_debug_globals();
+        initialize_testbed();
+        event_add(9999); // defer loading scripts until after the map has been created
+        mode = 2;
     }
     if (mode == 2)
     {
@@ -1139,7 +1184,6 @@ void initialize_game()
     initialize_fovmap_and_fovlist();
     initialize_map();
 }
-
 
 void main_title_loop()
 {

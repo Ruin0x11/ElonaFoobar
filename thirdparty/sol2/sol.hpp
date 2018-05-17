@@ -12134,7 +12134,7 @@ namespace sol {
 		struct caller {
 			template <typename... Args>
 			decltype(auto) operator()(F& fx, Args&&... args) const {
-				return call(fx, std::forward<Args>(args)...);
+ 				return call(fx, std::forward<Args>(args)...);
 			}
 		};
 

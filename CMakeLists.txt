@@ -157,6 +157,10 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
                    "${CMAKE_CURRENT_SOURCE_DIR}/mods"
                    "$<TARGET_FILE_DIR:${PROJECT_NAME}>/mods")
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                   "${CMAKE_CURRENT_SOURCE_DIR}/script"
+                   "$<TARGET_FILE_DIR:${PROJECT_NAME}>/script")
 
 
 # Copy assets from Elona 1.22 if they are present

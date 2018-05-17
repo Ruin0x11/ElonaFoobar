@@ -994,7 +994,6 @@ void init_item_quality_curse_state_material_and_equipments();
 void calc_furniture_value();
 void get_pregnant();
 void initialize_cell_object_data();
-void generate_random_nefia();
 void initialize_random_nefia_rdtype6();
 void initialize_quest_map_town();
 void initialize_random_nefia_rdtype8();

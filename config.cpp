@@ -302,6 +302,10 @@ void load_config()
             1,
             [&](auto value) { config::instance().netchat = value; }),
         std::make_unique<config_integer>(
+            u8"noaDebug",
+            0,
+            [&](auto value) { config::instance().noadebug = value; }),
+        std::make_unique<config_integer>(
             u8"serverList",
             0,
             [&](auto value) { config::instance().serverlist = value; }),
@@ -666,6 +670,10 @@ void load_config()
             u8"autosave",
             0,
             [&](auto value) { config::instance().autosave = value; }),
+        std::make_unique<config_string>(
+            u8"startup_script",
+            "",
+            [&](auto value) { config::instance().startup_script = std::string{value}; }),
     };
 
     picojson::value value;

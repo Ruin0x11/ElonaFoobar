@@ -51,7 +51,7 @@ bool is_ally(const character&);
  * @function player
  * @treturn LuaCharacter a reference to the player
  */
-sol::optional<character&> player();
+sol::optional<character*> player();
 
 /***
  * @classmod LuaCharacter
@@ -83,35 +83,35 @@ bool Chara::is_alive(const character& chara)
 
 bool Chara::is_player(const character& chara)
 {
-    return chara.id == 0; // TODO
+    return chara.idx == 0;
 }
 
 bool Chara::is_ally(const character& chara)
 {
-    return chara.id <= 16; // TODO
+    return chara.idx <= 16;
 }
 
-sol::optional<character&> Chara::player()
+sol::optional<character*> Chara::player()
 {
     if(elona::cdata[0].state == 0) {
         return sol::nullopt;
     }
     else
     {
-        return elona::cdata[0];
+        return &elona::cdata[0];
     }
 }
 
 void Chara::mut_damage_hp(character& chara, int damage)
 {
     assert(damage > 0); // TODO does this need verification?
-    dmghp(chara.id, damage, -11); // TODO defaults to unseen hand
+    dmghp(chara.idx, damage, -11); // TODO defaults to unseen hand
 }
 
 void Chara::mut_damage_con(character& chara, status_ailment_t type, int power)
 {
     assert(power > 0); // TODO does this need verification?
-    dmgcon(chara.id, type, power);
+    dmgcon(chara.idx, type, power);
 }
 
 
@@ -348,7 +348,8 @@ namespace Item {
  * @treturn[1] LuaItem the created item stack
  * @treturn[2] nil
  */
-sol::optional<item&> create(int, const position_t&, int);
+sol::optional<item*> create(int, const position_t&, int);
+sol::optional<item*> create_xy(int, int, int, int);
 
 /***
  * Checks if an item has an enchantment.
@@ -360,11 +361,17 @@ sol::optional<item&> create(int, const position_t&, int);
 bool has_enchantment(const item&, int);
 }
 
-sol::optional<item&> Item::create(int id, const position_t& pos, int num)
+sol::optional<item*> Item::create(int id, const position_t& pos, int num)
 {
-    if(elona::itemcreate(-1, id, pos.x, pos.y, num) != 0)
+    return Item::create_xy(id, pos.x, pos.y, num);
+}
+
+sol::optional<item*> Item::create_xy(int id, int x, int y, int num)
+{
+    flt();
+    if(elona::itemcreate(-1, id, x, y, num) != 0)
     {
-        return inv[ci]; // TODO deglobalize ci
+        return &inv[ci]; // TODO deglobalize ci
     }
     else
     {
@@ -397,20 +404,50 @@ void GUI::txt(const std::string& str)
 }
 
 
+namespace Debug
+{
+
+void dump_characters();
+void dump_items();
+
+}
+
+void Debug::dump_characters()
+{
+    ELONA_LOG("===== Charas =====")
+    for (int cnt = 0; cnt < ELONA_MAX_CHARACTERS; ++cnt)
+    {
+        if(cdata[cnt].state != 0)
+            ELONA_LOG(cdata[cnt].idx << ") Name: " << name(cnt) << ", Pos: " << cdata[cnt].position);
+    }
+}
+
+void Debug::dump_items()
+{
+    ELONA_LOG("===== Items  =====")
+    for (const auto& cnt : items(-1))
+    {
+        if(inv[cnt].number != 0)
+            ELONA_LOG(inv[cnt].idx << ") Name: " << itemname(cnt) << ", Pos: " << inv[cnt].position
+<< ", Curse: " << static_cast<int>(inv[cnt].curse_state) << ", Ident: " << static_cast<int>(inv[cnt].identification_state) << ", Count: " << inv[cnt].count);
+    }
+}
+
+
 void init_api(std::unique_ptr<sol::state>& state)
 {
     state.get()->new_usertype<position_t>( "position",
                                          sol::constructors<position_t()>()
         );
     state.get()->new_usertype<character>( "character",
-                                        sol::constructors<character()>(),
                                         "damage_hp", &Chara::mut_damage_hp,
                                         "damage_con", &Chara::mut_damage_con,
                                         "idx", sol::readonly( &character::idx )
         );
     state.get()->new_usertype<item>( "item",
-                                        sol::constructors<item()>(),
                                      "curse_state", &item::curse_state,
+                                     "identify_state", &item::identification_state,
+                                     "count", &item::count,
                                      "idx", sol::readonly( &item::idx )
         );
 
@@ -428,7 +465,7 @@ void init_api(std::unique_ptr<sol::state>& state)
     Fov.set_function("you_see", Fov::you_see);
 
     sol::table Item = Elona.create_named("Item");
-    Item.set_function("create", Item::create);
+    Item.set_function("create", sol::overload(Item::create, Item::create_xy));
 
     sol::table Rand = Elona.create_named("Rand");
     Rand.set_function("rnd", Rand::rnd);
@@ -447,6 +484,10 @@ void init_api(std::unique_ptr<sol::state>& state)
     sol::table GUI = Elona.create_named("GUI");
     GUI.set_function("txt", GUI::txt);
 
+    sol::table Debug = Elona.create_named("Debug");
+    Debug.set_function("dump_characters", Debug::dump_characters);
+    Debug.set_function("dump_items", Debug::dump_items);
+
 
     // constants
     sol::table Defines = Elona.create_named("Defines");
@@ -457,8 +498,22 @@ void init_api(std::unique_ptr<sol::state>& state)
      * @section Enum
      */
     /***
+     * The identification state of an item.
+     * @table IdentifyState
+     */
+    Enums["IdentifyState"] = Defines.create_with(
+        // @type Unidentified
+        "Unidentified", identification_state_t::unidentified,
+        // @type Partly
+        "Partly", identification_state_t::partly_identified,
+        // @type Almost
+        "Almost", identification_state_t::almost_identified,
+        // @type Completely
+        "Completely", identification_state_t::completely_identified
+        );
+    /***
      * The curse state of an item.
-     * @classmod CurseState
+     * @table CurseState
      */
     Enums["CurseState"] = Defines.create_with(
         // @type Doomed
@@ -472,7 +527,7 @@ void init_api(std::unique_ptr<sol::state>& state)
         );
     /***
      * A status effect applicable to a character.
-     * @classmod StatusAilment
+     * @table StatusAilment
      */
     Enums["StatusAilment"] = Defines.create_with(
         // @type Blinded

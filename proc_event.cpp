@@ -10,6 +10,7 @@
 #include "event.hpp"
 #include "item.hpp"
 #include "itemgen.hpp"
+#include "lua.hpp"
 #include "map_cell.hpp"
 #include "mef.hpp"
 #include "random.hpp"
@@ -956,6 +957,9 @@ void proc_event()
             initlv = cdata[0].level;
             chara_create(-1, 215, cdata[0].position.x, cdata[0].position.y);
         }
+        break;
+    case 9999:
+        lua::run_file(filesystem::dir::script() / config::instance().startup_script);
         break;
     }
 }

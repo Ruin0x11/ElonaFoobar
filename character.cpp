@@ -1140,6 +1140,7 @@ int chara_create(int prm_756, int prm_757, int prm_758, int prm_759)
     chara_createhack = 0;
     if (stat == 1)
     {
+        cdata[rc].idx = rc;
         if (rc == 56)
         {
             cdata[rc].state = 0;

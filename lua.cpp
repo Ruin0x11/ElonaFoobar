@@ -1,5 +1,6 @@
 #include "lua.hpp"
 #include "elona.hpp"
+#include "filesystem.hpp"
 #include "log.hpp"
 #include "variables.hpp"
 #include <vector>
@@ -24,6 +25,11 @@ void reload()
 
     load_mod("core");
     txt("Reloaded core/init.lua. ");
+}
+
+void run_file(const fs::path& filepath)
+{
+    sol.get()->script_file(filepath.string());
 }
 
 void load_mod(const std::string& name)
