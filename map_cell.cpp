@@ -273,23 +273,32 @@ int cell_findspace(int prm_796, int prm_797, int prm_798)
     return f_at_m130;
 }
 
+static int _random_tile(elona_vector1<int> tile)
+{
+    return tile(0) + (rnd(tile(2)) == 0) * rnd(tile(1));
+}
+
 int cell_get_type(tile_type_t type)
 {
+    // TODO dedup from map_converttile?
+    elona_vector1<int> tile;
     switch(type)
     {
     case tile_type_t::normal:
-        return tile_default(0);
+        tile = tile_default;
     case tile_type_t::wall:
-        return tile_wall(0);
+        tile = tile_wall;
     case tile_type_t::tunnel:
-        return tile_tunnel(0);
+        tile = tile_tunnel;
     case tile_type_t::room:
-        return tile_room(0);
+        tile = tile_room;
     case tile_type_t::fog:
-        return tile_fog(0);
+        tile = tile_fog;
     default:
         assert(0);
     }
+
+    return _random_tile(tile);
 }
 
 } // namespace elona
