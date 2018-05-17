@@ -447,7 +447,6 @@ void init_api(std::unique_ptr<sol::state>& state)
     state.get()->new_usertype<item>( "item",
                                      "curse_state", &item::curse_state,
                                      "identify_state", &item::identification_state,
-                                     "count", &item::count,
                                      "idx", sol::readonly( &item::idx )
         );
 
