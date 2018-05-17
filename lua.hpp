@@ -22,6 +22,7 @@ void on_map_creation();
 void on_chara_creation(int id);
 void on_chara_removal(int id);
 void reload();
+void dump_state();
 
 }
 }

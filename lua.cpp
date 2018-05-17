@@ -246,6 +246,11 @@ void init_global(std::unique_ptr<sol::state>& state)
     Global.create_named("Init");
 }
 
+void dump_state()
+{
+    sol.get()->script("if Elona.Debug and Elona.Debug.inspect then Elona.Debug.inspect(Elona) end");
+}
+
 void init()
 {
     sol = std::make_unique<sol::state>();
@@ -265,6 +270,7 @@ void init()
     // for each other mod, load_mod()
     // after global prototype db is made, make it read-only
     // make stdlib table Elona read-only
+    dump_state();
 }
 
 } // namespace lua
