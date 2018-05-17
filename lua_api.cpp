@@ -655,7 +655,9 @@ void init_api(std::unique_ptr<sol::state>& state)
     Magic.set_function("cast", Magic::cast);
 
     sol::table Map = Elona.create_named("Map");
-    Map.set_function("valid", Map::valid);
+    Map.set_function("width", Map::width);
+    Map.set_function("height", Map::height);
+    Map.set_function("valid", sol::overload(Map::valid, Map::valid_xy));
     Map.set_function("can_access", sol::overload(Map::can_access, Map::can_access_xy));
     Map.set_function("bound_within", Map::bound_within);
     Map.set_function("random_pos", Map::random_pos);

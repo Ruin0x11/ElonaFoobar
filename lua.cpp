@@ -28,6 +28,9 @@ void report_error(sol::error err)
 void reload()
 {
     // TODO more sophisticated reloading
+    // This needs to handle what happens when state is already existing.
+    // It also needs to handle the startup script, if it's being used.
+    // It also needs to handle all initialization hooks.
     sol.get()->script("if Event then Event.clear_all() end");
 
     load_mod("core");
@@ -184,15 +187,15 @@ void initialize_mod_data_for_map(const std::string& mod_name, sol::table& data)
 // TODO mods_iterator
 
 // TODO just make it a callback?
-void on_map_creation()
+void on_map_loaded()
 {
     sol::table registry_data = (*sol.get())["Elona"]["Registry"]["Data"];
     for(const auto& pair : registry_data)
     {
         const std::string mod_name = pair.first.as<std::string>();
         initialize_mod_data_for_map(mod_name, registry_data);
-        //callback("map_created");
     }
+    callback("initialized_map");
 }
 
 // TODO just make it a callback?
@@ -213,7 +216,7 @@ void on_chara_creation(int chara_id)
     {
         const std::string mod_name = pair.first.as<std::string>();
         initialize_mod_data_for_chara(chara_id, mod_name, registry_data);
-        //callback("chara_created", {{"chara", chara_id}});
+        callback("chara_created", {{"chara", chara_id}});
     }
 }
 

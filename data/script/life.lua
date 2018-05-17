@@ -9,15 +9,15 @@ function my_map_init(w, h)
       grid[i] = {}
 
       for j = 1, h do
-         grid[i][j] = 0
+         grid[i][j] = Elona.Rand.rnd(2)
       end
    end
-   return {grid=grid}
+   return {grid=grid} -- Now you can use Storage.Map.grid
 end
 
 -- Appropriated from https://rosettacode.org/wiki/Conway%27s_Game_of_Life#Lua
 -- It's a bit messy.
-function evolve(grid)
+function evolve(cell)
    local m = #cell
    local cell2 = {}
    for i = 1, m do
@@ -45,6 +45,7 @@ function evolve(grid)
          if count == 3 then cell[i][j] = 1 end
       end
    end
+   return cell
 end
 
 function run_life()
@@ -56,8 +57,8 @@ function run_life()
             Map.set_tile(i, j, Enums.TileType.Wall)
             Map.set_tile_memory(i, j, Enums.TileType.Wall)
          else
-            Map.set_tile_memory(i, j, Enums.TileType.Normal)
-            Map.set_tile(i, j, Enums.TileType.Normal)
+            Map.set_tile_memory(i, j, Enums.TileType.Room)
+            Map.set_tile(i, j, Enums.TileType.Room)
          end
       end
    end
@@ -65,4 +66,5 @@ function run_life()
 end
 
 Elona.Registry.register_map_init(my_map_init)
-Event.register("all_turns_passed", run_life)
+Elona.Event.register(Elona.Defines.Events.initialized_map, run_life)
+Elona.Event.register(Elona.Defines.Events.all_turns_finished, run_life)

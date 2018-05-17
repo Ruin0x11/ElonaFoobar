@@ -12,6 +12,7 @@
 #include "item.hpp"
 #include "quest.hpp"
 #include "itemgen.hpp"
+#include "lua.hpp"
 #include "map.hpp"
 #include "map_cell.hpp"
 #include "mapgen.hpp"
@@ -2967,6 +2968,9 @@ label_1744_internal:
     label_1746();
     label_1439();
     update_scrolling_info();
+    
+    lua::on_map_loaded();
+
     if (mdata(6) == 3)
     {
         quest_refresh_list();

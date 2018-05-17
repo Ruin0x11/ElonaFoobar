@@ -39,6 +39,7 @@ void init_registry(std::unique_ptr<sol::state>& state)
     sol::table Registry = Elona.create_named("Registry");
     Registry.set_function("on_event", Registry::set_on_event);
     Registry.set_function("register_chara_init", Registry::register_chara_init);
+    Registry.set_function("register_map_init", Registry::register_map_init);
     Registry.create_named("Data");
     sol::table Inits = Registry.create_named("Inits");
     Inits.create_named("Chara");

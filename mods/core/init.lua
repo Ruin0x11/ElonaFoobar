@@ -1,7 +1,6 @@
 require "mods/core/setup"
-
-local Defines = require 'mods/core/defines'
-local Event = require 'mods/core/event'
+local Defines = Elona.Defines
+local Storage = Elona.Registry.Data["core"]
 
 function hoge()
    Elona.GUI.txt("hoge ")
@@ -25,19 +24,16 @@ local function my_movement_handler(args)
    local chara_idx = args.chara_idx
    Elona.log(Elona.Debug.inspect(Elona))
    Elona.log("It is " .. chara_idx)
-   local data = Elona.Registry.Data["core"].Chara[chara_idx]
-   Elona.Registry.Data["core"].Chara[chara_idx].steps = data.steps + 1
-   Elona.GUI.txt("Steps taken by " .. chara_idx .. ": " .. Elona.Registry.Data["core"].Chara[chara_idx].steps .. " ")
+   local data = Storage.Chara[chara_idx]
+   Storage.Chara[chara_idx].steps = data.steps + 1
+   Elona.GUI.txt("Steps taken by " .. chara_idx .. ": " .. Storage.Chara[chara_idx].steps .. " ")
 end
 
 local function my_character_init()
-  local defaults = {
-    steps = 0
-  }
-  return defaults
+  return {steps = 0} -- Storage.Chara[chara_idx].steps
 end
 
 Elona.Registry.register_chara_init(my_character_init)
-Event.register(Defines.Events.chara_moved, my_movement_handler)
-Event.register(Defines.Events.player_turn, hoge)
-Event.register(Defines.Events.player_turn, foo)
+Elona.Event.register(Defines.Events.chara_moved, my_movement_handler)
+Elona.Event.register(Defines.Events.player_turn, hoge)
+Elona.Event.register(Defines.Events.player_turn, foo)

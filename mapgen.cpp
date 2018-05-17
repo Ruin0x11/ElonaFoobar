@@ -1729,6 +1729,7 @@ void generate_debug_map()
     mdata(0) = 50; // width
     mdata(1) = 50; // height
     mdata(2) = 1; // world map or local
+    mdata(9) = 10000; // time passed per turn
     mdata(10) = mdata(0) * mdata(1) / 100;
     mdata(12) = 3; // tileset
     mdata(15) = 0;

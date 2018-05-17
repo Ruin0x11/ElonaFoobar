@@ -1,4 +1,4 @@
-Iter = {}
+local Iter = {}
 
 function Iter.rectangle_iter_step (size, pos)
    local old = pos
@@ -15,6 +15,9 @@ function Iter.rectangle_iter_step (size, pos)
 end
 
 function Iter.rectangle_iter (x, y, sx, sy)
+   if x >= sx or y >= sy then
+      error("Invalid parameters passed to Iter.rectangle_iter")
+   end
    return Iter.rectangle_iter_step, {sx=sx, sy=sy, x=x}, {x=x, y=y}
 end
 

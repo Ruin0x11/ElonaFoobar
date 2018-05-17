@@ -1,3 +1,5 @@
+require "mods/core/table"
+
 local function fail_if_missing(var, msg)
     if not var then
         error(msg or "Missing value", 3)
@@ -5,24 +7,15 @@ local function fail_if_missing(var, msg)
     return false
 end
 
-function table.find(tbl, func, ...)
-    for k, v in pairs(tbl) do
-        if func(v, k, ...) then
-            return v, k
-        end
-    end
-    return nil
-end
+local Event = { --luacheck: allow defined top
+    _registry = {},
+}
 
 local function is_valid_id(event_id)
     if not (type(event_id) == "string") then
         error("Invalid Event Id, Must be string. Passed in "..event_id, 3)
     end
 end
-
-Event = { --luacheck: allow defined top
-    _registry = {},
-}
 
 function Event.register(event_ids, handler)
     fail_if_missing(event_ids, "missing event_ids argument")
@@ -100,4 +93,4 @@ function Event.clear_all()
    end
 end
 
-return Event
+Elona.Event = Event

@@ -286,14 +286,19 @@ int cell_get_type(tile_type_t type)
     {
     case tile_type_t::normal:
         tile = tile_default;
+        break;
     case tile_type_t::wall:
         tile = tile_wall;
+        break;
     case tile_type_t::tunnel:
         tile = tile_tunnel;
+        break;
     case tile_type_t::room:
         tile = tile_room;
+        break;
     case tile_type_t::fog:
         tile = tile_fog;
+        break;
     default:
         assert(0);
     }

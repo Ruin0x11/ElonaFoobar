@@ -21757,7 +21757,6 @@ turn_result_t pass_turns(bool time)
         }
         result = pass_one_turn(time);
     }
-    lua::callback("all_turns_finished");
     return turn_result_t::all_turns_finished;
 }
 
@@ -22294,6 +22293,7 @@ turn_result_t pass_one_turn(bool label_2738_flg)
         }
         if (ct >= ELONA_MAX_CHARACTERS)
         {
+            lua::callback("all_turns_finished");
             return turn_result_t::all_turns_finished;
         }
     }
