@@ -18945,6 +18945,7 @@ turn_result_t do_bash()
 
 turn_result_t proc_movement_event()
 {
+    lua::callback("chara_moved"s, {{"chara", cc}});
     if (cdata[cc].is_ridden())
     {
         return turn_result_t::turn_end;
@@ -24126,6 +24127,7 @@ label_2747:
     }
     if (getkey(snail::key::f8))
     {
+        txtnew();
         lua::reload();
         txt(u8"Reloaded lua."s);
         return turn_result_t::pc_turn_user_error;

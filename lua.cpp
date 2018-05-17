@@ -21,9 +21,10 @@ std::unique_ptr<sol::state> sol;
 void reload()
 {
     // TODO more sophisticated reloading
-    (*sol.get())["Global"]["Callbacks"] = sol::nullopt;
+    sol.get()->script("if Event then Event.clear_all() end");
 
     load_mod("core");
+
     txt("Reloaded core/init.lua. ");
 }
 
@@ -65,6 +66,7 @@ void callback(const std::string& event_id, const std::map<std::string, int> args
     // for each mod, if there is an array of callbacks at the given name in its exports, run all of them in order
     // could use hashset to determine quickly which mods define callbacks
     // or, use a plain list with references to the exported callbacks of each mod
+    ELONA_LOG("Running callback " << event_id);
     sol::optional<sol::protected_function> func = (*sol.get())["Global"]["Callbacks"][event_id];
     if (func && func.value() != sol::nil)
     {
@@ -137,7 +139,7 @@ void initialize_mod_data_for_chara(int chara, const std::string& mod_name, sol::
         auto initial_mod_data = func.value()(chara); // TODO except player/allies/respawnable characters
         if (initial_mod_data.valid())
         {
-            data[key]["Chara"][chara] = initial_mod_data;
+            data[mod_name]["Chara"][chara] = initial_mod_data;
         }
         else
         {
@@ -156,13 +158,12 @@ void on_chara_creation(int chara_id)
     // for each mod, init its extra data for the character
     // for each mod, run chara creation callback
 
-    //callback("chara_created", {{"cc", id}});
-
     sol::table registry_data = (*sol.get())["Elona"]["Registry"]["Data"];
     for(const auto& pair : registry_data)
     {
         const std::string mod_name = pair.first.as<std::string>();
         initialize_mod_data_for_chara(chara_id, mod_name, registry_data);
+        //callback("chara_created", {{"chara", chara_id}});
     }
 }
 
@@ -177,9 +178,10 @@ void on_chara_removal(int id)
 {
     ELONA_LOG("Character removed. Here is the data that was lost.\n")
     sol::table data = (*sol.get())["Elona"]["Registry"]["Data"];
-    for(auto& obj : data)
+    for(auto& pair : data)
     {
-        data[obj]["Chara"][id] = sol::nullopt; // TODO except player/allies/respawnable characters
+        const std::string mod_name = pair.first.as<std::string>();
+        data[mod_name]["Chara"][id] = sol::nullopt; // TODO except player/allies/respawnable characters
     }
 
     // for each mod, invalidate global chara state

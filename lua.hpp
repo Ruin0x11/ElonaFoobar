@@ -13,6 +13,7 @@ extern std::unique_ptr<sol::state> sol;
 void init();
 void init_api(std::unique_ptr<sol::state>&);
 void init_registry(std::unique_ptr<sol::state>&);
+void init_global(std::unique_ptr<sol::state>&);
 void run_file(const fs::path&);
 void callback(const std::string&);
 void callback(const std::string&, const std::map<std::string, int>);

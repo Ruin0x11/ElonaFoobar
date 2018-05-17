@@ -22,7 +22,7 @@ void Registry::set_on_event(const std::string& event_id, const sol::function& ca
 
 void Registry::register_chara_init(const sol::function& func)
 {
-    (*sol.get())["Global"]["Init"] = func;
+    (*sol.get())["Global"]["Init"] = [](int) { ELONA_LOG("asdf") };
 }
 
 void init_registry(std::unique_ptr<sol::state>& state)

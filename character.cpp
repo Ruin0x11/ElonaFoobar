@@ -13,6 +13,7 @@
 #include "i18n.hpp"
 #include "item.hpp"
 #include "item_db.hpp"
+#include "lua.hpp"
 #include "map_cell.hpp"
 #include "quest.hpp"
 #include "range.hpp"
@@ -1141,6 +1142,7 @@ int chara_create(int prm_756, int prm_757, int prm_758, int prm_759)
     if (stat == 1)
     {
         cdata[rc].idx = rc;
+        lua::on_chara_creation(rc);
         if (rc == 56)
         {
             cdata[rc].state = 0;
@@ -1857,6 +1859,7 @@ void chara_vanquish(int cc)
     }
     cdata[cc].state = 0;
     cdata[cc].character_role = 0;
+    lua::on_chara_removal(cc);
     quest_check();
 }
 
@@ -1936,18 +1939,19 @@ int chara_copy(int prm_848)
 }
 
 
-void chara_delete(int prm_783)
+void chara_delete(int cc)
 {
-    for (const auto& cnt : items(prm_783))
+    for (const auto& cnt : items(cc))
     {
         inv[cnt].number = 0;
     }
     for (int cnt = 0; cnt < 10; ++cnt)
     {
-        cdatan(cnt, prm_783) = "";
+        cdatan(cnt, cc) = "";
     }
-    sdata.clear(prm_783);
-    cdata(prm_783).clear();
+    sdata.clear(cc);
+    cdata(cc).clear();
+    lua::on_chara_removal(cc);
     return;
 }
 
