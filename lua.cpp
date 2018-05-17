@@ -1,5 +1,6 @@
 #include "lua.hpp"
 #include "elona.hpp"
+#include "character.hpp"
 #include "filesystem.hpp"
 #include "log.hpp"
 #include "variables.hpp"
@@ -121,11 +122,6 @@ void callback(const std::string& event_id, const std::map<std::string, int> args
 // }
 //
 
-const sol::optional<sol::protected_function>& get_character_init_callback()
-{
-    return (*sol.get())["Global"]["Init"];
-}
-
 void report_error(sol::error err)
 {
     std::string what = err.what();
@@ -134,29 +130,77 @@ void report_error(sol::error err)
 
 void initialize_mod_data_for_chara(int chara, const std::string& mod_name, sol::table& data)
 {
-    sol::optional<sol::protected_function> func = get_character_init_callback();
-    if(func && func.value() != sol::nil) {
-        auto initial_mod_data = func.value()(chara); // TODO except player/allies/respawnable characters
-        if (initial_mod_data.valid())
-        {
-            data[mod_name]["Chara"][chara] = initial_mod_data;
+    sol::table inits = (*sol.get())["Registry"]["Inits"]["Chara"];
+
+    for(const auto& pair : inits)
+    {
+        auto func = pair.second.as<sol::protected_function>();
+        if(func && func != sol::nil) {
+            auto initial_mod_data = func(chara); // TODO except player/allies/respawnable characters
+            if (initial_mod_data.valid())
+            {
+                data[mod_name]["Chara"][chara] = initial_mod_data;
+            }
+            else
+            {
+                sol::error error = initial_mod_data;
+                report_error(error);
+            }
         }
-        else
-        {
-            sol::error error = initial_mod_data;
-            report_error(error);
+    }
+}
+
+
+void initialize_mod_data_for_map(const std::string& mod_name, sol::table& data)
+{
+    sol::table inits = (*sol.get())["Registry"]["Inits"]["Map"];
+
+    for(const auto& pair : inits)
+    {
+        auto func = pair.second.as<sol::protected_function>();
+        if(func && func != sol::nil) {
+            int width = mdata(0);
+            int height = mdata(1);
+            auto initial_mod_data = func(width, height);
+            if (initial_mod_data.valid())
+            {
+                data[mod_name]["Map"] = initial_mod_data;
+            }
+            else
+            {
+                sol::error error = initial_mod_data;
+                report_error(error);
+            }
         }
     }
 }
 
 // TODO mods_iterator
 
+// TODO just make it a callback?
+void on_map_creation()
+{
+    sol::table registry_data = (*sol.get())["Elona"]["Registry"]["Data"];
+    for(const auto& pair : registry_data)
+    {
+        const std::string mod_name = pair.first.as<std::string>();
+        initialize_mod_data_for_map(mod_name, registry_data);
+        //callback("map_created");
+    }
+}
+
+// TODO just make it a callback?
+// TODO use character&, not id
 void on_chara_creation(int chara_id)
 {
     // TODO handle deserialization separately from creation from scratch
     // TODO only handle deserialization for characters that actually exist
     // for each mod, init its extra data for the character
     // for each mod, run chara creation callback
+    if(elona::cdata[chara_id].state == 0)
+    {
+        return;
+    }
 
     sol::table registry_data = (*sol.get())["Elona"]["Registry"]["Data"];
     for(const auto& pair : registry_data)
@@ -197,7 +241,7 @@ void on_chara_removal(int id)
 
 void init_global(std::unique_ptr<sol::state>& state)
 {
-    sol::table Global = sol.get()->create_named_table("Global");
+    sol::table Global = state.get()->create_named_table("Global");
     Global.create_named("Callbacks");
     Global.create_named("Init");
 }

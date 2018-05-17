@@ -445,7 +445,7 @@ void fmode_7_8(bool read)
             if (fs::exists(filepath))
             {
                 load(filepath, cdata, 0, ELONA_MAX_PARTY_CHARACTERS);
-                // TODO handle separately
+                // TODO handle separately from chara creation
                 for (int chara = 0; chara < ELONA_MAX_PARTY_CHARACTERS; chara++) {
                     lua::on_chara_creation(chara);
                 }

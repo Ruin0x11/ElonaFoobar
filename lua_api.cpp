@@ -192,12 +192,27 @@ namespace Map {
  * @submodule Map
  */
 /***
+ * Returns the current map's width. This is only valid until the map changes.
+ * @function width
+ * @treturn num the current map's width in tiles
+ */
+int width();
+
+/***
+ * Returns the current map's height. This is only valid until the map changes.
+ * @function height
+ * @treturn num the current map's height in tiles
+ */
+int height();
+
+/***
  * Checks if a position is inside the map.
  * @function valid
  * @tparam LuaPosition (const) the map position
  * @treturn bool true if the position is inside the map.
  */
 bool valid(const position_t&);
+bool valid_xy(int, int);
 
 /***
  * Checks if a position is accessable by walking.
@@ -206,6 +221,7 @@ bool valid(const position_t&);
  * @treturn bool true if the position is accessable by walking
  */
 bool can_access(const position_t&);
+bool can_access_xy(int, int);
 
 /***
  * Given a position, returns a position that is bounded within the current map.
@@ -229,6 +245,8 @@ position_t random_pos();
  * @tparam TileKind (const) the tile kind to set
  */
 void set_tile(const position_t&, tile_type_t);
+void set_tile_xy(int, int, tile_type_t);
+
 /***
  * Sets the player's memory of a tile position to the given tile kind.
  * @function set_tile_memory
@@ -236,21 +254,42 @@ void set_tile(const position_t&, tile_type_t);
  * @tparam TileKind (const) the tile kind to set
  */
 void set_tile_memory(const position_t&, tile_type_t);
+void set_tile_memory_xy(int, int, tile_type_t);
+}
+
+int Map::width()
+{
+    return mdata(0);
+}
+
+int Map::height()
+{
+    return mdata(1);
 }
 
 bool Map::valid(const position_t& pos)
 {
-    if (x < 0 || y < 0 || x >= mdata(0) || y >= mdata(1))
+    return Map::valid_xy(pos.x, pos.y);
+}
+
+bool Map::valid_xy(int x, int y)
+{
+    if (x < 0 || y < 0 || x >= Map::width() || y >= Map::height())
     {
         return false;
     }
 
-    return elona::map(pos.x, pos.y, 0) != 0;
+    return elona::map(x, y, 0) != 0;
 }
 
 bool Map::can_access(const position_t& pos)
 {
-    elona::cell_check(pos.x, pos.y);
+    return Map::can_access_xy(pos.x, pos.y);
+}
+
+bool Map::can_access_xy(int x, int y)
+{
+    elona::cell_check(x, y);
     return cellaccess != 0;
 }
 
@@ -278,22 +317,32 @@ position_t Map::random_pos()
 
 void Map::set_tile(const position_t& pos, tile_type_t type)
 {
-    if(!Map::valid(pos))
+    Map::set_tile_xy(pos.x, pos.y, type);
+}
+
+void Map::set_tile_xy(int x, int y, tile_type_t type)
+{
+    if(!Map::valid_xy(x, y))
     {
         return;
     }
 
-    elona::map(pos.x, pos.y, 0) = elona::cell_get_type(type);
+    elona::map(x, y, 0) = elona::cell_get_type(type);
 }
 
 void Map::set_tile_memory(const position_t& pos, tile_type_t type)
 {
-    if(!Map::valid(pos))
+    Map::set_tile_memory_xy(pos.x, pos.y, type);
+}
+
+void Map::set_tile_memory_xy(int x, int y, tile_type_t type)
+{
+    if(!Map::valid_xy(x, y))
     {
         return;
     }
 
-    elona::map(pos.x, pos.y, 2) = elona::cell_get_type(type);
+    elona::map(x, y, 2) = elona::cell_get_type(type);
 }
 
 
@@ -382,13 +431,13 @@ namespace Item {
 /***
  * Attempts to create an item of the given quantity at a position. Returns the item stack if it was created, nil otherwise.
  * @function create
- * @tparam id the item prototype id
  * @tparam LuaPosition (const) position to create the item at
+ * @tparam id the item prototype id
  * @tparam num number of items to create
  * @treturn[1] LuaItem the created item stack
  * @treturn[2] nil
  */
-sol::optional<item*> create(int, const position_t&, int);
+sol::optional<item*> create(const position_t&, int, int);
 sol::optional<item*> create_xy(int, int, int, int);
 
 /***
@@ -401,12 +450,12 @@ sol::optional<item*> create_xy(int, int, int, int);
 bool has_enchantment(const item&, int);
 }
 
-sol::optional<item*> Item::create(int id, const position_t& pos, int num)
+sol::optional<item*> Item::create(const position_t& pos, int id, int num)
 {
-    return Item::create_xy(id, pos.x, pos.y, num);
+    return Item::create_xy(pos.x, pos.y, id, num);
 }
 
-sol::optional<item*> Item::create_xy(int id, int x, int y, int num)
+sol::optional<item*> Item::create_xy(int x, int y, int id, int num)
 {
     elona::flt();
     if(elona::itemcreate(-1, id, x, y, num) != 0)
@@ -607,11 +656,11 @@ void init_api(std::unique_ptr<sol::state>& state)
 
     sol::table Map = Elona.create_named("Map");
     Map.set_function("valid", Map::valid);
-    Map.set_function("can_access", Map::can_access);
+    Map.set_function("can_access", sol::overload(Map::can_access, Map::can_access_xy));
     Map.set_function("bound_within", Map::bound_within);
     Map.set_function("random_pos", Map::random_pos);
-    Map.set_function("set_tile", Map::set_tile);
-    Map.set_function("set_tile_memory", Map::set_tile_memory);
+    Map.set_function("set_tile", sol::overload(Map::set_tile, Map::set_tile_xy));
+    Map.set_function("set_tile_memory", sol::overload(Map::set_tile_memory, Map::set_tile_memory_xy));
 
     sol::table GUI = Elona.create_named("GUI");
     GUI.set_function("txt", GUI::txt);

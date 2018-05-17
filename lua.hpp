@@ -18,6 +18,7 @@ void run_file(const fs::path&);
 void callback(const std::string&);
 void callback(const std::string&, const std::map<std::string, int>);
 void load_mod(const std::string&);
+void on_map_creation();
 void on_chara_creation(int id);
 void on_chara_removal(int id);
 void reload();

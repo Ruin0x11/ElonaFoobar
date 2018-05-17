@@ -1,3 +1,5 @@
+require "mods/core/setup.lua"
+
 local Defines = require 'mods/core/defines'
 local Event = require 'mods/core/event'
 local Storage = Elona.Registry.Data["core"]

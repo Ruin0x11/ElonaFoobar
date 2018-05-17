@@ -9,6 +9,7 @@ namespace lua
 namespace Registry {
 void set_on_event(const std::string&, const sol::function&);
 void register_chara_init(const sol::function&);
+void register_map_init(const sol::function&);
 }
 
 
@@ -22,7 +23,14 @@ void Registry::set_on_event(const std::string& event_id, const sol::function& ca
 
 void Registry::register_chara_init(const sol::function& func)
 {
-    (*sol.get())["Global"]["Init"] = [](int) { ELONA_LOG("asdf") };
+    sol::table inits = (*sol.get())["Registry"]["Inits"]["Chara"];
+    inits.add(func);
+}
+
+void Registry::register_map_init(const sol::function& func)
+{
+    sol::table inits = (*sol.get())["Registry"]["Inits"]["Map"];
+    inits.add(func);
 }
 
 void init_registry(std::unique_ptr<sol::state>& state)
@@ -32,6 +40,9 @@ void init_registry(std::unique_ptr<sol::state>& state)
     Registry.set_function("on_event", Registry::set_on_event);
     Registry.set_function("register_chara_init", Registry::register_chara_init);
     Registry.create_named("Data");
+    sol::table Inits = Registry.create_named("Inits");
+    Inits.create_named("Chara");
+    Inits.create_named("Map");
 }
 
 } // namespace lua
