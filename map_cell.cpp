@@ -273,4 +273,23 @@ int cell_findspace(int prm_796, int prm_797, int prm_798)
     return f_at_m130;
 }
 
+int cell_get_type(tile_type_t type)
+{
+    switch(type)
+    {
+    case tile_type_t::normal:
+        return tile_default(0);
+    case tile_type_t::wall:
+        return tile_wall(0);
+    case tile_type_t::tunnel:
+        return tile_tunnel(0);
+    case tile_type_t::room:
+        return tile_room(0);
+    case tile_type_t::fog:
+        return tile_fog(0);
+    default:
+        assert(0);
+    }
+}
+
 } // namespace elona

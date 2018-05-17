@@ -109,6 +109,7 @@ ELONA_EXTERN(elona_vector1<int> fsetweapon);
 ELONA_EXTERN(elona_vector1<int> fsetrewardsupply);
 
 // map.cpp/mapgen.cpp
+ELONA_EXTERN(elona_vector1<int> tile_room);
 ELONA_EXTERN(int tile_trap);
 ELONA_EXTERN(int tile_doorclosed4);
 ELONA_EXTERN(int tile_dooropen);

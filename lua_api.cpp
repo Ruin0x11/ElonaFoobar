@@ -221,6 +221,21 @@ position_t bound_within(const position_t&);
  * @treturn LuaPosition a random position
  */
 position_t random_pos();
+
+/***
+ * Sets a tile of the current map. Only checks if the position is in bounds.
+ * @function set_tile
+ * @tparam LuaPosition (const) the map position
+ * @tparam TileKind (const) the tile kind to set
+ */
+void set_tile(const position_t&, tile_type_t);
+/***
+ * Sets the player's memory of a tile position to the given tile kind.
+ * @function set_tile_memory
+ * @tparam LuaPosition (const) the map position
+ * @tparam TileKind (const) the tile kind to set
+ */
+void set_tile_memory(const position_t&, tile_type_t);
 }
 
 int Map::valid(const position_t& pos)
@@ -254,6 +269,26 @@ position_t Map::random_pos()
             rnd(mdata(0) - 1),
                 rnd(mdata(1) - 1)
                 });
+}
+
+void Map::set_tile(const position_t& pos, tile_type_t type)
+{
+    if(!Map::valid(pos))
+    {
+        return;
+    }
+
+    map(pos.x, pos.y, 0) = cell_get_type(type);
+}
+
+void Map::set_tile_memory(const position_t& pos, tile_type_t type)
+{
+    if(!Map::valid(pos))
+    {
+        return;
+    }
+
+    map(pos.x, pos.y, 2) = cell_get_type(type);
 }
 
 
