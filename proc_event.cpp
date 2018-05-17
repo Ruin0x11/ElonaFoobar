@@ -959,7 +959,7 @@ void proc_event()
         }
         break;
     case 9999:
-        lua::run_file(filesystem::dir::script() / config::instance().startup_script);
+        lua::run_file(filesystem::dir::data() / "script"s / config::instance().startup_script);
         break;
     }
 }

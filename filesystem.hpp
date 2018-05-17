@@ -29,7 +29,6 @@ fs::path graphic();
 fs::path map();
 fs::path save();
 fs::path save(const std::string& player_id);
-fs::path script();
 fs::path sound();
 fs::path tmp();
 fs::path user();
