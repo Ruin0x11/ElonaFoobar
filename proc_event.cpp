@@ -959,13 +959,9 @@ void proc_event()
         }
         break;
     case 9999:
-        lua::run_file(filesystem::dir::data() / "script"s / config::instance().startup_script);
-        // The startup script is special since everything is deferred until the map loads.
-        // So, re-run the map/character initialization things to pick up new init hooks loaded by the startup script.
-        // The following shouldn't cause any significant changes in behavior.
-        lua::on_map_loaded();
-        for (int chara = 0; chara < ELONA_MAX_CHARACTERS; chara++) {
-            lua::on_chara_creation(chara);
+        if(config::instance().startup_script != ""s)
+        {
+            lua::run_startup_script(config::instance().startup_script);
         }
         break;
     }

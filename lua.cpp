@@ -1,5 +1,6 @@
 #include "lua.hpp"
 #include "elona.hpp"
+#include "config.hpp"
 #include "character.hpp"
 #include "filesystem.hpp"
 #include "log.hpp"
@@ -25,15 +26,35 @@ void report_error(sol::error err)
 	ELONA_LOG(what);
 }
 
+void run_startup_script(const std::string& startup_script)
+{
+    run_file(filesystem::dir::data() / "script"s / startup_script);
+    // The startup script is special since everything is deferred until the map loads.
+    // So, re-run the map/character initialization things to pick up new init hooks loaded by the startup script.
+    // The following shouldn't cause any significant changes in behavior.
+    on_map_loaded();
+    for (int chara_id = 0; chara_id < ELONA_MAX_CHARACTERS; chara_id++) {
+        if(elona::cdata[chara_id].state != 0)
+        {
+            on_chara_creation(chara_id);
+        }
+    }
+}
+
 void reload()
 {
     // TODO more sophisticated reloading
     // This needs to handle what happens when state is already existing.
     // It also needs to handle the startup script, if it's being used.
     // It also needs to handle all initialization hooks.
-    sol.get()->script("if Event then Event.clear_all() end");
+    sol.get()->safe_script("if Elona.Event then Elona.Event.clear_all() end");
+    clear_init_hooks(sol);
 
     load_mod("core");
+    if(config::instance().startup_script != ""s)
+    {
+        run_startup_script(config::instance().startup_script);
+    }
 
     txt("Reloaded core/init.lua. ");
 }
@@ -206,11 +227,6 @@ void on_chara_creation(int chara_id)
     // TODO only handle deserialization for characters that actually exist
     // for each mod, init its extra data for the character
     // for each mod, run chara creation callback
-    if(elona::cdata[chara_id].state == 0)
-    {
-        return;
-    }
-
     sol::table registry_data = (*sol.get())["Elona"]["Registry"]["Data"];
     for(const auto& pair : registry_data)
     {

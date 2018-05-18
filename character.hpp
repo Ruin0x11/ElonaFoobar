@@ -337,6 +337,7 @@ struct character
     template <typename Archive>
     void serialize(Archive& ar)
     {
+        ar(idx);
         ar(state);
         ar(position);
         ar(next_position);

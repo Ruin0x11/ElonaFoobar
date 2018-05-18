@@ -50,15 +50,14 @@ end
 
 function run_life()
    local grid = Storage.Map.grid
-   for i = 1, Map.width() do
-      for j = 1, Map.height() do
-         if Storage.Map.grid[i][j] == 1 and Map.can_access(i, j) then
-            -- TODO: replace with items?
-            Map.set_tile(i, j, Enums.TileType.Wall)
-            Map.set_tile_memory(i, j, Enums.TileType.Wall)
+   for y = 1, Map.width() do
+      for x = 1, Map.height() do
+         if Storage.Map.grid[x][y] == 1 and Map.can_access(x, y) then
+            Map.set_tile(x, y, Enums.TileType.Wall)
+            Map.set_tile_memory(x, y, Enums.TileType.Wall)
          else
-            Map.set_tile_memory(i, j, Enums.TileType.Room)
-            Map.set_tile(i, j, Enums.TileType.Room)
+            Map.set_tile(x, y, Enums.TileType.Room)
+            Map.set_tile_memory(x, y, Enums.TileType.Room)
          end
       end
    end

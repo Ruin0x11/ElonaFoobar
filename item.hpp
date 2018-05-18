@@ -83,6 +83,7 @@ struct item
     template <typename Archive>
     void serialize(Archive& ar)
     {
+        ar(idx);
         ar(number);
         ar(value);
         ar(image);

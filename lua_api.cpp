@@ -54,6 +54,18 @@ bool is_ally(const character&);
 sol::optional<character*> player();
 
 /***
+ * Attempts to create a character at a given position. Returns the character if it was created, nil otherwise.
+ * @function create
+ * @tparam LuaPosition (const) position to create the character at
+ * @tparam id the character prototype id
+ * @treturn[1] LuaCharacter the created character
+ * @treturn[2] nil
+ */
+sol::optional<character*> create(const position_t&, int);
+sol::optional<character*> create_xy(int, int, int);
+
+
+/***
  * @classmod LuaCharacter
  */
 /***
@@ -102,16 +114,35 @@ sol::optional<character*> Chara::player()
     }
 }
 
-void Chara::mut_damage_hp(character& chara, int damage)
+sol::optional<character*> Chara::create(const position_t& pos, int id)
 {
-    assert(damage > 0); // TODO does this need verification?
-    elona::dmghp(chara.idx, damage, -11); // TODO defaults to unseen hand
+    return Chara::create_xy(pos.x, pos.y, id);
 }
 
-void Chara::mut_damage_con(character& chara, status_ailment_t type, int power)
+sol::optional<character*> Chara::create_xy(int x, int y, int id)
+{
+    elona::flt();
+    if(elona::chara_create(-1, id, x, y) != 0)
+    {
+        return &elona::cdata[elona::rc];
+    }
+    else
+    {
+        return sol::nullopt;
+    }
+}
+
+
+void Chara::mut_damage_hp(character& self, int damage)
+{
+    assert(damage > 0); // TODO does this need verification?
+    elona::dmghp(self.idx, damage, -11); // TODO defaults to unseen hand
+}
+
+void Chara::mut_damage_con(character& self, status_ailment_t type, int power)
 {
     assert(power > 0); // TODO does this need verification?
-    elona::dmgcon(chara.idx, type, power);
+    elona::dmgcon(self.idx, type, power);
 }
 
 
@@ -460,7 +491,7 @@ sol::optional<item*> Item::create_xy(int x, int y, int id, int num)
     elona::flt();
     if(elona::itemcreate(-1, id, x, y, num) != 0)
     {
-        return &elona::inv[ci]; // TODO deglobalize ci
+        return &elona::inv[elona::ci]; // TODO deglobalize ci
     }
     else
     {
@@ -616,28 +647,37 @@ void init_enums(std::unique_ptr<sol::state>& state)
 
 void init_api(std::unique_ptr<sol::state>& state)
 {
-    state.get()->new_usertype<position_t>( "position",
+    state.get()->new_usertype<position_t>( "LuaPosition",
                                          sol::constructors<position_t()>()
         );
-    state.get()->new_usertype<character>( "character",
+    state.get()->new_usertype<character>( "LuaCharacter",
                                         "damage_hp", &Chara::mut_damage_hp,
                                         "damage_con", &Chara::mut_damage_con,
-                                        "idx", sol::readonly( &character::idx )
+                                        "idx", sol::readonly(&character::idx),
+                                        "hp", sol::readonly(&character::hp),
+                                        "max_hp", sol::readonly(&character::max_hp),
+                                        "mp", sol::readonly(&character::mp),
+                                        "max_mp", sol::readonly( &character::max_mp),
+                                        "sp", sol::readonly(&character::sp),
+                                        "max_sp", sol::readonly( &character::max_sp),
+                                        "shop_rank", &character::shop_rank,
+                                        "character_role", &character::character_role
         );
-    state.get()->new_usertype<item>( "item",
+    state.get()->new_usertype<item>( "LuaItem",
                                      "curse_state", &item::curse_state,
                                      "identify_state", &item::identification_state,
-                                     "idx", sol::readonly( &item::idx )
+                                     "idx", sol::readonly(&item::idx)
         );
 
     sol::table Elona = state.get()->create_named_table("Elona");
-    Elona.set_function("log", [](const std::string& msg) { elona::log::detail::out << msg << std::endl; } );
+    Elona.set_function("log", [](const std::string& msg) { elona::log::detail::out << msg << std::endl; });
 
     sol::table Chara = Elona.create_named("Chara");
     Chara.set_function("is_alive", Chara::is_alive);
     Chara.set_function("is_player", Chara::is_player);
     Chara.set_function("is_ally", Chara::is_ally);
     Chara.set_function("player", Chara::player);
+    Chara.set_function("create", sol::overload(Chara::create, Chara::create_xy));
 
     sol::table Fov = Elona.create_named("Fov");
     Fov.set_function("los", Fov::los);

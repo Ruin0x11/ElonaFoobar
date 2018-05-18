@@ -23,7 +23,7 @@ void Registry::set_on_event(const std::string& event_id, const sol::function& ca
 
 void Registry::register_chara_init(const sol::function& func)
 {
-	sol::table inits = (*sol.get())["Elona"]["Registry"]["Inits"]["Chara"];
+    sol::table inits = (*sol.get())["Elona"]["Registry"]["Inits"]["Chara"];
     inits.add(func);
 }
 
@@ -41,9 +41,21 @@ void init_registry(std::unique_ptr<sol::state>& state)
     Registry.set_function("register_chara_init", Registry::register_chara_init);
     Registry.set_function("register_map_init", Registry::register_map_init);
     Registry.create_named("Data");
+    init_init_hooks(state);
+}
+
+void init_init_hooks(std::unique_ptr<sol::state>& state)
+{
+    sol::table Registry = (*state.get())["Elona"]["Registry"];
     sol::table Inits = Registry.create_named("Inits");
     Inits.create_named("Chara");
     Inits.create_named("Map");
+}
+
+void clear_init_hooks(std::unique_ptr<sol::state>& state)
+{
+    (*state.get())["Elona"]["Registry"]["Inits"] = sol::nil;
+    init_init_hooks(state);
 }
 
 } // namespace lua
