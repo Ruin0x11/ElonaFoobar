@@ -47,6 +47,7 @@ public:
     int netwish;
     int noadebug;
     int objectshadow;
+    int restock_interval;
     int runscroll;
     int runwait;
     int scroll;

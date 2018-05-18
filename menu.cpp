@@ -4683,9 +4683,7 @@ label_1970_internal:
                 cs == cnt,
                 listn(0, p),
                 wx + 114,
-                wy + 66 + cnt * 19 - 1,
-                0,
-                -1);
+                wy + 66 + cnt * 19 - 1);
             continue;
         }
         if (list(1, p) != 99999)
@@ -4719,7 +4717,7 @@ label_1970_internal:
             x = 70;
         }
         gcopy(3, 384 + traitref * 24, 336, 24, 24);
-        cs_list(cs == cnt, listn(0, p), wx + x, wy + 66 + cnt * 19 - 1, 0, -1);
+        cs_list(cs == cnt, listn(0, p), wx + x, wy + 66 + cnt * 19 - 1);
         if (list(1, p) < 10000)
         {
             pos(wx + 270, wy + 66 + cnt * 19 + 2);
@@ -4903,14 +4901,13 @@ label_1970_internal:
 
 menu_result menu_journal()
 {
+
     menu_result result = { false, false, turn_result_t::none };
     curmenu = 1;
-    listmax = 0;
     page = 99;
     pagesize = 40;
     cs = 0;
     cc = 0;
-    listmax = noteinfo();
     keyrange = 0;
     key_list(0) = key_enter;
     buff = newsbuff;
@@ -7018,7 +7015,7 @@ label_1961_internal:
             {
                 if (adata(16, gdata_current_map) == 102)
                 {
-                    s = u8"   "s + sdata(17, i) + u8" / " + s + sdata(156, i);
+                    s = u8"   "s + sdata(17, i) + u8" / " + sdata(156, i);
                 }
                 if (adata(16, gdata_current_map) == 31)
                 {

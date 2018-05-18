@@ -404,7 +404,6 @@ void map_placearena(int prm_939, int prm_940)
 {
     while (1)
     {
-        await();
         x = rnd(7) + 5;
         y = rnd(6) + 6;
         if (prm_940 == 0)
