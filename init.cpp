@@ -29,6 +29,7 @@
 #include "main.hpp"
 #include "main_menu.hpp"
 #include "mef.hpp"
+#include "network.hpp"
 #include "race.hpp"
 #include "range.hpp"
 #include "audio.hpp"
@@ -423,7 +424,6 @@ void initialize_elona()
     DIM2(trate, 8);
     SDIM1(filtern);
     SDIM1(filter_creature);
-    SDIM2(netbuf, 20000);
     initialize_character_filters();
     initialize_item_chip();
     initialize_building_daga();

@@ -25,6 +25,7 @@
 #include "map_cell.hpp"
 #include "mef.hpp"
 #include "menu.hpp"
+#include "network.hpp"
 #include "quest.hpp"
 #include "shop.hpp"
 #include "snail/application.hpp"

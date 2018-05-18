@@ -103,6 +103,7 @@ set(CORE_SOURCES
     mef.cpp
     menu.cpp
     message.cpp
+    network.cpp
     proc_event.cpp
     quest.cpp
     race.cpp
@@ -118,6 +119,7 @@ set(CORE_SOURCES
     tcg.cpp
     text.cpp
     trait.cpp
+    turn_sequence.cpp
     ui.cpp
     variables.cpp
     wish.cpp
