@@ -26,6 +26,14 @@ h1, h2, h3, h4, h5, h6 {
 table,thead{text-align:left}
 table,th,td{padding:2px}
 
+/* icon */
+
+.icon {float: left;
+       position: absolute;
+       top: 0;
+       padding-left: 15px;
+       padding-top: 15px;
+}
 
 /* sidebar */
 
@@ -91,7 +99,7 @@ table.module_list td {
 table.module_list td.name {
     vertical-align: top;
     min-width: 125px;
-    background-color: #0D0D0D;
+    background-color: rgba(150,154,179,.3);
 }
 
 table.module_list td.summary {vertical-align: top}
@@ -237,7 +245,7 @@ a.fragment-hashtag:hover{color:#1FA2D6}
         white-space: nowrap;
     }
     table.function_list td.name {
-        background-color: #0D0D0D;
+        background-color: rgba(150,154,179,.3);
         vertical-align: top;
         white-space: normal;
     }

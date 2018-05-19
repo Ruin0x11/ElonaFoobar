@@ -33,6 +33,14 @@
     <div class="uk-container uk-container-center">
     <div class="uk-grid uk-margin-top">
 
+> if not ldoc.single then
+> if module then
+    <img src="../red_putit.png" alt="elomod" class="icon">
+> else
+    <img src="red_putit.png" alt="elomod" class="icon">
+> end
+> end
+
     <!-- sidebar start -->
     <aside class="uk-width-medium-1-5 uk-row-first">
     <div id="sidebar" class="uk-panel">
@@ -52,9 +60,9 @@
 
 > if not ldoc.single then
 > if module then
-    <a href="../$(ldoc.output).html"><h1>$(ldoc.project)</h1></a>
+    <a href="../$(ldoc.output).html"><h1 style="padding-top: 8px">$(ldoc.project)</h1></a>
 > else
-    <a href="$(ldoc.output).html"><h1>$(ldoc.project)</h1></a>
+    <a href="$(ldoc.output).html"><h1 style="padding-top: 8px">$(ldoc.project)</h1></a>
 > end
 > end
 

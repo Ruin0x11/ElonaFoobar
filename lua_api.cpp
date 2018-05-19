@@ -404,7 +404,9 @@ void init_enums(std::unique_ptr<sol::state>& state)
 void init_api(std::unique_ptr<sol::state>& state)
 {
     state.get()->new_usertype<position_t>( "LuaPosition",
-                                         sol::constructors<position_t()>()
+                                           sol::constructors<position_t()>(),
+                                           "x", &position::x,
+                                           "y", &position::y,
         );
     state.get()->new_usertype<character>( "LuaCharacter",
                                         "damage_hp", &LuaCharacter::mut_damage_hp,

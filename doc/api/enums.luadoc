@@ -3,6 +3,7 @@
 module "Defines.Enums"
 
 --- The identification state of an item.
+-- @enum IdentifyState
 -- @usage local item = Item.create(792, 10, 10, 3)
 --item.identify_state = Enums.IdentifyState.Completely
 -- @tfield Defines.Enums.IdentifyState Unidentified
@@ -12,6 +13,7 @@ module "Defines.Enums"
 IdentifyState = {}
 
 --- The curse state of an item.
+-- @enum CurseState
 -- @usage local item = Item.create(792, 10, 10, 3)
 --item.curse_state = Enums.CurseState.Blessed
 -- @tfield Defines.Enums.CurseState Doomed
@@ -21,6 +23,7 @@ IdentifyState = {}
 CurseState = {}
 
 --- A status effect applicable to a character.
+-- @enum StatusAilment
 -- @see LuaCharacter.apply_ailment
 -- @tfield Defines.Enums.StatusAilment Blinded
 -- @tfield Defines.Enums.StatusAilment Confused
@@ -36,6 +39,7 @@ CurseState = {}
 StatusAilment = {}
 
 --- A type of tile to be used with Map.set_tile.
+-- @enum TileKind
 -- @see Map.set_tile
 -- @tfield Defines.Enums.TileKind Normal
 -- @tfield Defines.Enums.TileKind Wall
