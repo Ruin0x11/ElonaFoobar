@@ -745,7 +745,7 @@ void init_api(std::unique_ptr<sol::state>& state)
     Pos.set_function("dist", Pos::dist);
 
     sol::table World = Elona.create_named("World");
-    World.set_function("time", Pos::time);
+    World.set_function("time", World::time);
 
     sol::table Fov = Elona.create_named("Fov");
     Fov.set_function("los", Fov::los);

@@ -95,7 +95,6 @@ set(CORE_SOURCES
     lua_api.cpp
     lua_registry.cpp
     magic.cpp
-    main.cpp
     main_menu.cpp
     map.cpp
     map_cell.cpp
@@ -129,7 +128,10 @@ set(CORE_SOURCES
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 # Executable
-add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${CORE_SOURCES})
+add_library(${PROJECT_NAME} ${CORE_SOURCES})
+add_executable(${PROJECT_NAME}_bin WIN32 MACOSX_BUNDLE main.cpp)
+target_link_libraries(${PROJECT_NAME}_bin ${PROJECT_NAME})
+set_target_properties(${PROJECT_NAME}_bin PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
 
 
 # If a CMake prefix was not provided, assume dependencies are in "./deps"
@@ -288,7 +290,7 @@ IF(WIN32)
   SET(APPS "\${CMAKE_INSTALL_PREFIX}/bin/ElonaFoobar.exe")
 ENDIF(WIN32)
 
-INSTALL(TARGETS ElonaFoobar
+INSTALL(TARGETS ElonaFoobar_bin
     BUNDLE DESTINATION . COMPONENT Runtime
     RUNTIME DESTINATION bin COMPONENT Runtime)
 
@@ -298,3 +300,19 @@ INSTALL(CODE "
     include(BundleUtilities)
     fixup_bundle(\"${APPS}\" \"\" \"${DIRS}\")
     " COMPONENT Runtime)
+
+
+
+# Testing
+set (CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/catch})
+add_library(Catch INTERFACE)
+target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
+
+# Test sources
+set(TEST_SOURCES
+  tests/tests.cpp
+  tests/lua_api.cpp
+)
+add_executable(tests ${TEST_SOURCES})
+target_link_libraries(tests Catch)
+target_link_libraries(tests ${PROJECT_NAME})
