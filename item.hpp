@@ -37,7 +37,9 @@ struct item
     item();
 
 
-    int idx = 0;
+    // NOTE: Don't add new fields unless you add them to serialization, which
+    // will break save compatibility.
+    int idx = -1;
     int number = 0;
     int value = 0;
     int image = 0;
@@ -83,7 +85,7 @@ struct item
     template <typename Archive>
     void serialize(Archive& ar)
     {
-        ar(idx);
+        // NOTE: Changing this will break save compatibility!
         ar(number);
         ar(value);
         ar(image);

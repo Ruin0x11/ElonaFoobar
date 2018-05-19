@@ -195,8 +195,9 @@ struct character
 {
     character();
 
-
-    int idx;
+    // NOTE: Don't add new fields unless you add them to serialization, which
+    // will break save compatibility.
+    int idx = -1;
     int state = 0;
     position_t position;
     position_t next_position;
@@ -337,7 +338,7 @@ struct character
     template <typename Archive>
     void serialize(Archive& ar)
     {
-        ar(idx);
+        // NOTE: Changing this will break save compatibility!
         ar(state);
         ar(position);
         ar(next_position);
