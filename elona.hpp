@@ -22,8 +22,6 @@
 
 namespace elona
 {
-int run();
-
 
 template <typename...>
 constexpr bool false_v = false;

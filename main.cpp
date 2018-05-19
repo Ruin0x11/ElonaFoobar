@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <SDL.h>
 #include "defines.hpp"
+#include "init.hpp"
 #include "log.hpp"
 #include "version.hpp"
 #if defined(ELONA_OS_WINDOWS)
@@ -10,7 +11,6 @@
 
 namespace elona
 {
-int run();
 
 void report_error(const char* what)
 {

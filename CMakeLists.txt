@@ -116,6 +116,7 @@ set(CORE_SOURCES
     talk_npc.cpp
     talk_unique.cpp
     tcg.cpp
+    testing.cpp
     text.cpp
     trait.cpp
     turn_sequence.cpp

@@ -298,11 +298,9 @@ void init()
 
     // prevent usage of some tables during mod loading, since calling things like GUI.txt at the top level before starting the game is dangerous
     // load core mod first
-    load_mod("core");
     // for each other mod, load_mod()
     // after global prototype db is made, make it read-only
     // make stdlib table Elona read-only
-    dump_state();
 }
 
 } // namespace lua

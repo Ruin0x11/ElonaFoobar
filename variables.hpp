@@ -1179,7 +1179,6 @@ void initialize_jkey();
 void label_2720();
 void set_option();
 turn_result_t play_scene();
-void initialize_game();
 bool turn_wrapper();
 turn_result_t pass_turns(bool);
 turn_result_t turn_begin();
