@@ -741,6 +741,12 @@ void init_api(std::unique_ptr<sol::state>& state)
     Chara.set_function("player", Chara::player);
     Chara.set_function("create", sol::overload(Chara::create, Chara::create_xy));
 
+    sol::table Pos = Elona.create_named("Pos");
+    Pos.set_function("dist", Pos::dist);
+
+    sol::table World = Elona.create_named("World");
+    World.set_function("time", Pos::time);
+
     sol::table Fov = Elona.create_named("Fov");
     Fov.set_function("los", Fov::los);
     Fov.set_function("you_see", Fov::you_see);
@@ -770,6 +776,7 @@ void init_api(std::unique_ptr<sol::state>& state)
     GUI.set_function("txt", GUI::txt);
 
     sol::table Debug = Elona.create_named("Debug");
+    Debug.set_function("log", Debug::log);
     Debug.set_function("dump_characters", Debug::dump_characters);
     Debug.set_function("dump_items", Debug::dump_items);
 

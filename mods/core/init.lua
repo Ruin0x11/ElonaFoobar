@@ -2,7 +2,7 @@ require "mods/core/setup"
 local Defines = Elona.Defines
 local Storage = Elona.Registry.Data["core"]
 
-function hoge()
+local function hoge()
    Elona.GUI.txt("hoge ")
    Elona.GUI.txt("Calling rnd: " .. Elona.Rand.rnd(20) .. " ")
    if Elona.Rand.one_in(10) then
@@ -12,7 +12,7 @@ function hoge()
    end
 end
 
-function foo()
+local function foo()
    Elona.GUI.txt("foo ")
    if Elona.Rand.one_in(10) then
       local pos = Elona.Map.random_pos()

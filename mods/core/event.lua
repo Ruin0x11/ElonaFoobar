@@ -26,13 +26,13 @@ function Event.register(event_ids, handler)
         is_valid_id(event_id)
 
         if handler == nil then
-           Elona.log("Handler for " .. event_id .. " was nil, setting to nil")
+           Elona.Debug.log("Handler for " .. event_id .. " was nil, setting to nil")
             Event._registry[event_id] = nil
             Elona.Registry.on_event(event_id, nil)
         else
-           Elona.log("Get handler for " .. event_id .. " ")
+           Elona.Debug.log("Get handler for " .. event_id .. " ")
             if not Event._registry[event_id] then
-               Elona.log("New handler")
+               Elona.Debug.log("New handler")
                 Event._registry[event_id] = {}
 
                 Elona.Registry.on_event(event_id, Event.dispatch)
@@ -40,9 +40,9 @@ function Event.register(event_ids, handler)
             --If the handler is already registered for this event: remove and insert it to the end.
             local _, reg_index = table.find(Event._registry[event_id], function(v) return v == handler end)
             if reg_index then
-               Elona.log("Handler exists")
+               Elona.Debug.log("Handler exists")
                 table.remove(Event._registry[event_id], reg_index)
-                log("Same handler already registered for event "..event_id..", reording it to the bottom")
+                Elona.Debug.log("Same handler already registered for event "..event_id..", reording it to the bottom")
             end
             table.insert(Event._registry[event_id], handler)
         end
@@ -54,7 +54,7 @@ function Event.dispatch(event_id, args)
    local _registry = Event._registry[event_id]
    if _registry then
       for idx, handler in ipairs(_registry) do
-         Elona.log("Handler for " .. event_id .. ": " .. idx)
+         Elona.Debug.log("Handler for " .. event_id .. ": " .. idx)
          local status, err = xpcall(handler, function(a) return debug.traceback(a) end, args)
          if not status then
             error("Error dispatching " .. event_id .. ": " .. Elona.Debug.inspect(err))

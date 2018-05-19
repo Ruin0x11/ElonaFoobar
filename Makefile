@@ -56,4 +56,8 @@ ldoc:
 	cp doc/uikit.min.css $(BIN_DIR)/doc/uikit.min.css
 	cd $(BIN_DIR) && ldoc -c ../doc/config.ld -l ../doc -s ../doc ../doc/api/
 
+luacheck:
+	luacheck --version
+	luacheck mods/
+
 rebuild: clean build
