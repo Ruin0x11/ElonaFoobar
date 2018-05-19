@@ -1,0 +1,730 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Fields">Fields</a></li>
+<li><a href="#Chara">Chara</a></li>
+<li><a href="#A_series_of_enums">A series of enums </a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/Elona.html">Elona</a></li>
+  <li><strong>LuaCharacter</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>LuaCharacter</code></h1>
+<p>Checks if a character is alive.</p>
+<p></p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#returns...">returns... (character)</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set_tile_memory">set_tile_memory (position, kind)</a></td>
+	<td class="summary">Sets the player's memory of a tile position to the given tile kind.</td>
+	</tr>
+</table>
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#character">character</a></td>
+	<td class="summary">Damages a character.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#character">character</a></td>
+	<td class="summary">Applies a status ailment to a character.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#from">from</a></td>
+	<td class="summary">Returns the distance between two points.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#id">id</a></td>
+	<td class="summary">Makes the player cast a spell.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#position">position</a></td>
+	<td class="summary">Checks if a position is inside the map.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#position">position</a></td>
+	<td class="summary">Checks if a position is accessable by walking.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#position">position</a></td>
+	<td class="summary">Given a position, returns a position that is bounded within the current map.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#position">position</a></td>
+	<td class="summary">Sets a tile of the current map.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#from">from</a></td>
+	<td class="summary">Checks if there is line of sight between two positions in the current map.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#character">character</a></td>
+	<td class="summary">Returns true if the player can see the given character, taking blindness into account.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#n">n</a></td>
+	<td class="summary">Returns a random number from 0 to n, exclusive.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#n">n</a></td>
+	<td class="summary">Returns true one out of every n times.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#position">position</a></td>
+	<td class="summary">Attempts to create an item of the given quantity at a position.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#item">item</a></td>
+	<td class="summary">Checks if an item has an enchantment.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#str">str</a></td>
+	<td class="summary">Prints some text in the HUD message window.</td>
+	</tr>
+</table>
+<h2><a href="#Chara">Chara</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#is_player">is_player (character)</a></td>
+	<td class="summary">Checks if a character is the player (has index 0).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#is_ally">is_ally (character)</a></td>
+	<td class="summary">Checks if a character is a member of the player's party (has index < 16).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#player">player ()</a></td>
+	<td class="summary">Returns a reference to the player.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#create">create (character, id)</a></td>
+	<td class="summary">Attempts to create a character at a given position.</td>
+	</tr>
+</table>
+<h2><a href="#A_series_of_enums">A series of enums </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#IdentifyState">IdentifyState</a></td>
+	<td class="summary">The identification state of an item.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#CurseState">CurseState</a></td>
+	<td class="summary">The curse state of an item.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#StatusAilment">StatusAilment</a></td>
+	<td class="summary">A status effect applicable to a character.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#TileType">TileType</a></td>
+	<td class="summary">A type of tile to generate with Map.set_tile.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "returns..."></a>
+    <strong>returns... (character)</strong>
+    </dt>
+    <dd>
+
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">character</span>
+         (const) LuaCharacter a character
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        true if the character is alive
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set_tile_memory"></a>
+    <strong>set_tile_memory (position, kind)</strong>
+    </dt>
+    <dd>
+    Sets the player's memory of a tile position to the given tile kind.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">position</span>
+         (const) the map position
+        </li>
+        <li><span class="parameter">kind</span>
+         (const) the tile kind to set
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "character"></a>
+    <strong>character</strong>
+    </dt>
+    <dd>
+    Damages a character.
+
+
+    <ul>
+        <li><span class="parameter">character</span>
+         (mut) a character
+        </li>
+        <li><span class="parameter">amount</span>
+         the amount to damage
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "character"></a>
+    <strong>character</strong>
+    </dt>
+    <dd>
+    Applies a status ailment to a character.
+
+
+    <ul>
+        <li><span class="parameter">character</span>
+         (mut) a character
+        </li>
+        <li><span class="parameter">type</span>
+         the type of status ailment
+        </li>
+        <li><span class="parameter">power</span>
+         the power of the status ailment
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "from"></a>
+    <strong>from</strong>
+    </dt>
+    <dd>
+    Returns the distance between two points.
+
+
+    <ul>
+        <li><span class="parameter">from</span>
+         (const) the point from
+        </li>
+        <li><span class="parameter">to</span>
+         (const) the point to
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "id"></a>
+    <strong>id</strong>
+    </dt>
+    <dd>
+    Makes the player cast a spell.
+
+
+    <ul>
+        <li><span class="parameter">id</span>
+         the spell ID
+        </li>
+        <li><span class="parameter">power</span>
+         the power of the spell
+        </li>
+        <li><span class="parameter">target_location</span>
+         (const) the position the spell targets
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "position"></a>
+    <strong>position</strong>
+    </dt>
+    <dd>
+    Checks if a position is inside the map.
+
+
+    <ul>
+        <li><span class="parameter">position</span>
+         (const) the map position
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "position"></a>
+    <strong>position</strong>
+    </dt>
+    <dd>
+    Checks if a position is accessable by walking.
+
+
+    <ul>
+        <li><span class="parameter">position</span>
+         (const) the map position
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "position"></a>
+    <strong>position</strong>
+    </dt>
+    <dd>
+    Given a position, returns a position that is bounded within the current map.
+
+
+    <ul>
+        <li><span class="parameter">position</span>
+         (const) the map position
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "position"></a>
+    <strong>position</strong>
+    </dt>
+    <dd>
+    Sets a tile of the current map.  Only checks if the position is valid, not things like blocking objects.
+
+
+    <ul>
+        <li><span class="parameter">position</span>
+         (const) the map position
+        </li>
+        <li><span class="parameter">type</span>
+         (const) the type kind to set
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "from"></a>
+    <strong>from</strong>
+    </dt>
+    <dd>
+    Checks if there is line of sight between two positions in the current map.
+
+
+    <ul>
+        <li><span class="parameter">from</span>
+         (const) the position from
+        </li>
+        <li><span class="parameter">to</span>
+         (const) the position to
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "character"></a>
+    <strong>character</strong>
+    </dt>
+    <dd>
+    Returns true if the player can see the given character, taking blindness into account.
+
+
+    <ul>
+        <li><span class="parameter">character</span>
+         (const) a character
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "n"></a>
+    <strong>n</strong>
+    </dt>
+    <dd>
+    Returns a random number from 0 to n, exclusive.
+
+
+    <ul>
+        <li><span class="parameter">n</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "n"></a>
+    <strong>n</strong>
+    </dt>
+    <dd>
+    Returns true one out of every n times.
+
+
+    <ul>
+        <li><span class="parameter">n</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "position"></a>
+    <strong>position</strong>
+    </dt>
+    <dd>
+    Attempts to create an item of the given quantity at a position.  Returns the item stack if it was created, nil otherwise.
+
+
+    <ul>
+        <li><span class="parameter">position</span>
+         (const) position to create the item at
+        </li>
+        <li><span class="parameter">id</span>
+         the item prototype id
+        </li>
+        <li><span class="parameter">number</span>
+         the number of items to create
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "item"></a>
+    <strong>item</strong>
+    </dt>
+    <dd>
+    Checks if an item has an enchantment.
+
+
+    <ul>
+        <li><span class="parameter">item</span>
+         (const) an item
+        </li>
+        <li><span class="parameter">id</span>
+         the id of the enchantment
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "str"></a>
+    <strong>str</strong>
+    </dt>
+    <dd>
+    Prints some text in the HUD message window.
+
+
+    <ul>
+        <li><span class="parameter">str</span>
+         message to print
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Chara"></a>Chara</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "is_player"></a>
+    <strong>is_player (character)</strong>
+    </dt>
+    <dd>
+    Checks if a character is the player (has index 0).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">character</span>
+         (const) a character
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        true if the character is the player
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "is_ally"></a>
+    <strong>is_ally (character)</strong>
+    </dt>
+    <dd>
+    Checks if a character is a member of the player's party (has index < 16).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">character</span>
+         (const) a character
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        true if the character is in the player's party
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "player"></a>
+    <strong>player ()</strong>
+    </dt>
+    <dd>
+    Returns a reference to the player.  They might not be alive.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">LuaCharacter</span></span>
+        a reference to the player
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "create"></a>
+    <strong>create (character, id)</strong>
+    </dt>
+    <dd>
+    Attempts to create a character at a given position.  Returns the character if it was created, nil otherwise.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">character</span>
+         (const) position to create the character at
+        </li>
+        <li><span class="parameter">id</span>
+         the character prototype id
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">LuaCharacter</span></span>
+        the created character
+    </ol>
+     <h3>Or</h3>
+    <ol>
+
+           <span class="types"><span class="type">nil</span></span>
+
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="A_series_of_enums"></a>A series of enums </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "IdentifyState"></a>
+    <strong>IdentifyState</strong>
+    </dt>
+    <dd>
+    The identification state of an item.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "CurseState"></a>
+    <strong>CurseState</strong>
+    </dt>
+    <dd>
+    The curse state of an item.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "StatusAilment"></a>
+    <strong>StatusAilment</strong>
+    </dt>
+    <dd>
+    A status effect applicable to a character.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "TileType"></a>
+    <strong>TileType</strong>
+    </dt>
+    <dd>
+    A type of tile to generate with Map.set_tile.
+
+
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2018-05-18 21:23:18 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

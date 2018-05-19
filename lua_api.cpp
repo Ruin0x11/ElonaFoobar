@@ -12,6 +12,9 @@
 #include "status_ailment.hpp"
 #include "variables.hpp"
 
+/***
+ * @module Elona
+ */
 namespace elona
 {
 
@@ -20,29 +23,29 @@ namespace lua
 
 namespace Chara {
 /***
- * @submodule Chara
- */
-/***
  * Checks if a character is alive.
  * @function is_alive
- * @tparam (const) LuaCharacter a character
+ * @param character (const) LuaCharacter a character
  * @treturn bool true if the character is alive
+ * @within Elona.Chara
  */
 bool is_alive(const character&);
 
 /***
  * Checks if a character is the player (has index 0).
  * @function is_player
- * @tparam LuaCharacter (const) a character
+ * @param character (const) a character
  * @treturn bool true if the character is the player
+ * @within Elona.Chara
  */
 bool is_player(const character&);
 
 /***
- * Checks if a character is a member of the player's party (has index < 57).
+ * Checks if a character is a member of the player's party (has index < 16).
  * @function is_ally
- * @tparam LuaCharacter (const) a character
+ * @param character (const) a character
  * @treturn bool true if the character is in the player's party
+ * @within Elona.Chara
  */
 bool is_ally(const character&);
 
@@ -50,57 +53,54 @@ bool is_ally(const character&);
  * Returns a reference to the player. They might not be alive.
  * @function player
  * @treturn LuaCharacter a reference to the player
+ * @within Elona.Chara
  */
 sol::optional<character*> player();
 
 /***
  * Attempts to create a character at a given position. Returns the character if it was created, nil otherwise.
  * @function create
- * @tparam LuaPosition (const) position to create the character at
- * @tparam id the character prototype id
+ * @param character (const) position to create the character at
+ * @param id the character prototype id
  * @treturn[1] LuaCharacter the created character
  * @treturn[2] nil
+ * @within Elona.Chara
  */
 sol::optional<character*> create(const position_t&, int);
 sol::optional<character*> create_xy(int, int, int);
 
 
 /***
- * @classmod LuaCharacter
- */
-/***
  * Damages a character.
- * @class character
  * @function damage_hp
- * @tparam LuaCharacter (mut) a character
- * @tparam num the amount to damage
+ * @param amount the amount to damage
+ * @within LuaCharacter
  */
 void mut_damage_hp(character&, int);
 
 /***
  * Applies a status ailment to a character.
- * @class character
- * @function damage_con
- * @tparam LuaCharacter (mut) a character
- * @tparam Enums.StatusAilment the type of status ailment
- * @tparam num the power of the status ailment
+ * @function apply_ailment
+ * @param type the type of status ailment
+ * @param power the power of the status ailment
+ * @within LuaCharacter
  */
-void mut_damage_con(character&, status_ailment_t, int);
+void mut_apply_ailment(character&, status_ailment_t, int);
 };
 
-bool Chara::is_alive(const character& chara)
+bool Chara::is_alive(const character& character)
 {
-    return chara.state == 1;
+    return character.state == 1;
 }
 
-bool Chara::is_player(const character& chara)
+bool Chara::is_player(const character& character)
 {
-    return chara.idx == 0;
+    return character.idx == 0;
 }
 
-bool Chara::is_ally(const character& chara)
+bool Chara::is_ally(const character& character)
 {
-    return chara.idx <= 16;
+    return character.idx <= 16;
 }
 
 sol::optional<character*> Chara::player()
@@ -114,9 +114,9 @@ sol::optional<character*> Chara::player()
     }
 }
 
-sol::optional<character*> Chara::create(const position_t& pos, int id)
+sol::optional<character*> Chara::create(const position_t& position, int id)
 {
-    return Chara::create_xy(pos.x, pos.y, id);
+    return Chara::create_xy(position.x, position.y, id);
 }
 
 sol::optional<character*> Chara::create_xy(int x, int y, int id)
@@ -133,13 +133,13 @@ sol::optional<character*> Chara::create_xy(int x, int y, int id)
 }
 
 
-void Chara::mut_damage_hp(character& self, int damage)
+void Chara::mut_damage_hp(character& self, int amount)
 {
-    assert(damage > 0); // TODO does this need verification?
-    elona::dmghp(self.idx, damage, -11); // TODO defaults to unseen hand
+    assert(amount > 0); // TODO does this need verification?
+    elona::dmghp(self.idx, amount, -11); // TODO defaults to unseen hand
 }
 
-void Chara::mut_damage_con(character& self, status_ailment_t type, int power)
+void Chara::mut_apply_ailment(character& self, status_ailment_t type, int power)
 {
     assert(power > 0); // TODO does this need verification?
     elona::dmgcon(self.idx, type, power);
@@ -148,14 +148,12 @@ void Chara::mut_damage_con(character& self, status_ailment_t type, int power)
 
 namespace Pos {
 /***
- * @submodule Pos
- */
-/***
  * Returns the distance between two points.
  * @function dist
- * @tparam LuaPosition (const) the point from
- * @tparam LuaPosition (const) the point to
+ * @param from (const) the point from
+ * @param to (const) the point to
  * @treturn num the distance between the points
+ * @within Elona.Pos
  */
 int dist(const position_t&, const position_t&);
 }
@@ -168,12 +166,10 @@ int Pos::dist(const position_t& from, const position_t& to)
 
 namespace World {
 /***
- * @submodule World
- */
-/***
  * Returns the time in hours.
  * @function time
  * @treturn num the time in hours
+ * @within Elona.World
  */
 int time();
 };
@@ -189,29 +185,26 @@ int World::time()
 
 namespace Magic {
 /***
- * @submodule Magic
- */
-/***
  * Makes the player cast a spell.
  * @function cast
- * @tparam num the spell ID
- * @tparam num the power of the spell
- * @tparam LuaPosition (const) the position the spell targets
- * @within Magic
+ * @param effect_id the spell ID
+ * @param effect_power the power of the spell
+ * @param target_location (const) the position the spell targets
+ * @within Elona.Magic
  */
 void cast(int, int, const position_t&);
 }
 
-void Magic::cast(int efid, int efp, const position_t& pos)
+void Magic::cast(int effect_id, int effect_power, const position_t& target_location)
 {
     int ccbk = elona::cc;
     int tcbk = elona::tc;
     elona::cc = 0;
     elona::tc = 0;
-    elona::efid = efid;
-    elona::efp = efp;
-    elona::tlocx = pos.x;
-    elona::tlocy = pos.y;
+    elona::efid = effect_id;
+    elona::efp = effect_power;
+    elona::tlocx = target_location.x;
+    elona::tlocy = target_location.y;
     elona::magic();
     elona::cc = ccbk;
     elona::tc = tcbk;
@@ -220,12 +213,10 @@ void Magic::cast(int efid, int efp, const position_t& pos)
 
 namespace Map {
 /***
- * @submodule Map
- */
-/***
  * Returns the current map's width. This is only valid until the map changes.
  * @function width
  * @treturn num the current map's width in tiles
+ * @within Elona.Map
  */
 int width();
 
@@ -233,14 +224,16 @@ int width();
  * Returns the current map's height. This is only valid until the map changes.
  * @function height
  * @treturn num the current map's height in tiles
+ * @within Elona.Map
  */
 int height();
 
 /***
  * Checks if a position is inside the map.
  * @function valid
- * @tparam LuaPosition (const) the map position
+ * @param position (const) the map position
  * @treturn bool true if the position is inside the map.
+ * @within Elona.Map
  */
 bool valid(const position_t&);
 bool valid_xy(int, int);
@@ -248,8 +241,9 @@ bool valid_xy(int, int);
 /***
  * Checks if a position is accessable by walking.
  * @function can_access
- * @tparam LuaPosition (const) the map position
+ * @param position (const) the map position
  * @treturn bool true if the position is accessable by walking
+ * @within Elona.Map
  */
 bool can_access(const position_t&);
 bool can_access_xy(int, int);
@@ -257,8 +251,9 @@ bool can_access_xy(int, int);
 /***
  * Given a position, returns a position that is bounded within the current map.
  * @function bound_within
- * @tparam LuaPosition (const) the map position
+ * @param position (const) the map position
  * @treturn LuaPosition the bounded position
+ * @within Elona.Map
  */
 position_t bound_within(const position_t&);
 
@@ -266,14 +261,16 @@ position_t bound_within(const position_t&);
  * Returns a random position in the current map. It may not be accessable.
  * @function random_pos
  * @treturn LuaPosition a random position
+ * @within Elona.Map
  */
 position_t random_pos();
 
 /***
  * Sets a tile of the current map. Only checks if the position is valid, not things like blocking objects.
  * @function set_tile
- * @tparam LuaPosition (const) the map position
- * @tparam TileKind (const) the tile kind to set
+ * @param position (const) the map position
+ * @param type (const) the type type to set
+ * @within Elona.Map
  */
 void set_tile(const position_t&, tile_type_t);
 void set_tile_xy(int, int, tile_type_t);
@@ -281,8 +278,9 @@ void set_tile_xy(int, int, tile_type_t);
 /***
  * Sets the player's memory of a tile position to the given tile kind.
  * @function set_tile_memory
- * @tparam LuaPosition (const) the map position
- * @tparam TileKind (const) the tile kind to set
+ * @param position (const) the map position
+ * @param type (const) the tile type to set
+ * @within Elona.Map
  */
 void set_tile_memory(const position_t&, tile_type_t);
 void set_tile_memory_xy(int, int, tile_type_t);
@@ -298,9 +296,9 @@ int Map::height()
     return mdata(1);
 }
 
-bool Map::valid(const position_t& pos)
+bool Map::valid(const position_t& position)
 {
-    return Map::valid_xy(pos.x, pos.y);
+    return Map::valid_xy(position.x, position.y);
 }
 
 bool Map::valid_xy(int x, int y)
@@ -313,9 +311,9 @@ bool Map::valid_xy(int x, int y)
     return elona::map(x, y, 0) != 0;
 }
 
-bool Map::can_access(const position_t& pos)
+bool Map::can_access(const position_t& position)
 {
-    return Map::can_access_xy(pos.x, pos.y);
+    return Map::can_access_xy(position.x, position.y);
 }
 
 bool Map::can_access_xy(int x, int y)
@@ -324,14 +322,14 @@ bool Map::can_access_xy(int x, int y)
     return cellaccess != 0;
 }
 
-position_t Map::bound_within(const position_t& pos)
+position_t Map::bound_within(const position_t& position)
 {
     int x = clamp(
-        pos.x,
+        position.x,
         0,
         mdata(0) - 1);
     int y = clamp(
-        pos.y,
+        position.y,
         0,
         mdata(1) - 1);
     return position_t{x, y};
@@ -346,9 +344,9 @@ position_t Map::random_pos()
                 });
 }
 
-void Map::set_tile(const position_t& pos, tile_type_t type)
+void Map::set_tile(const position_t& position, tile_type_t type)
 {
-    Map::set_tile_xy(pos.x, pos.y, type);
+    Map::set_tile_xy(position.x, position.y, type);
 }
 
 void Map::set_tile_xy(int x, int y, tile_type_t type)
@@ -361,9 +359,9 @@ void Map::set_tile_xy(int x, int y, tile_type_t type)
     elona::map(x, y, 0) = elona::cell_get_type(type);
 }
 
-void Map::set_tile_memory(const position_t& pos, tile_type_t type)
+void Map::set_tile_memory(const position_t& position, tile_type_t type)
 {
-    Map::set_tile_memory_xy(pos.x, pos.y, type);
+    Map::set_tile_memory_xy(position.x, position.y, type);
 }
 
 void Map::set_tile_memory_xy(int x, int y, tile_type_t type)
@@ -379,22 +377,21 @@ void Map::set_tile_memory_xy(int x, int y, tile_type_t type)
 
 namespace Fov {
 /***
- * @submodule Fov
- */
-/***
  * Checks if there is line of sight between two positions in the current map.
  * @function los
- * @tparam LuaPosition (const) the position from
- * @tparam LuaPosition (const) the position to
+ * @param from (const) the position from
+ * @param to (const) the position to
  * @treturn bool true if there is line of sight between the positions
+ * @within Elona.Fov
  */
 bool los(const position_t&, const position_t&);
 
 /***
  * Returns true if the player can see the given character, taking blindness into account.
  * @function you_see
- * @tparam LuaCharacter (const) a character
+ * @param character (const) a character
  * @treturn bool true if the player can see the character
+ * @within Elona.Fov
  */
 bool you_see(const character&);
 };
@@ -404,29 +401,28 @@ bool Fov::los(const position_t& from, const position_t& to)
     return elona::fov_los(from.x, from.y, to.x, to.y) == 1;
 }
 
-bool Fov::you_see(const character& chara)
+bool Fov::you_see(const character& character)
 {
-    return elona::is_in_fov(chara.idx);
+    return elona::is_in_fov(character.idx);
 }
 
 
 namespace Rand {
 /***
- * @submodule Rand
- */
-/***
  * Returns a random number from 0 to n, exclusive.
  * @function rnd
- * @tparam num n
+ * @param n
  * @treturn num a number in [0, n)
+ * @within Elona.Rand
  */
 int rnd(int n);
 
 /***
  * Returns true one out of every n times.
  * @function one_in
- * @tparam num n
+ * @param n
  * @treturn bool true one out of every n times
+ * @within Elona.Rand
  */
 bool one_in(int n);
 
@@ -434,6 +430,7 @@ bool one_in(int n);
  * Returns true 50% of the time.
  * @function coinflip
  * @treturn bool true 50% of the time
+ * @within Elona.Rand
  */
 bool coinflip();
 };
@@ -457,39 +454,36 @@ bool Rand::coinflip()
 
 namespace Item {
 /***
- * @submodule Item
- */
-/***
  * Attempts to create an item of the given quantity at a position. Returns the item stack if it was created, nil otherwise.
  * @function create
- * @tparam LuaPosition (const) position to create the item at
- * @tparam id the item prototype id
- * @tparam num number of items to create
+ * @param position (const) position to create the item at
+ * @param id the item prototype id
+ * @param number the number of items to create
  * @treturn[1] LuaItem the created item stack
  * @treturn[2] nil
+ * @within Elona.Item
  */
 sol::optional<item*> create(const position_t&, int, int);
 sol::optional<item*> create_xy(int, int, int, int);
 
 /***
  * Checks if an item has an enchantment.
- * @function has_enchantment
- * @tparam LuaItem (const) an item
- * @tparam num the id of the enchantment
+ * @param item (const) an item
+ * @param id the id of the enchantment
  * @treturn bool true if the item has the enchantment
  */
 bool has_enchantment(const item&, int);
 }
 
-sol::optional<item*> Item::create(const position_t& pos, int id, int num)
+sol::optional<item*> Item::create(const position_t& position, int id, int number)
 {
-    return Item::create_xy(pos.x, pos.y, id, num);
+    return Item::create_xy(position.x, position.y, id, number);
 }
 
-sol::optional<item*> Item::create_xy(int x, int y, int id, int num)
+sol::optional<item*> Item::create_xy(int x, int y, int id, int number)
 {
     elona::flt();
-    if(elona::itemcreate(-1, id, x, y, num) != 0)
+    if(elona::itemcreate(-1, id, x, y, number) != 0)
     {
         return &elona::inv[elona::ci]; // TODO deglobalize ci
     }
@@ -507,13 +501,10 @@ bool Item::has_enchantment(const item& item, int id)
 
 namespace GUI {
 /***
- * @submodule GUI
- */
-/***
  * Prints some text in the HUD message window.
  * @function txt
- * @tparam string message to print
- * @within GUI
+ * @param str message to print
+ * @within Elona.GUI
  */
 void txt(const std::string& str);
 };
@@ -527,9 +518,33 @@ void GUI::txt(const std::string& str)
 namespace Debug
 {
 
+/***
+ * Logs a message to log.txt.
+ * @function log
+ * @param message the message to log
+ * @within Elona.Debug
+ */
+void log(const std::string&);
+
+/***
+ * Dumps all characters to the log.
+ * @function dump_characters
+ * @within Elona.Debug
+ */
 void dump_characters();
+
+/***
+ * Dumps all items to the log.
+ * @function dump_items
+ * @within Elona.Debug
+ */
 void dump_items();
 
+}
+
+void Debug::log(const std::string& message)
+{
+    ELONA_LOG(message);
 }
 
 void Debug::dump_characters()
@@ -567,80 +582,127 @@ void init_enums(std::unique_ptr<sol::state>& state)
     sol::table Enums = Defines.create_named("Enums");
 
     /***
-     * A series of enums.
-     * @section Enum
+     * Enums
+     * @section Enums
      */
     /***
      * The identification state of an item.
-     * @table IdentifyState
+     * @type Elona.Enums.IdentifyState
      */
     Enums["IdentifyState"] = Defines.create_with(
-        // @type Unidentified
+        /***
+         * @field Unidentified
+         */
         "Unidentified", identification_state_t::unidentified,
-        // @type Partly
+        /***
+         * @field Partly
+         */
         "Partly", identification_state_t::partly_identified,
-        // @type Almost
+        /***
+         * @field Almost
+         */
         "Almost", identification_state_t::almost_identified,
-        // @type Completely
+        /***
+         * @field Completely
+         */
         "Completely", identification_state_t::completely_identified
         );
     /***
      * The curse state of an item.
-     * @table CurseState
+     * @type Elona.Enums.CurseState
      */
     Enums["CurseState"] = Defines.create_with(
-        // @type Doomed
+        /***
+         * @field Doomed
+         */
         "Doomed", curse_state_t::doomed,
-        // @type Cursed
+        /***
+         * @field Cursed
+         */
         "Cursed", curse_state_t::cursed,
-        // @type None
+        /***
+         * @field None
+         */
         "None", curse_state_t::none,
-        // @type Blessed
+        /***
+         * @field Blessed
+         */
         "Blessed", curse_state_t::blessed
         );
     /***
      * A status effect applicable to a character.
-     * @table StatusAilment
+     * @type Elona.Enums.StatusAilment
      */
     Enums["StatusAilment"] = Defines.create_with(
-        // @type Blinded
+        /***
+         * @field Blinded
+         */
         "Blinded", status_ailment_t::blinded,
-        // @type Confused
+        /***
+         * @field Confused
+         */
         "Confused", status_ailment_t::confused,
-        // @type Paralyzed
+        /***
+         * @field Paralyzed
+         */
         "Paralyzed", status_ailment_t::paralyzed,
-        // @type Poisoned
+        /***
+         * @field Poisoned
+         */
         "Poisoned", status_ailment_t::poisoned,
-        // @type Sleep
+        /***
+         * @field Sleep
+         */
         "Sleep", status_ailment_t::sleep,
-        // @type Fear
+        /***
+         * @field Fear
+         */
         "Fear", status_ailment_t::fear,
-        // @type Dimmed
+        /***
+         * @field Dimmed
+         */
         "Dimmed", status_ailment_t::dimmed,
-        // @type Bleeding
+        /***
+         * @field Bleeding
+         */
         "Bleeding", status_ailment_t::bleeding,
-        // @type Drunk
+        /***
+         * @field Drunk
+         */
         "Drunk", status_ailment_t::drunk,
-        // @type Insane
+        /***
+         * @field Insane
+         */
         "Insane", status_ailment_t::insane,
-        // @type Sick
+        /***
+         * @field Sick
+         */
         "Sick", status_ailment_t::sick
         );
     /***
      * A type of tile to generate with Map.set_tile.
-     * @table TileType
-     * @see Map.set_tile
+     * @type Elona.Enums.TileType
      */
     Enums["TileType"] = Defines.create_with(
-        // @type Normal
+        /***
+         * @field Normal
+         */
         "Normal", tile_type_t::normal,
-        // @type Wall
+        /***
+         * @field Wall
+         */
         "Wall", tile_type_t::wall,
-        // @type Tunnel
+        /***
+         * @field Tunnel
+         */
         "Tunnel", tile_type_t::tunnel,
-        // @type Room
+        /***
+         * @field Room
+         */
         "Room", tile_type_t::room,
-        // @type Fog
+        /***
+         * @field Fog
+         */
         "Fog", tile_type_t::fog
         );
 }
@@ -652,7 +714,7 @@ void init_api(std::unique_ptr<sol::state>& state)
         );
     state.get()->new_usertype<character>( "LuaCharacter",
                                         "damage_hp", &Chara::mut_damage_hp,
-                                        "damage_con", &Chara::mut_damage_con,
+                                        "apply_ailment", &Chara::mut_apply_ailment,
                                         "idx", sol::readonly(&character::idx),
                                         "hp", sol::readonly(&character::hp),
                                         "max_hp", sol::readonly(&character::max_hp),
@@ -670,7 +732,7 @@ void init_api(std::unique_ptr<sol::state>& state)
         );
 
     sol::table Elona = state.get()->create_named_table("Elona");
-    Elona.set_function("log", [](const std::string& msg) { elona::log::detail::out << msg << std::endl; });
+    Elona.set_function("log", Debug::log);
 
     sol::table Chara = Elona.create_named("Chara");
     Chara.set_function("is_alive", Chara::is_alive);

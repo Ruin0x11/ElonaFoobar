@@ -1,0 +1,1562 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Fields">Fields</a></li>
+<li><a href="#Elona_Chara">Elona.Chara</a></li>
+<li><a href="#LuaCharacter">LuaCharacter</a></li>
+<li><a href="#Elona_Pos">Elona.Pos</a></li>
+<li><a href="#Elona_World">Elona.World</a></li>
+<li><a href="#Elona_Magic">Elona.Magic</a></li>
+<li><a href="#Elona_Map">Elona.Map</a></li>
+<li><a href="#Elona_Fov">Elona.Fov</a></li>
+<li><a href="#Elona_Rand">Elona.Rand</a></li>
+<li><a href="#Elona_Item">Elona.Item</a></li>
+<li><a href="#Elona_GUI">Elona.GUI</a></li>
+<li><a href="#Elona_Debug">Elona.Debug</a></li>
+<li><a href="#Class_Elona_Enums_IdentifyState">Class Elona.Enums.IdentifyState </a></li>
+<li><a href="#Class_Elona_Enums_CurseState">Class Elona.Enums.CurseState </a></li>
+<li><a href="#Class_Elona_Enums_StatusAilment">Class Elona.Enums.StatusAilment </a></li>
+<li><a href="#Class_Elona_Enums_TileType">Class Elona.Enums.TileType </a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>Elona</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>Elona</code></h1>
+<p></p>
+<p></p>
+
+
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#item">item</a></td>
+	<td class="summary">Checks if an item has an enchantment.</td>
+	</tr>
+</table>
+<h2><a href="#Elona_Chara">Elona.Chara</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#is_alive">is_alive (character)</a></td>
+	<td class="summary">Checks if a character is alive.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#is_player">is_player (character)</a></td>
+	<td class="summary">Checks if a character is the player (has index 0).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#is_ally">is_ally (character)</a></td>
+	<td class="summary">Checks if a character is a member of the player's party (has index < 16).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#player">player ()</a></td>
+	<td class="summary">Returns a reference to the player.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#create">create (character, id)</a></td>
+	<td class="summary">Attempts to create a character at a given position.</td>
+	</tr>
+</table>
+<h2><a href="#LuaCharacter">LuaCharacter</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#damage_hp">damage_hp (amount)</a></td>
+	<td class="summary">Damages a character.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#apply_ailment">apply_ailment (type, power)</a></td>
+	<td class="summary">Applies a status ailment to a character.</td>
+	</tr>
+</table>
+<h2><a href="#Elona_Pos">Elona.Pos</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#dist">dist (from, to)</a></td>
+	<td class="summary">Returns the distance between two points.</td>
+	</tr>
+</table>
+<h2><a href="#Elona_World">Elona.World</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#time">time ()</a></td>
+	<td class="summary">Returns the time in hours.</td>
+	</tr>
+</table>
+<h2><a href="#Elona_Magic">Elona.Magic</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#cast">cast (effect_id, effect_power, target_location)</a></td>
+	<td class="summary">Makes the player cast a spell.</td>
+	</tr>
+</table>
+<h2><a href="#Elona_Map">Elona.Map</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#width">width ()</a></td>
+	<td class="summary">Returns the current map's width.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#height">height ()</a></td>
+	<td class="summary">Returns the current map's height.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#valid">valid (position)</a></td>
+	<td class="summary">Checks if a position is inside the map.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#can_access">can_access (position)</a></td>
+	<td class="summary">Checks if a position is accessable by walking.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#bound_within">bound_within (position)</a></td>
+	<td class="summary">Given a position, returns a position that is bounded within the current map.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#random_pos">random_pos ()</a></td>
+	<td class="summary">Returns a random position in the current map.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set_tile">set_tile (position, type)</a></td>
+	<td class="summary">Sets a tile of the current map.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set_tile_memory">set_tile_memory (position, type)</a></td>
+	<td class="summary">Sets the player's memory of a tile position to the given tile kind.</td>
+	</tr>
+</table>
+<h2><a href="#Elona_Fov">Elona.Fov</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#los">los (from, to)</a></td>
+	<td class="summary">Checks if there is line of sight between two positions in the current map.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#you_see">you_see (character)</a></td>
+	<td class="summary">Returns true if the player can see the given character, taking blindness into account.</td>
+	</tr>
+</table>
+<h2><a href="#Elona_Rand">Elona.Rand</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#rnd">rnd (n)</a></td>
+	<td class="summary">Returns a random number from 0 to n, exclusive.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#one_in">one_in (n)</a></td>
+	<td class="summary">Returns true one out of every n times.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#coinflip">coinflip ()</a></td>
+	<td class="summary">Returns true 50% of the time.</td>
+	</tr>
+</table>
+<h2><a href="#Elona_Item">Elona.Item</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#create">create (position, id, number)</a></td>
+	<td class="summary">Attempts to create an item of the given quantity at a position.</td>
+	</tr>
+</table>
+<h2><a href="#Elona_GUI">Elona.GUI</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#txt">txt (str)</a></td>
+	<td class="summary">Prints some text in the HUD message window.</td>
+	</tr>
+</table>
+<h2><a href="#Elona_Debug">Elona.Debug</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#log">log (message)</a></td>
+	<td class="summary">Logs a message to log.txt.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#dump_characters">dump_characters ()</a></td>
+	<td class="summary">Dumps all characters to the log.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#dump_items">dump_items ()</a></td>
+	<td class="summary">Dumps all items to the log.</td>
+	</tr>
+</table>
+<h2><a href="#Class_Elona_Enums_IdentifyState">Class Elona.Enums.IdentifyState </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.IdentifyState.Unidentified">Elona.Enums.IdentifyState.Unidentified</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.IdentifyState.Partly">Elona.Enums.IdentifyState.Partly</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.IdentifyState.Almost">Elona.Enums.IdentifyState.Almost</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.IdentifyState.Completely">Elona.Enums.IdentifyState.Completely</a></td>
+	<td class="summary"></td>
+	</tr>
+</table>
+<h2><a href="#Class_Elona_Enums_CurseState">Class Elona.Enums.CurseState </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.CurseState.Doomed">Elona.Enums.CurseState.Doomed</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.CurseState.Cursed">Elona.Enums.CurseState.Cursed</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.CurseState.None">Elona.Enums.CurseState.None</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.CurseState.Blessed">Elona.Enums.CurseState.Blessed</a></td>
+	<td class="summary"></td>
+	</tr>
+</table>
+<h2><a href="#Class_Elona_Enums_StatusAilment">Class Elona.Enums.StatusAilment </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.StatusAilment.Blinded">Elona.Enums.StatusAilment.Blinded</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.StatusAilment.Confused">Elona.Enums.StatusAilment.Confused</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.StatusAilment.Paralyzed">Elona.Enums.StatusAilment.Paralyzed</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.StatusAilment.Poisoned">Elona.Enums.StatusAilment.Poisoned</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.StatusAilment.Sleep">Elona.Enums.StatusAilment.Sleep</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.StatusAilment.Fear">Elona.Enums.StatusAilment.Fear</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.StatusAilment.Dimmed">Elona.Enums.StatusAilment.Dimmed</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.StatusAilment.Bleeding">Elona.Enums.StatusAilment.Bleeding</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.StatusAilment.Drunk">Elona.Enums.StatusAilment.Drunk</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.StatusAilment.Insane">Elona.Enums.StatusAilment.Insane</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.StatusAilment.Sick">Elona.Enums.StatusAilment.Sick</a></td>
+	<td class="summary"></td>
+	</tr>
+</table>
+<h2><a href="#Class_Elona_Enums_TileType">Class Elona.Enums.TileType </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.TileType.Normal">Elona.Enums.TileType.Normal</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.TileType.Wall">Elona.Enums.TileType.Wall</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.TileType.Tunnel">Elona.Enums.TileType.Tunnel</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.TileType.Room">Elona.Enums.TileType.Room</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Elona.Enums.TileType.Fog">Elona.Enums.TileType.Fog</a></td>
+	<td class="summary"></td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "item"></a>
+    <strong>item</strong>
+    </dt>
+    <dd>
+    Checks if an item has an enchantment.
+
+
+    <ul>
+        <li><span class="parameter">item</span>
+         (const) an item
+        </li>
+        <li><span class="parameter">id</span>
+         the id of the enchantment
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Elona_Chara"></a>Elona.Chara</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "is_alive"></a>
+    <strong>is_alive (character)</strong>
+    </dt>
+    <dd>
+    Checks if a character is alive.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">character</span>
+         (const) LuaCharacter a character
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        true if the character is alive
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "is_player"></a>
+    <strong>is_player (character)</strong>
+    </dt>
+    <dd>
+    Checks if a character is the player (has index 0).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">character</span>
+         (const) a character
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        true if the character is the player
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "is_ally"></a>
+    <strong>is_ally (character)</strong>
+    </dt>
+    <dd>
+    Checks if a character is a member of the player's party (has index < 16).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">character</span>
+         (const) a character
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        true if the character is in the player's party
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "player"></a>
+    <strong>player ()</strong>
+    </dt>
+    <dd>
+    Returns a reference to the player.  They might not be alive.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">LuaCharacter</span></span>
+        a reference to the player
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "create"></a>
+    <strong>create (character, id)</strong>
+    </dt>
+    <dd>
+    Attempts to create a character at a given position.  Returns the character if it was created, nil otherwise.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">character</span>
+         (const) position to create the character at
+        </li>
+        <li><span class="parameter">id</span>
+         the character prototype id
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">LuaCharacter</span></span>
+        the created character
+    </ol>
+     <h3>Or</h3>
+    <ol>
+
+           <span class="types"><span class="type">nil</span></span>
+
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="LuaCharacter"></a>LuaCharacter</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "damage_hp"></a>
+    <strong>damage_hp (amount)</strong>
+    </dt>
+    <dd>
+    Damages a character.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">amount</span>
+         the amount to damage
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "apply_ailment"></a>
+    <strong>apply_ailment (type, power)</strong>
+    </dt>
+    <dd>
+    Applies a status ailment to a character.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">type</span>
+         the type of status ailment
+        </li>
+        <li><span class="parameter">power</span>
+         the power of the status ailment
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Elona_Pos"></a>Elona.Pos</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "dist"></a>
+    <strong>dist (from, to)</strong>
+    </dt>
+    <dd>
+    Returns the distance between two points.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">from</span>
+         (const) the point from
+        </li>
+        <li><span class="parameter">to</span>
+         (const) the point to
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">num</span></span>
+        the distance between the points
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Elona_World"></a>Elona.World</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "time"></a>
+    <strong>time ()</strong>
+    </dt>
+    <dd>
+    Returns the time in hours.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">num</span></span>
+        the time in hours
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Elona_Magic"></a>Elona.Magic</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "cast"></a>
+    <strong>cast (effect_id, effect_power, target_location)</strong>
+    </dt>
+    <dd>
+    Makes the player cast a spell.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">effect_id</span>
+         the spell ID
+        </li>
+        <li><span class="parameter">effect_power</span>
+         the power of the spell
+        </li>
+        <li><span class="parameter">target_location</span>
+         (const) the position the spell targets
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Elona_Map"></a>Elona.Map</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "width"></a>
+    <strong>width ()</strong>
+    </dt>
+    <dd>
+    Returns the current map's width.  This is only valid until the map changes.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">num</span></span>
+        the current map's width in tiles
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "height"></a>
+    <strong>height ()</strong>
+    </dt>
+    <dd>
+    Returns the current map's height.  This is only valid until the map changes.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">num</span></span>
+        the current map's height in tiles
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "valid"></a>
+    <strong>valid (position)</strong>
+    </dt>
+    <dd>
+    Checks if a position is inside the map.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">position</span>
+         (const) the map position
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        true if the position is inside the map.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "can_access"></a>
+    <strong>can_access (position)</strong>
+    </dt>
+    <dd>
+    Checks if a position is accessable by walking.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">position</span>
+         (const) the map position
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        true if the position is accessable by walking
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "bound_within"></a>
+    <strong>bound_within (position)</strong>
+    </dt>
+    <dd>
+    Given a position, returns a position that is bounded within the current map.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">position</span>
+         (const) the map position
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">LuaPosition</span></span>
+        the bounded position
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "random_pos"></a>
+    <strong>random_pos ()</strong>
+    </dt>
+    <dd>
+    Returns a random position in the current map.  It may not be accessable.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">LuaPosition</span></span>
+        a random position
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set_tile"></a>
+    <strong>set_tile (position, type)</strong>
+    </dt>
+    <dd>
+    Sets a tile of the current map.  Only checks if the position is valid, not things like blocking objects.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">position</span>
+         (const) the map position
+        </li>
+        <li><span class="parameter">type</span>
+         (const) the type type to set
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set_tile_memory"></a>
+    <strong>set_tile_memory (position, type)</strong>
+    </dt>
+    <dd>
+    Sets the player's memory of a tile position to the given tile kind.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">position</span>
+         (const) the map position
+        </li>
+        <li><span class="parameter">type</span>
+         (const) the tile type to set
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Elona_Fov"></a>Elona.Fov</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "los"></a>
+    <strong>los (from, to)</strong>
+    </dt>
+    <dd>
+    Checks if there is line of sight between two positions in the current map.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">from</span>
+         (const) the position from
+        </li>
+        <li><span class="parameter">to</span>
+         (const) the position to
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        true if there is line of sight between the positions
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "you_see"></a>
+    <strong>you_see (character)</strong>
+    </dt>
+    <dd>
+    Returns true if the player can see the given character, taking blindness into account.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">character</span>
+         (const) a character
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        true if the player can see the character
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Elona_Rand"></a>Elona.Rand</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "rnd"></a>
+    <strong>rnd (n)</strong>
+    </dt>
+    <dd>
+    Returns a random number from 0 to n, exclusive.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">num</span></span>
+        a number in [0, n)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "one_in"></a>
+    <strong>one_in (n)</strong>
+    </dt>
+    <dd>
+    Returns true one out of every n times.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">n</span>
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        true one out of every n times
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "coinflip"></a>
+    <strong>coinflip ()</strong>
+    </dt>
+    <dd>
+    Returns true 50% of the time.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        true 50% of the time
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Elona_Item"></a>Elona.Item</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "create"></a>
+    <strong>create (position, id, number)</strong>
+    </dt>
+    <dd>
+    Attempts to create an item of the given quantity at a position.  Returns the item stack if it was created, nil otherwise.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">position</span>
+         (const) position to create the item at
+        </li>
+        <li><span class="parameter">id</span>
+         the item prototype id
+        </li>
+        <li><span class="parameter">number</span>
+         the number of items to create
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">LuaItem</span></span>
+        the created item stack
+    </ol>
+     <h3>Or</h3>
+    <ol>
+
+           <span class="types"><span class="type">nil</span></span>
+
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Elona_GUI"></a>Elona.GUI</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "txt"></a>
+    <strong>txt (str)</strong>
+    </dt>
+    <dd>
+    Prints some text in the HUD message window.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str</span>
+         message to print
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Elona_Debug"></a>Elona.Debug</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "log"></a>
+    <strong>log (message)</strong>
+    </dt>
+    <dd>
+    Logs a message to log.txt.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">message</span>
+         the message to log
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "dump_characters"></a>
+    <strong>dump_characters ()</strong>
+    </dt>
+    <dd>
+    Dumps all characters to the log.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "dump_items"></a>
+    <strong>dump_items ()</strong>
+    </dt>
+    <dd>
+    Dumps all items to the log.
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header has-description"><a name="Class_Elona_Enums_IdentifyState"></a>Class Elona.Enums.IdentifyState </h2>
+
+          <div class="section-description">
+          The identification state of an item.
+          </div>
+    <dl class="function">
+    <dt>
+    <a name = "Elona.Enums.IdentifyState.Unidentified"></a>
+    <strong>Elona.Enums.IdentifyState.Unidentified</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Unidentified</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.IdentifyState.Partly"></a>
+    <strong>Elona.Enums.IdentifyState.Partly</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Partly</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.IdentifyState.Almost"></a>
+    <strong>Elona.Enums.IdentifyState.Almost</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Almost</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.IdentifyState.Completely"></a>
+    <strong>Elona.Enums.IdentifyState.Completely</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Completely</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header has-description"><a name="Class_Elona_Enums_CurseState"></a>Class Elona.Enums.CurseState </h2>
+
+          <div class="section-description">
+          The curse state of an item.
+          </div>
+    <dl class="function">
+    <dt>
+    <a name = "Elona.Enums.CurseState.Doomed"></a>
+    <strong>Elona.Enums.CurseState.Doomed</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Doomed</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.CurseState.Cursed"></a>
+    <strong>Elona.Enums.CurseState.Cursed</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Cursed</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.CurseState.None"></a>
+    <strong>Elona.Enums.CurseState.None</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">None</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.CurseState.Blessed"></a>
+    <strong>Elona.Enums.CurseState.Blessed</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Blessed</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header has-description"><a name="Class_Elona_Enums_StatusAilment"></a>Class Elona.Enums.StatusAilment </h2>
+
+          <div class="section-description">
+          A status effect applicable to a character.
+          </div>
+    <dl class="function">
+    <dt>
+    <a name = "Elona.Enums.StatusAilment.Blinded"></a>
+    <strong>Elona.Enums.StatusAilment.Blinded</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Blinded</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.StatusAilment.Confused"></a>
+    <strong>Elona.Enums.StatusAilment.Confused</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Confused</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.StatusAilment.Paralyzed"></a>
+    <strong>Elona.Enums.StatusAilment.Paralyzed</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Paralyzed</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.StatusAilment.Poisoned"></a>
+    <strong>Elona.Enums.StatusAilment.Poisoned</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Poisoned</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.StatusAilment.Sleep"></a>
+    <strong>Elona.Enums.StatusAilment.Sleep</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Sleep</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.StatusAilment.Fear"></a>
+    <strong>Elona.Enums.StatusAilment.Fear</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Fear</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.StatusAilment.Dimmed"></a>
+    <strong>Elona.Enums.StatusAilment.Dimmed</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Dimmed</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.StatusAilment.Bleeding"></a>
+    <strong>Elona.Enums.StatusAilment.Bleeding</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Bleeding</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.StatusAilment.Drunk"></a>
+    <strong>Elona.Enums.StatusAilment.Drunk</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Drunk</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.StatusAilment.Insane"></a>
+    <strong>Elona.Enums.StatusAilment.Insane</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Insane</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.StatusAilment.Sick"></a>
+    <strong>Elona.Enums.StatusAilment.Sick</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Sick</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header has-description"><a name="Class_Elona_Enums_TileType"></a>Class Elona.Enums.TileType </h2>
+
+          <div class="section-description">
+          A type of tile to generate with Map.set_tile.
+          </div>
+    <dl class="function">
+    <dt>
+    <a name = "Elona.Enums.TileType.Normal"></a>
+    <strong>Elona.Enums.TileType.Normal</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Normal</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.TileType.Wall"></a>
+    <strong>Elona.Enums.TileType.Wall</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Wall</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.TileType.Tunnel"></a>
+    <strong>Elona.Enums.TileType.Tunnel</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Tunnel</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.TileType.Room"></a>
+    <strong>Elona.Enums.TileType.Room</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Room</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Elona.Enums.TileType.Fog"></a>
+    <strong>Elona.Enums.TileType.Fog</strong>
+    </dt>
+    <dd>
+
+
+
+    <ul>
+        <li><span class="parameter">Fog</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2018-05-18 21:55:55 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
