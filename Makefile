@@ -24,7 +24,7 @@ MKDIR := mkdir
 # -DSDL2_MIXER_LIBRARIES="C:\\path-to-SDL2_mixer\\SDL2_mixer.lib" \
 # -DCMAKE_EXE_LINKER_FLAGS="/SUBSYSTEM:WINDOWS /LIBPATH:\"C:\\\\path-to-boost\\\\lib" \
 # -G "Visual Studio 15 2017 Win64"
- 
+
 
 .PHONY: FORCE
 
@@ -50,5 +50,10 @@ clean: FORCE
 format: FORCE
 	$(FIND) . \( -name "*.cpp" -or -name "*.hpp" \) -print0 | $(XARGS) -0 $(FORMAT) -i
 
+ldoc:
+	mkdir -p $(BIN_DIR)/doc
+	cp doc/ldoc.css $(BIN_DIR)/doc/ldoc.css
+	cp doc/uikit.min.css $(BIN_DIR)/doc/uikit.min.css
+	cd $(BIN_DIR) && ldoc -c ../doc/config.ld -l ../doc -s ../doc ../doc/api/
 
 rebuild: clean build
