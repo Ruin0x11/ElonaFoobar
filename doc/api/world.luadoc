@@ -1,0 +1,7 @@
+--- Functions for working with the state of the game world.
+--  @usage local World = Elona.World
+module "World"
+
+--- Returns the time in hours.
+-- @treturn num the time in hours
+function time() end

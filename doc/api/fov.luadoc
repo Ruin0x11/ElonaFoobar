@@ -1,0 +1,14 @@
+--- Functions for testing visibility.
+--  @usage local Fov = Elona.Fov
+module "Fov"
+
+--- Checks if there is line of sight between two positions in the current map.
+-- @tparam LuaPosition from (const) the position from
+-- @tparam LuaPosition to (const) the position to
+-- @treturn bool true if there is line of sight between the positions
+function los(from, to) end
+
+--- Returns true if the player can see the given character, taking blindness into account.
+-- @tparam LuaCharacter character (const) a character
+-- @treturn bool true if the player can see the character
+function you_see(character) end

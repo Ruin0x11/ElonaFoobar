@@ -180,21 +180,22 @@ pre.code.example code pre{margin:0}
 
 /* usage code */
 
-code{background-color:#181818;color:#C8C8C8;font-size:1.3rem}
-pre.code code{background-color:#282828;color:#C8C8C8;font-size:1.3rem}
-pre.code .comment{color:#998d70}
-pre.code .constant{color:#a8660d}
-pre.code .escape{color:#844631}
-pre.code .keyword{color:#c43724;font-weight:700}
-pre.code .library{color:#0e7c6b}
+pre{background-color:#181818}
+code{background-color:#181818;color:#C8C8C8;font-size:1.1rem}
+pre.code code{background-color:#282828;color:#C8C8C8;font-size:1.1rem}
+pre.code .comment{color:#75715e}
+pre.code .constant{color:#66D9EF}
+pre.code .escape{color:#AE81FF}
+pre.code .keyword{color:#66D9EF;font-weight:700}
+pre.code .library{color:#A6E22E}
 pre.code .marker{color:#512b1e;background:#fedc56;font-weight:700}
-pre.code .string{color:#99ca3c}
-pre.code .number{color:#f8660d}
-pre.code .operator{color:#2239a8;font-weight:700}
-pre.code .preprocessor,pre .prepro{color:#a33243}
-pre.code .global{color:#5798da}
+pre.code .string{color:#E6DB74}
+pre.code .number{color:#AE81FF}
+pre.code .operator{color:#F92672;font-weight:700}
+pre.code .preprocessor,pre .prepro{color:#75715E}
+pre.code .global{color:#F8F8F2}
 pre.code .user-keyword{color:purple}
-pre.code .prompt{color:#998d70}
+pre.code .prompt{color:#75715E}
 pre.code .url{color:#272fc2;text-decoration:underline}
 
 

@@ -1,0 +1,9 @@
+--- Functions for working with magic.
+--  @usage local Magic = Elona.Magic
+module "Magic"
+
+--- Makes the player cast a spell.
+-- @tparam num effect_id the spell ID
+-- @tparam num effect_power the power of the spell
+-- @tparam LuaPosition target_location (const) the position the spell targets
+function cast(effect_id, effect_power, target_location) end

@@ -1,0 +1,45 @@
+--- Enumerations for various data types.
+--  @usage local Enums = Elona.Defines.Enums
+module "Defines.Enums"
+
+--- The identification state of an item.
+-- @usage local item = Item.create(792, 10, 10, 3)
+--item.identify_state = Enums.IdentifyState.Completely
+-- @tfield Defines.Enums.IdentifyState Unidentified
+-- @tfield Defines.Enums.IdentifyState Partly
+-- @tfield Defines.Enums.IdentifyState Almost
+-- @tfield Defines.Enums.IdentifyState Completely
+IdentifyState = {}
+
+--- The curse state of an item.
+-- @usage local item = Item.create(792, 10, 10, 3)
+--item.curse_state = Enums.CurseState.Blessed
+-- @tfield Defines.Enums.CurseState Doomed
+-- @tfield Defines.Enums.CurseState Cursed
+-- @tfield Defines.Enums.CurseState None
+-- @tfield Defines.Enums.CurseState Blessed
+CurseState = {}
+
+--- A status effect applicable to a character.
+-- @see LuaCharacter.apply_ailment
+-- @tfield Defines.Enums.StatusAilment Blinded
+-- @tfield Defines.Enums.StatusAilment Confused
+-- @tfield Defines.Enums.StatusAilment Paralyzed
+-- @tfield Defines.Enums.StatusAilment Poisoned
+-- @tfield Defines.Enums.StatusAilment Sleep
+-- @tfield Defines.Enums.StatusAilment Fear
+-- @tfield Defines.Enums.StatusAilment Dimmed
+-- @tfield Defines.Enums.StatusAilment Bleeding
+-- @tfield Defines.Enums.StatusAilment Drunk
+-- @tfield Defines.Enums.StatusAilment Insane
+-- @tfield Defines.Enums.StatusAilment Sick
+StatusAilment = {}
+
+--- A type of tile to be used with Map.set_tile.
+-- @see Map.set_tile
+-- @tfield Defines.Enums.TileKind Normal
+-- @tfield Defines.Enums.TileKind Wall
+-- @tfield Defines.Enums.TileKind Tunnel
+-- @tfield Defines.Enums.TileKind Room
+-- @tfield Defines.Enums.TileKind Fog
+TileKind = {}

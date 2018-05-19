@@ -1,0 +1,7 @@
+--- Functions for manipulating the player's user interface.
+--  @usage local GUI = Elona.GUI
+module "GUI"
+
+--- Prints some text in the HUD message window.
+-- @tparam string message the message to print
+function txt(message) end

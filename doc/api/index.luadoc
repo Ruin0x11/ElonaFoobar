@@ -1,6 +1,0 @@
---- test
-
-module "Elona"
-
---- Returns something
-function thing() end
