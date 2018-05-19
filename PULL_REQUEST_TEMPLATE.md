@@ -19,3 +19,16 @@ Close #ISSUE.
 
 
 # Summary
+
+<!-- For Lua API -->
+# Related Issues
+
+Close #ISSUE.
+
+# Summary
+
+# TODO
+- [ ] Created a binding in `lua_api.cpp` inside the appropriate namespace.
+- [ ] Set the binding on the correct table in `lua::init()`.
+- [ ] Updated `.luacheckrc` with the new table value.
+- [ ] Added LDoc documentation in `doc/api`.
