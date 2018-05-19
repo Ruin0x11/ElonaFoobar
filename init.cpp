@@ -402,7 +402,6 @@ void initialize_elona()
     SDIM2(buff, 10000);
     initialize_jkey();
     load_config2();
-    load_config();
 
     initialize_keywait();
 
@@ -790,7 +789,6 @@ void initialize_elona()
     }
 }
 
-
 int run()
 {
     initialize_cat_db();
@@ -798,6 +796,8 @@ int run()
     foobar_save.initialize();
 
     title(u8"Elona Foobar version "s + latest_version.short_string());
+
+    load_config(filesystem::dir::exe() / u8"config.json");
 
     initialize_elona();
     start_elona();
@@ -1185,7 +1185,8 @@ void initialize_game()
     }
     if (mode == 3)
     {
-        load_save_data();
+        const auto save_dir = filesystem::dir::save(playerid);
+        load_save_data(save_dir);
     }
     initialize_fovmap_and_fovlist();
     initialize_map();

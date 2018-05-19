@@ -180,8 +180,54 @@ namespace elona
 {
 
 
+void config_query_language()
+{
+    buffer(4);
+    picload(filesystem::dir::graphic() / u8"lang.bmp");
+    gsel(0);
+    gmode(0);
+    p = 0;
 
-void load_config()
+    while (1)
+    {
+        boxf();
+        pos(160, 170);
+        gcopy(4, 0, 0, 340, 100);
+        pos(180, 220 + p * 20);
+        gcopy(4, 360, 6, 20, 18);
+        redraw();
+        await(30);
+        if (getkey(snail::key::down))
+        {
+            p = 1;
+        }
+        if (getkey(snail::key::keypad_2))
+        {
+            p = 1;
+        }
+        if (getkey(snail::key::up))
+        {
+            p = 0;
+        }
+        if (getkey(snail::key::keypad_8))
+        {
+            p = 0;
+        }
+        if (getkey(snail::key::enter))
+        {
+            break;
+        }
+        if (getkey(snail::key::space))
+        {
+            break;
+        }
+    }
+
+    config::instance().language = p;
+    set_config(u8"language", p);
+}
+
+void load_config(const fs::path& json_file)
 {
     // FIXME std::string{value} => value
     std::unique_ptr<config_base> config_list[] = {
@@ -683,14 +729,13 @@ void load_config()
     picojson::value value;
 
     {
-        std::ifstream file{(filesystem::dir::exe() / u8"config.json").native(),
+        std::ifstream file{json_file.native(),
                            std::ios::binary};
         if (!file)
         {
             throw config_loading_error{
                 u8"Failed to open: "s
-                + filesystem::make_preferred_path_in_utf8(
-                      filesystem::dir::exe() / u8"config.json")};
+                + filesystem::make_preferred_path_in_utf8(json_file)};
         }
         fileutil::skip_bom(file);
 
@@ -746,52 +791,9 @@ void load_config()
     {
         config::instance().startrun = 1000;
     }
-
     if (config::instance().language == -1)
     {
-        buffer(4);
-        picload(filesystem::dir::graphic() / u8"lang.bmp");
-        gsel(0);
-        gmode(0);
-        p = 0;
-
-        while (1)
-        {
-            boxf();
-            pos(160, 170);
-            gcopy(4, 0, 0, 340, 100);
-            pos(180, 220 + p * 20);
-            gcopy(4, 360, 6, 20, 18);
-            redraw();
-            await(30);
-            if (getkey(snail::key::down))
-            {
-                p = 1;
-            }
-            if (getkey(snail::key::keypad_2))
-            {
-                p = 1;
-            }
-            if (getkey(snail::key::up))
-            {
-                p = 0;
-            }
-            if (getkey(snail::key::keypad_8))
-            {
-                p = 0;
-            }
-            if (getkey(snail::key::enter))
-            {
-                break;
-            }
-            if (getkey(snail::key::space))
-            {
-                break;
-            }
-        }
-
-        config::instance().language = p;
-        set_config(u8"language", p);
+        config_query_language();
     }
     if (config::instance().language == 0)
     {
@@ -819,8 +821,6 @@ void load_config()
         set_config("key_mode2", key_ammo);
     }
 }
-
-
 
 void set_config(const std::string& key, int value)
 {

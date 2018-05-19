@@ -12,7 +12,7 @@ void lua_testcase(const std::string& filename)
     elona::lua::run_file(fs::path("tests/lua/"s + filename));
 }
 
-TEST_CASE("Core API: Map", "[Elona.Map]")
+TEST_CASE("Core API: Map", "[Lua: Elona.Map]")
 {
     //lua_testcase("map.lua");
 }

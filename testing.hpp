@@ -6,6 +6,7 @@ namespace testing
 {
 
 void pre_init();
+void post_run();
 
 /***
  * Sets world state to a clean base for testing:

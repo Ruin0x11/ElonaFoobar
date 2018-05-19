@@ -8,5 +8,9 @@ int main(int argc, char* argv[])
 
     elona::testing::pre_init();
 
-    return Catch::Session().run(argc, argv);
+    int result = Catch::Session().run(argc, argv);
+
+    elona::testing::post_run();
+
+    return result;
 }

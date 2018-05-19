@@ -389,9 +389,8 @@ void save(const fs::path& filepath, T& data, size_t begin, size_t end)
 
 
 
-void fmode_7_8(bool read)
+void fmode_7_8(bool read, const fs::path& dir)
 {
-    const auto dir = filesystem::dir::save(playerid);
     if (!fs::exists(dir))
     {
         fs::create_directory(dir);
@@ -511,6 +510,10 @@ void fmode_7_8(bool read)
             if (fs::exists(filepath))
             {
                 load(filepath, inv, 0, 1320);
+                for(int i = 0; i < 1320; i++)
+                {
+                    inv[i].idx = i;
+                }
             }
         }
         else
@@ -830,6 +833,10 @@ void fmode_14_15(bool read)
             if (fs::exists(filepath))
             {
                 load(filepath, inv, 0, 1320);
+                for(int i = 0; i < 1320; i++)
+                {
+                    inv[i].idx = i;
+                }
             }
         }
         else
@@ -1104,6 +1111,10 @@ void fmode_3_4(bool read, const fs::path& filename)
     if (read)
     {
         load(filepath, inv, 1320, 5480);
+        for(int i = 1320; i < 5480; i++)
+        {
+            inv[i].idx = i;
+        }
     }
     else
     {
@@ -1297,10 +1308,6 @@ void ctrl_file(file_operation_t file_operation)
     case file_operation_t::_6:
         fmode_5_6(file_operation == file_operation_t::_5);
         break;
-    case file_operation_t::_7:
-    case file_operation_t::_8:
-        fmode_7_8(file_operation == file_operation_t::_7);
-        break;
     case file_operation_t::_9: fmode_9(); break;
     case file_operation_t::_10: fmode_10(); break;
     case file_operation_t::_11:
@@ -1328,6 +1335,10 @@ void ctrl_file(file_operation2_t file_operation, const fs::path& filepath)
     case file_operation2_t::_3:
     case file_operation2_t::_4:
         fmode_3_4(file_operation == file_operation2_t::_3, filepath);
+        break;
+    case file_operation2_t::_7:
+    case file_operation2_t::_8:
+        fmode_7_8(file_operation == file_operation2_t::_7, filepath);
         break;
     case file_operation2_t::_23:
     case file_operation2_t::_24:

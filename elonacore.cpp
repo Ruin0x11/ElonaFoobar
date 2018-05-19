@@ -12078,13 +12078,13 @@ void create_cnpc()
 
 
 
-void load_save_data()
+void load_save_data(const fs::path& base_save_dir)
 {
     ELONA_LOG("Load save data: " << playerid);
 
     filemod = "";
     ctrl_file(file_operation_t::_10);
-    const auto save_dir = filesystem::dir::save(playerid);
+    const auto save_dir = base_save_dir / filesystem::u8path(playerid);
     buff(0).clear();
     if (!fs::exists(save_dir / u8"filelist.txt"))
     {
@@ -12119,7 +12119,7 @@ void load_save_data()
             bcopy(save_dir / s(0), filesystem::dir::tmp() / s(0));
         }
     }
-    ctrl_file(file_operation_t::_7);
+    ctrl_file(file_operation2_t::_7, save_dir);
     migrate_save_data();
     set_item_info();
     for (int cnt = 0; cnt < 16; ++cnt)
@@ -12139,8 +12139,12 @@ void load_save_data()
 }
 
 
-
 void save_game()
+{
+    save_game(filesystem::dir::save());
+}
+
+void save_game(const fs::path& base_save_dir)
 {
     ELONA_LOG("Save game: " << playerid);
 
@@ -12158,7 +12162,7 @@ void save_game()
     ctrl_file(file_operation2_t::_4, u8"inv_"s + mid + u8".s2");
     save_f = 0;
     for (const auto& entry : filesystem::dir_entries{
-             filesystem::dir::save(), filesystem::dir_entries::type::dir})
+             base_save_dir, filesystem::dir_entries::type::dir})
     {
         if (filesystem::to_utf8_path(entry.path().filename()) == playerid)
         {
@@ -12166,7 +12170,7 @@ void save_game()
             break;
         }
     }
-    const auto save_dir = filesystem::dir::save(playerid);
+    const auto save_dir = base_save_dir / filesystem::u8path(playerid);
     if (save_f == 0)
     {
         mkdir(save_dir);
@@ -12193,7 +12197,7 @@ void save_game()
             }
         }
     }
-    ctrl_file(file_operation_t::_8);
+    ctrl_file(file_operation2_t::_8, save_dir);
     filemod = "";
     buff(0).clear();
     for (const auto& entry :
@@ -12206,7 +12210,7 @@ void save_game()
     notesel(buff);
     {
         std::ofstream out{
-            (filesystem::dir::save(playerid) / u8"filelist.txt").native(),
+            (save_dir / u8"filelist.txt").native(),
             std::ios::binary};
         out << buff(0) << std::endl;
     }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "filesystem.hpp"
 #include "lib/noncopyable.hpp"
 
 
@@ -78,6 +79,7 @@ public:
     int use_autopick_in_conquered_nefia;
     int use_autopick_in_conquered_quest_map;
 
+    bool is_test = false; // testing use only
 
 private:
     config() = default;
@@ -86,8 +88,7 @@ private:
 
 
 void load_config2();
-void load_config();
-
+void load_config(const fs::path& json_file);
 
 void set_config(const std::string& key, int value);
 void set_config(const std::string& key, const std::string& value);

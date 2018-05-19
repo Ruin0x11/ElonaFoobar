@@ -1596,7 +1596,7 @@ void set_option()
                 set_option();
                 return;
             }
-            load_config();
+            load_config(filesystem::dir::exe() / u8"config.json");
             if (mode == 0)
             {
                 if (config::instance().net)
