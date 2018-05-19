@@ -18,3 +18,8 @@ snail/Debug
 snail/snail.dir
 snail/snail.vcxproj*
 cmake_install.cmake
+tests/data/save/sav_ruin/
+
+GPATH
+GRTAGS
+GTAGS

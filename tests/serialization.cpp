@@ -4,10 +4,10 @@
 
 #include "../ability.hpp"
 #include "../character.hpp"
+#include "../enums.hpp"
 #include "../filesystem.hpp"
 #include "../foobar_save.hpp"
 #include "../init.hpp"
-#include "../item.hpp"
 #include "../item.hpp"
 #include "../itemgen.hpp"
 #include "../lua.hpp"
@@ -46,6 +46,7 @@ void start_in_debug_map()
 void save_and_reload()
 {
     save_game(save_dir);
+    elona::testing::reset_state();
     elona::firstturn = 1;
     load_save_data(save_dir);
 }
@@ -57,14 +58,37 @@ TEST_CASE("Test character saving and reloading", "[C++: Serialization]")
     int y = 8;
     REQUIRE(chara_create(-1, putit_proto_id, x, y));
     int index = elona::rc;
+    cdata[index].is_floating() = true;
 
     save_and_reload();
 
     REQUIRE(elona::cdata(index).state != 0);
-    REQUIRE(elona::cdata(index).position.x == x);
-    REQUIRE(elona::cdata(index).position.y == y);
-    REQUIRE_THAT(elona::cdatan(0, index), Contains("プチ"));
-    REQUIRE(elona::cdatan(2, index) == "slime");
+    REQUIRE(elona::cdata(index).position.x == 4);
+    REQUIRE(elona::cdata(index).position.y == 8);
+    REQUIRE(elona::cdata(index).id == 3);
+    REQUIRE(elona::cdata(index).is_floating() == true);
+}
+
+TEST_CASE("Test item saving and reloading", "[C++: Serialization]")
+{
+    start_in_debug_map();
+    int x = 4;
+    int y = 8;
+    int number = 3;
+    REQUIRE(itemcreate(-1, putitoro_proto_id, x, y, number));
+    int index = elona::ci;
+    ibitmod(6, index, 1);
+    elona::inv(index).curse_state = curse_state_t::blessed;
+
+    save_and_reload();
+
+    REQUIRE(elona::inv(index).number == 3);
+    REQUIRE(elona::inv(index).id == putitoro_proto_id);
+    REQUIRE(elona::inv(index).position.x == 4);
+    REQUIRE(elona::inv(index).position.y == 8);
+    REQUIRE(elona::inv(index).curse_state == curse_state_t::blessed);
+    REQUIRE(elona::ibit(6, index) == 1);
+    REQUIRE(itemname(index) == "3個のプチトロ(媚薬混入)");
 }
 
 TEST_CASE("Test party character index preservation", "[C++: Serialization]")

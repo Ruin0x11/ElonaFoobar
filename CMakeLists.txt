@@ -37,6 +37,10 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
+# Options
+option(WITH_TESTS "Enable building test executable" OFF)
+
+
 # Source files
 set(CORE_SOURCES
     ability.cpp
@@ -302,19 +306,24 @@ INSTALL(CODE "
     fixup_bundle(\"${APPS}\" \"\" \"${DIRS}\")
     " COMPONENT Runtime)
 
-
-
 # Testing
-set (CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/catch})
-add_library(Catch INTERFACE)
-target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
+if(WITH_TESTS)
+  set (CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/catch})
+  add_library(Catch INTERFACE)
+  target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 
-# Test sources
-set(TEST_SOURCES
-  tests/tests.cpp
-  tests/lua_api.cpp
-  tests/serialization.cpp
-)
-add_executable(tests ${TEST_SOURCES})
-target_link_libraries(tests Catch)
-target_link_libraries(tests ${PROJECT_NAME})
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                     COMMAND ${CMAKE_COMMAND} -E copy_directory
+                     "${CMAKE_CURRENT_SOURCE_DIR}/tests/data"
+                     "$<TARGET_FILE_DIR:${PROJECT_NAME}>/tests/data")
+
+  # Test sources
+  set(TEST_SOURCES
+    tests/tests.cpp
+    tests/lua_api.cpp
+    tests/serialization.cpp
+    )
+  add_executable(test_runner ${TEST_SOURCES})
+  target_link_libraries(test_runner Catch)
+  target_link_libraries(test_runner ${PROJECT_NAME})
+endif()
