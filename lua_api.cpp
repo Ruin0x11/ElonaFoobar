@@ -243,17 +243,17 @@ void Map::set_tile_memory_xy(int x, int y, tile_kind_t type)
 }
 
 
-namespace Fov {
+namespace FOV {
 bool los(const position_t&, const position_t&);
 bool you_see(const character&);
 };
 
-bool Fov::los(const position_t& from, const position_t& to)
+bool FOV::los(const position_t& from, const position_t& to)
 {
     return elona::fov_los(from.x, from.y, to.x, to.y) == 1;
 }
 
-bool Fov::you_see(const character& character)
+bool FOV::you_see(const character& character)
 {
     return elona::is_in_fov(character.idx);
 }
@@ -405,8 +405,8 @@ void init_api(std::unique_ptr<sol::state>& state)
 {
     state.get()->new_usertype<position_t>( "LuaPosition",
                                            sol::constructors<position_t()>(),
-                                           "x", &position::x,
-                                           "y", &position::y,
+                                           "x", &position_t::x,
+                                           "y", &position_t::y
         );
     state.get()->new_usertype<character>( "LuaCharacter",
                                         "damage_hp", &LuaCharacter::mut_damage_hp,
@@ -443,9 +443,9 @@ void init_api(std::unique_ptr<sol::state>& state)
     sol::table World = Elona.create_named("World");
     World.set_function("time", World::time);
 
-    sol::table Fov = Elona.create_named("Fov");
-    Fov.set_function("los", Fov::los);
-    Fov.set_function("you_see", Fov::you_see);
+    sol::table FOV = Elona.create_named("FOV");
+    FOV.set_function("los", FOV::los);
+    FOV.set_function("you_see", FOV::you_see);
 
     sol::table Item = Elona.create_named("Item");
     Item.set_function("create", sol::overload(Item::create, Item::create_xy));

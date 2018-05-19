@@ -129,7 +129,7 @@ stds.elona = {
                     "cast"
                  },
               },
-              Fov = {
+              FOV = {
                  fields = {
                     "los", "you_see"
                  },

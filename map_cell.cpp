@@ -278,25 +278,25 @@ static int _random_tile(elona_vector1<int> tile)
     return tile(0) + (rnd(tile(2)) == 0) * rnd(tile(1));
 }
 
-int cell_get_type(tile_type_t type)
+int cell_get_type(tile_kind_t type)
 {
     // TODO dedup from map_converttile?
     elona_vector1<int> tile;
     switch(type)
     {
-    case tile_type_t::normal:
+    case tile_kind_t::normal:
         tile = tile_default;
         break;
-    case tile_type_t::wall:
+    case tile_kind_t::wall:
         tile = tile_wall;
         break;
-    case tile_type_t::tunnel:
+    case tile_kind_t::tunnel:
         tile = tile_tunnel;
         break;
-    case tile_type_t::room:
+    case tile_kind_t::room:
         tile = tile_room;
         break;
-    case tile_type_t::fog:
+    case tile_kind_t::fog:
         tile = tile_fog;
         break;
     default:

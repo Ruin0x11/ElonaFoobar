@@ -1,5 +1,5 @@
-シャンガ
-光を嫌う弓
+アネネコ
+停止の守り手
 giant
 warrior
 
@@ -158,8 +158,18 @@ warrior
 
 
 
-コブビット
-ホワイト・オブ・ハート
+ゴルァダオス
+華麗なる生贄
+norland
+wizard
+
+
+
+
+
+
+ウラネコ
+血まみれの不浄
 norland
 warrior
 
@@ -168,8 +178,8 @@ warrior
 
 
 
-セズアク
-首謀者の雪月花
+エリ
+つたない心
 norland
 warrior
 
@@ -178,8 +188,8 @@ warrior
 
 
 
-プタン
-ブレス大佐
+レオリーツ
+傷の幻術使い
 norland
 wizard
 
@@ -188,28 +198,8 @@ wizard
 
 
 
-トル
-タイガーフェイリア
-norland
-archer
-
-
-
-
-
-
-シュウガ
-戒律の将軍
-norland
-wizard
-
-
-
-
-
-
-ピーナルド
-飛べる白銀
+ワレズ
+黒をまとう雷
 norland
 warrior
 
@@ -218,8 +208,8 @@ warrior
 
 
 
-セイリック
-鷲の災い
+ムビン
+森番の教皇
 norland
 archer
 
@@ -228,18 +218,8 @@ archer
 
 
 
-ニコ
-真っ青な暗殺者
-norland
-archer
-
-
-
-
-
-
-カンザ
-骨っぽい教官
+コルンゴ
+英雄になりたい脅迫
 norland
 wizard
 
@@ -248,178 +228,8 @@ wizard
 
 
 
-デイソー
-踊りの弓
-norland
-wizard
-
-
-
-
-
-
-アバ
-跳ねる中毒者
-norland
-archer
-
-
-
-
-
-
-オゾロッタ
-声の法王
-norland
-wizard
-
-
-
-
-
-
-ニーツェン
-兄の未来
-norland
-wizard
-
-
-
-
-
-
-ロバタン
-デッドスピア
-norland
-archer
-
-
-
-
-
-
-キニック
-紅のダイヤモンド
-norland
-archer
-
-
-
-
-
-
-シュナルク
-幽霊のフュージョン
-norland
-archer
-
-
-
-
-
-
-ロバザス
-刃のシャウト
-norland
-wizard
-
-
-
-
-
-
-ライオン
-レフティトゥモロー
-norland
-archer
-
-
-
-
-
-
-イロビン
-父のための停滞
-norland
-wizard
-
-
-
-
-
-
-フィニー
-飛べる蜘蛛
-norland
-archer
-
-
-
-
-
-
-ヨレズ
-赤き戦士
-norland
-wizard
-
-
-
-
-
-
-チュ
-ハイヤードカーズ
-norland
-wizard
-
-
-
-
-
-
-テオーコリー
-闇に染まった抗争
-norland
-wizard
-
-
-
-
-
-
-ズージス
-はむかう使者
-norland
-wizard
-
-
-
-
-
-
-ファアン
-闇に染まった悪人
-norland
-archer
-
-
-
-
-
-
-ミシェゲス
-ザ・ハンマー
-norland
-archer
-
-
-
-
-
-
-カンザーンゴ
-時の無政府
+ライアホーク
+昔なじみの死体
 norland
 warrior
 
@@ -428,8 +238,8 @@ warrior
 
 
 
-イルミス
-カオティックニュートラル
+ナスー
+番犬のブレイド
 norland
 warrior
 
@@ -438,8 +248,8 @@ warrior
 
 
 
-オル
-真夜中のジェネラル
+ミヤ
+完璧の信頼
 norland
 wizard
 
@@ -448,8 +258,8 @@ wizard
 
 
 
-ハイラス
-一なる裏切り者
+アバルッタ
+略奪者の破局
 norland
 archer
 
@@ -458,58 +268,8 @@ archer
 
 
 
-ハッタ
-定めに従う魔力
-norland
-wizard
-
-
-
-
-
-
-ネロムス
-虐殺する魔石
-norland
-wizard
-
-
-
-
-
-
-オベシャック
-愛情の玩具
-norland
-wizard
-
-
-
-
-
-
-ズーツェン
-夕昏のスパイダー
-norland
-wizard
-
-
-
-
-
-
-サイラルク
-忍者のエース
-norland
-archer
-
-
-
-
-
-
-ヅポンド
-ハーベスト定め
+ギザナード
+時を操る猫
 norland
 warrior
 
@@ -518,8 +278,8 @@ warrior
 
 
 
-ココール
-時間のかかる伯爵
+アヘハエラ
+ドゥルロウ
 norland
 archer
 
@@ -528,8 +288,8 @@ archer
 
 
 
-ソビン
-猟犬の定め
+ロベタリ
+槌を振るう大佐
 norland
 warrior
 
@@ -538,8 +298,248 @@ warrior
 
 
 
-カザフォース
-完全なる化身
+セズイヌ
+闇に染まる遺産
+norland
+warrior
+
+
+
+
+
+
+フレオーモフ
+プラチナのミート
+norland
+warrior
+
+
+
+
+
+
+イオコード
+鬼のような闘牛
+norland
+archer
+
+
+
+
+
+
+デルデスタン
+虎を殺す復活
+norland
+archer
+
+
+
+
+
+
+タイベット
+サンエオン
+norland
+warrior
+
+
+
+
+
+
+ラザデン
+素晴らしき星
+norland
+archer
+
+
+
+
+
+
+オミガン
+竜の豹
+norland
+warrior
+
+
+
+
+
+
+アイワーツ
+狐の帝
+norland
+warrior
+
+
+
+
+
+
+ログラ
+ドクタータイム
+norland
+wizard
+
+
+
+
+
+
+モモック
+ゴールデンアンデッド
+norland
+archer
+
+
+
+
+
+
+ゴルァ
+奇跡を起こす無限
+norland
+warrior
+
+
+
+
+
+
+ヘダー
+キー・オブ・ハート
+norland
+wizard
+
+
+
+
+
+
+カフノルド
+紫をまとう溶岩
+norland
+wizard
+
+
+
+
+
+
+ヤー
+籠に篭る仲間
+norland
+wizard
+
+
+
+
+
+
+イソニー
+ロードビクトリー
+norland
+archer
+
+
+
+
+
+
+レダオラ
+イモータルグラウンド
+norland
+archer
+
+
+
+
+
+
+アレクベルク
+絶対鋼鉄
+norland
+archer
+
+
+
+
+
+
+フレア
+迷える地震
+norland
+archer
+
+
+
+
+
+
+オディゼ
+かわいい黄
+norland
+archer
+
+
+
+
+
+
+ナゾディ
+ラバーズハーベスト
+norland
+warrior
+
+
+
+
+
+
+オスファウス
+絶対的な前世
+norland
+archer
+
+
+
+
+
+
+ルハルト
+元気になった飛行
+norland
+archer
+
+
+
+
+
+
+ラザノン
+マッチレスサムライ
+norland
+warrior
+
+
+
+
+
+
+セスロイ
+狭の白
+norland
+archer
+
+
+
+
+
+
+カザギスタン
+愛の絶対神
 norland
 archer
 

@@ -1,6 +1,6 @@
 --- Functions for testing visibility.
---  @usage local Fov = Elona.Fov
-module "Fov"
+--  @usage local FOV = Elona.FOV
+module "FOV"
 
 --- Checks if there is line of sight between two positions in the current map.
 -- @tparam LuaPosition from (const) the position from
