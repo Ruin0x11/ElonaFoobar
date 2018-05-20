@@ -58,7 +58,7 @@ roran
 
 
 
-吟遊詩人のフズス
+吟遊詩人のアイシャック
 
 juere
 pianist
@@ -68,7 +68,7 @@ pianist
 
 
 
-釣具店の店主のドホーク
+釣具店の店主のカブハエラ
 
 norland
 gunner
@@ -78,7 +78,7 @@ gunner
 
 
 
-武具店の店主のブノア
+武具店の店主のフレアヨン
 
 norland
 gunner
@@ -88,7 +88,7 @@ gunner
 
 
 
-交易店の店主のミシュロンド
+交易店の店主のナバーフィス
 
 norland
 gunner
@@ -98,7 +98,7 @@ gunner
 
 
 
-雑貨屋の店主のファーシド
+雑貨屋の店主のアロナイル
 
 norland
 gunner
@@ -108,7 +108,7 @@ gunner
 
 
 
-魔法店の魔術士のザノート
+魔法店の魔術士のギコ
 
 norland
 wizard
@@ -118,7 +118,7 @@ wizard
 
 
 
-宿屋の店主のアロ
+宿屋の店主のカザーサンダー
 
 norland
 gunner
@@ -128,7 +128,7 @@ gunner
 
 
 
-パン屋の店主のバム
+パン屋の店主のエイミアン
 
 norland
 gunner
@@ -138,7 +138,7 @@ gunner
 
 
 
-魔術士のイオロナ
+魔術士のセサー
 
 norland
 wizard
@@ -148,7 +148,7 @@ wizard
 
 
 
-バーテンダーのモノード
+バーテンダーのモデア
 
 norland
 gunner
@@ -158,7 +158,7 @@ gunner
 
 
 
-癒し手のトナート
+癒し手のネネス
 
 norland
 warrior
@@ -168,7 +168,7 @@ warrior
 
 
 
-ヴェルニースの長のサルッチ
+ヴェルニースの長のオグディス
 
 norland
 gunner
@@ -178,7 +178,7 @@ gunner
 
 
 
-ギルドのトレイナーのゴルアク
+ギルドのトレイナーのケハルト
 
 norland
 warrior
@@ -188,7 +188,7 @@ warrior
 
 
 
-情報屋のオズフィス
+情報屋のメナルド
 
 norland
 warrior
@@ -198,7 +198,7 @@ warrior
 
 
 
-市民のネファス
+市民のフレインバ
 
 yerles
 warrior
@@ -208,7 +208,7 @@ warrior
 
 
 
-市民のギガ
+市民のチャウン
 
 yerles
 warrior
@@ -218,7 +218,7 @@ warrior
 
 
 
-市民のヘノード
+市民のトミアン
 
 yerles
 warrior
@@ -228,7 +228,7 @@ warrior
 
 
 
-市民のオグコリー
+市民のセログ
 
 yerles
 warrior
@@ -238,7 +238,7 @@ warrior
 
 
 
-市民のミシュビア
+市民のオベゴス
 
 yerles
 warrior
@@ -248,7 +248,7 @@ warrior
 
 
 
-市民のトル
+市民のラザ
 
 yerles
 warrior
@@ -258,7 +258,7 @@ warrior
 
 
 
-市民のオル
+市民のホー
 
 yerles
 warrior
@@ -268,7 +268,7 @@ warrior
 
 
 
-市民のラト
+市民のミシャエッタ
 
 yerles
 warrior
@@ -278,17 +278,7 @@ warrior
 
 
 
-ガードのカイノーツ
-
-yerles
-archer
-
-
-
-
-
-
-ガードのアロラーガ
+ガードのタオロフ
 
 yerles
 archer
@@ -298,7 +288,7 @@ archer
 
 
 
-ガードのフォコール
+ガードのセイネコ
 
 yerles
 archer
@@ -308,7 +298,7 @@ archer
 
 
 
-ガードのヘルレズ
+ガードのスワート
 
 yerles
 archer
@@ -318,7 +308,17 @@ archer
 
 
 
-鉱夫のムッカー
+ガードのコタマ
+
+yerles
+archer
+
+
+
+
+
+
+老人のギユン
 
 norland
 tourist
@@ -328,7 +328,7 @@ tourist
 
 
 
-鉱夫のラワート
+鉱夫のワイハエル
 
 norland
 tourist
@@ -338,7 +338,7 @@ tourist
 
 
 
-鉱夫のログメス
+老人のゲジス
 
 norland
 tourist
@@ -348,37 +348,7 @@ tourist
 
 
 
-老人のコギスタン
-
-norland
-tourist
-
-
-
-
-
-
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-鉱夫のカズガン
-
-norland
-tourist
-
-
-
-
-
-
-乞食のミシテン
+鉱夫のポジス
 
 norland
 tourist
@@ -398,7 +368,7 @@ warrior
 
 
 
-乞食のギズファウス
+鉱夫のアハート
 
 norland
 tourist
@@ -408,7 +378,7 @@ tourist
 
 
 
-街の子供のフレオヤス
+乞食のウラルイン
 
 norland
 tourist
@@ -418,7 +388,7 @@ tourist
 
 
 
-鉱夫のアレクラーガ
+鉱夫のアマフック
 
 norland
 tourist
@@ -428,7 +398,7 @@ tourist
 
 
 
-老人のキスヤン
+鉱夫のコブダオラ
 
 norland
 tourist
@@ -438,7 +408,7 @@ tourist
 
 
 
-老人のオズンソー
+老人のレバーゲン
 
 norland
 tourist
@@ -448,27 +418,7 @@ tourist
 
 
 
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-鉱夫のアフンガ
+街の子供のライオサンド
 
 norland
 tourist
@@ -478,7 +428,7 @@ tourist
 
 
 
-乞食のエロナート
+乞食のジルレル
 
 norland
 tourist
@@ -488,7 +438,7 @@ tourist
 
 
 
-鉱夫のテオヒモス
+鉱夫のワグ
 
 norland
 tourist
@@ -498,7 +448,7 @@ tourist
 
 
 
-鉱夫のフレオロック
+鉱夫のブフィー
 
 norland
 tourist
@@ -518,7 +468,7 @@ warrior
 
 
 
-街の子供のジネード
+乞食のセイッテイ
 
 norland
 tourist
@@ -528,7 +478,7 @@ tourist
 
 
 
-鉱夫のシャドン
+鉱夫のツエイス
 
 norland
 tourist
@@ -538,7 +488,7 @@ tourist
 
 
 
-鉱夫のアデルウン
+街の子供のカブーラーガ
 
 norland
 tourist
@@ -548,7 +498,7 @@ tourist
 
 
 
-鉱夫のプルート
+街の子供のニスー
 
 norland
 tourist
@@ -558,7 +508,57 @@ tourist
 
 
 
-鉱夫のオグバード
+鉱夫のデルロート
+
+norland
+tourist
+
+
+
+
+
+
+鉱夫のアロダス
+
+norland
+tourist
+
+
+
+
+
+
+鉱夫のマナルク
+
+norland
+tourist
+
+
+
+
+
+
+傭兵
+
+norland
+warrior
+
+
+
+
+
+
+街の子供のギコルス
+
+norland
+tourist
+
+
+
+
+
+
+老人のアルシド
 
 norland
 tourist

@@ -18,7 +18,7 @@ gunner
 
 
 
-街の子供のサインバ
+街の子供のバンソー
 
 norland
 tourist
@@ -28,7 +28,7 @@ tourist
 
 
 
-街の子供のルノン
+街の子供のアロロス
 
 norland
 tourist
@@ -38,7 +38,7 @@ tourist
 
 
 
-街の子供のモワーツ
+街の子供のワイコリー
 
 norland
 tourist
@@ -48,7 +48,7 @@ tourist
 
 
 
-吟遊詩人のウラギス
+吟遊詩人のエイミ
 
 juere
 pianist
@@ -78,7 +78,7 @@ warrior
 
 
 
-バーテンダーのダイノア
+バーテンダーのウラットー
 
 norland
 gunner
@@ -88,7 +88,7 @@ gunner
 
 
 
-癒し手のジルヘド
+癒し手のナルビー
 
 norland
 warrior
@@ -98,7 +98,7 @@ warrior
 
 
 
-シスターのアレデリア
+シスターのホホース
 
 norland
 wizard
@@ -108,7 +108,7 @@ wizard
 
 
 
-武具店の店主のオグー
+武具店の店主のエロネル
 
 norland
 gunner
@@ -118,7 +118,7 @@ gunner
 
 
 
-雑貨屋の店主のニコシャス
+雑貨屋の店主のライオネコ
 
 norland
 gunner
@@ -128,7 +128,7 @@ gunner
 
 
 
-宿屋の店主のベルミー
+宿屋の店主のオベダン
 
 norland
 gunner
@@ -138,7 +138,7 @@ gunner
 
 
 
-パン屋の店主のチャタマ
+パン屋の店主のショス
 
 norland
 gunner
@@ -148,7 +148,7 @@ gunner
 
 
 
-魔法店の魔術士のカザトリ
+魔法店の魔術士のゼーデン
 
 norland
 wizard
@@ -158,7 +158,7 @@ wizard
 
 
 
-交易店の店主のギザリス
+交易店の店主のニンソー
 
 norland
 gunner
@@ -168,7 +168,7 @@ gunner
 
 
 
-ノイエルの長のナゴ
+ノイエルの長のシュル
 
 norland
 gunner
@@ -178,7 +178,7 @@ gunner
 
 
 
-ギルドのトレイナーのフォーギン
+ギルドのトレイナーのライアライス
 
 norland
 warrior
@@ -188,7 +188,7 @@ warrior
 
 
 
-魔術士のガンダロッタ
+魔術士のナゾー
 
 norland
 wizard
@@ -198,7 +198,7 @@ wizard
 
 
 
-情報屋のロベンガ
+情報屋のトドールイン
 
 norland
 warrior
@@ -208,7 +208,7 @@ warrior
 
 
 
-市民のホザスタン
+市民のタオー
 
 yerles
 warrior
@@ -218,7 +218,7 @@ warrior
 
 
 
-市民のサマルー
+市民のサイエイス
 
 yerles
 warrior
@@ -228,7 +228,7 @@ warrior
 
 
 
-市民のガンダイガ
+市民のギザレア
 
 yerles
 warrior
@@ -238,7 +238,7 @@ warrior
 
 
 
-市民のフィーフィス
+市民のモナロン
 
 yerles
 warrior
@@ -248,7 +248,7 @@ warrior
 
 
 
-市民のモナダス
+市民のワハド
 
 yerles
 warrior
@@ -258,7 +258,7 @@ warrior
 
 
 
-市民のエイー
+市民のセロ
 
 yerles
 warrior
@@ -268,17 +268,7 @@ warrior
 
 
 
-ガードのケフシャック
-
-yerles
-archer
-
-
-
-
-
-
-ガードのギズ
+ガードのカノード
 
 yerles
 archer
@@ -288,7 +278,7 @@ archer
 
 
 
-ガードのフリオボス
+ガードのエイミッカー
 
 yerles
 archer
@@ -298,7 +288,17 @@ archer
 
 
 
-街の子供のナルアッタ
+ガードのベルシャーク
+
+yerles
+archer
+
+
+
+
+
+
+街の子供のキザルイン
 
 norland
 tourist
@@ -308,7 +308,7 @@ tourist
 
 
 
-街の子供のニダオラ
+街の子供のソラーナ
 
 norland
 tourist
@@ -318,7 +318,7 @@ tourist
 
 
 
-街の子供のモビー
+街の子供のメワート
 
 norland
 tourist
@@ -328,7 +328,7 @@ tourist
 
 
 
-街の子供のライザスタン
+街の子供のアジナイル
 
 norland
 tourist
@@ -338,7 +338,7 @@ tourist
 
 
 
-街の子供のチュ
+街の子供のアラツェン
 
 norland
 tourist
@@ -348,7 +348,7 @@ tourist
 
 
 
-街の子供のセイロフ
+街の子供のカブアッタ
 
 norland
 tourist
@@ -358,7 +358,7 @@ tourist
 
 
 
-街の子供のコナス
+街の子供のカブガー
 
 norland
 tourist
@@ -368,7 +368,7 @@ tourist
 
 
 
-街の子供のノロゴス
+街の子供のセサムー
 
 norland
 tourist
@@ -378,7 +378,7 @@ tourist
 
 
 
-街の子供のヅリス
+乞食のナルリズ
 
 norland
 tourist
@@ -388,7 +388,7 @@ tourist
 
 
 
-街の子供のフレオノン
+修道女のイオヒモス
 
 norland
 tourist
@@ -398,7 +398,7 @@ tourist
 
 
 
-修道女のカザルー
+修道女のアリフォース
 
 norland
 tourist
@@ -408,7 +408,7 @@ tourist
 
 
 
-老人のワグホーク
+老人のタイラーガ
 
 norland
 tourist
@@ -418,7 +418,7 @@ tourist
 
 
 
-乞食のフレイルー
+街の子供のゲオン
 
 norland
 tourist
@@ -428,7 +428,7 @@ tourist
 
 
 
-修道女のファアク
+街の子供のフェヘド
 
 norland
 tourist
@@ -438,37 +438,7 @@ tourist
 
 
 
-老人のサル
-
-norland
-tourist
-
-
-
-
-
-
-老人のフレオーラルド
-
-norland
-tourist
-
-
-
-
-
-
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-老人のウリ
+修道女のレオ
 
 norland
 tourist
@@ -488,7 +458,7 @@ warrior
 
 
 
-乞食のオズゴス
+老人のイロ
 
 norland
 tourist
@@ -498,7 +468,7 @@ tourist
 
 
 
-乞食のゴルワー
+修道女のサマディス
 
 norland
 tourist
@@ -508,7 +478,7 @@ tourist
 
 
 
-修道女のフレインソー
+乞食のサルデオス
 
 norland
 tourist
@@ -518,7 +488,7 @@ tourist
 
 
 
-修道女のタオッタ
+修道女のタイ
 
 norland
 tourist
@@ -528,7 +498,7 @@ tourist
 
 
 
-街の子供のオゾニー
+修道女のエロフォン
 
 norland
 tourist
@@ -538,27 +508,7 @@ tourist
 
 
 
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-乞食のロアク
+修道女のアマレル
 
 norland
 tourist
@@ -568,37 +518,7 @@ tourist
 
 
 
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-貴族のオグファス
-
-norland
-warrior
-
-
-
-
-
-
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-乞食のコブネック
+修道女のギザハエラ
 
 norland
 tourist
@@ -608,27 +528,7 @@ tourist
 
 
 
-乞食のクフム
-
-norland
-tourist
-
-
-
-
-
-
-老人のウラコール
-
-norland
-tourist
-
-
-
-
-
-
-街の子供のガーベルク
+街の子供のフノフ
 
 norland
 tourist
@@ -658,7 +558,17 @@ warrior
 
 
 
-街の子供のチャナルド
+傭兵
+
+norland
+warrior
+
+
+
+
+
+
+修道女のアディス
 
 norland
 tourist
@@ -668,17 +578,37 @@ tourist
 
 
 
-乞食のミド
+貴族のアレデリア
 
 norland
-tourist
+warrior
 
 
 
 
 
 
-老人のオディ
+貴族のセスベルト
+
+norland
+warrior
+
+
+
+
+
+
+貴族のキス
+
+norland
+warrior
+
+
+
+
+
+
+老人のセサカス
 
 norland
 tourist
@@ -689,6 +619,76 @@ tourist
 
 
 傭兵
+
+norland
+warrior
+
+
+
+
+
+
+乞食のオミギン
+
+norland
+tourist
+
+
+
+
+
+
+貴族のミシュ
+
+norland
+warrior
+
+
+
+
+
+
+老人のオグソード
+
+norland
+tourist
+
+
+
+
+
+
+街の子供のセル
+
+norland
+tourist
+
+
+
+
+
+
+傭兵
+
+norland
+warrior
+
+
+
+
+
+
+傭兵
+
+norland
+warrior
+
+
+
+
+
+
+貴族のカザフォス
 
 norland
 warrior

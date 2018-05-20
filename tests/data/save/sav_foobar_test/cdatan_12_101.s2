@@ -28,7 +28,7 @@ gunner
 
 
 
-雑貨屋の店主のアレクサミー
+雑貨屋の店主のセロネック
 
 norland
 gunner
@@ -38,7 +38,7 @@ gunner
 
 
 
-宿屋の店主のエロシエル
+宿屋の店主のビゴス
 
 norland
 gunner
@@ -48,7 +48,7 @@ gunner
 
 
 
-何でも屋の店主のサルロン
+何でも屋の店主のウシド
 
 norland
 gunner
@@ -58,7 +58,7 @@ gunner
 
 
 
-交易店の店主のイシュシャーク
+交易店の店主のフレアナン
 
 norland
 gunner
@@ -68,7 +68,7 @@ gunner
 
 
 
-馬屋の店主のナバネス
+馬屋の店主のアフルート
 
 norland
 gunner
@@ -78,7 +78,7 @@ gunner
 
 
 
-駄馬のナゾオード
+駄馬のペシャ
 
 horse
 
@@ -88,7 +88,7 @@ horse
 
 
 
-駄馬のベル
+駄馬のオグゲス
 
 horse
 
@@ -98,17 +98,7 @@ horse
 
 
 
-ヨウィン馬のエイミ
-
-horse
-predator
-
-
-
-
-
-
-ヨウィン馬のアジザスタン
+ヨウィン馬のボレ
 
 horse
 predator
@@ -118,7 +108,17 @@ predator
 
 
 
-ヨウィンの長のエリスロナ
+ヨウィン馬のボギスタン
+
+horse
+predator
+
+
+
+
+
+
+ヨウィンの長のフォベット
 
 norland
 gunner
@@ -128,7 +128,7 @@ gunner
 
 
 
-ギルドのトレイナーのライオロッタ
+ギルドのトレイナーのドラード
 
 norland
 warrior
@@ -138,7 +138,7 @@ warrior
 
 
 
-魔術士のタムシエル
+魔術士のアヘノック
 
 norland
 wizard
@@ -148,7 +148,7 @@ wizard
 
 
 
-情報屋のトルサ
+情報屋のイフサ
 
 norland
 warrior
@@ -168,7 +168,7 @@ warmage
 
 
 
-市民のアバト
+市民のサインバ
 
 yerles
 warrior
@@ -178,7 +178,7 @@ warrior
 
 
 
-市民のアレエッタ
+市民のタムダオス
 
 yerles
 warrior
@@ -188,7 +188,7 @@ warrior
 
 
 
-市民のコブタマ
+市民のナルナック
 
 yerles
 warrior
@@ -198,7 +198,7 @@ warrior
 
 
 
-市民のデルー
+市民のヘスフォス
 
 yerles
 warrior
@@ -208,17 +208,7 @@ warrior
 
 
 
-ガードのオディーファウス
-
-yerles
-archer
-
-
-
-
-
-
-ガードのロリーツ
+ガードのサル
 
 yerles
 archer
@@ -228,7 +218,7 @@ archer
 
 
 
-ガードのギズシャック
+ガードのブス
 
 yerles
 archer
@@ -238,7 +228,17 @@ archer
 
 
 
-街の子供のライアーバーグ
+ガードのタオラルク
+
+yerles
+archer
+
+
+
+
+
+
+農夫のアルーライス
 
 norland
 tourist
@@ -248,7 +248,7 @@ tourist
 
 
 
-街の子供のリラッタ
+農夫のアフルート
 
 norland
 tourist
@@ -258,7 +258,7 @@ tourist
 
 
 
-乞食のチホース
+農夫のトド
 
 norland
 tourist
@@ -268,17 +268,7 @@ tourist
 
 
 
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-農夫のタラロイ
+農夫のコブゼ
 
 norland
 tourist
@@ -288,67 +278,7 @@ tourist
 
 
 
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-農夫のレオポン
-
-norland
-tourist
-
-
-
-
-
-
-農夫のファシーク
-
-norland
-tourist
-
-
-
-
-
-
-農夫のムナン
-
-norland
-tourist
-
-
-
-
-
-
-農夫のロベダン
-
-norland
-tourist
-
-
-
-
-
-
-農夫のソザス
+農夫のカスビット
 
 norland
 tourist
@@ -368,7 +298,7 @@ warrior
 
 
 
-老人のオイーリス
+農夫のエバシエラ
 
 norland
 tourist
@@ -378,7 +308,7 @@ tourist
 
 
 
-農夫のカズファラ
+農夫のユゾフ
 
 norland
 tourist
@@ -388,7 +318,7 @@ tourist
 
 
 
-乞食のエリスンナ
+農夫のフオッタ
 
 norland
 tourist
@@ -398,7 +328,17 @@ tourist
 
 
 
-乞食のライオッテイ
+農夫のフリオダオス
+
+norland
+tourist
+
+
+
+
+
+
+農夫のヒサード
 
 norland
 tourist
@@ -418,57 +358,7 @@ warrior
 
 
 
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-乞食のコブガー
+街の子供のコレー
 
 norland
 tourist
@@ -478,7 +368,7 @@ tourist
 
 
 
-乞食のナルッテイ
+農夫のトーゾフ
 
 norland
 tourist
@@ -488,7 +378,7 @@ tourist
 
 
 
-老人のアエン
+街の子供のブーダー
 
 norland
 tourist
@@ -498,7 +388,7 @@ tourist
 
 
 
-乞食のサジティス
+街の子供のアルソード
 
 norland
 tourist
@@ -508,7 +398,87 @@ tourist
 
 
 
-乞食のソイザス
+老人のカバユン
+
+norland
+tourist
+
+
+
+
+
+
+傭兵
+
+norland
+warrior
+
+
+
+
+
+
+乞食のサイロン
+
+norland
+tourist
+
+
+
+
+
+
+老人のアラフォス
+
+norland
+tourist
+
+
+
+
+
+
+傭兵
+
+norland
+warrior
+
+
+
+
+
+
+乞食のオミデスタン
+
+norland
+tourist
+
+
+
+
+
+
+乞食のレバネック
+
+norland
+tourist
+
+
+
+
+
+
+傭兵
+
+norland
+warrior
+
+
+
+
+
+
+老人のカズデア
 
 norland
 tourist
@@ -538,7 +508,7 @@ warrior
 
 
 
-老人のフォーエイス
+乞食のクタガ
 
 norland
 tourist
@@ -548,7 +518,17 @@ tourist
 
 
 
-街の子供のトミヤン
+傭兵
+
+norland
+warrior
+
+
+
+
+
+
+乞食のエリナック
 
 norland
 tourist
@@ -558,7 +538,7 @@ tourist
 
 
 
-街の子供のレオーベア
+老人のウラッテイ
 
 norland
 tourist
@@ -568,10 +548,30 @@ tourist
 
 
 
-街の子供のフレイフィー
+街の子供のサロット
 
 norland
 tourist
+
+
+
+
+
+
+街の子供のアジラッタ
+
+norland
+tourist
+
+
+
+
+
+
+傭兵
+
+norland
+warrior
 
 
 

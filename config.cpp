@@ -992,14 +992,13 @@ void load_config2(const fs::path& json_file)
             [&](auto value) { config::instance().wizard = value; }),
     };
 
-    std::ifstream file{(filesystem::dir::exe() / u8"config.json").native(),
+    std::ifstream file{json_file.native(),
                        std::ios::binary};
     if (!file)
     {
         throw config_loading_error{
             u8"Failed to open: "s
-            + filesystem::make_preferred_path_in_utf8(
-                  filesystem::dir::exe() / u8"config.json")};
+            + filesystem::make_preferred_path_in_utf8(json_file)};
     }
 
     fileutil::skip_bom(file);

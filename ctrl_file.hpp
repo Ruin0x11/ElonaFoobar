@@ -7,6 +7,13 @@
 namespace elona
 {
 
+struct file_loading_error : public std::runtime_error
+{
+    file_loading_error(const std::string& message)
+        : std::runtime_error(message)
+    {
+    }
+};
 
 enum class file_operation_t
 {

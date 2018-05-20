@@ -13,12 +13,14 @@ namespace testing
 
 void pre_init()
 {
-    load_config(fs::path("tests/data/config.json"));
-    config::instance().is_test = true;
-
     initialize_cat_db();
 
+    foobar_save.initialize();
+
     title(u8"Elona Foobar version "s + latest_version.short_string());
+
+    initialize_config(fs::path("tests/data/config.json"));
+    config::instance().is_test = true;
 }
 
 void post_run()
@@ -28,7 +30,6 @@ void post_run()
 
 void reset_state()
 {
-    foobar_save.initialize();
     lua::init();
     lua::load_mod("core");
     initialize_elona();

@@ -38,7 +38,7 @@ warrior
 
 
 
-清掃員のチョガ
+清掃員のコレー
 
 norland
 gunner
@@ -48,7 +48,7 @@ gunner
 
 
 
-清掃員のセモディ
+清掃員のケフボス
 
 norland
 gunner
@@ -58,7 +58,7 @@ gunner
 
 
 
-清掃員のクフネード
+清掃員のアヘエス
 
 norland
 gunner
@@ -68,7 +68,7 @@ gunner
 
 
 
-吟遊詩人のセルハック
+吟遊詩人のミシャシャス
 
 juere
 pianist
@@ -78,7 +78,7 @@ pianist
 
 
 
-交易店の店主のハイーミア
+交易店の店主のレオザ
 
 norland
 gunner
@@ -88,7 +88,7 @@ gunner
 
 
 
-武具店の店主のヤリック
+武具店の店主のウタマ
 
 norland
 gunner
@@ -98,7 +98,7 @@ gunner
 
 
 
-雑貨屋の店主のエリスダス
+雑貨屋の店主のミシャアス
 
 norland
 gunner
@@ -108,7 +108,7 @@ gunner
 
 
 
-何でも屋の店主のアレクーラーガ
+何でも屋の店主のワイオン
 
 norland
 gunner
@@ -118,7 +118,7 @@ gunner
 
 
 
-ブラックマーケットの店主のダローグ
+ブラックマーケットの店主のタムオン
 
 norland
 gunner
@@ -128,7 +128,7 @@ gunner
 
 
 
-食品店店主のルギン
+食品店店主のセル
 
 norland
 gunner
@@ -138,7 +138,7 @@ gunner
 
 
 
-魔法店の魔術士のカンザーボス
+魔法店の魔術士のオベハエル
 
 norland
 wizard
@@ -148,7 +148,7 @@ wizard
 
 
 
-宿屋の店主のウラソー
+宿屋の店主のコーロナ
 
 norland
 gunner
@@ -158,7 +158,7 @@ gunner
 
 
 
-バーテンダーのニスハーツ
+バーテンダーのナル
 
 norland
 gunner
@@ -168,7 +168,7 @@ gunner
 
 
 
-アリーナマスターのカスシエル
+アリーナマスターのガガス
 
 norland
 warrior
@@ -188,7 +188,7 @@ warrior
 
 
 
-ポート・カプールの長のヅーファー
+ポート・カプールの長のノワート
 
 norland
 gunner
@@ -198,7 +198,7 @@ gunner
 
 
 
-ギルドのトレイナーのネーネ
+ギルドのトレイナーのコブデスタン
 
 norland
 warrior
@@ -208,7 +208,7 @@ warrior
 
 
 
-魔術士のヘルナス
+魔術士のミシュラナ
 
 norland
 wizard
@@ -218,7 +218,7 @@ wizard
 
 
 
-情報屋のイノフ
+情報屋のジルーダス
 
 norland
 warrior
@@ -228,7 +228,7 @@ warrior
 
 
 
-癒し手のダゴス
+癒し手のミスケ
 
 norland
 warrior
@@ -238,7 +238,7 @@ warrior
 
 
 
-市民のヌルー
+市民のイフシーク
 
 yerles
 warrior
@@ -248,7 +248,7 @@ warrior
 
 
 
-市民のゼウン
+市民のシウン
 
 yerles
 warrior
@@ -258,7 +258,7 @@ warrior
 
 
 
-市民のノンゴ
+市民のテハド
 
 yerles
 warrior
@@ -268,7 +268,7 @@ warrior
 
 
 
-市民のカイゼス
+市民のナゴモフ
 
 yerles
 warrior
@@ -278,7 +278,7 @@ warrior
 
 
 
-水夫のトドンバ
+水夫のキザワート
 
 norland
 thief
@@ -288,7 +288,7 @@ thief
 
 
 
-水夫のピエッタ
+水夫のキスフォード
 
 norland
 thief
@@ -298,7 +298,7 @@ thief
 
 
 
-水夫のバウン
+水夫のセイフェス
 
 norland
 thief
@@ -308,7 +308,7 @@ thief
 
 
 
-水夫のホシーク
+水夫のチネス
 
 norland
 thief
@@ -318,7 +318,7 @@ thief
 
 
 
-ガードのビゾフ
+ガードのエド
 
 norland
 archer
@@ -328,7 +328,7 @@ archer
 
 
 
-ガードのセサフィス
+ガードのハイヘド
 
 norland
 archer
@@ -338,7 +338,7 @@ archer
 
 
 
-ガードのガダス
+ガードのソガン
 
 norland
 archer
@@ -348,7 +348,7 @@ archer
 
 
 
-ガードのナルネ
+ガードのゴルーワーツ
 
 norland
 archer
@@ -358,7 +358,7 @@ archer
 
 
 
-ガードのサイホーク
+ガードのサイサンダー
 
 norland
 archer
@@ -368,7 +368,7 @@ archer
 
 
 
-船長のシャコール
+船長のオイライ
 
 norland
 warrior
@@ -378,17 +378,7 @@ warrior
 
 
 
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-乞食のエリスンナ
+老人のマラス
 
 norland
 tourist
@@ -398,7 +388,17 @@ tourist
 
 
 
-乞食のライオッテイ
+街の子供のアルソード
+
+norland
+tourist
+
+
+
+
+
+
+老人のカバユン
 
 norland
 tourist
@@ -418,57 +418,7 @@ warrior
 
 
 
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-乞食のコブガー
+乞食のサイロン
 
 norland
 tourist
@@ -478,7 +428,7 @@ tourist
 
 
 
-乞食のナルッテイ
+老人のアラフォス
 
 norland
 tourist
@@ -488,7 +438,17 @@ tourist
 
 
 
-老人のアエン
+傭兵
+
+norland
+warrior
+
+
+
+
+
+
+乞食のオミデスタン
 
 norland
 tourist
@@ -498,7 +458,7 @@ tourist
 
 
 
-乞食のサジティス
+乞食のレバネック
 
 norland
 tourist
@@ -508,7 +468,17 @@ tourist
 
 
 
-乞食のソイザス
+傭兵
+
+norland
+warrior
+
+
+
+
+
+
+老人のカズデア
 
 norland
 tourist
@@ -538,7 +508,7 @@ warrior
 
 
 
-老人のフォーエイス
+乞食のクタガ
 
 norland
 tourist
@@ -548,7 +518,17 @@ tourist
 
 
 
-街の子供のトミヤン
+傭兵
+
+norland
+warrior
+
+
+
+
+
+
+乞食のエリナック
 
 norland
 tourist
@@ -558,7 +538,7 @@ tourist
 
 
 
-街の子供のレオーベア
+老人のウラッテイ
 
 norland
 tourist
@@ -568,10 +548,30 @@ tourist
 
 
 
-街の子供のフレイフィー
+街の子供のサロット
 
 norland
 tourist
+
+
+
+
+
+
+街の子供のアジラッタ
+
+norland
+tourist
+
+
+
+
+
+
+傭兵
+
+norland
+warrior
 
 
 

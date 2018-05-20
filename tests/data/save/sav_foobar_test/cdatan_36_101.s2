@@ -28,7 +28,7 @@ wizard
 
 
 
-清掃員のジニック
+清掃員のシュデア
 
 norland
 gunner
@@ -38,7 +38,7 @@ gunner
 
 
 
-吟遊詩人のカブハエラ
+吟遊詩人のネロサ
 
 juere
 pianist
@@ -48,7 +48,7 @@ pianist
 
 
 
-吟遊詩人のセサノフ
+吟遊詩人のコバモス
 
 juere
 pianist
@@ -58,7 +58,7 @@ pianist
 
 
 
-吟遊詩人のアロバルド
+吟遊詩人のイルネス
 
 juere
 pianist
@@ -68,7 +68,7 @@ pianist
 
 
 
-吟遊詩人のカイダオス
+吟遊詩人のカニック
 
 juere
 pianist
@@ -78,7 +78,7 @@ pianist
 
 
 
-吟遊詩人のイフロード
+吟遊詩人のハネイル
 
 juere
 pianist
@@ -88,7 +88,7 @@ pianist
 
 
 
-バーテンダーのダル
+バーテンダーのトミー
 
 norland
 gunner
@@ -98,7 +98,7 @@ gunner
 
 
 
-癒し手のサルーネード
+癒し手のオルポンド
 
 norland
 warrior
@@ -108,7 +108,7 @@ warrior
 
 
 
-雑貨屋の店主のラレズ
+雑貨屋の店主のオスオン
 
 norland
 gunner
@@ -118,7 +118,7 @@ gunner
 
 
 
-宿屋の店主のガンダ
+宿屋の店主のゲバルド
 
 norland
 gunner
@@ -128,7 +128,7 @@ gunner
 
 
 
-武具店の店主のツジス
+武具店の店主のカスニック
 
 norland
 gunner
@@ -138,7 +138,7 @@ gunner
 
 
 
-パン屋の店主のゼタリ
+パン屋の店主のアレク
 
 norland
 gunner
@@ -148,7 +148,7 @@ gunner
 
 
 
-魔法店の魔術士のゼナ
+魔法店の魔術士のイルシーク
 
 norland
 wizard
@@ -158,7 +158,7 @@ wizard
 
 
 
-交易店の店主のナバー
+交易店の店主のヘダオス
 
 norland
 gunner
@@ -168,7 +168,7 @@ gunner
 
 
 
-釣具店の店主のフレアウン
+釣具店の店主のダル
 
 norland
 gunner
@@ -178,7 +178,7 @@ gunner
 
 
 
-ルミエストの長のプーラグ
+ルミエストの長のアローボス
 
 norland
 gunner
@@ -188,7 +188,7 @@ gunner
 
 
 
-ギルドのトレイナーのウラミック
+ギルドのトレイナーのアリド
 
 norland
 warrior
@@ -198,227 +198,7 @@ warrior
 
 
 
-魔術士のイロ
-
-norland
-wizard
-
-
-
-
-
-
-情報屋のゴフィー
-
-norland
-warrior
-
-
-
-
-
-
-市民のコルノ
-
-yerles
-warrior
-
-
-
-
-
-
-市民のハイロズ
-
-yerles
-warrior
-
-
-
-
-
-
-市民のボンナ
-
-yerles
-warrior
-
-
-
-
-
-
-市民のショ
-
-yerles
-warrior
-
-
-
-
-
-
-市民のタオハート
-
-yerles
-warrior
-
-
-
-
-
-
-市民のルベック
-
-yerles
-warrior
-
-
-
-
-
-
-市民のイブミー
-
-yerles
-warrior
-
-
-
-
-
-
-市民のイシュ
-
-yerles
-warrior
-
-
-
-
-
-
-市民のフレオ
-
-yerles
-warrior
-
-
-
-
-
-
-市民のオミリス
-
-yerles
-warrior
-
-
-
-
-
-
-市民のセイチス
-
-yerles
-warrior
-
-
-
-
-
-
-市民のタイボス
-
-yerles
-warrior
-
-
-
-
-
-
-ガードのライア
-
-yerles
-archer
-
-
-
-
-
-
-ガードのミシャファウス
-
-yerles
-archer
-
-
-
-
-
-
-ガードのミシー
-
-yerles
-archer
-
-
-
-
-
-
-ガードのラザロイ
-
-yerles
-archer
-
-
-
-
-
-
-ガードのロベールッタ
-
-yerles
-archer
-
-
-
-
-
-
-ガードのロシナイル
-
-yerles
-archer
-
-
-
-
-
-
-ガードのアイラック
-
-yerles
-archer
-
-
-
-
-
-
-老人のフィラルド
-
-norland
-tourist
-
-
-
-
-
-
-芸術家のケフワーツ
+魔術士のギザガー
 
 norland
 wizard
@@ -428,7 +208,207 @@ wizard
 
 
 
-芸術家のライオットー
+情報屋のトムツェン
+
+norland
+warrior
+
+
+
+
+
+
+市民のクターメス
+
+yerles
+warrior
+
+
+
+
+
+
+市民のエイ
+
+yerles
+warrior
+
+
+
+
+
+
+市民のセイヘド
+
+yerles
+warrior
+
+
+
+
+
+
+市民のヌピン
+
+yerles
+warrior
+
+
+
+
+
+
+市民のギザ
+
+yerles
+warrior
+
+
+
+
+
+
+市民のコピン
+
+yerles
+warrior
+
+
+
+
+
+
+市民のアネットー
+
+yerles
+warrior
+
+
+
+
+
+
+市民のダイッチ
+
+yerles
+warrior
+
+
+
+
+
+
+市民のニービー
+
+yerles
+warrior
+
+
+
+
+
+
+市民のノロロンド
+
+yerles
+warrior
+
+
+
+
+
+
+市民のオズファラ
+
+yerles
+warrior
+
+
+
+
+
+
+市民のアレア
+
+yerles
+warrior
+
+
+
+
+
+
+ガードのカスゲン
+
+yerles
+archer
+
+
+
+
+
+
+ガードのナバリッタ
+
+yerles
+archer
+
+
+
+
+
+
+ガードのゴルアン
+
+yerles
+archer
+
+
+
+
+
+
+ガードのタイレア
+
+yerles
+archer
+
+
+
+
+
+
+ガードのガンダミック
+
+yerles
+archer
+
+
+
+
+
+
+ガードのセイバン
+
+yerles
+archer
+
+
+
+
+
+
+ガードのチューン
+
+yerles
+archer
+
+
+
+
+
+
+芸術家のセルデリア
 
 norland
 wizard
@@ -438,47 +418,7 @@ wizard
 
 
 
-乞食のデイ
-
-norland
-tourist
-
-
-
-
-
-
-乞食のトムファウス
-
-norland
-tourist
-
-
-
-
-
-
-街の子供のアレクノン
-
-norland
-tourist
-
-
-
-
-
-
-芸術家のセサワーツ
-
-norland
-wizard
-
-
-
-
-
-
-乞食のオンガ
+乞食のキザニー
 
 norland
 tourist
@@ -498,7 +438,17 @@ warrior
 
 
 
-老人のダルンソー
+芸術家のラライ
+
+norland
+wizard
+
+
+
+
+
+
+街の子供のチュタマ
 
 norland
 tourist
@@ -508,27 +458,7 @@ tourist
 
 
 
-老人のマボス
-
-norland
-tourist
-
-
-
-
-
-
-街の子供のコブービン
-
-norland
-tourist
-
-
-
-
-
-
-芸術家のレバーフォン
+芸術家のキネス
 
 norland
 wizard
@@ -548,7 +478,27 @@ warrior
 
 
 
-老人のオグダー
+傭兵
+
+norland
+warrior
+
+
+
+
+
+
+傭兵
+
+norland
+warrior
+
+
+
+
+
+
+乞食のハディ
 
 norland
 tourist
@@ -558,27 +508,7 @@ tourist
 
 
 
-老人のミシュタ
-
-norland
-tourist
-
-
-
-
-
-
-乞食のバッテイ
-
-norland
-tourist
-
-
-
-
-
-
-芸術家のエロイン
+芸術家のヌゲン
 
 norland
 wizard
@@ -598,17 +528,7 @@ warrior
 
 
 
-芸術家のセサムス
-
-norland
-wizard
-
-
-
-
-
-
-老人のネルーネ
+老人のエリスフェス
 
 norland
 tourist
@@ -618,17 +538,7 @@ tourist
 
 
 
-傭兵
-
-norland
-warrior
-
-
-
-
-
-
-芸術家のエイ
+芸術家のエバ
 
 norland
 wizard
@@ -638,7 +548,17 @@ wizard
 
 
 
-芸術家のエイミタリ
+乞食のニコドー
+
+norland
+tourist
+
+
+
+
+
+
+芸術家のカバダン
 
 norland
 wizard
@@ -658,7 +578,7 @@ warrior
 
 
 
-街の子供のチャナルド
+街の子供のサイフィス
 
 norland
 tourist
@@ -668,7 +588,37 @@ tourist
 
 
 
-乞食のミド
+芸術家のエロシーク
+
+norland
+wizard
+
+
+
+
+
+
+傭兵
+
+norland
+warrior
+
+
+
+
+
+
+芸術家のエリゼス
+
+norland
+wizard
+
+
+
+
+
+
+街の子供のアロコール
 
 norland
 tourist
@@ -678,7 +628,37 @@ tourist
 
 
 
-老人のオディ
+老人のゴゾフ
+
+norland
+tourist
+
+
+
+
+
+
+乞食のゼハエラ
+
+norland
+tourist
+
+
+
+
+
+
+芸術家のイルメス
+
+norland
+wizard
+
+
+
+
+
+
+街の子供のセル
 
 norland
 tourist
@@ -689,6 +669,26 @@ tourist
 
 
 傭兵
+
+norland
+warrior
+
+
+
+
+
+
+傭兵
+
+norland
+warrior
+
+
+
+
+
+
+貴族のカザフォス
 
 norland
 warrior
