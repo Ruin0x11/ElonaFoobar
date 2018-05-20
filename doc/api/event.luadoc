@@ -1,0 +1,27 @@
+--- Allows you to register new event callbacks when initializing mods.
+--  @usage local Event = Elona.Event
+module "Event"
+
+--- Registers a new event handler.
+--- This function will append a new callback hander for the given
+--- event to the end of the callback list for that event. Then, when
+--- the event is fired, each callback in the list will be run in the
+--- order in which they were registered. the callback will receive an
+--- <code>event</code> parameter containing relevant data for that
+--- callback. This parameter will differ between event types. Read the
+--- documentation for the event you're handling to see the available
+--- event parameters for it.
+-- @tparam Defines.EventKind event_id the event kind to register
+-- @tparam function handler the handler for this event
+-- @usage local function my_chara_moved_handler(event)
+--     local chara_idx = event.chara_idx
+--     GUI.txt("A character with ID " .. chara_idx .. " moved. ")
+-- end
+--
+-- Event.register(Defines.EventKind.chara_moved, my_chara_moved_handler)
+function register(event_id, handler) end
+
+--- Removes an event handler.
+-- @tparam Defines.EventKind event_id the event type to remove the handler from
+-- @tparam function handler the handler to remove
+function remove(event_id, handler) end

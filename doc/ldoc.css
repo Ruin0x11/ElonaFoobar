@@ -188,8 +188,8 @@ pre.code.example code pre{margin:0}
 
 /* usage code */
 
-pre{background-color:#181818}
-code{background-color:#181818;color:#C8C8C8;font-size:1.1rem}
+pre{background-color:#282828}
+code{background-color:#282828;color:#C8C8C8;font-size:1.1rem}
 pre.code code{background-color:#282828;color:#C8C8C8;font-size:1.1rem}
 pre.code .comment{color:#75715e}
 pre.code .constant{color:#66D9EF}

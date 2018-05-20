@@ -33,6 +33,6 @@ local function my_character_init()
 end
 
 Elona.Registry.register_chara_init(my_character_init)
-Elona.Event.register(Defines.Events.chara_moved, my_movement_handler)
-Elona.Event.register(Defines.Events.player_turn, hoge)
-Elona.Event.register(Defines.Events.player_turn, foo)
+Elona.Event.register(Defines.EventKind.chara_moved, my_movement_handler)
+Elona.Event.register(Defines.EventKind.player_turn, hoge)
+Elona.Event.register(Defines.EventKind.player_turn, foo)

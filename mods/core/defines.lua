@@ -1,4 +1,4 @@
-Elona.Defines.Events = {
+Elona.Defines.EventKind = {
    chara_moved = "chara_moved",
    player_turn = "player_turn",
    all_turns_finished = "all_turns_finished",

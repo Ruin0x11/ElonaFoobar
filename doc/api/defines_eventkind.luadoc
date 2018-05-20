@@ -1,0 +1,32 @@
+--- A set of events that can be listened for using the <code>Event</code> module.
+-- @see Event
+-- @usage local Defines = Elona.Defines
+-- Event.register(Defines.EventKind.chara_moved, my_chara_moved_handler)
+module "Defines.EventKind"
+
+--- Fired when a character is about to start moving.
+-- @event chara_moved
+-- @field chara_idx the index of the character that moved
+-- @usage local function my_chara_moved_handler(event)
+--     local chara_idx = event.chara_idx
+--     GUI.txt("A character with ID " .. chara_idx .. " moved. ")
+-- end
+
+--- Fired when a player is about to perform an action.
+-- @event player_turn
+
+--- Fired when all characters have finished acting this turn.
+-- @event all_turns_finished
+
+--- Fired when the map has been loaded.
+-- @event initialized_map
+-- @usage local function place_characters()
+--     for x in 0, 5 do
+--         for y in 0, 5 do
+--             Chara.create(x, y, 3)
+--         end
+--     end
+-- end
+--
+-- Event.register(Defines.EventKind.initialized_map, place_characters)
+--

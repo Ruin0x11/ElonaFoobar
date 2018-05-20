@@ -65,5 +65,5 @@ function run_life()
 end
 
 Elona.Registry.register_map_init(my_map_init)
-Elona.Event.register(Elona.Defines.Events.initialized_map, run_life)
-Elona.Event.register(Elona.Defines.Events.all_turns_finished, run_life)
+Elona.Event.register(Elona.Defines.EventKind.initialized_map, run_life)
+Elona.Event.register(Elona.Defines.EventKind.all_turns_finished, run_life)
