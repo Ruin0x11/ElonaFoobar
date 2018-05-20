@@ -3,6 +3,7 @@
 #include "character.hpp"
 #include "item.hpp"
 #include "optional.hpp"
+#include "position.hpp"
 #include "thirdparty/sol2/sol.hpp"
 #include <vector>
 #include <any>
@@ -35,31 +36,23 @@ void store::init(sol::state &state)
 store::object serialize_userdata(const sol::object &val)
 {
     store::object obj;
-    sol::protected_function serial_fn = val.as<sol::table>()["serial_idx"];
-    auto serial_type = serial_fn.call();
-    sol::protected_function idx_fn = val.as<sol::table>()["idx"];
-    auto idx = idx_fn.call();
-    if(serial_type.valid())
+    if(val.is<character&>())
     {
-        serial_t serial_type = serial_type;
-        switch(serial_type)
-        {
-        case serial_t::character:
-        {
-            int idx = idx;
-            obj = store::character_ref(idx);
-        }
-            break;
-        case serial_t::item:
-        {
-            int idx = idx;
-            obj = store::item_ref(idx);
-        }
-            break;
-        default:
-            assert(0);
-            break;
-        }
+        character& chara = val.as<character&>();
+        assert(chara.idx != -1);
+        assert(chara.state != 0);
+        obj = store::character_ref(chara.idx);
+    }
+    else if(val.is<item&>())
+    {
+        item& i = val.as<item&>();
+        assert(i.idx != -1);
+        assert(i.number != 0);
+        obj = store::item_ref(i.idx);
+    }
+    else if(val.is<position_t>())
+    {
+        assert(0);
     }
     else
     {
@@ -128,6 +121,7 @@ sol::object store::get(std::string key, sol::this_state tstate)
     case sol::type::userdata:
         if (obj.type() == typeid(character_ref)) {
             character_ref idx = boost::get<character_ref>(obj);
+            assert(idx != -1);
 
             // Check to make sure this reference is still valid.
             if(elona::cdata(idx).state == 0)
@@ -135,11 +129,12 @@ sol::object store::get(std::string key, sol::this_state tstate)
                 return sol::nil;
             }
 
-            return sol::make_object(view, elona::cdata(static_cast<int>(idx)));
+            return sol::make_reference(view, elona::cdata(static_cast<int>(idx)));
         }
         else if (obj.type() == typeid(item_ref))
         {
             item_ref idx = boost::get<item_ref>(obj);
+            assert(idx != -1);
 
             // Check to make sure this reference is still valid.
             if(elona::inv(idx).number == 0)
@@ -147,7 +142,7 @@ sol::object store::get(std::string key, sol::this_state tstate)
                 return sol::nil;
             }
 
-            return sol::make_object(view, elona::inv(static_cast<int>(idx)));
+            return sol::make_reference(view, elona::inv(static_cast<int>(idx)));
         }
         else {
             assert(0);

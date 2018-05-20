@@ -1,7 +1,6 @@
 #include "../thirdparty/catch/catch.hpp"
 
-#include "../testing.hpp"
-
+#include "tests.hpp"
 #include "../ability.hpp"
 #include "../character.hpp"
 #include "../enums.hpp"
@@ -11,20 +10,18 @@
 #include "../item.hpp"
 #include "../itemgen.hpp"
 #include "../lua.hpp"
+#include "../testing.hpp"
 #include "../variables.hpp"
 
 using namespace Catch;
 using namespace elona::testing;
-
-int putit_proto_id = 3;
-int putitoro_proto_id = 792;
 
 TEST_CASE("Test character saving and reloading", "[C++: Serialization]")
 {
     start_in_debug_map();
     int x = 4;
     int y = 8;
-    REQUIRE(chara_create(-1, putit_proto_id, x, y));
+    REQUIRE(chara_create(-1, PUTIT_PROTO_ID, x, y));
     int index = elona::rc;
     cdata[index].is_floating() = true;
 
@@ -43,7 +40,7 @@ TEST_CASE("Test item saving and reloading", "[C++: Serialization]")
     int x = 4;
     int y = 8;
     int number = 3;
-    REQUIRE(itemcreate(-1, putitoro_proto_id, x, y, number));
+    REQUIRE(itemcreate(-1, PUTITORO_PROTO_ID, x, y, number));
     int index = elona::ci;
     ibitmod(6, index, 1);
     elona::inv(index).curse_state = curse_state_t::blessed;
@@ -51,7 +48,7 @@ TEST_CASE("Test item saving and reloading", "[C++: Serialization]")
     save_and_reload();
 
     REQUIRE(elona::inv(index).number == 3);
-    REQUIRE(elona::inv(index).id == putitoro_proto_id);
+    REQUIRE(elona::inv(index).id == PUTITORO_PROTO_ID);
     REQUIRE(elona::inv(index).position.x == 4);
     REQUIRE(elona::inv(index).position.y == 8);
     REQUIRE(elona::inv(index).curse_state == curse_state_t::blessed);
@@ -62,7 +59,7 @@ TEST_CASE("Test item saving and reloading", "[C++: Serialization]")
 TEST_CASE("Test party character index preservation", "[C++: Serialization]")
 {
     start_in_debug_map();
-    REQUIRE(chara_create(-1, putit_proto_id, 0, 0));
+    REQUIRE(chara_create(-1, PUTIT_PROTO_ID, 0, 0));
     REQUIRE(new_ally_joins());
     int index = elona::rc;
 
@@ -74,7 +71,7 @@ TEST_CASE("Test party character index preservation", "[C++: Serialization]")
 TEST_CASE("Test other character index preservation", "[C++: Serialization]")
 {
     start_in_debug_map();
-    REQUIRE(chara_create(-1, putit_proto_id, 0, 0));
+    REQUIRE(chara_create(-1, PUTIT_PROTO_ID, 0, 0));
     int index = elona::rc;
 
     save_and_reload();
@@ -85,7 +82,7 @@ TEST_CASE("Test other character index preservation", "[C++: Serialization]")
 TEST_CASE("Test item index preservation", "[C++: Serialization]")
 {
     start_in_debug_map();
-    REQUIRE(itemcreate(-1, putitoro_proto_id, 0, 0, 0));
+    REQUIRE(itemcreate(-1, PUTITORO_PROTO_ID, 0, 0, 0));
     int index = elona::ci;
 
     save_and_reload();

@@ -1,9 +1,13 @@
 #include "../thirdparty/catch/catch.hpp"
-
 #include "../thirdparty/sol2/sol.hpp"
-#include "../lua_store.hpp"
+
+#include "tests.hpp"
 #include "../character.hpp"
+#include "../item.hpp"
+#include "../itemgen.hpp"
+#include "../lua_store.hpp"
 #include "../testing.hpp"
+#include "../variables.hpp"
 
 using namespace std::literals::string_literals;
 
@@ -169,14 +173,48 @@ TEST_CASE("Test that tables can be retrieved", "[Lua: Store]")
     REQUIRE(iterations == tablesize);
 }
 
-TEST_CASE("Test that character references can be set/retrieved", "[Lua: Store]")
+TEST_CASE("Test that character references can be set", "[Lua: Store]")
 {
     sol::state sol;
     sol.open_libraries(sol::lib::base);
     elona::lua::store store;
     store.init(sol);
 
-    elona::testing::start_in_debug_map();
-    elona::character& chara = elona::cdata(57);
+    sol.new_usertype<character>( "LuaCharacter",
+                                 "idx", sol::readonly(&character::idx)
+        );
 
+    elona::testing::start_in_debug_map();
+    REQUIRE(elona::chara_create(-1, PUTIT_PROTO_ID, 0, 0));
+    elona::character& my_chara = elona::cdata(elona::rc);
+
+    store.set("my_chara"s, sol::make_object(sol, my_chara));
+
+    my_chara = sol["Store"]["get"]("my_chara");
+    REQUIRE(my_chara.idx == 57);
+    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_chara").idx == 57))"));
+}
+
+TEST_CASE("Test that item references can be set", "[Lua: Store]")
+{
+    sol::state sol;
+    sol.open_libraries(sol::lib::base);
+    elona::lua::store store;
+    store.init(sol);
+
+    sol.new_usertype<item>( "LuaItem",
+                            "idx", sol::readonly(&item::idx)
+        );
+
+    elona::testing::start_in_debug_map();
+    REQUIRE(itemcreate(-1, PUTITORO_PROTO_ID, 0, 0, 3));
+    int idx = elona::ci;
+    elona::item& my_item = elona::inv(idx);
+    sol.set("idx", idx);
+
+    store.set("my_item"s, sol::make_object(sol, my_item));
+
+    my_item = sol["Store"]["get"]("my_item");
+    REQUIRE(my_item.idx == idx);
+    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_item").idx == idx))"));
 }
