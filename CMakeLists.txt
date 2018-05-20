@@ -99,6 +99,7 @@ set(CORE_SOURCES
     lua.cpp
     lua_api.cpp
     lua_registry.cpp
+    lua_store.cpp
     magic.cpp
     main_menu.cpp
     map.cpp
@@ -326,6 +327,7 @@ if(WITH_TESTS)
   set(TEST_SOURCES
     tests/tests.cpp
     tests/lua_api.cpp
+    tests/lua_store.cpp
     tests/serialization.cpp
     )
   add_executable(test_runner ${TEST_SOURCES})
