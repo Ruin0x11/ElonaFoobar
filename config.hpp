@@ -87,7 +87,7 @@ private:
 
 
 
-void load_config2();
+void load_config2(const fs::path& json_file);
 void load_config(const fs::path& json_file);
 
 void set_config(const std::string& key, int value);

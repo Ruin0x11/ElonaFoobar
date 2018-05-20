@@ -381,7 +381,7 @@ void initialize_cat_db()
     the_trait_db.initialize();
 }
 
-void initialize_elona()
+void initialize_config(const fs::path& config_file)
 {
     time_warn = timeGetTime() / 1000;
     time_begin = timeGetTime() / 1000;
@@ -394,6 +394,8 @@ void initialize_elona()
 
     initialize_directories();
 
+    // The config setup routine needs these variables allocated to
+    // handle the language selection menu.
     SDIM3(s, 160, 40);
     DIM2(p, 100);
     DIM2(rtval, 10);
@@ -401,8 +403,13 @@ void initialize_elona()
     SDIM3(key_select, 2, 20);
     SDIM2(buff, 10000);
     initialize_jkey();
-    load_config2();
 
+    load_config2(config_file);
+    load_config(config_file);
+}
+
+void initialize_elona()
+{
     initialize_keywait();
 
     i18n::load(jp ? u8"jp" : u8"en");
@@ -797,8 +804,7 @@ int run()
 
     title(u8"Elona Foobar version "s + latest_version.short_string());
 
-    load_config(filesystem::dir::exe() / u8"config.json");
-
+    initialize_config(filesystem::dir::exe() / u8"config.json");
     initialize_elona();
     start_elona();
 

@@ -931,7 +931,7 @@ void set_config(const std::string& key, const std::string& value1, int value2)
 
 
 
-void load_config2()
+void load_config2(const fs::path& json_file)
 {
     std::unique_ptr<config_base> config_list[] = {
         std::make_unique<config_integer>(
