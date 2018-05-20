@@ -21,11 +21,11 @@ local function foo()
    end
 end
 
-local function my_movement_handler(args)
-   local chara_idx = args.chara_idx
+local function my_movement_handler(chara_idx)
    --local data = Storage.Chara[chara_idx]
    --Storage.Chara[chara_idx].steps = data.steps + 1
    --Elona.GUI.txt("Steps taken by " .. chara_idx .. ": " .. Storage.Chara[chara_idx].steps .. " ")
+   Elona.GUI.txt("Steps taken by " .. chara_idx .. ": " .. 0 .. " ")
 end
 
 local function my_character_init()

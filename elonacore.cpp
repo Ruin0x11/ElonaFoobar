@@ -25,6 +25,7 @@
 #include "enchantment.hpp"
 #include "equipment.hpp"
 #include "event.hpp"
+#include "event_manager.hpp"
 #include "filesystem.hpp"
 #include "fish.hpp"
 #include "foobar_save.hpp"
@@ -17088,6 +17089,7 @@ turn_result_t do_bash()
 
 turn_result_t proc_movement_event()
 {
+    lua::lua.get_event_manager().run_callbacks<lua::event_kind_t::chara_moved>(cc);
     if (cdata[cc].is_ridden())
     {
         return turn_result_t::turn_end;

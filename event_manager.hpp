@@ -50,7 +50,7 @@ public:
     }
 
     template<typename... Args>
-    void run_all(retval_type<void>, Args&&... args)
+    void run(retval_type<void>, Args&&... args)
     {
         for (const auto iter : functions)
         {
@@ -59,7 +59,7 @@ public:
     }
 
     template<typename R, typename... Args>
-    void run_all(retval_type<R>, Args&&... args)
+    void run(retval_type<R>, Args&&... args)
     {
         R retval;
 
@@ -92,16 +92,16 @@ public:
     void trigger_event(event_kind_t, sol::table);
 
     template<event_kind_t event, typename R = void, typename... Args>
-    R run_all(Args&&... args)
+    R run_callbacks(Args&&... args)
     {
-        return events.at(event).run_all(callbacks::retval_type<R>{},
+        return events.at(event).run(callbacks::retval_type<R>{},
                                         std::forward<Args>(args)...);
     }
 
     template<event_kind_t event, typename R = void>
-    R run_all()
+    R run_callbacks()
     {
-        return events.at(event).run_all(callbacks::retval_type<R>{});
+        return events.at(event).run(callbacks::retval_type<R>{});
     }
 
     typedef std::unordered_map<event_kind_t, callbacks> container;

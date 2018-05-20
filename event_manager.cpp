@@ -36,6 +36,10 @@ event_manager::event_manager(lua_env* lua)
         "CharaMoved", event_kind_t::chara_moved,
         "PlayerTurn", event_kind_t::player_turn,
         "AllTurnsFinished", event_kind_t::all_turns_finished);
+
+    events[event_kind_t::chara_moved] = callbacks();
+    events[event_kind_t::player_turn] = callbacks();
+    events[event_kind_t::all_turns_finished] = callbacks();
 }
 
 void event_manager::register_event(event_kind_t event,
@@ -55,7 +59,7 @@ void event_manager::trigger_event(event_kind_t event,
     auto iter = events.find(event);
     if(iter != events.end())
     {
-        iter->second.run_all(callbacks::retval_type<void>(), data);
+        iter->second.run(callbacks::retval_type<void>(), data);
     }
     else
     {
