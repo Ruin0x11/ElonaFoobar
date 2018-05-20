@@ -40,8 +40,20 @@ void init_registry(std::unique_ptr<sol::state>& state)
     Registry.set_function("on_event", Registry::set_on_event);
     Registry.set_function("register_chara_init", Registry::register_chara_init);
     Registry.set_function("register_map_init", Registry::register_map_init);
-    Registry.create_named("Data");
+    init_registry_storage(state);
     init_init_hooks(state);
+}
+
+void init_registry_storage(std::unique_ptr<sol::state>& state)
+{
+    sol::table Registry = (*state.get())["Elona"]["Registry"];
+    Registry.create_named("Data");
+}
+
+void clear_registry_storage(std::unique_ptr<sol::state>& state)
+{
+    (*state.get())["Elona"]["Registry"]["Data"] = sol::nil;
+    init_registry_storage(state);
 }
 
 void init_init_hooks(std::unique_ptr<sol::state>& state)

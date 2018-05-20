@@ -14,42 +14,10 @@
 #include "../variables.hpp"
 
 using namespace Catch;
+using namespace elona::testing;
 
-const fs::path save_dir("tests/data/save");
 int putit_proto_id = 3;
 int putitoro_proto_id = 792;
-
-void load_previous_savefile()
-{
-    elona::testing::reset_state();
-    // This file was saved directly after the dialog at the start of the game.
-    elona::playerid = "sav_foobar_test";
-    load_save_data(save_dir);
-    elona::firstturn = 1;
-    elona::mode = 3; // begin the game as if it were loaded from a save; load inv_xxx.s2
-    initialize_map();
-}
-
-void start_in_debug_map()
-{
-    elona::testing::reset_state();
-    initialize_debug_globals();
-    elona::playerid = "sav_ruin";
-
-    elona_delete(save_dir / elona::playerid);
-
-    gdata_current_map = 9999; // Debug map
-    gdata_current_dungeon_level = 2;
-    initialize_map();
-}
-
-void save_and_reload()
-{
-    save_game(save_dir);
-    elona::testing::reset_state();
-    elona::firstturn = 1;
-    load_save_data(save_dir);
-}
 
 TEST_CASE("Test character saving and reloading", "[C++: Serialization]")
 {

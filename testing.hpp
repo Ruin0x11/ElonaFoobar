@@ -10,18 +10,24 @@ void post_run();
 
 /***
  * Sets world state to a clean base for testing:
+ * - Resets Lua mod state and reloads the core mod.
  * - Wipes and reinitializes everything.
- * - Resets Lua mods state.
- * - Creates a blank 50x50 map.
- * - Places player at (25,25).
+ * - Runs game initialization.
  */
 void reset_state();
 
+void save_and_reload();
+
 /***
- * Starts an interactive session.
- * After this is run you can use command(key) to simulate player input.
+ * Loads a pre-prepared savefile to test save breakages between
+ * versions.
  */
-void run_game();
+void load_previous_savefile();
+
+/***
+ * Wipes state and starts in a 50x50 debug map.
+ */
+void start_in_debug_map();
 
 }
 }

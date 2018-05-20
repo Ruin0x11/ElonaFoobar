@@ -44,14 +44,25 @@ void run_startup_script(const std::string& startup_script)
     }
 }
 
-void reload()
+void clear_events(std::unique_ptr<sol::state>& state)
 {
-    // TODO more sophisticated reloading
+    state.get()->safe_script("if Elona.Event then Elona.Event.clear_all() end");
+}
+
+void clear()
+{
     // This needs to handle what happens when state is already existing.
     // It also needs to handle the startup script, if it's being used.
     // It also needs to handle all initialization hooks.
-    sol.get()->safe_script("if Elona.Event then Elona.Event.clear_all() end");
+    clear_events(sol);
     clear_init_hooks(sol);
+    clear_registry_storage(sol);
+}
+
+void reload()
+{
+    // TODO more sophisticated reloading
+    clear();
 
     load_mod("core");
     if(config::instance().startup_script != ""s)
@@ -301,7 +312,7 @@ void init()
     init_api(sol);
     init_registry(sol);
     init_global(sol);
-	dump_state();
+    dump_state();
 
     // prevent usage of some tables during mod loading, since calling things like GUI.txt at the top level before starting the game is dangerous
     // load core mod first

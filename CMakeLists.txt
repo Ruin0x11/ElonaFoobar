@@ -316,6 +316,10 @@ if(WITH_TESTS)
                      COMMAND ${CMAKE_COMMAND} -E copy_directory
                      "${CMAKE_CURRENT_SOURCE_DIR}/tests/data"
                      "$<TARGET_FILE_DIR:${PROJECT_NAME}>/tests/data")
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                     COMMAND ${CMAKE_COMMAND} -E copy_directory
+                     "${CMAKE_CURRENT_SOURCE_DIR}/tests/lua"
+                     "$<TARGET_FILE_DIR:${PROJECT_NAME}>/tests/lua")
 
   # Test sources
   set(TEST_SOURCES
