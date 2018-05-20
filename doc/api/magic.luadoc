@@ -6,4 +6,6 @@ module "Magic"
 -- @tparam num effect_id the spell ID
 -- @tparam num effect_power the power of the spell
 -- @tparam LuaPosition target_location (const) the position the spell targets
+-- @usage local pos = Elona.Map.random_pos()
+--Elona.Magic.cast(432, 100, pos) -- Ball magic
 function cast(effect_id, effect_power, target_location) end

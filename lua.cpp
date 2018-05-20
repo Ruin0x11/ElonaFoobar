@@ -28,6 +28,9 @@ void report_error(sol::error err)
 
 void run_startup_script(const std::string& startup_script)
 {
+    // create a special registry for storing data for our script
+    create_named_registry("script");
+
     run_file(filesystem::dir::data() / "script"s / startup_script);
     // The startup script is special since everything is deferred until the map loads.
     // So, re-run the map/character initialization things to pick up new init hooks loaded by the startup script.
@@ -64,29 +67,33 @@ void run_file(const fs::path& filepath)
     sol.get()->script_file(filepath.string());
 }
 
-void load_mod(const std::string& name)
+void create_named_registry(const std::string& id)
 {
-    (*sol.get())["Global"]["MOD_NAME"] = name;
-    // create character/item/map/global tables
-
     // TODO this could overwrite a thing if the mod is already loaded
     sol::table data = (*sol.get())["Elona"]["Registry"]["Data"];
 
-    sol::table modlocal = data.create_named(name);
+    sol::table modlocal = data.create_named(id);
 
     sol::table Chara = modlocal.create_named("Chara");
     sol::table Item = modlocal.create_named("Item");
     sol::table Map = modlocal.create_named("Map");
     sol::table Global = modlocal.create_named("Global");
+}
+
+void load_mod(const std::string& name)
+{
+    (*sol.get())["Global"]["MOD_NAME"] = name;
+    // create character/item/map/global tables
     // run various mod loading stages (like defining custom fields for all prototypes in the game?)
     // evaluate init.lua to load defines
-	auto result = sol.get()->safe_script_file("mods/"s + name + "/init.lua"s);
-	if (!result.valid())
-	{
-		sol::error err = result;
-		report_error(err);
-		throw new std::runtime_error("Failed initializing mod "s + name);
-	}
+    create_named_registry(name);
+    auto result = sol.get()->safe_script_file("mods/"s + name + "/init.lua"s);
+    if (!result.valid())
+    {
+        sol::error err = result;
+        report_error(err);
+        throw new std::runtime_error("Failed initializing mod "s + name);
+    }
     // determine mod overrides inside .json files
     // merge overrides, new things, and locale configs into global database
     // add reference to global API table as Elona so the mod can use it

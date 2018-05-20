@@ -1,32 +1,32 @@
 --- Represents a character.
 -- @classmod LuaCharacter
 
---- [R] The index of this character in the characters array.
--- @field idx
+--- [R] The index of this character in the global characters array.
+-- @tfield num idx
 
 --- [R] The character's current HP.
--- @field hp
+-- @tfield num hp
 
 --- [R] The character's maximum HP.
--- @field max_hp
+-- @tfield num max_hp
 
 --- [R] The character's current MP.
--- @field mp
+-- @tfield num mp
 
 --- [R] The character's maximum MP.
--- @field max_mp
+-- @tfield num max_mp
 
 --- [R] The character's current stamina.
--- @field sp
+-- @tfield num sp
 
 --- [R] The character's maximum stamina.
--- @field max_sp
+-- @tfield num max_sp
 
 --- [RW] The shop rank of this character. Used only if they are a shopkeeper.
--- @field shop_rank
+-- @tfield num shop_rank
 
 --- [RW] The role this character takes on.
--- @field character_role
+-- @tfield num character_role
 
 --- Damages this character.
 -- @tparam num amount the amount to damage

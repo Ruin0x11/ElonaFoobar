@@ -8,7 +8,7 @@ full_description = [[
 ]]
 no_lua_ref = true
 convert_opt = true
-sort = true
+sort = false
 no_return_or_parms = false
 not_luadoc = true
 merge = false
@@ -16,8 +16,8 @@ backtick_references = false
 format = "discount"
 template_escape = ">"
 dir = "./doc"
---examples = {"../bin/doc/examples"}
---topics = {"../bin/doc/readme.md"}
+examples = {"./doc/examples"}
+readme = "./doc/readme.md"
 
 new_type("event", "Events", false, "Event Parameters")
 new_type("enum", "Enums", false, "Enum Values")

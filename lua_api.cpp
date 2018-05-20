@@ -98,11 +98,17 @@ void LuaCharacter::mut_apply_ailment(character& self, status_ailment_t ailment, 
 
 namespace Pos {
 int dist(const position_t&, const position_t&);
+int dist_xy(int, int, int, int);
 }
 
 int Pos::dist(const position_t& from, const position_t& to)
 {
-    return elona::dist(from.x, from.y, to.x, to.y);
+    return Pos::dist_xy(from.x, from.y, to.x, to.y);
+}
+
+int Pos::dist_xy(int fx, int fy, int tx, int ty)
+{
+    return elona::dist(fx, fy, tx, ty);
 }
 
 
@@ -438,7 +444,7 @@ void init_api(std::unique_ptr<sol::state>& state)
     Chara.set_function("create", sol::overload(Chara::create, Chara::create_xy));
 
     sol::table Pos = Elona.create_named("Pos");
-    Pos.set_function("dist", Pos::dist);
+    Pos.set_function("dist", sol::overload(Pos::dist, Pos::dist_xy));
 
     sol::table World = Elona.create_named("World");
     World.set_function("time", World::time);

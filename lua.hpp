@@ -16,6 +16,7 @@ void init_registry(std::unique_ptr<sol::state>&);
 void init_global(std::unique_ptr<sol::state>&);
 void init_init_hooks(std::unique_ptr<sol::state>&);
 void clear_init_hooks(std::unique_ptr<sol::state>&);
+void create_named_registry(const std::string&);
 void run_file(const fs::path&);
 void run_startup_script(const std::string&);
 void callback(const std::string&);

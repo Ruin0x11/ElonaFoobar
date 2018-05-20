@@ -2,7 +2,7 @@
 -- @classmod LuaPosition
 
 --- [RW] The X coordinate of this position.
--- @field x
+-- @tfield num x
 
 --- [RW] The Y coordinate of this position.
--- @field y
+-- @tfield num y

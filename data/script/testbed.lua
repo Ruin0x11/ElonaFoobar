@@ -1,4 +1,4 @@
-local Iter = require 'mods/core/iter'
+local Iter = Elona.Iter
 local Item = Elona.Item
 local Enums = Elona.Defines.Enums
 
