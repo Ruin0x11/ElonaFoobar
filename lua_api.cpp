@@ -1,4 +1,5 @@
 #include "lua.hpp"
+
 #include "character.hpp"
 #include "dmgheal.hpp"
 #include "enchantment.hpp"
@@ -6,6 +7,7 @@
 #include "item.hpp"
 #include "itemgen.hpp"
 #include "log.hpp"
+#include "lua_store.hpp"
 #include "map.hpp"
 #include "map_cell.hpp"
 #include "position.hpp"
@@ -468,12 +470,12 @@ void init_usertypes(lua_env& lua)
     lua.get_state()->new_usertype<position_t>( "LuaPosition",
                                            sol::constructors<position_t()>(),
                                            "x", &position_t::x,
-                                           "y", &position_t::y
+                                           "y", &position_t::y,
+                                           "serial_idx", []() { return serial_t::position; }
         );
     lua.get_state()->new_usertype<character>( "LuaCharacter",
                                         "damage_hp", &LuaCharacter::mut_damage_hp,
                                         "apply_ailment", &LuaCharacter::mut_apply_ailment,
-                                        "idx", sol::readonly(&character::idx),
                                         "hp", sol::readonly(&character::hp),
                                         "max_hp", sol::readonly(&character::max_hp),
                                         "mp", sol::readonly(&character::mp),
@@ -481,12 +483,15 @@ void init_usertypes(lua_env& lua)
                                         "sp", sol::readonly(&character::sp),
                                         "max_sp", sol::readonly( &character::max_sp),
                                         "shop_rank", &character::shop_rank,
-                                        "character_role", &character::character_role
+                                        "character_role", &character::character_role,
+                                        "idx", sol::readonly(&character::idx),
+                                        "serial_idx", []() { return serial_t::character; }
         );
     lua.get_state()->new_usertype<item>( "LuaItem",
                                      "curse_state", &item::curse_state,
                                      "identify_state", &item::identification_state,
-                                     "idx", sol::readonly(&item::idx)
+                                     "idx", sol::readonly(&item::idx),
+                                     "serial_idx", []() { return serial_t::item; }
         );
 }
 
@@ -526,6 +531,10 @@ void init_enums(sol::table& Elona)
         "Tunnel", tile_kind_t::tunnel,
         "Room", tile_kind_t::room,
         "Fog", tile_kind_t::fog
+        );
+    Enums["SerialType"] = Enums.create_with(
+        "Character", serial_t::character,
+        "Item", serial_t::item
         );
 }
 

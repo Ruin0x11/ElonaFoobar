@@ -1,5 +1,8 @@
 #include "lua_store.hpp"
 
+#include "character.hpp"
+#include "item.hpp"
+#include "optional.hpp"
 #include "thirdparty/sol2/sol.hpp"
 #include <vector>
 #include <any>
@@ -29,31 +32,69 @@ void store::init(sol::state &state)
 }
 
 
+store::object serialize_userdata(const sol::object &val)
+{
+    store::object obj;
+    sol::protected_function serial_fn = val.as<sol::table>()["serial_idx"];
+    auto serial_type = serial_fn.call();
+    sol::protected_function idx_fn = val.as<sol::table>()["idx"];
+    auto idx = idx_fn.call();
+    if(serial_type.valid())
+    {
+        serial_t serial_type = serial_type;
+        switch(serial_type)
+        {
+        case serial_t::character:
+        {
+            int idx = idx;
+            obj = store::character_ref(idx);
+        }
+            break;
+        case serial_t::item:
+        {
+            int idx = idx;
+            obj = store::item_ref(idx);
+        }
+            break;
+        default:
+            assert(0);
+            break;
+        }
+    }
+    else
+    {
+        assert(0);
+    }
+    return obj;
+}
+
 void store::set(std::string key, const sol::object &val)
 {
     store::object obj;
     auto type = val.get_type();
     switch(type)
     {
-        case sol::type::none:break;
-        case sol::type::lua_nil:break;
-        case sol::type::string:
-            obj = val.as<std::string>();
-            break;
-        case sol::type::number:
-            obj = val.as<int>();
-            break;
-        case sol::type::thread:break;
-        case sol::type::boolean:
-            obj = val.as<bool>();
-            break;
-        case sol::type::function:break;
-        case sol::type::userdata:break;
-        case sol::type::lightuserdata:break;
-        case sol::type::poly:break;
-        case sol::type::table:
-            obj = val;
-            break;
+    case sol::type::none:break;
+    case sol::type::lua_nil:break;
+    case sol::type::string:
+        obj = val.as<std::string>();
+        break;
+    case sol::type::number:
+        obj = val.as<int>();
+        break;
+    case sol::type::thread:break;
+    case sol::type::boolean:
+        obj = val.as<bool>();
+        break;
+    case sol::type::function:break;
+    case sol::type::userdata:
+        obj = serialize_userdata(val);
+        break;
+    case sol::type::lightuserdata:break;
+    case sol::type::poly:break;
+    case sol::type::table:
+        obj = val;
+        break;
     }
     store[key.data()] = {type, obj};
 }
@@ -65,29 +106,58 @@ sol::object store::get(std::string key, sol::this_state tstate)
     if (val == store.end())
         return sol::nil;
 
-    auto &[type, obj] = val->second;
+    const auto& pair = val->second;
+    const auto& type = pair.first;
+    const auto& obj = pair.second;
 
     switch(type)
     {
-        case sol::type::none:break;
-        case sol::type::lua_nil:break;
-        case sol::type::string:
-            assert(obj.type() == typeid(std::string));
-            return sol::object(view, sol::in_place, boost::get<std::string>(obj));
-        case sol::type::number:
-            assert(obj.type() == typeid(int));
-            return sol::make_object(view, boost::get<int>(obj));
-        case sol::type::thread:break;
-        case sol::type::boolean:
-            assert(obj.type() == typeid(bool));
-            return sol::make_object(view, boost::get<bool>(obj));
-        case sol::type::function:break;
-        case sol::type::userdata:break;
-        case sol::type::lightuserdata:break;
-        case sol::type::poly:break;
-        case sol::type::table:
-            assert(obj.type() == typeid(sol::table));
-            return boost::get<sol::table>(obj);
+    case sol::type::none:break;
+    case sol::type::lua_nil:break;
+    case sol::type::string:
+        assert(obj.type() == typeid(std::string));
+        return sol::object(view, sol::in_place, boost::get<std::string>(obj));
+    case sol::type::number:
+        assert(obj.type() == typeid(int));
+        return sol::make_object(view, boost::get<int>(obj));
+    case sol::type::thread:break;
+    case sol::type::boolean:
+        assert(obj.type() == typeid(bool));
+        return sol::make_object(view, boost::get<bool>(obj));
+    case sol::type::function:break;
+    case sol::type::userdata:
+        if (obj.type() == typeid(character_ref)) {
+            character_ref idx = boost::get<character_ref>(obj);
+
+            // Check to make sure this reference is still valid.
+            if(elona::cdata(idx).state == 0)
+            {
+                return sol::nil;
+            }
+
+            return sol::make_object(view, elona::cdata(static_cast<int>(idx)));
+        }
+        else if (obj.type() == typeid(item_ref))
+        {
+            item_ref idx = boost::get<item_ref>(obj);
+
+            // Check to make sure this reference is still valid.
+            if(elona::inv(idx).number == 0)
+            {
+                return sol::nil;
+            }
+
+            return sol::make_object(view, elona::inv(static_cast<int>(idx)));
+        }
+        else {
+            assert(0);
+        }
+        break;
+    case sol::type::lightuserdata:break;
+    case sol::type::poly:break;
+    case sol::type::table:
+        assert(obj.type() == typeid(sol::table));
+        return boost::get<sol::table>(obj);
     }
     return sol::nil;
 }

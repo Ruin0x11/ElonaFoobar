@@ -2,6 +2,8 @@
 
 #include "../thirdparty/sol2/sol.hpp"
 #include "../lua_store.hpp"
+#include "../character.hpp"
+#include "../testing.hpp"
 
 using namespace std::literals::string_literals;
 
@@ -165,4 +167,16 @@ TEST_CASE("Test that tables can be retrieved", "[Lua: Store]")
     iterations = 0;
     my_table.for_each(fxpair);
     REQUIRE(iterations == tablesize);
+}
+
+TEST_CASE("Test that character references can be set/retrieved", "[Lua: Store]")
+{
+    sol::state sol;
+    sol.open_libraries(sol::lib::base);
+    elona::lua::store store;
+    store.init(sol);
+
+    elona::testing::start_in_debug_map();
+    elona::character& chara = elona::cdata(57);
+
 }
