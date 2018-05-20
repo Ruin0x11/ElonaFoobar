@@ -10,11 +10,13 @@ namespace lua
 
 class lua_env;
 
-enum class event_kind_t
+enum class event_kind_t : unsigned
 {
     chara_moved,
     player_turn,
     all_turns_finished,
+
+    COUNT
 };
 
 enum class event_control_t

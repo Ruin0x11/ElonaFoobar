@@ -37,9 +37,12 @@ event_manager::event_manager(lua_env* lua)
         "PlayerTurn", event_kind_t::player_turn,
         "AllTurnsFinished", event_kind_t::all_turns_finished);
 
-    events[event_kind_t::chara_moved] = callbacks();
-    events[event_kind_t::player_turn] = callbacks();
-    events[event_kind_t::all_turns_finished] = callbacks();
+    unsigned event_count = static_cast<unsigned>(event_kind_t::COUNT);
+    for(unsigned i = 0; i < event_count; i++)
+    {
+        event_kind_t event_kind = static_cast<event_kind_t>(i);
+        events[event_kind] = callbacks();
+    }
 }
 
 void event_manager::register_event(event_kind_t event,
