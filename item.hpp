@@ -85,7 +85,7 @@ struct item
     template <typename Archive>
     void serialize(Archive& ar)
     {
-        // NOTE: Changing this will break save compatibility!
+        // WARNING: Changing this will break save compatibility!
         ar(number);
         ar(value);
         ar(image);

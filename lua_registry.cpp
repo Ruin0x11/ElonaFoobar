@@ -21,12 +21,16 @@ void Registry::set_on_event(const std::string& event_id, const sol::function& ca
     ELONA_LOG("Set " << event_id << " of " << mod_name);
 }
 
+// TODO merge this with Event on Lua side since the interfaces are very similar
+// also, this allows registering an infinite amount of the same handler...
 void Registry::register_chara_init(const sol::function& func)
 {
     sol::table inits = (*sol.get())["Elona"]["Registry"]["Inits"]["Chara"];
     inits.add(func);
 }
 
+// TODO merge this with Event on Lua side since the interfaces are very similar
+// also, this allows registering an infinite amount of the same handler...
 void Registry::register_map_init(const sol::function& func)
 {
     sol::table inits = (*sol.get())["Elona"]["Registry"]["Inits"]["Map"];

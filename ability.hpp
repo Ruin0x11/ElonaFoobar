@@ -68,7 +68,7 @@ struct ability
     template <typename Archive>
     void serialize(Archive& ar)
     {
-        // NOTE: Changing this will break save compatibility!
+        // WARNING: Changing this will break save compatibility!
         ar(current_level);
         ar(original_level);
         ar(experience);

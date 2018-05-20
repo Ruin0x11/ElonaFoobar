@@ -70,7 +70,7 @@ lrun = function(name, testfunc)
     local ts = ltests
     local fs = lfails
     local clock = os.clock()
-    io.write(string.format("\t%-16s", name))
+    io.write(string.format("\t%-16s ", name))
     testfunc()
     io.write(string.format("pass:%2d   fail:%2d   %4dms\n",
         (ltests-ts)-(lfails-fs), lfails-fs,

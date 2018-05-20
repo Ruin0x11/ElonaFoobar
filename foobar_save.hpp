@@ -21,7 +21,7 @@ struct foobar_save_t
     template <typename Archive>
     void serialize(Archive& ar)
     {
-        // NOTE: Changing this will break save compatibility!
+        // WARNING: Changing this will break save compatibility!
         ar(is_autodig_enabled);
     }
 };

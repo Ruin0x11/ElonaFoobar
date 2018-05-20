@@ -30,6 +30,8 @@ bool is_ally(const character&);
 sol::optional<character*> player();
 sol::optional<character*> create(const position_t&, int);
 sol::optional<character*> create_xy(int, int, int);
+
+void bind(sol::table& Elona);
 };
 
 bool Chara::is_alive(const character& character)
@@ -76,29 +78,21 @@ sol::optional<character*> Chara::create_xy(int x, int y, int id)
     }
 }
 
-
-namespace LuaCharacter
+void Chara::bind(sol::table& Elona)
 {
-void mut_damage_hp(character&, int);
-void mut_apply_ailment(character&, status_ailment_t, int);
+    sol::table Chara = Elona.create_named("Chara");
+    Chara.set_function("is_alive", Chara::is_alive);
+    Chara.set_function("is_player", Chara::is_player);
+    Chara.set_function("is_ally", Chara::is_ally);
+    Chara.set_function("player", Chara::player);
+    Chara.set_function("create", sol::overload(Chara::create, Chara::create_xy));
 }
-
-void LuaCharacter::mut_damage_hp(character& self, int amount)
-{
-    assert(amount > 0); // TODO does this need verification?
-    elona::dmghp(self.idx, amount, -11); // TODO defaults to unseen hand
-}
-
-void LuaCharacter::mut_apply_ailment(character& self, status_ailment_t ailment, int power)
-{
-    assert(power > 0); // TODO does this need verification?
-    elona::dmgcon(self.idx, ailment, power);
-}
-
 
 namespace Pos {
 int dist(const position_t&, const position_t&);
 int dist_xy(int, int, int, int);
+
+void bind(sol::table& Elona);
 }
 
 int Pos::dist(const position_t& from, const position_t& to)
@@ -111,9 +105,18 @@ int Pos::dist_xy(int fx, int fy, int tx, int ty)
     return elona::dist(fx, fy, tx, ty);
 }
 
+void Pos::bind(sol::table& Elona)
+{
+    sol::table Pos = Elona.create_named("Pos");
+    Pos.set_function("dist", sol::overload(Pos::dist, Pos::dist_xy));
+}
+
 
 namespace World {
 int time();
+bool is_in_overworld();
+
+void bind(sol::table& Elona);
 };
 
 int World::time()
@@ -124,9 +127,22 @@ int World::time()
         + gdata_year * 24 * 30 * 12;
 }
 
+bool World::is_in_overworld()
+{
+    return elona::mdata(2) == 0;
+}
+
+void World::bind(sol::table& Elona)
+{
+    sol::table World = Elona.create_named("World");
+    World.set_function("time", World::time);
+}
+
 
 namespace Magic {
 void cast(int, int, const position_t&);
+
+void bind(sol::table& Elona);
 }
 
 void Magic::cast(int effect_id, int effect_power, const position_t& target_location)
@@ -144,6 +160,11 @@ void Magic::cast(int effect_id, int effect_power, const position_t& target_locat
     elona::tc = tcbk;
 }
 
+void Magic::bind(sol::table& Elona)
+{
+    sol::table Magic = Elona.create_named("Magic");
+    Magic.set_function("cast", Magic::cast);
+}
 
 namespace Map {
 int width();
@@ -158,6 +179,8 @@ void set_tile(const position_t&, tile_kind_t);
 void set_tile_xy(int, int, tile_kind_t);
 void set_tile_memory(const position_t&, tile_kind_t);
 void set_tile_memory_xy(int, int, tile_kind_t);
+
+void bind(sol::table& Elona);
 }
 
 int Map::width()
@@ -248,10 +271,24 @@ void Map::set_tile_memory_xy(int x, int y, tile_kind_t type)
     elona::map(x, y, 2) = elona::cell_get_type(type);
 }
 
+void Map::bind(sol::table& Elona)
+{
+    sol::table Map = Elona.create_named("Map");
+    Map.set_function("width", Map::width);
+    Map.set_function("height", Map::height);
+    Map.set_function("valid", sol::overload(Map::valid, Map::valid_xy));
+    Map.set_function("can_access", sol::overload(Map::can_access, Map::can_access_xy));
+    Map.set_function("bound_within", Map::bound_within);
+    Map.set_function("random_pos", Map::random_pos);
+    Map.set_function("set_tile", sol::overload(Map::set_tile, Map::set_tile_xy));
+    Map.set_function("set_tile_memory", sol::overload(Map::set_tile_memory, Map::set_tile_memory_xy));
+}
 
 namespace FOV {
 bool los(const position_t&, const position_t&);
 bool you_see(const character&);
+
+void bind(sol::table& Elona);
 };
 
 bool FOV::los(const position_t& from, const position_t& to)
@@ -264,11 +301,20 @@ bool FOV::you_see(const character& character)
     return elona::is_in_fov(character.idx);
 }
 
+void FOV::bind(sol::table& Elona)
+{
+    sol::table FOV = Elona.create_named("FOV");
+    FOV.set_function("los", FOV::los);
+    FOV.set_function("you_see", FOV::you_see);
+}
+
 
 namespace Rand {
 int rnd(int n);
 bool one_in(int n);
 bool coinflip();
+
+void bind(sol::table& Elona);
 };
 
 
@@ -279,12 +325,20 @@ int Rand::rnd(int n)
 
 bool Rand::one_in(int n)
 {
-    return elona::rnd(n) == 0;
+    return Rand::rnd(n) == 0;
 }
 
 bool Rand::coinflip()
 {
-    return elona::rnd(2) == 0;
+    return Rand::one_in(2);
+}
+
+void Rand::bind(sol::table& Elona)
+{
+    sol::table Rand = Elona.create_named("Rand");
+    Rand.set_function("rnd", Rand::rnd);
+    Rand.set_function("one_in", Rand::one_in);
+    Rand.set_function("coinflip", Rand::coinflip);
 }
 
 
@@ -292,6 +346,8 @@ namespace Item {
 sol::optional<item*> create(const position_t&, int, int);
 sol::optional<item*> create_xy(int, int, int, int);
 bool has_enchantment(const item&, int);
+
+void bind(sol::table& Elona);
 }
 
 sol::optional<item*> Item::create(const position_t& position, int id, int number)
@@ -317,14 +373,28 @@ bool Item::has_enchantment(const item& item, int id)
     return elona::encfindspec(item.idx, id);
 }
 
+void Item::bind(sol::table& Elona)
+{
+    sol::table Item = Elona.create_named("Item");
+    Item.set_function("create", sol::overload(Item::create, Item::create_xy));
+}
+
 
 namespace GUI {
 void txt(const std::string& message);
+
+void bind(sol::table& Elona);
 };
 
 void GUI::txt(const std::string& message)
 {
     elona::txt(message);
+}
+
+void GUI::bind(sol::table& Elona)
+{
+    sol::table GUI = Elona.create_named("GUI");
+    GUI.set_function("txt", GUI::txt);
 }
 
 
@@ -333,6 +403,8 @@ namespace Debug
 void log(const std::string&);
 void dump_characters();
 void dump_items();
+
+void bind(sol::table& Elona);
 }
 
 void Debug::log(const std::string& message)
@@ -365,11 +437,61 @@ void Debug::dump_items()
     }
 }
 
-
-void init_enums(std::unique_ptr<sol::state>& state)
+void Debug::bind(sol::table& Elona)
 {
-    sol::table Elona = (*state.get())["Elona"];
+    sol::table Debug = Elona.create_named("Debug");
+    Debug.set_function("log", Debug::log);
+    Debug.set_function("dump_characters", Debug::dump_characters);
+    Debug.set_function("dump_items", Debug::dump_items);
+}
 
+namespace LuaCharacter
+{
+void mut_damage_hp(character&, int);
+void mut_apply_ailment(character&, status_ailment_t, int);
+}
+
+void LuaCharacter::mut_damage_hp(character& self, int amount)
+{
+    assert(amount > 0); // TODO does this need verification?
+    elona::dmghp(self.idx, amount, -11); // TODO defaults to unseen hand
+}
+
+void LuaCharacter::mut_apply_ailment(character& self, status_ailment_t ailment, int power)
+{
+    assert(power > 0); // TODO does this need verification?
+    elona::dmgcon(self.idx, ailment, power);
+}
+
+void init_usertypes(std::unique_ptr<sol::state>& state)
+{
+    state.get()->new_usertype<position_t>( "LuaPosition",
+                                           sol::constructors<position_t()>(),
+                                           "x", &position_t::x,
+                                           "y", &position_t::y
+        );
+    state.get()->new_usertype<character>( "LuaCharacter",
+                                        "damage_hp", &LuaCharacter::mut_damage_hp,
+                                        "apply_ailment", &LuaCharacter::mut_apply_ailment,
+                                        "idx", sol::readonly(&character::idx),
+                                        "hp", sol::readonly(&character::hp),
+                                        "max_hp", sol::readonly(&character::max_hp),
+                                        "mp", sol::readonly(&character::mp),
+                                        "max_mp", sol::readonly( &character::max_mp),
+                                        "sp", sol::readonly(&character::sp),
+                                        "max_sp", sol::readonly( &character::max_sp),
+                                        "shop_rank", &character::shop_rank,
+                                        "character_role", &character::character_role
+        );
+    state.get()->new_usertype<item>( "LuaItem",
+                                     "curse_state", &item::curse_state,
+                                     "identify_state", &item::identification_state,
+                                     "idx", sol::readonly(&item::idx)
+        );
+}
+
+void init_enums(sol::table& Elona)
+{
     sol::table Defines = Elona.create_named("Defines");
     sol::table Enums = Defines.create_named("Enums");
 
@@ -409,80 +531,21 @@ void init_enums(std::unique_ptr<sol::state>& state)
 
 void init_api(std::unique_ptr<sol::state>& state)
 {
-    state.get()->new_usertype<position_t>( "LuaPosition",
-                                           sol::constructors<position_t()>(),
-                                           "x", &position_t::x,
-                                           "y", &position_t::y
-        );
-    state.get()->new_usertype<character>( "LuaCharacter",
-                                        "damage_hp", &LuaCharacter::mut_damage_hp,
-                                        "apply_ailment", &LuaCharacter::mut_apply_ailment,
-                                        "idx", sol::readonly(&character::idx),
-                                        "hp", sol::readonly(&character::hp),
-                                        "max_hp", sol::readonly(&character::max_hp),
-                                        "mp", sol::readonly(&character::mp),
-                                        "max_mp", sol::readonly( &character::max_mp),
-                                        "sp", sol::readonly(&character::sp),
-                                        "max_sp", sol::readonly( &character::max_sp),
-                                        "shop_rank", &character::shop_rank,
-                                        "character_role", &character::character_role
-        );
-    state.get()->new_usertype<item>( "LuaItem",
-                                     "curse_state", &item::curse_state,
-                                     "identify_state", &item::identification_state,
-                                     "idx", sol::readonly(&item::idx)
-        );
-
     sol::table Elona = state.get()->create_named_table("Elona");
-    Elona.set_function("log", Debug::log);
 
-    sol::table Chara = Elona.create_named("Chara");
-    Chara.set_function("is_alive", Chara::is_alive);
-    Chara.set_function("is_player", Chara::is_player);
-    Chara.set_function("is_ally", Chara::is_ally);
-    Chara.set_function("player", Chara::player);
-    Chara.set_function("create", sol::overload(Chara::create, Chara::create_xy));
+    Chara::bind(Elona);
+    Pos::bind(Elona);
+    World::bind(Elona);
+    FOV::bind(Elona);
+    Magic::bind(Elona);
+    Item::bind(Elona);
+    Rand::bind(Elona);
+    GUI::bind(Elona);
+    Map::bind(Elona);
+    Debug::bind(Elona);
 
-    sol::table Pos = Elona.create_named("Pos");
-    Pos.set_function("dist", sol::overload(Pos::dist, Pos::dist_xy));
-
-    sol::table World = Elona.create_named("World");
-    World.set_function("time", World::time);
-
-    sol::table FOV = Elona.create_named("FOV");
-    FOV.set_function("los", FOV::los);
-    FOV.set_function("you_see", FOV::you_see);
-
-    sol::table Item = Elona.create_named("Item");
-    Item.set_function("create", sol::overload(Item::create, Item::create_xy));
-
-    sol::table Rand = Elona.create_named("Rand");
-    Rand.set_function("rnd", Rand::rnd);
-    Rand.set_function("one_in", Rand::one_in);
-    Rand.set_function("coinflip", Rand::coinflip);
-
-    sol::table Magic = Elona.create_named("Magic");
-    Magic.set_function("cast", Magic::cast);
-
-    sol::table Map = Elona.create_named("Map");
-    Map.set_function("width", Map::width);
-    Map.set_function("height", Map::height);
-    Map.set_function("valid", sol::overload(Map::valid, Map::valid_xy));
-    Map.set_function("can_access", sol::overload(Map::can_access, Map::can_access_xy));
-    Map.set_function("bound_within", Map::bound_within);
-    Map.set_function("random_pos", Map::random_pos);
-    Map.set_function("set_tile", sol::overload(Map::set_tile, Map::set_tile_xy));
-    Map.set_function("set_tile_memory", sol::overload(Map::set_tile_memory, Map::set_tile_memory_xy));
-
-    sol::table GUI = Elona.create_named("GUI");
-    GUI.set_function("txt", GUI::txt);
-
-    sol::table Debug = Elona.create_named("Debug");
-    Debug.set_function("log", Debug::log);
-    Debug.set_function("dump_characters", Debug::dump_characters);
-    Debug.set_function("dump_items", Debug::dump_items);
-
-    init_enums(state);
+    init_usertypes(state);
+    init_enums(Elona);
 }
 
 
