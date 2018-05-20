@@ -13,6 +13,7 @@ class lua_env;
 enum class event_kind_t
 {
     chara_moved,
+    player_turn,
     all_turns_finished,
 };
 

@@ -167,7 +167,7 @@ void lua_env::load_all_mods(const fs::path& mods_dir)
     }
 }
 
-void run_file(const fs::path& path)
+void run_file(const fs::path& pat)
 {
 
 }

@@ -30,10 +30,11 @@ event_manager::event_manager(lua_env* lua)
 {
     this->lua = lua;
 
-    sol::table Defines = (*lua->get_state())["Defines"];
+    sol::table Defines = (*lua->get_state())["Elona"]["Defines"];
 
     Defines["EventKind"] = Defines.create_with(
         "CharaMoved", event_kind_t::chara_moved,
+        "PlayerTurn", event_kind_t::player_turn,
         "AllTurnsFinished", event_kind_t::all_turns_finished);
 }
 
