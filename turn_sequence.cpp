@@ -879,7 +879,6 @@ turn_result_t pass_one_turn(bool label_2738_flg)
         }
         if (ct >= ELONA_MAX_CHARACTERS)
         {
-            lua::callback("all_turns_finished");
             return turn_result_t::all_turns_finished;
         }
     }
@@ -1447,7 +1446,6 @@ turn_result_t pc_turn(bool advance_time)
 {
     if (advance_time)
     {
-        lua::callback("player_turn");
         if (gdata_catches_god_signal)
         {
             if (rnd(1000) == 0)

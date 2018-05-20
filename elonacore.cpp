@@ -17088,7 +17088,6 @@ turn_result_t do_bash()
 
 turn_result_t proc_movement_event()
 {
-    lua::callback("chara_moved"s, {{"chara_idx", cc}});
     if (cdata[cc].is_ridden())
     {
         return turn_result_t::turn_end;

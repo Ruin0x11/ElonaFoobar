@@ -47,19 +47,18 @@ void start_in_debug_map()
 
 void configure_lua()
 {
-    lua::sol.get()->open_libraries(sol::lib::os,
-                                   sol::lib::io);
-    sol::table Elona = (*lua::sol.get())["Elona"];
-    sol::table Testing = Elona.create_named("Testing");
-    Testing.set_function("initialize_map", initialize_map);
-    Testing.set_function("start_in_debug_map", start_in_debug_map);
-    Testing.set_function("reset_state", reset_state);
+    // lua::sol.get()->open_libraries(sol::lib::os,
+    //                                sol::lib::io);
+    // sol::table Elona = (*lua::sol.get())["Elona"];
+    // sol::table Testing = Elona.create_named("Testing");
+    // Testing.set_function("initialize_map", initialize_map);
+    // Testing.set_function("start_in_debug_map", start_in_debug_map);
+    // Testing.set_function("reset_state", reset_state);
 }
 
 void pre_init()
 {
     initialize_cat_db();
-    lua::init();
     configure_lua();
 
     foobar_save.initialize();
@@ -77,8 +76,8 @@ void post_run()
 
 void reset_state()
 {
-    lua::clear();
-    lua::load_mod("core");
+    //lua::clear();
+    //lua::load_mod("core");
     initialize_elona();
 }
 

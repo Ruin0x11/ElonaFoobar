@@ -463,14 +463,14 @@ void LuaCharacter::mut_apply_ailment(character& self, status_ailment_t ailment, 
     elona::dmgcon(self.idx, ailment, power);
 }
 
-void init_usertypes(std::unique_ptr<sol::state>& state)
+void init_usertypes(lua_env& lua)
 {
-    state.get()->new_usertype<position_t>( "LuaPosition",
+    lua.get_state()->new_usertype<position_t>( "LuaPosition",
                                            sol::constructors<position_t()>(),
                                            "x", &position_t::x,
                                            "y", &position_t::y
         );
-    state.get()->new_usertype<character>( "LuaCharacter",
+    lua.get_state()->new_usertype<character>( "LuaCharacter",
                                         "damage_hp", &LuaCharacter::mut_damage_hp,
                                         "apply_ailment", &LuaCharacter::mut_apply_ailment,
                                         "idx", sol::readonly(&character::idx),
@@ -483,7 +483,7 @@ void init_usertypes(std::unique_ptr<sol::state>& state)
                                         "shop_rank", &character::shop_rank,
                                         "character_role", &character::character_role
         );
-    state.get()->new_usertype<item>( "LuaItem",
+    lua.get_state()->new_usertype<item>( "LuaItem",
                                      "curse_state", &item::curse_state,
                                      "identify_state", &item::identification_state,
                                      "idx", sol::readonly(&item::idx)
@@ -529,9 +529,9 @@ void init_enums(sol::table& Elona)
         );
 }
 
-void init_api(std::unique_ptr<sol::state>& state)
+void init_api(lua_env& lua)
 {
-    sol::table Elona = state.get()->create_named_table("Elona");
+    sol::table Elona = lua.get_state()->create_named_table("Elona");
 
     Chara::bind(Elona);
     Pos::bind(Elona);
@@ -544,7 +544,7 @@ void init_api(std::unique_ptr<sol::state>& state)
     Map::bind(Elona);
     Debug::bind(Elona);
 
-    init_usertypes(state);
+    init_usertypes(lua);
     init_enums(Elona);
 }
 
