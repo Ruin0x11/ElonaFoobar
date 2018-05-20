@@ -43,12 +43,17 @@ public:
     typedef callback_container::iterator iterator;
     typedef callback_container::const_iterator const_iterator;
 
+    void push(sol::environment &env, sol::function &function)
+    {
+        functions.emplace_back(env, function);
+    }
+
     template<typename... Args>
     void run_all(retval_type<void>, Args&&... args)
     {
-        for (const auto it : functions)
+        for (const auto iter : functions)
         {
-            it.function.call(std::forward<Args>(args)...);
+            iter.function.call(std::forward<Args>(args)...);
         }
     }
 
@@ -57,9 +62,9 @@ public:
     {
         R retval;
 
-        for (const auto& it : functions)
+        for (const auto& iter : functions)
         {
-            retval = it.function.call(std::forward<Args>(args)...);
+            retval = iter.function.call(std::forward<Args>(args)...);
         }
 
         return retval;
@@ -72,9 +77,9 @@ class event_manager
 {
 
 public:
-    static void init(lua_env& lua);
+    static void init(lua_env&);
 public:
-    explicit event_manager(lua_env *lua_env);
+    explicit event_manager(lua_env*);
     /***
      * Registers a new event handler from a mod's environment.
      */
@@ -82,10 +87,8 @@ public:
 
     /***
      * Runs all callbacks for this event in the order they were registered.
-     *
-     * Returns true if the current character's turn needs to end.
      */
-    bool trigger_event(event_kind_t, sol::table, const std::string);
+    void trigger_event(event_kind_t, sol::table);
 
     template<event_kind_t event, typename R = void, typename... Args>
     R run_all(Args&&... args)
@@ -103,7 +106,7 @@ public:
     typedef std::unordered_map<event_kind_t, callbacks> container;
 private:
     container events;
-    std::weak_ptr<lua_env> lua_p;
+    lua_env* lua;
 };
 
 } // namespace lua

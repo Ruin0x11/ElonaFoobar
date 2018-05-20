@@ -77,6 +77,7 @@ set(CORE_SOURCES
     enchantment.cpp
     equipment.cpp
     event.cpp
+    event_manager.cpp
     filesystem.cpp
     fish.cpp
     food.cpp

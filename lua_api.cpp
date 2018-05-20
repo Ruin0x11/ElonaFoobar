@@ -495,19 +495,19 @@ void init_enums(sol::table& Elona)
     sol::table Defines = Elona.create_named("Defines");
     sol::table Enums = Defines.create_named("Enums");
 
-    Enums["IdentifyState"] = Defines.create_with(
+    Enums["IdentifyState"] = Enums.create_with(
         "Unidentified", identification_state_t::unidentified,
         "Partly", identification_state_t::partly_identified,
         "Almost", identification_state_t::almost_identified,
         "Completely", identification_state_t::completely_identified
         );
-    Enums["CurseState"] = Defines.create_with(
+    Enums["CurseState"] = Enums.create_with(
         "Doomed", curse_state_t::doomed,
         "Cursed", curse_state_t::cursed,
         "None", curse_state_t::none,
         "Blessed", curse_state_t::blessed
         );
-    Enums["StatusAilment"] = Defines.create_with(
+    Enums["StatusAilment"] = Enums.create_with(
         "Blinded", status_ailment_t::blinded,
         "Confused", status_ailment_t::confused,
         "Paralyzed", status_ailment_t::paralyzed,
@@ -520,7 +520,7 @@ void init_enums(sol::table& Elona)
         "Insane", status_ailment_t::insane,
         "Sick", status_ailment_t::sick
         );
-    Enums["TileKind"] = Defines.create_with(
+    Enums["TileKind"] = Enums.create_with(
         "Normal", tile_kind_t::normal,
         "Wall", tile_kind_t::wall,
         "Tunnel", tile_kind_t::tunnel,

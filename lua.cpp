@@ -82,13 +82,19 @@ lua_env::lua_env()
                               sol::lib::string,
                               sol::lib::math);
 
-    event_mgr = std::make_unique<event_manager>(this);
-    event_manager::init(*this);
-
     init_api(*this);
     init_registry(*this);
     init_global(*this);
+
+    event_mgr = std::make_unique<event_manager>(this);
+    event_manager::init(*this);
+
     //dump_state();
+}
+
+event_manager& lua_env::get_event_manager()
+{
+    return *event_mgr;
 }
 
 /***
@@ -101,6 +107,11 @@ lua_env::lua_env()
  * (only has data.lua)
  */
 void create_new_environment(const std::string& id)
+{
+
+}
+
+void create_named_registry(const std::string& name)
 {
 
 }
@@ -154,11 +165,16 @@ void lua_env::load_all_mods(const fs::path& mods_dir)
         mod.env = load_mod(mods_dir / mod.name);
         ELONA_LOG("Loaded mod " << mod.name);
     }
+}
 
-    if(config::instance().startup_script != ""s)
-    {
-        run_startup_script(config::instance().startup_script);
-    }
+void run_file(const fs::path& path)
+{
+
+}
+
+void run_startup_script(const std::string& name)
+{
+
 }
 
 } // namespace lua
