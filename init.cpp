@@ -360,7 +360,6 @@ int cat_cbitmod(lua_State* L)
 void initialize_cat_db()
 {
     cat::global.initialize();
-    lua::lua.load_all_mods(filesystem::dir::mods());
 
     export_to_cat_world(cat::global.ptr());
     cat::global.register_function(u8"cdata", cat_cdata);

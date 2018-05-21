@@ -36,8 +36,11 @@ public:
 
     event_manager& get_event_manager();
 
+    // For testing use
+    void run_mod_from_script(const std::string& script);
 private:
-    sol::environment load_mod(const fs::path&);
+    void load_mod(const fs::path& path, mod_info&);
+    void create_mod_info(const std::string&, mod_info&);
 private:
     std::shared_ptr<sol::state> lua;
     std::unique_ptr<event_manager> event_mgr;

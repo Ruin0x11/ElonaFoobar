@@ -327,6 +327,7 @@ if(WITH_TESTS)
   set(TEST_SOURCES
     tests/tests.cpp
     tests/lua_api.cpp
+    tests/lua_mods.cpp
     tests/lua_store.cpp
     tests/serialization.cpp
     )

@@ -126,29 +126,21 @@ void create_named_registry(const std::string& name)
 
 }
 
-sol::environment lua_env::load_mod(const fs::path& path)
+void lua_env::load_mod(const fs::path& path, mod_info& mod)
 {
     // create character/item/map/global tables
     // run various mod loading stages (like defining custom fields for all prototypes in the game?)
     // evaluate init.lua to load defines
-    const std::string name = path.filename().string();
-    create_named_registry(name);
-
-    sol::environment env(*(this->lua), sol::create, this->lua->globals());
-    env["Global"]["MOD_NAME"] = name;
-
-    auto result = this->lua->safe_script_file(filesystem::make_preferred_path_in_utf8(path / "init.lua"), env);
+    auto result = this->lua->safe_script_file(filesystem::make_preferred_path_in_utf8(path / "init.lua"), mod.env);
     if (!result.valid())
     {
         sol::error err = result;
         report_error(err);
-        throw new std::runtime_error("Failed initializing mod "s + name);
+        throw new std::runtime_error("Failed initializing mod "s + mod.name);
     }
     // determine mod overrides inside .json files
     // merge overrides, new things, and locale configs into global database
     // add reference to global API table as Elona so the mod can use it
-
-    return env;
 }
 
 void lua_env::load_all_mods(const fs::path& mods_dir)
@@ -164,8 +156,13 @@ void lua_env::load_all_mods(const fs::path& mods_dir)
             const std::string mod_name = entry.path().filename().string();
             ELONA_LOG("Found mod " << mod_name);
 
+            if(mod_name == "script")
+            {
+                throw new std::runtime_error("\"script\" is a reserved mod name.");
+            }
+
             mod_info info;
-            info.name = mod_name;
+            create_mod_info(mod_name, info);
             this->mods.emplace(mod_name, std::move(info));
         }
     }
@@ -173,30 +170,36 @@ void lua_env::load_all_mods(const fs::path& mods_dir)
     for (auto &&pair : this->mods)
     {
         auto mod = pair.second;
-        mod.env = load_mod(mods_dir / mod.name);
-        lua::store mod_store;
-        mod_store.init(*this->get_state(), mod.env);
-        mod.store = mod_store;
+        load_mod(mods_dir, mod);
         ELONA_LOG("Loaded mod " << mod.name);
     }
 }
 
-void lua_env::run_startup_script(const std::string& name)
+void lua_env::create_mod_info(const std::string& name, mod_info& mod)
 {
     sol::environment env(*(this->lua), sol::create, this->lua->globals());
-    env["Global"]["MOD_NAME"] = "script";
+    env["Global"]["MOD_NAME"] = name;
+
+    mod.name = name;
+    mod.env = env;
+    lua::store store;
+    store.init(*this->get_state(), mod.env);
+    mod.store = std::move(store);
+}
+
+void lua_env::run_startup_script(const std::string& name)
+{
+    if(this->mods.find(name) != this->mods.end())
+    {
+        throw new std::runtime_error("Startup script was already run.");
+    }
+
+    mod_info script_mod;
+    create_mod_info("script", script_mod);
 
     lua->safe_script_file(filesystem::make_preferred_path_in_utf8(
                               filesystem::dir::data() / "script"s / name),
-        env);
-
-    mod_info script_mod;
-    script_mod.name = "script";
-    script_mod.env = env;
-    lua::store script_store;
-    script_store.init(*this->get_state(), script_mod.env);
-    script_mod.store = script_store;
-    this->mods.emplace("script", std::move(script_mod));
+        script_mod.env);
 
     // The startup script is special since everything is deferred until the map loads.
     // So, re-run the map/character initialization things to pick up new init hooks loaded by the startup script.
@@ -209,11 +212,23 @@ void lua_env::run_startup_script(const std::string& name)
         }
     }
     ELONA_LOG("Loaded startup script " << name);
+
+    this->mods.emplace("script", std::move(script_mod));
 }
 
-void run_file(const fs::path& path)
-{
 
+// For testing use
+void lua_env::run_mod_from_script(const std::string& script)
+{
+    mod_info info;
+    create_mod_info("testing_mod", info);
+    auto result = this->lua->safe_script(script, info.env);
+    if (!result.valid())
+    {
+        sol::error err = result;
+        report_error(err);
+        throw new std::runtime_error("Failed initializing mod "s + info.name);
+    }
 }
 
 } // namespace lua

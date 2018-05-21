@@ -297,3 +297,42 @@ TEST_CASE("Test isolation between environments", "[Lua: Store]")
     REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["message"] == "dood"))", first_env));
     REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["message"] == "putit"))", second_env));
 }
+
+
+TEST_CASE("Test multiple table assignment", "[Lua: Store]")
+{
+    sol::state sol;
+    sol.open_libraries(sol::lib::base);
+    elona::lua::store store;
+    store.init(sol);
+
+    REQUIRE_NOTHROW(sol.safe_script(R"(Store.thing = { [0]=0,[1]=1,[2]=2,[3]={1,2,3} })"));
+
+    sol::table my_table = sol["Store"]["thing"];
+    int a = my_table[0];
+    int b = my_table[1];
+    int c = my_table[2];
+    REQUIRE(a == 0);
+    REQUIRE(b == 1);
+    REQUIRE(c == 2);
+
+    REQUIRE_NOTHROW(sol.safe_script(R"(Store.thing = { [0]=2,[1]=1,[2]=0,[3]={3,2,1} })"));
+
+    my_table = sol["Store"]["thing"];
+    a = my_table[0];
+    b = my_table[1];
+    c = my_table[2];
+    REQUIRE(a == 2);
+    REQUIRE(b == 1);
+    REQUIRE(c == 0);
+}
+
+TEST_CASE("Test prevention of reassignment of Store", "[Lua: Store]")
+{
+    sol::state sol;
+    sol.open_libraries(sol::lib::base);
+    elona::lua::store store;
+    store.init(sol);
+
+    REQUIRE_THROWS(sol.safe_script(R"(Store = {})"));
+}
