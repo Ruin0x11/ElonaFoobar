@@ -2,7 +2,6 @@
 #include "config.hpp"
 #include "foobar_save.hpp"
 #include "init.hpp"
-#include "lua.hpp"
 #include "variables.hpp"
 #include "version.hpp"
 

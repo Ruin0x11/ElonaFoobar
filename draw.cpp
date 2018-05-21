@@ -391,6 +391,7 @@ void load_pcc_part(int cc, int body_part, const char* body_part_str)
     gcopy(10 + cc, 128, 0, 128, 198);
     pos(256, 0);
     gfini(128, 198);
+    std::cout << pcc(body_part, cc) << std::endl;
     gfdec2(
         c_col(0, pcc(body_part, cc) / 1000),
         c_col(1, pcc(body_part, cc) / 1000),

@@ -77,7 +77,6 @@ set(CORE_SOURCES
     enchantment.cpp
     equipment.cpp
     event.cpp
-    event_manager.cpp
     filesystem.cpp
     fish.cpp
     food.cpp
@@ -96,9 +95,6 @@ set(CORE_SOURCES
     item_material.cpp
     itemgen.cpp
     log.cpp
-    lua.cpp
-    lua_api.cpp
-    lua_registry.cpp
     magic.cpp
     main_menu.cpp
     map.cpp

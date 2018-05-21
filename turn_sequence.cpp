@@ -20,7 +20,6 @@
 #include "input.hpp"
 #include "item.hpp"
 #include "item_db.hpp"
-#include "lua.hpp"
 #include "macro.hpp"
 #include "map_cell.hpp"
 #include "mef.hpp"

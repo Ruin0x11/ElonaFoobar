@@ -37,7 +37,6 @@
 #include "item_material.hpp"
 #include "itemgen.hpp"
 #include "log.hpp"
-#include "lua.hpp"
 #include "macro.hpp"
 #include "main.hpp"
 #include "map.hpp"

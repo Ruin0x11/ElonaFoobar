@@ -10,7 +10,6 @@
 #include "event.hpp"
 #include "item.hpp"
 #include "itemgen.hpp"
-#include "lua.hpp"
 #include "map_cell.hpp"
 #include "mef.hpp"
 #include "random.hpp"
@@ -961,7 +960,6 @@ void proc_event()
     case 9999:
         if(config::instance().startup_script != ""s)
         {
-            lua::run_startup_script(config::instance().startup_script);
         }
         break;
     }
