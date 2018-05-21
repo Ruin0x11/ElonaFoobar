@@ -12,8 +12,18 @@ TEST_CASE("Test usage of store in mod", "[Lua: Mods]")
 {
     elona::lua::lua_env lua;
 
-    lua.run_mod_from_script("Store.thing = 1");
+    REQUIRE_NOTHROW(lua.run_mod_from_script(R"(
+Store.thing = 1
+assert(Store.thing == 1)
+)"));
+}
 
-    int thing = (*lua.get_state())["thing"];
-    REQUIRE(thing == 1);
+TEST_CASE("Test invalid usage of store in main state", "[Lua: Mods]")
+{
+    elona::lua::lua_env lua;
+
+    REQUIRE_NOTHROW(lua.run_mod_from_script("Store.thing = 1"));
+
+    sol::object obj = (*lua.get_state())["Store"]["thing"];
+    REQUIRE(obj == sol::nil);
 }

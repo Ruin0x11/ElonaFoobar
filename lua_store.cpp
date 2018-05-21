@@ -26,10 +26,9 @@ void store::init(sol::state& state)
 
 void store::init(sol::state& state, sol::environment& env)
 {
-    sol::table Store = state.create_table("Store");
+    env["Store"] = state.create_table_with();
+    sol::table Store = env["Store"];
     bind(state, Store);
-
-    env["Store"] = Store;
 }
 
 void store::bind(sol::state& state, sol::table& Store)
@@ -42,7 +41,8 @@ void store::bind(sol::state& state, sol::table& Store)
     };
 
     metatable[sol::meta_function::index] = [this](sol::table table, std::string key, sol::this_state tstate) {
-        return get(key, tstate);
+        sol::state_view view(tstate);
+        return get(key, view);
     };
 
     state.new_usertype<character_ref>( "LuaCharacterRef" );
@@ -53,6 +53,7 @@ void store::bind(sol::state& state, sol::table& Store)
 
 void store::set(std::string key, const sol::object &val, sol::state_view& view)
 {
+    std::cout << "Set: " << key << std::endl;
     store::object obj;
     auto type = val.get_type();
     switch(type)
@@ -174,10 +175,10 @@ sol::table store::serialize_table(sol::state_view& view, sol::table& table)
     return table;
 }
 
-sol::object store::get(std::string key, sol::this_state tstate)
+sol::object store::get(std::string key, sol::state_view& view)
 {
-    sol::state_view view(tstate);
-    std::cout << "K: " << key << std::endl;
+    std::cout << "Get: " << key << std::endl;
+    std::cout << key.data() << std::endl;
     auto val = store.find(key.data());
     if (val == store.end())
         return sol::nil;

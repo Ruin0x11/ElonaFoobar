@@ -31,6 +31,9 @@ lua_env::lua_env()
                               sol::lib::string,
                               sol::lib::math);
 
+    // Create dummy Store table to prevent crashes on access from state outside of an environment
+    lua->create_named_table("Store");
+
     init_api(*this);
     init_registry(*this);
     init_global(*this);
@@ -131,7 +134,7 @@ void lua_env::load_mod(const fs::path& path, mod_info& mod)
     // create character/item/map/global tables
     // run various mod loading stages (like defining custom fields for all prototypes in the game?)
     // evaluate init.lua to load defines
-    auto result = this->lua->safe_script_file(filesystem::make_preferred_path_in_utf8(path / "init.lua"), mod.env);
+    auto result = this->lua->safe_script_file(filesystem::make_preferred_path_in_utf8(path / mod.name / "init.lua"), mod.env);
     if (!result.valid())
     {
         sol::error err = result;
@@ -177,14 +180,11 @@ void lua_env::load_all_mods(const fs::path& mods_dir)
 
 void lua_env::create_mod_info(const std::string& name, mod_info& mod)
 {
-    sol::environment env(*(this->lua), sol::create, this->lua->globals());
-    env["Global"]["MOD_NAME"] = name;
-
     mod.name = name;
-    mod.env = env;
-    lua::store store;
-    store.init(*this->get_state(), mod.env);
-    mod.store = std::move(store);
+    mod.env = sol::environment(*(this->lua), sol::create, this->lua->globals());
+    mod.env["Global"]["MOD_NAME"] = name;
+    mod.store = lua::store();
+    mod.store.init(*this->get_state(), mod.env);
 }
 
 void lua_env::run_startup_script(const std::string& name)
@@ -222,6 +222,13 @@ void lua_env::run_mod_from_script(const std::string& script)
 {
     mod_info info;
     create_mod_info("testing_mod", info);
+
+    auto view = sol::state_view(*this->get_state());
+    info.store.set("thing", sol::make_object(*this->get_state(), 1), view);
+    int a = info.store.get("thing", view).as<int>();
+    std::cout << "ASD" << a << std::endl;
+
+
     auto result = this->lua->safe_script(script, info.env);
     if (!result.valid())
     {
