@@ -28,6 +28,7 @@ public:
     ~lua_env() = default;
     std::shared_ptr<sol::state> get_state() { return lua; }
     void load_all_mods(const fs::path&);
+    void run_startup_script(const std::string&);
 
     event_manager& get_event_manager();
 
@@ -50,7 +51,6 @@ void init_init_hooks(lua_env&);
 void clear_init_hooks(lua_env&);
 void create_named_registry(const std::string&);
 void run_file(const fs::path&);
-void run_startup_script(const std::string&);
 void on_map_loaded();
 void on_chara_creation(int id);
 void on_chara_removal(int id);

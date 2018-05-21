@@ -22,14 +22,7 @@ void store::init(sol::state& state)
         return;
 
     sol::table Store = state.create_table("Store");
-
-    Store.set_function("set", [this](std::string key, const sol::object &val){
-        set(key, val);
-    });
-
-    Store.set_function("get", [this](std::string key, sol::this_state tstate){
-        return get(key, tstate);
-    });
+    bind(state, Store);
 }
 
 void store::init(sol::state& state, sol::environment& env)
@@ -38,18 +31,56 @@ void store::init(sol::state& state, sol::environment& env)
         return;
 
     sol::table Store = state.create_table("Store");
-
-    Store.set_function("set", [this](std::string key, const sol::object &val){
-        set(key, val);
-    });
-
-    Store.set_function("get", [this](std::string key, sol::this_state tstate){
-        return get(key, tstate);
-    });
+    bind(state, Store);
 
     env["Store"] = Store;
 }
 
+void store::bind(sol::state& state, sol::table& Store)
+{
+    sol::table metatable = state.create_table_with();
+
+    metatable[sol::meta_function::new_index] = [this](sol::table table, std::string key, const sol::object &val){
+        set(key, val);
+    };
+
+    metatable[sol::meta_function::index] = [this](sol::table table, std::string key, sol::this_state tstate) {
+        return get(key, tstate);
+    };
+
+    Store[sol::metatable_key] = metatable;
+}
+
+void store::set(std::string key, const sol::object &val)
+{
+    store::object obj;
+    auto type = val.get_type();
+    switch(type)
+    {
+    case sol::type::none:break;
+    case sol::type::lua_nil:break;
+    case sol::type::string:
+        obj = val.as<std::string>();
+        break;
+    case sol::type::number:
+        obj = val.as<int>();
+        break;
+    case sol::type::thread:break;
+    case sol::type::boolean:
+        obj = val.as<bool>();
+        break;
+    case sol::type::function:break;
+    case sol::type::userdata:
+        obj = serialize_userdata(val);
+        break;
+    case sol::type::lightuserdata:break;
+    case sol::type::poly:break;
+    case sol::type::table:
+        obj = val;
+        break;
+    }
+    store[key.data()] = {type, obj};
+}
 
 store::object store::serialize_userdata(const sol::object &val)
 {
@@ -90,35 +121,41 @@ store::object store::serialize_userdata(const sol::object &val)
     return obj;
 }
 
-void store::set(std::string key, const sol::object &val)
+sol::object store::get(std::string key, sol::this_state tstate)
 {
-    store::object obj;
-    auto type = val.get_type();
+    sol::state_view view(tstate);
+    auto val = store.find(key.data());
+    if (val == store.end())
+        return sol::nil;
+
+    const auto& pair = val->second;
+    const auto& type = pair.first;
+    const auto& obj = pair.second;
+
     switch(type)
     {
     case sol::type::none:break;
     case sol::type::lua_nil:break;
     case sol::type::string:
-        obj = val.as<std::string>();
-        break;
+        assert(obj.type() == typeid(std::string));
+        return sol::object(view, sol::in_place, boost::get<std::string>(obj));
     case sol::type::number:
-        obj = val.as<int>();
-        break;
+        assert(obj.type() == typeid(int));
+        return sol::make_object(view, boost::get<int>(obj));
     case sol::type::thread:break;
     case sol::type::boolean:
-        obj = val.as<bool>();
-        break;
+        assert(obj.type() == typeid(bool));
+        return sol::make_object(view, boost::get<bool>(obj));
     case sol::type::function:break;
     case sol::type::userdata:
-        obj = serialize_userdata(val);
-        break;
+        return deserialize_userdata(obj, view);
     case sol::type::lightuserdata:break;
     case sol::type::poly:break;
     case sol::type::table:
-        obj = val;
-        break;
+        assert(obj.type() == typeid(sol::table));
+        return boost::get<sol::table>(obj);
     }
-    store[key.data()] = {type, obj};
+    return sol::nil;
 }
 
 sol::object store::deserialize_character(const store::object& obj, sol::state_view& view)
@@ -174,42 +211,5 @@ sol::object store::deserialize_userdata(const store::object& obj, sol::state_vie
     }
 }
 
-sol::object store::get(std::string key, sol::this_state tstate)
-{
-    sol::state_view view(tstate);
-    auto val = store.find(key.data());
-    if (val == store.end())
-        return sol::nil;
-
-    const auto& pair = val->second;
-    const auto& type = pair.first;
-    const auto& obj = pair.second;
-
-    switch(type)
-    {
-    case sol::type::none:break;
-    case sol::type::lua_nil:break;
-    case sol::type::string:
-        assert(obj.type() == typeid(std::string));
-        return sol::object(view, sol::in_place, boost::get<std::string>(obj));
-    case sol::type::number:
-        assert(obj.type() == typeid(int));
-        return sol::make_object(view, boost::get<int>(obj));
-    case sol::type::thread:break;
-    case sol::type::boolean:
-        assert(obj.type() == typeid(bool));
-        return sol::make_object(view, boost::get<bool>(obj));
-    case sol::type::function:break;
-    case sol::type::userdata:
-        return deserialize_userdata(obj, view);
-    case sol::type::lightuserdata:break;
-    case sol::type::poly:break;
-    case sol::type::table:
-        assert(obj.type() == typeid(sol::table));
-        return boost::get<sol::table>(obj);
-    }
-    return sol::nil;
-}
-
-}
-}
+} // namespace lua
+} // namespace elona

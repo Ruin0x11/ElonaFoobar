@@ -961,7 +961,7 @@ void proc_event()
     case 9999:
         if(config::instance().startup_script != ""s)
         {
-            lua::run_startup_script(config::instance().startup_script);
+            lua::lua.run_startup_script(config::instance().startup_script);
         }
         break;
     }

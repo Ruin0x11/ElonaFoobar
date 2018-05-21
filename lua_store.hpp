@@ -34,6 +34,8 @@ public:
     void init(sol::state &state);
     void init(sol::state &state, sol::environment& env);
 private:
+    void bind(sol::state&, sol::table&);
+
     /***
      * Serializes a compatible userdata object or reference (character, item or position).
      */

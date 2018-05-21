@@ -20,12 +20,12 @@ TEST_CASE("Test that strings can be set/retrieved", "[Lua: Store]")
 
     store.set("my_string"s, sol::make_object(sol, "dood"));
 
-    std::string my_string = sol["Store"]["get"]("my_string");
+    std::string my_string = sol["Store"]["my_string"];
     REQUIRE(my_string == std::string("dood"));
-    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_string") == "dood"))"));
+    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_string"] == "dood"))"));
 
-    REQUIRE_NOTHROW(sol.safe_script(R"(Store.set("my_string", "putit"))"));
-    my_string = sol["Store"]["get"]("my_string");
+    REQUIRE_NOTHROW(sol.safe_script(R"(Store["my_string"] = "putit")"));
+    my_string = sol["Store"]["my_string"];
     REQUIRE(my_string == std::string("putit"));
 }
 
@@ -38,12 +38,12 @@ TEST_CASE("Test that booleans can be set/retrieved", "[Lua: Store]")
 
     store.set("my_bool"s, sol::make_object(sol, false));
 
-    bool my_bool = sol["Store"]["get"]("my_bool");
+    bool my_bool = sol["Store"]["my_bool"];
     REQUIRE(my_bool == false);
-    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_bool") == false))"));
+    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_bool"] == false))"));
 
-    REQUIRE_NOTHROW(sol.safe_script(R"(Store.set("my_bool", true))"));
-    my_bool = sol["Store"]["get"]("my_bool");
+    REQUIRE_NOTHROW(sol.safe_script(R"(Store["my_bool"] = true)"));
+    my_bool = sol["Store"]["my_bool"];
     REQUIRE(my_bool == true);
 }
 
@@ -57,12 +57,12 @@ TEST_CASE("Test that integers can be set/retrieved", "[Lua: Store]")
 
     store.set("my_int"s, sol::make_object(sol, 42));
 
-    int my_int = sol["Store"]["get"]("my_int");
+    int my_int = sol["Store"]["my_int"];
     REQUIRE(my_int == 42);
-    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_int") == 42))"));
+    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_int"] == 42))"));
 
-    REQUIRE_NOTHROW(sol.safe_script(R"(Store.set("my_int", 84))"));
-    my_int = sol["Store"]["get"]("my_int");
+    REQUIRE_NOTHROW(sol.safe_script(R"(Store["my_int"] = 84)"));
+    my_int = sol["Store"]["my_int"];
     REQUIRE(my_int == 84);
 }
 
@@ -73,9 +73,9 @@ TEST_CASE("Test that tables can be set", "[Lua: Store]")
     elona::lua::store store;
     store.init(sol);
 
-    REQUIRE_NOTHROW(sol.safe_script(R"(Store.set("my_table", { [0]=42, [1]="Scut!", [2]=false, [3]=nil, bell=" *リン* " }))"));
+    REQUIRE_NOTHROW(sol.safe_script(R"(Store["my_table"] = { [0]=42, [1]="Scut!", [2]=false, [3]=nil, bell=" *リン* " })"));
 
-    sol::table my_table = sol["Store"]["get"]("my_table");
+    sol::table my_table = sol["Store"]["my_table"];
 
     std::size_t tablesize = 4;
     std::size_t iterations = 0;
@@ -131,7 +131,7 @@ TEST_CASE("Test that tables can be retrieved", "[Lua: Store]")
                                                 "bell"," *リン* ");
     store.set("my_table"s, sol::object(my_table));
 
-    my_table = sol["Store"]["get"]("my_table");
+    my_table = sol["Store"]["my_table"];
 
     std::size_t tablesize = 4;
     std::size_t iterations = 0;
@@ -194,16 +194,16 @@ TEST_CASE("Test that character references can be set", "[Lua: Store]")
 
     SECTION("valid reference")
     {
-        my_chara = sol["Store"]["get"]("my_chara");
+        my_chara = sol["Store"]["my_chara"];
         REQUIRE(my_chara.idx == idx);
-        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_chara").idx == idx))"));
+        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_chara"].idx == idx))"));
     }
     SECTION("invalid reference")
     {
         elona::chara_delete(idx);
-        sol::object thing = sol["Store"]["get"]("my_chara");
+        sol::object thing = sol["Store"]["my_chara"];
         REQUIRE(thing == sol::nil);
-        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_chara") == nil))"));
+        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_chara"] == nil))"));
     }
 }
 
@@ -228,17 +228,17 @@ TEST_CASE("Test that item references can be set", "[Lua: Store]")
 
     SECTION("valid reference")
     {
-        my_item = sol["Store"]["get"]("my_item");
+        my_item = sol["Store"]["my_item"];
         REQUIRE(my_item.idx == idx);
-        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_item").idx == idx))"));
+        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_item"].idx == idx))"));
     }
 
     SECTION("invalid reference")
     {
         elona::item_delete(idx);
-        sol::object thing = sol["Store"]["get"]("my_item");
+        sol::object thing = sol["Store"]["my_item"];
         REQUIRE(thing == sol::nil);
-        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_item") == nil))"));
+        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_item"] == nil))"));
     }
 }
 
@@ -258,11 +258,11 @@ TEST_CASE("Test that positions can be set", "[Lua: Store]")
 
     store.set("my_position"s, sol::make_object(sol, my_position));
 
-    my_position = sol["Store"]["get"]("my_position");
+    my_position = sol["Store"]["my_position"];
     REQUIRE(my_position.x == 24);
     REQUIRE(my_position.y == 47);
-    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_position").x == 24))"));
-    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_position").y == 47))"));
+    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_position"].x == 24))"));
+    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_position"].y == 47))"));
 }
 
 TEST_CASE("Test isolation between environments")
@@ -277,9 +277,9 @@ TEST_CASE("Test isolation between environments")
     first_store.init(sol, first_env);
     second_store.init(sol, second_env);
 
-    REQUIRE_NOTHROW(sol.safe_script(R"(Store.set("message", "dood"))", first_env));
-    REQUIRE_NOTHROW(sol.safe_script(R"(Store.set("message", "putit"))", second_env));
+    REQUIRE_NOTHROW(sol.safe_script(R"(Store["message"] = "dood")", first_env));
+    REQUIRE_NOTHROW(sol.safe_script(R"(Store["message"] = "putit")", second_env));
 
-    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("message") == "dood"))", first_env));
-    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("message") == "putit"))", second_env));
+    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["message"] == "dood"))", first_env));
+    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["message"] == "putit"))", second_env));
 }
