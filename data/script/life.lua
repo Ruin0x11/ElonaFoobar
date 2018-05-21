@@ -1,6 +1,6 @@
 local Map = Elona.Map
 local Enums = Elona.Defines.Enums
-local Storage = Elona.Registry.Data["script"]
+local EventKind = Elona.Defines.EventKind
 
 local function my_map_init(w, h)
    local grid = {}
@@ -48,10 +48,15 @@ local function evolve(cell)
 end
 
 local function run_life()
-   local grid = Storage.Map.grid
+   local grid = Store.grid
+   if grid == nil then
+      Store.grid = my_map_init(Map.width(), Map.height()).grid
+      assert(Store.grid ~= nil)
+      grid = Store.grid
+   end
    for y = 1, Map.width() do
       for x = 1, Map.height() do
-         if Storage.Map.grid[x][y] == 1 and Map.can_access(x, y) then
+         if Store.grid[x][y] == 1 and Map.can_access(x, y) then
             Map.set_tile(x, y, Enums.TileKind.Wall)
             Map.set_tile_memory(x, y, Enums.TileKind.Wall)
          else
@@ -60,9 +65,8 @@ local function run_life()
          end
       end
    end
-   Storage.Map.grid = evolve(grid)
+   Store.grid = evolve(grid)
 end
 
-Elona.Registry.register_map_init(my_map_init)
-Elona.Event.register(Elona.Defines.EventKind.initialized_map, run_life)
-Elona.Event.register(Elona.Defines.EventKind.all_turns_finished, run_life)
+Elona.Event.register(EventKind.MapInitialized, run_life)
+Elona.Event.register(EventKind.AllTurnsFinished, run_life)

@@ -12,6 +12,7 @@
 #include "dmgheal.hpp"
 #include "elona.hpp"
 #include "event.hpp"
+#include "event_manager.hpp"
 #include "foobar_save.hpp"
 #include "food.hpp"
 #include "fov.hpp"
@@ -879,6 +880,7 @@ turn_result_t pass_one_turn(bool label_2738_flg)
         }
         if (ct >= ELONA_MAX_CHARACTERS)
         {
+            lua::lua.get_event_manager().run_callbacks<lua::event_kind_t::all_turns_finished>();
             return turn_result_t::all_turns_finished;
         }
     }

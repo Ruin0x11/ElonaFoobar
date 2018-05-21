@@ -18,7 +18,7 @@ class store
 
 
 public:
-    void set(std::string key, sol::object&, sol::state_view& view);
+    void set(std::string key, const sol::object&, sol::state_view& view);
     sol::object get(std::string key, sol::this_state tstate);
 
     BOOST_STRONG_TYPEDEF(int, character_ref);

@@ -1,5 +1,5 @@
 {
     "font1": "Kochi Gothic.ttf",
     "font2": "Bitstream Sans Vera Mono.ttf",
-    "startup_script": "testbed.lua"
+    "startup_script": "life.lua"
 }

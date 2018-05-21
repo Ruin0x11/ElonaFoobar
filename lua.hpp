@@ -41,7 +41,7 @@ private:
 private:
     std::shared_ptr<sol::state> lua;
     std::unique_ptr<event_manager> event_mgr;
-    std::vector<mod_info> mods;
+    std::unordered_map<std::string, mod_info> mods;
 };
 
 void init();

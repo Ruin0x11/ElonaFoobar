@@ -21,6 +21,10 @@ enum class event_kind_t : unsigned
     item_initialized,
     game_initialized,
 
+    map_created,
+    character_created,
+    item_created,
+
     COUNT
 };
 
@@ -38,10 +42,12 @@ public:
     {
         sol::function function;
         sol::environment env;
-        callback_t(sol::environment _env, sol::function _function)
+        std::string mod_name;
+        callback_t(sol::environment _env, sol::function _function, std::string _mod_name)
         {
             env = _env;
             function = _function;
+            mod_name = _mod_name;
         }
     };
 
@@ -56,7 +62,8 @@ public:
 
     void push(sol::environment &env, sol::function &function)
     {
-        functions.emplace_back(env, function);
+        std::string mod_name = env["Global"]["MOD_NAME"];
+        functions.emplace_back(env, function, mod_name);
     }
 
     template<typename... Args>

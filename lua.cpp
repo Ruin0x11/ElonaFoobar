@@ -62,7 +62,19 @@ void lua_env::on_chara_creation(character& chara)
     // for each mod, run chara creation callback
     for(const auto& callback : this->get_event_manager().get_callbacks(event_kind_t::character_initialized))
     {
-        //sol::table retval = callback.run(callbacks::retval_type<sol::table>{});
+        sol::table retval = callback.function.call();
+        sol::state_view view(*lua);
+        retval.for_each([&](sol::object key, sol::object value)
+        {
+            if(!key.is<std::string>())
+            {
+                assert(0);
+            }
+            else
+            {
+                mods.at(callback.mod_name).store.set(key.as<std::string>(), value, view);
+            }
+        });
     }
 }
 
@@ -154,12 +166,13 @@ void lua_env::load_all_mods(const fs::path& mods_dir)
 
             mod_info info;
             info.name = mod_name;
-            this->mods.push_back(std::move(info));
+            this->mods.emplace(mod_name, std::move(info));
         }
     }
 
-    for (auto &&mod : this->mods)
+    for (auto &&pair : this->mods)
     {
+        auto mod = pair.second;
         mod.env = load_mod(mods_dir / mod.name);
         lua::store mod_store;
         mod_store.init(*this->get_state(), mod.env);
@@ -170,7 +183,21 @@ void lua_env::load_all_mods(const fs::path& mods_dir)
 
 void lua_env::run_startup_script(const std::string& name)
 {
-    run_file(filesystem::dir::data() / "script"s / name);
+    sol::environment env(*(this->lua), sol::create, this->lua->globals());
+    env["Global"]["MOD_NAME"] = "script";
+
+    lua->safe_script_file(filesystem::make_preferred_path_in_utf8(
+                              filesystem::dir::data() / "script"s / name),
+        env);
+
+    mod_info script_mod;
+    script_mod.name = "script";
+    script_mod.env = env;
+    lua::store script_store;
+    script_store.init(*this->get_state(), script_mod.env);
+    script_mod.store = script_store;
+    this->mods.emplace("script", std::move(script_mod));
+
     // The startup script is special since everything is deferred until the map loads.
     // So, re-run the map/character initialization things to pick up new init hooks loaded by the startup script.
     // The following shouldn't cause any significant changes in behavior.

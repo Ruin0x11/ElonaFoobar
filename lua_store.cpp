@@ -36,7 +36,7 @@ void store::bind(sol::state& state, sol::table& Store)
 {
     sol::table metatable = state.create_table_with();
 
-    metatable[sol::meta_function::new_index] = [this](sol::table table, std::string key, sol::object val, sol::this_state tstate){
+    metatable[sol::meta_function::new_index] = [this](sol::table table, std::string key, const sol::object val, sol::this_state tstate){
         sol::state_view view(tstate);
         set(key, val, view);
     };
@@ -51,7 +51,7 @@ void store::bind(sol::state& state, sol::table& Store)
     Store[sol::metatable_key] = metatable;
 }
 
-void store::set(std::string key, sol::object &val, sol::state_view& view)
+void store::set(std::string key, const sol::object &val, sol::state_view& view)
 {
     store::object obj;
     auto type = val.get_type();
@@ -177,6 +177,7 @@ sol::table store::serialize_table(sol::state_view& view, sol::table& table)
 sol::object store::get(std::string key, sol::this_state tstate)
 {
     sol::state_view view(tstate);
+    std::cout << "K: " << key << std::endl;
     auto val = store.find(key.data());
     if (val == store.end())
         return sol::nil;

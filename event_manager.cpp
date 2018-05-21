@@ -35,7 +35,9 @@ event_manager::event_manager(lua_env* lua)
     Defines["EventKind"] = Defines.create_with(
         "CharaMoved", event_kind_t::chara_moved,
         "PlayerTurn", event_kind_t::player_turn,
-        "AllTurnsFinished", event_kind_t::all_turns_finished);
+        "AllTurnsFinished", event_kind_t::all_turns_finished,
+        "MapInitialized", event_kind_t::map_initialized
+        );
 
     unsigned event_count = static_cast<unsigned>(event_kind_t::COUNT);
     for(unsigned i = 0; i < event_count; i++)
