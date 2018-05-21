@@ -185,6 +185,7 @@ void lua_env::create_mod_info(const std::string& name, mod_info& mod)
     mod.env["Global"]["MOD_NAME"] = name;
     mod.store = lua::store();
     mod.store.init(*this->get_state(), mod.env);
+    mod.env["Store"] = mod.store;
 }
 
 void lua_env::run_startup_script(const std::string& name)
@@ -223,12 +224,6 @@ void lua_env::run_mod_from_script(const std::string& script)
     mod_info info;
     create_mod_info("testing_mod", info);
 
-    auto view = sol::state_view(*this->get_state());
-    info.store.set("thing", sol::make_object(*this->get_state(), 1), view);
-    int a = info.store.get("thing", view).as<int>();
-    std::cout << "ASD" << a << std::endl;
-
-
     auto result = this->lua->safe_script(script, info.env);
     if (!result.valid())
     {
@@ -236,6 +231,16 @@ void lua_env::run_mod_from_script(const std::string& script)
         report_error(err);
         throw new std::runtime_error("Failed initializing mod "s + info.name);
     }
+
+    this->mods.emplace("testing_mod", std::move(info));
+}
+
+void lua_env::run_in_mod(const std::string& name, const std::string& script)
+{
+    auto val = mods.find(name);
+    if(val == mods.end())
+        throw new std::runtime_error("No such mod "s + name + "."s);
+    this->lua->script(script, val->second.env);
 }
 
 } // namespace lua

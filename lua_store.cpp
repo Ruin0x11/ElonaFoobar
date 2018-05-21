@@ -22,33 +22,46 @@ void store::init(sol::state& state)
 
     sol::table Store = state.create_table("Store");
     bind(state, Store);
+    state["Store"] = this;
 }
 
 void store::init(sol::state& state, sol::environment& env)
 {
-    env["Store"] = state.create_table_with();
-    sol::table Store = env["Store"];
+    sol::table Store = state.create_table_with();
     bind(state, Store);
+    // This doesn't point to the store correctly unless it is set inside mod_info.
+    // I don't know why.
+    //env["Store"] = this;
 }
 
 void store::bind(sol::state& state, sol::table& Store)
 {
-    sol::table metatable = state.create_table_with();
+    //sol::table metatable = state.create_table_with();
 
-    metatable[sol::meta_function::new_index] = [this](sol::table table, std::string key, const sol::object val, sol::this_state tstate){
+    state.new_usertype<lua::store>("LuaStore",
+                                   sol::meta_function::new_index , [](lua::store& s, std::string key, const sol::object val, sol::this_state tstate){
         sol::state_view view(tstate);
-        set(key, val, view);
-    };
+        s.set(key, val, view);
+                                   },
+                                   sol::meta_function::index , [](lua::store& s, std::string key, sol::this_state tstate) {
+        sol::state_view view(tstate);
+        return s.get(key, view);
+    });
 
-    metatable[sol::meta_function::index] = [this](sol::table table, std::string key, sol::this_state tstate) {
-        sol::state_view view(tstate);
-        return get(key, view);
-    };
+    // metatable[sol::meta_function::new_index] = [this](sol::table table, std::string key, const sol::object val, sol::this_state tstate){
+    //     sol::state_view view(tstate);
+    //     set(key, val, view);
+    // };
+
+    // metatable[sol::meta_function::index] = [this](sol::table table, std::string key, sol::this_state tstate) {
+    //     sol::state_view view(tstate);
+    //     return get(key, view);
+    // };
 
     state.new_usertype<character_ref>( "LuaCharacterRef" );
     state.new_usertype<item_ref>( "LuaItemRef" );
 
-    Store[sol::metatable_key] = metatable;
+    //Store[sol::metatable_key] = metatable;
 }
 
 void store::set(std::string key, const sol::object &val, sol::state_view& view)

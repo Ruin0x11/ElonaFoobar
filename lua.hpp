@@ -13,6 +13,8 @@ namespace elona
 namespace lua
 {
 
+using namespace std::literals::string_literals;
+
 class event_manager;
 
 struct mod_info
@@ -38,6 +40,13 @@ public:
 
     // For testing use
     void run_mod_from_script(const std::string& script);
+    void run_in_mod(const std::string& name, const std::string& script);
+    const mod_info& get_mod(const std::string& name) const {
+        auto val = mods.find(name);
+        if(val == mods.end())
+            throw new std::runtime_error("No such mod "s + name + "."s);
+        return val->second;
+    }
 private:
     void load_mod(const fs::path& path, mod_info&);
     void create_mod_info(const std::string&, mod_info&);
