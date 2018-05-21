@@ -1142,7 +1142,7 @@ int chara_create(int prm_756, int prm_757, int prm_758, int prm_759)
     if (stat == 1)
     {
         cdata[rc].idx = rc;
-        lua::on_chara_creation(rc);
+        lua::lua.on_chara_creation(cdata[rc]);
         if (rc == 56)
         {
             cdata[rc].state = 0;
@@ -1940,6 +1940,7 @@ int chara_copy(int prm_848)
 
 void chara_delete(int cc)
 {
+    lua::lua.on_chara_removal(cdata[cc]);
     for (const auto& cnt : items(cc))
     {
         inv[cnt].number = 0;
@@ -1950,7 +1951,6 @@ void chara_delete(int cc)
     }
     sdata.clear(cc);
     cdata(cc).clear();
-    lua::on_chara_removal(cc);
     return;
 }
 

@@ -18,7 +18,8 @@ TEST_CASE("Test that strings can be set/retrieved", "[Lua: Store]")
     elona::lua::store store;
     store.init(sol);
 
-    store.set("my_string"s, sol::make_object(sol, "dood"));
+    auto view = sol::state_view(sol);
+    store.set("my_string"s, sol::make_object(sol, "dood"), view);
 
     std::string my_string = sol["Store"]["my_string"];
     REQUIRE(my_string == std::string("dood"));
@@ -36,7 +37,8 @@ TEST_CASE("Test that booleans can be set/retrieved", "[Lua: Store]")
     elona::lua::store store;
     store.init(sol);
 
-    store.set("my_bool"s, sol::make_object(sol, false));
+    auto view = sol::state_view(sol);
+    store.set("my_bool"s, sol::make_object(sol, false), view);
 
     bool my_bool = sol["Store"]["my_bool"];
     REQUIRE(my_bool == false);
@@ -55,7 +57,8 @@ TEST_CASE("Test that integers can be set/retrieved", "[Lua: Store]")
     elona::lua::store store;
     store.init(sol);
 
-    store.set("my_int"s, sol::make_object(sol, 42));
+    auto view = sol::state_view(sol);
+    store.set("my_int"s, sol::make_object(sol, 42), view);
 
     int my_int = sol["Store"]["my_int"];
     REQUIRE(my_int == 42);
@@ -129,7 +132,8 @@ TEST_CASE("Test that tables can be retrieved", "[Lua: Store]")
                                                 2, false,
                                                 3, sol::nil, // does nothing
                                                 "bell"," *リン* ");
-    store.set("my_table"s, sol::object(my_table));
+    auto view = sol::state_view(sol);
+    store.set("my_table"s, sol::object(my_table), view);
 
     my_table = sol["Store"]["my_table"];
 
@@ -190,7 +194,8 @@ TEST_CASE("Test that character references can be set", "[Lua: Store]")
     elona::character& my_chara = elona::cdata(idx);
     sol.set("idx", idx);
 
-    store.set("my_chara"s, sol::make_object(sol, my_chara));
+    auto view = sol::state_view(sol);
+    store.set("my_chara"s, sol::make_object(sol, my_chara), view);
 
     SECTION("valid reference")
     {
@@ -224,7 +229,8 @@ TEST_CASE("Test that item references can be set", "[Lua: Store]")
     elona::item& my_item = elona::inv(idx);
     sol.set("idx", idx);
 
-    store.set("my_item"s, sol::make_object(sol, my_item));
+    auto view = sol::state_view(sol);
+    store.set("my_item"s, sol::make_object(sol, my_item), view);
 
     SECTION("valid reference")
     {
@@ -256,7 +262,8 @@ TEST_CASE("Test that positions can be set", "[Lua: Store]")
 
     position_t my_position = { 24, 47 };
 
-    store.set("my_position"s, sol::make_object(sol, my_position));
+    auto view = sol::state_view(sol);
+    store.set("my_position"s, sol::make_object(sol, my_position), view);
 
     my_position = sol["Store"]["my_position"];
     REQUIRE(my_position.x == 24);

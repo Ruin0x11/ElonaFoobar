@@ -15,8 +15,10 @@ namespace lua
 
 class store
 {
+
+
 public:
-    void set(std::string key, const sol::object &);
+    void set(std::string key, const sol::object&, sol::state_view& view);
     sol::object get(std::string key, sol::this_state tstate);
 
     BOOST_STRONG_TYPEDEF(int, character_ref);
@@ -39,10 +41,9 @@ private:
      * Serializes a compatible userdata object or reference (character, item or position).
      */
     object serialize_userdata(const sol::object&);
-
-    sol::object deserialize_character(const store::object&, sol::state_view&);
-    sol::object deserialize_item(const store::object&, sol::state_view&);
-    sol::object deserialize_position(const store::object&, sol::state_view&);
+    void convert_table_value(sol::state&, sol::table&);
+    sol::table serialize_table(sol::state&, sol::table&);
+    void convert_table_value(sol::object&, sol::state&);
 
     /***
      * Deserializes a compatible userdata object or reference (character, item or position).
@@ -51,6 +52,17 @@ private:
 private:
     std::unordered_map<std::string, std::pair<sol::type, object>> store;
 };
+
+sol::object deserialize_character(store::character_ref, sol::state_view&);
+sol::object deserialize_item(store::item_ref, sol::state_view&);
+sol::object deserialize_position(position_t, sol::state_view&);
+sol::object deserialize_table(sol::table&, sol::state_view&);
+sol::object deserialize_table_nested_value(const sol::object&, sol::state_view&);
+sol::object serialize_table_nested_value(const sol::object&, sol::state_view&);
+
+// These are for handling nested assignments of references to custom usertypes inside tables.
+void table_meta_new_index(sol::table table, sol::object key, sol::object value, sol::this_state ts);
+sol::object table_meta_index(sol::table table, sol::object key, sol::this_state ts);
 
 }
 }

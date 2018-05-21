@@ -453,7 +453,7 @@ void fmode_7_8(bool read, const fs::path& dir)
                 // TODO handle separately from chara creation
                 for (int chara = 0; chara < ELONA_MAX_PARTY_CHARACTERS; chara++) {
                     cdata[chara].idx = chara;
-                    lua::on_chara_creation(chara);
+                    lua::lua.on_chara_creation(cdata[chara]);
                 }
             }
         }
@@ -773,7 +773,7 @@ void fmode_14_15(bool read)
                 // TODO handle separately from chara creation
                 for (int chara = 0; chara < ELONA_MAX_PARTY_CHARACTERS; chara++) {
                     cdata[chara].idx = chara;
-                    lua::on_chara_creation(chara);
+                    lua::lua.on_chara_creation(cdata[chara]);
                 }
             }
         }
@@ -963,7 +963,7 @@ void fmode_1_2(bool read)
             // TODO handle separately
             for (int chara = ELONA_MAX_PARTY_CHARACTERS; chara < ELONA_MAX_CHARACTERS; chara++) {
                 cdata[chara].idx = chara;
-                lua::on_chara_creation(chara);
+                lua::lua.on_chara_creation(cdata[chara]);
             }
         }
         else
@@ -1164,7 +1164,7 @@ void fmode_17()
             // TODO handle separately
             for (int chara = ELONA_MAX_PARTY_CHARACTERS; chara < ELONA_MAX_CHARACTERS; chara++) {
                 cdata[chara].idx = chara;
-                lua::on_chara_creation(chara);
+                lua::lua.on_chara_creation(cdata[chara]);
             }
         }
         else

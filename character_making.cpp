@@ -853,7 +853,7 @@ main_menu_result_t character_making_final_phase()
     await(250);
     mode = 5;
     cdata[0].idx = 0;
-    lua::on_chara_creation(0);
+    lua::lua.on_chara_creation(cdata[0]);
     return main_menu_result_t::initialize_game;
 }
 

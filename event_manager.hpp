@@ -16,6 +16,11 @@ enum class event_kind_t : unsigned
     player_turn,
     all_turns_finished,
 
+    map_initialized,
+    character_initialized,
+    item_initialized,
+    game_initialized,
+
     COUNT
 };
 
@@ -45,6 +50,9 @@ public:
     typedef std::vector<callback_t> callback_container;
     typedef callback_container::iterator iterator;
     typedef callback_container::const_iterator const_iterator;
+
+    const_iterator begin() const { return functions.begin(); }
+    const_iterator end() const { return functions.end(); }
 
     void push(sol::environment &env, sol::function &function)
     {
@@ -92,6 +100,11 @@ public:
      * Runs all callbacks for this event in the order they were registered.
      */
     void trigger_event(event_kind_t, sol::table);
+
+    const callbacks& get_callbacks(event_kind_t event) const
+    {
+        return events.at(event);
+    }
 
     template<event_kind_t event, typename R = void, typename... Args>
     R run_callbacks(Args&&... args)

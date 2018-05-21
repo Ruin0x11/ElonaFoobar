@@ -21,57 +21,6 @@ lua_env lua;
 // TODO move api to separate source file
 // TODO make things immutable where they need to be
 
-
-void report_error(sol::error err)
-{
-	std::string what = err.what();
-	ELONA_LOG(what);
-}
-
-// TODO mods_iterator
-
-// TODO just make it a callback?
-void on_map_loaded()
-{
-}
-
-// TODO just make it a callback?
-// TODO use character&, not id
-void on_chara_creation(int chara_id)
-{
-    // TODO handle deserialization separately from creation from scratch
-    // TODO only handle deserialization for characters that actually exist
-    // for each mod, init its extra data for the character
-    // for each mod, run chara creation callback
-}
-
-// void on_item_creation(int id)
-// {
-//     // for each mod, init its extra data for the item
-//     // for each mod, run item creation callback
-// }
-//
-
-void on_chara_removal(int id)
-{
-    // for each mod, invalidate global chara state
-    // for each mod, run chara removal callback
-}
-//
-// void on_item_removal(int id)
-// {
-//     // for each mod, invalidate global item state
-//     // for each mod, run item removal callback
-// }
-
-
-void init_global(lua_env& lua)
-{
-    sol::table Global = lua.get_state()->create_named_table("Global");
-    Global.create_named("Callbacks");
-    Global.create_named("Init");
-}
-
 lua_env::lua_env()
 {
     lua = std::make_shared<sol::state>();
@@ -95,6 +44,55 @@ lua_env::lua_env()
 event_manager& lua_env::get_event_manager()
 {
     return *event_mgr;
+}
+
+void report_error(sol::error err)
+{
+	std::string what = err.what();
+	ELONA_LOG(what);
+}
+
+// TODO mods_iterator
+
+void lua_env::on_chara_creation(character& chara)
+{
+    // TODO handle deserialization separately from creation from scratch
+    // TODO only handle deserialization for characters that actually exist
+    // for each mod, init its extra data for the character
+    // for each mod, run chara creation callback
+    for(const auto& callback : this->get_event_manager().get_callbacks(event_kind_t::character_initialized))
+    {
+        //sol::table retval = callback.run(callbacks::retval_type<sol::table>{});
+    }
+}
+
+ void on_item_creation(int id)
+ {
+     // for each mod, init its extra data for the item
+     // for each mod, run item creation callback
+     //this->get_event_manager()->run_callbacks<event_kind_t::item_initialized>(item);
+ }
+
+
+void lua_env::on_chara_removal(character&)
+{
+    // for each mod, invalidate global chara state
+    // for each mod, run chara removal callback
+    //this->get_event_manager()->run_callbacks<event_kind_t::character_removed>(chara);
+}
+//
+// void on_item_removal(int id)
+// {
+//     // for each mod, invalidate global item state
+//     // for each mod, run item removal callback
+// }
+
+
+void init_global(lua_env& lua)
+{
+    sol::table Global = lua.get_state()->create_named_table("Global");
+    Global.create_named("Callbacks");
+    Global.create_named("Init");
 }
 
 /***
@@ -172,7 +170,18 @@ void lua_env::load_all_mods(const fs::path& mods_dir)
 
 void lua_env::run_startup_script(const std::string& name)
 {
-
+    run_file(filesystem::dir::data() / "script"s / name);
+    // The startup script is special since everything is deferred until the map loads.
+    // So, re-run the map/character initialization things to pick up new init hooks loaded by the startup script.
+    // The following shouldn't cause any significant changes in behavior.
+    this->get_event_manager().run_callbacks<event_kind_t::map_initialized>();
+    for (int chara_id = 0; chara_id < ELONA_MAX_CHARACTERS; chara_id++) {
+        if(elona::cdata[chara_id].state != 0)
+        {
+            on_chara_creation(elona::cdata[chara_id]);
+        }
+    }
+    ELONA_LOG("Loaded startup script " << name);
 }
 
 void run_file(const fs::path& path)

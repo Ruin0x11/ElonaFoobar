@@ -9,6 +9,7 @@
 #include "draw.hpp"
 #include "elona.hpp"
 #include "event.hpp"
+#include "event_manager.hpp"
 #include "item.hpp"
 #include "quest.hpp"
 #include "itemgen.hpp"
@@ -2967,8 +2968,8 @@ label_1744_internal:
     label_1746();
     label_1439();
     update_scrolling_info();
-    
-    lua::on_map_loaded();
+
+    lua::lua.get_event_manager().run_callbacks<lua::event_kind_t::map_initialized>();
 
     if (mdata(6) == 3)
     {

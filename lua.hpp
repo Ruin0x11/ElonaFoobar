@@ -3,6 +3,7 @@
 #include "thirdparty/sol2/sol.hpp"
 #include "filesystem.hpp"
 #include "event_manager.hpp"
+#include "character.hpp"
 #include "lua_store.hpp"
 #include <map>
 #include <vector>
@@ -30,6 +31,9 @@ public:
     void load_all_mods(const fs::path&);
     void run_startup_script(const std::string&);
 
+    void on_chara_creation(character&);
+    void on_chara_removal(character&);
+
     event_manager& get_event_manager();
 
 private:
@@ -52,8 +56,6 @@ void clear_init_hooks(lua_env&);
 void create_named_registry(const std::string&);
 void run_file(const fs::path&);
 void on_map_loaded();
-void on_chara_creation(int id);
-void on_chara_removal(int id);
 
 extern lua_env lua;
 

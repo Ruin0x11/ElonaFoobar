@@ -39,18 +39,22 @@ void store::bind(sol::state& state, sol::table& Store)
 {
     sol::table metatable = state.create_table_with();
 
-    metatable[sol::meta_function::new_index] = [this](sol::table table, std::string key, const sol::object &val){
-        set(key, val);
+    metatable[sol::meta_function::new_index] = [this](sol::table table, std::string key, const sol::object &val, sol::this_state tstate){
+        sol::state_view view(tstate);
+        set(key, val, view);
     };
 
     metatable[sol::meta_function::index] = [this](sol::table table, std::string key, sol::this_state tstate) {
         return get(key, tstate);
     };
 
+    state.new_usertype<character_ref>( "LuaCharacterRef" );
+    state.new_usertype<item_ref>( "LuaItemRef" );
+
     Store[sol::metatable_key] = metatable;
 }
 
-void store::set(std::string key, const sol::object &val)
+void store::set(std::string key, const sol::object &val, sol::state_view& view)
 {
     store::object obj;
     auto type = val.get_type();
@@ -75,7 +79,20 @@ void store::set(std::string key, const sol::object &val)
     case sol::type::lightuserdata:break;
     case sol::type::poly:break;
     case sol::type::table:
-        obj = val;
+        // We need to set a new metatable here, otherwise no
+        // deserialization logic will be applied if the user tries
+        // assigning to a value inside the table. For example, what
+        // happens if the user tries setting a table of characters,
+        // then one of the character references goes bad?
+
+        // TODO: This is not handled beyond a depth of 1.
+        sol::table metatable = view.create_table_with();
+        metatable[sol::meta_function::new_index] = table_meta_new_index;
+        metatable[sol::meta_function::index] = table_meta_index;
+
+        sol::table table = val;
+        table[sol::metatable_key] = metatable;
+        obj = table;
         break;
     }
     store[key.data()] = {type, obj};
@@ -120,6 +137,138 @@ store::object store::serialize_userdata(const sol::object &val)
     return obj;
 }
 
+void store::convert_table_value(sol::object& value, sol::state& state)
+{
+    sol::type valuetype = value.get_type();
+    switch (valuetype) {
+    case sol::type::number:
+    case sol::type::string:
+    case sol::type::boolean:
+    case sol::type::lua_nil:
+        break;
+    case sol::type::userdata:
+    {
+        store::object obj = serialize_userdata(value);
+        if(obj.type() == typeid(character_ref))
+        {
+            value = sol::make_object(state, boost::get<character_ref>(obj));
+        }
+        else if(obj.type() == typeid(item_ref))
+        {
+            value = sol::make_object(state, boost::get<item_ref>(obj));
+        }
+        else if(obj.type() == typeid(position_t))
+        {
+            // do nothing
+        }
+        else
+        {
+            assert(0);
+        }
+    }
+    break;
+    case sol::type::table:
+    {
+        sol::table t = value;
+        value = serialize_table(state, t);
+    }
+    break;
+    default:
+        // The user tried storing an unsupported value.
+        assert(0);
+        break;
+    }
+}
+
+sol::table store::serialize_table(sol::state& state, sol::table& table)
+{
+    auto fx = [&](sol::object key, sol::object value) {
+        convert_table_value(key, state);
+        convert_table_value(value, state);
+    };
+    table.for_each(fx);
+    return table;
+}
+
+void table_meta_new_index(sol::table table, sol::object key, sol::object value, sol::this_state ts)
+{
+    sol::state_view view(ts);
+    if(value.get_type() == sol::type::userdata)
+    {
+        value = serialize_table_nested_value(value, view);
+    }
+    table[key] = value;
+}
+
+sol::object table_meta_index(sol::table table, sol::object key, sol::this_state ts)
+{
+    sol::state_view view(ts);
+    sol::object value = table[key];
+    if(value.get_type() == sol::type::userdata)
+    {
+        return deserialize_table_nested_value(value, view);
+    }
+    return table[key];
+}
+
+sol::object serialize_table_nested_value(const sol::object &val, sol::state_view& view)
+{
+    sol::object obj = sol::object(sol::nil);
+    if(val.is<character&>())
+    {
+        character& chara = val.as<character&>();
+        if(chara.idx == -1 || chara.state == 0)
+        {
+            obj = sol::object(sol::nil);
+        }
+        else
+        {
+            obj = sol::make_object(view, store::character_ref(chara.idx));
+        }
+    }
+    else if(val.is<item&>())
+    {
+        item& i = val.as<item&>();
+        if(i.idx == -1 || i.number == 0)
+        {
+            obj = sol::object(sol::nil);
+        }
+        else
+        {
+            obj = sol::make_object(view, store::item_ref(i.idx));
+        }
+    }
+    else if(val.is<position_t&>())
+    {
+        position_t pos = val.as<position_t>();
+        obj = sol::make_object(view, pos);
+    }
+    else
+    {
+        assert(0);
+    }
+    return obj;
+}
+
+sol::object deserialize_table_nested_value(const sol::object& obj, sol::state_view& view)
+{
+    if (obj.is<store::character_ref>()) {
+        return deserialize_character(obj.as<store::character_ref>(), view);
+    }
+    else if (obj.is<store::item_ref>())
+    {
+        return deserialize_item(obj.as<store::item_ref>(), view);
+    }
+    else if (obj.is<position_t>())
+    {
+        return deserialize_position(obj.as<position_t>(), view);
+    }
+    else {
+        assert(0);
+        return sol::nil;
+    }
+}
+
 sol::object store::get(std::string key, sol::this_state tstate)
 {
     sol::state_view view(tstate);
@@ -152,14 +301,14 @@ sol::object store::get(std::string key, sol::this_state tstate)
     case sol::type::poly:break;
     case sol::type::table:
         assert(obj.type() == typeid(sol::table));
+        // set metatable here
         return boost::get<sol::table>(obj);
     }
     return sol::nil;
 }
 
-sol::object store::deserialize_character(const store::object& obj, sol::state_view& view)
+sol::object deserialize_character(store::character_ref idx, sol::state_view& view)
 {
-    character_ref idx = boost::get<character_ref>(obj);
     assert(idx != -1);
 
     // Check to make sure this reference is still valid.
@@ -171,9 +320,8 @@ sol::object store::deserialize_character(const store::object& obj, sol::state_vi
     return sol::make_reference(view, elona::cdata(static_cast<int>(idx)));
 }
 
-sol::object store::deserialize_item(const store::object& obj, sol::state_view& view)
+sol::object deserialize_item(store::item_ref idx, sol::state_view& view)
 {
-    item_ref idx = boost::get<item_ref>(obj);
     assert(idx != -1);
 
     // Check to make sure this reference is still valid.
@@ -185,24 +333,23 @@ sol::object store::deserialize_item(const store::object& obj, sol::state_view& v
     return sol::make_reference(view, elona::inv(static_cast<int>(idx)));
 }
 
-sol::object store::deserialize_position(const store::object& obj, sol::state_view& view)
+sol::object deserialize_position(const position_t pos, sol::state_view& view)
 {
-    position_t pos = boost::get<position_t>(obj);
     return sol::make_object(view, pos);
 }
 
 sol::object store::deserialize_userdata(const store::object& obj, sol::state_view& view)
 {
     if (obj.type() == typeid(character_ref)) {
-        return deserialize_character(obj, view);
+        return deserialize_character(boost::get<character_ref>(obj), view);
     }
-    else if (obj.type() == typeid(store::item_ref))
+    else if (obj.type() == typeid(item_ref))
     {
-        return deserialize_item(obj, view);
+        return deserialize_item(boost::get<item_ref>(obj), view);
     }
     else if (obj.type() == typeid(position_t))
     {
-        return deserialize_position(obj, view);
+        return deserialize_position(boost::get<position_t>(obj), view);
     }
     else {
         assert(0);
