@@ -218,3 +218,26 @@ TEST_CASE("Test that item references can be set", "[Lua: Store]")
     REQUIRE(my_item.idx == idx);
     REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_item").idx == idx))"));
 }
+
+TEST_CASE("Test that positions can be set", "[Lua: Store]")
+{
+    sol::state sol;
+    sol.open_libraries(sol::lib::base);
+    elona::lua::store store;
+    store.init(sol);
+
+    sol.new_usertype<position_t>( "LuaPosition",
+                                  "x", &position_t::x,
+                                  "y", &position_t::y
+        );
+
+    position_t my_position = { 24, 47 };
+
+    store.set("my_position"s, sol::make_object(sol, my_position));
+
+    my_position = sol["Store"]["get"]("my_position");
+    REQUIRE(my_position.x == 24);
+    REQUIRE(my_position.y == 47);
+    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_position").x == 24))"));
+    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_position").y == 47))"));
+}

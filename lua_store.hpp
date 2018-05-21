@@ -1,6 +1,7 @@
 #pragma once
 
 #include "character.hpp"
+#include "position.hpp"
 #include "thirdparty/sol2/sol.hpp"
 #include <vector>
 #include <any>
@@ -12,13 +13,6 @@ namespace elona
 {
 namespace lua
 {
-
-enum class serial_t
-{
-    position,
-    character,
-    item,
-};
 
 class store
 {
@@ -33,10 +27,25 @@ public:
                            bool,
                            std::string,
                            sol::table,
+                           position_t,
                            character_ref,
                            item_ref> object;
 
     void init(sol::state &state);
+private:
+    /***
+     * Serializes a compatible userdata object or reference (character, item or position).
+     */
+    object serialize_userdata(const sol::object&);
+
+    sol::object deserialize_character(const store::object&, sol::state_view&);
+    sol::object deserialize_item(const store::object&, sol::state_view&);
+    sol::object deserialize_position(const store::object&, sol::state_view&);
+
+    /***
+     * Deserializes a compatible userdata object or reference (character, item or position).
+     */
+    sol::object deserialize_userdata(const store::object&, sol::state_view&);
 private:
     std::unordered_map<std::string, std::pair<sol::type, object>> store;
 };

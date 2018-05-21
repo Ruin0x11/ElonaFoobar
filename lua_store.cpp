@@ -33,26 +33,37 @@ void store::init(sol::state &state)
 }
 
 
-store::object serialize_userdata(const sol::object &val)
+store::object store::serialize_userdata(const sol::object &val)
 {
-    store::object obj;
+    store::object obj = sol::nil;
     if(val.is<character&>())
     {
         character& chara = val.as<character&>();
-        assert(chara.idx != -1);
-        assert(chara.state != 0);
-        obj = store::character_ref(chara.idx);
+        if(chara.idx == -1 || chara.state == 0)
+        {
+            obj = sol::nil;
+        }
+        else
+        {
+            obj = character_ref(chara.idx);
+        }
     }
     else if(val.is<item&>())
     {
         item& i = val.as<item&>();
-        assert(i.idx != -1);
-        assert(i.number != 0);
-        obj = store::item_ref(i.idx);
+        if(i.idx == -1 || i.number == 0)
+        {
+            obj = sol::nil;
+        }
+        else
+        {
+            obj = item_ref(i.idx);
+        }
     }
-    else if(val.is<position_t>())
+    else if(val.is<position_t&>())
     {
-        assert(0);
+        position_t pos = val.as<position_t>();
+        obj = pos;
     }
     else
     {
@@ -92,6 +103,59 @@ void store::set(std::string key, const sol::object &val)
     store[key.data()] = {type, obj};
 }
 
+sol::object store::deserialize_character(const store::object& obj, sol::state_view& view)
+{
+    character_ref idx = boost::get<character_ref>(obj);
+    assert(idx != -1);
+
+    // Check to make sure this reference is still valid.
+    if(elona::cdata(idx).state == 0)
+    {
+        return sol::nil;
+    }
+
+    return sol::make_reference(view, elona::cdata(static_cast<int>(idx)));
+}
+
+sol::object store::deserialize_item(const store::object& obj, sol::state_view& view)
+{
+    item_ref idx = boost::get<item_ref>(obj);
+    assert(idx != -1);
+
+    // Check to make sure this reference is still valid.
+    if(elona::inv(idx).number == 0)
+    {
+        return sol::nil;
+    }
+
+    return sol::make_reference(view, elona::inv(static_cast<int>(idx)));
+}
+
+sol::object store::deserialize_position(const store::object& obj, sol::state_view& view)
+{
+    position_t pos = boost::get<position_t>(obj);
+    return sol::make_object(view, pos);
+}
+
+sol::object store::deserialize_userdata(const store::object& obj, sol::state_view& view)
+{
+    if (obj.type() == typeid(character_ref)) {
+        return deserialize_character(obj, view);
+    }
+    else if (obj.type() == typeid(store::item_ref))
+    {
+        return deserialize_item(obj, view);
+    }
+    else if (obj.type() == typeid(position_t))
+    {
+        return deserialize_position(obj, view);
+    }
+    else {
+        assert(0);
+        return sol::nil;
+    }
+}
+
 sol::object store::get(std::string key, sol::this_state tstate)
 {
     sol::state_view view(tstate);
@@ -119,35 +183,7 @@ sol::object store::get(std::string key, sol::this_state tstate)
         return sol::make_object(view, boost::get<bool>(obj));
     case sol::type::function:break;
     case sol::type::userdata:
-        if (obj.type() == typeid(character_ref)) {
-            character_ref idx = boost::get<character_ref>(obj);
-            assert(idx != -1);
-
-            // Check to make sure this reference is still valid.
-            if(elona::cdata(idx).state == 0)
-            {
-                return sol::nil;
-            }
-
-            return sol::make_reference(view, elona::cdata(static_cast<int>(idx)));
-        }
-        else if (obj.type() == typeid(item_ref))
-        {
-            item_ref idx = boost::get<item_ref>(obj);
-            assert(idx != -1);
-
-            // Check to make sure this reference is still valid.
-            if(elona::inv(idx).number == 0)
-            {
-                return sol::nil;
-            }
-
-            return sol::make_reference(view, elona::inv(static_cast<int>(idx)));
-        }
-        else {
-            assert(0);
-        }
-        break;
+        return deserialize_userdata(obj, view);
     case sol::type::lightuserdata:break;
     case sol::type::poly:break;
     case sol::type::table:
