@@ -4,7 +4,6 @@
 #include "position.hpp"
 #include "thirdparty/sol2/sol.hpp"
 #include <vector>
-#include <any>
 #include <unordered_map>
 #include <boost/variant.hpp>
 #include <boost/serialization/strong_typedef.hpp>
