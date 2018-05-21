@@ -3,6 +3,7 @@
 #include "thirdparty/sol2/sol.hpp"
 #include "filesystem.hpp"
 #include "event_manager.hpp"
+#include "lua_store.hpp"
 #include <map>
 #include <vector>
 
@@ -17,6 +18,7 @@ struct mod_info
 {
     std::string name;
     sol::environment env;
+    lua::store store;
 };
 
 class lua_env

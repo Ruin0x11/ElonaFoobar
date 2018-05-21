@@ -16,7 +16,7 @@ namespace elona
 namespace lua
 {
 
-void store::init(sol::state &state)
+void store::init(sol::state& state)
 {
     if(state["Store"].valid()) // already exists
         return;
@@ -30,6 +30,24 @@ void store::init(sol::state &state)
     Store.set_function("get", [this](std::string key, sol::this_state tstate){
         return get(key, tstate);
     });
+}
+
+void store::init(sol::state& state, sol::environment& env)
+{
+    if(env["Store"].valid()) // already exists
+        return;
+
+    sol::table Store = state.create_table("Store");
+
+    Store.set_function("set", [this](std::string key, const sol::object &val){
+        set(key, val);
+    });
+
+    Store.set_function("get", [this](std::string key, sol::this_state tstate){
+        return get(key, tstate);
+    });
+
+    env["Store"] = Store;
 }
 
 

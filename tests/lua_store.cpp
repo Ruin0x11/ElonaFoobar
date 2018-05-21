@@ -186,13 +186,25 @@ TEST_CASE("Test that character references can be set", "[Lua: Store]")
 
     elona::testing::start_in_debug_map();
     REQUIRE(elona::chara_create(-1, PUTIT_PROTO_ID, 0, 0));
-    elona::character& my_chara = elona::cdata(elona::rc);
+    int idx = elona::rc;
+    elona::character& my_chara = elona::cdata(idx);
+    sol.set("idx", idx);
 
     store.set("my_chara"s, sol::make_object(sol, my_chara));
 
-    my_chara = sol["Store"]["get"]("my_chara");
-    REQUIRE(my_chara.idx == 57);
-    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_chara").idx == 57))"));
+    SECTION("valid reference")
+    {
+        my_chara = sol["Store"]["get"]("my_chara");
+        REQUIRE(my_chara.idx == idx);
+        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_chara").idx == idx))"));
+    }
+    SECTION("invalid reference")
+    {
+        elona::chara_delete(idx);
+        sol::object thing = sol["Store"]["get"]("my_chara");
+        REQUIRE(thing == sol::nil);
+        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_chara") == nil))"));
+    }
 }
 
 TEST_CASE("Test that item references can be set", "[Lua: Store]")
@@ -214,9 +226,20 @@ TEST_CASE("Test that item references can be set", "[Lua: Store]")
 
     store.set("my_item"s, sol::make_object(sol, my_item));
 
-    my_item = sol["Store"]["get"]("my_item");
-    REQUIRE(my_item.idx == idx);
-    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_item").idx == idx))"));
+    SECTION("valid reference")
+    {
+        my_item = sol["Store"]["get"]("my_item");
+        REQUIRE(my_item.idx == idx);
+        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_item").idx == idx))"));
+    }
+
+    SECTION("invalid reference")
+    {
+        elona::item_delete(idx);
+        sol::object thing = sol["Store"]["get"]("my_item");
+        REQUIRE(thing == sol::nil);
+        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_item") == nil))"));
+    }
 }
 
 TEST_CASE("Test that positions can be set", "[Lua: Store]")
@@ -240,4 +263,23 @@ TEST_CASE("Test that positions can be set", "[Lua: Store]")
     REQUIRE(my_position.y == 47);
     REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_position").x == 24))"));
     REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("my_position").y == 47))"));
+}
+
+TEST_CASE("Test isolation between environments")
+{
+    sol::state sol;
+    sol.open_libraries(sol::lib::base);
+
+    sol::environment first_env(sol, sol::create, sol.globals());
+    sol::environment second_env(sol, sol::create, sol.globals());
+    elona::lua::store first_store;
+    elona::lua::store second_store;
+    first_store.init(sol, first_env);
+    second_store.init(sol, second_env);
+
+    REQUIRE_NOTHROW(sol.safe_script(R"(Store.set("message", "dood"))", first_env));
+    REQUIRE_NOTHROW(sol.safe_script(R"(Store.set("message", "putit"))", second_env));
+
+    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("message") == "dood"))", first_env));
+    REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store.get("message") == "putit"))", second_env));
 }

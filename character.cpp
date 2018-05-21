@@ -1859,7 +1859,6 @@ void chara_vanquish(int cc)
     }
     cdata[cc].state = 0;
     cdata[cc].character_role = 0;
-    lua::on_chara_removal(cc);
     quest_check();
 }
 

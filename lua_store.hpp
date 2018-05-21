@@ -32,6 +32,7 @@ public:
                            item_ref> object;
 
     void init(sol::state &state);
+    void init(sol::state &state, sol::environment& env);
 private:
     /***
      * Serializes a compatible userdata object or reference (character, item or position).

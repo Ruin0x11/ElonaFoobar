@@ -163,11 +163,14 @@ void lua_env::load_all_mods(const fs::path& mods_dir)
     for (auto &&mod : this->mods)
     {
         mod.env = load_mod(mods_dir / mod.name);
+        lua::store mod_store;
+        mod_store.init(*this->get_state(), mod.env);
+        mod.store = mod_store;
         ELONA_LOG("Loaded mod " << mod.name);
     }
 }
 
-void run_file(const fs::path& pat)
+void run_file(const fs::path& path)
 {
 
 }
