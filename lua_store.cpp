@@ -76,24 +76,7 @@ void store::set(std::string key, sol::object &val, sol::state_view& view)
     case sol::type::lightuserdata:break;
     case sol::type::poly:break;
     case sol::type::table:
-        // We need to set a new metatable here, otherwise no
-        // deserialization logic will be applied if the user tries
-        // assigning to a value inside the table. For example, what
-        // happens if the user tries setting a table of characters,
-        // then one of the character references goes bad?
-
-        // TODO: This is not handled beyond a depth of 1.
-        sol::table metatable = view.create_table_with();
-        metatable[sol::meta_function::new_index] = table_meta_new_index;
-        metatable[sol::meta_function::index] = table_meta_index;
-
-        // Convert all types on this table to serializable ones.
-        sol::table table = val;
-        table[sol::metatable_key] = metatable;
-        serialize_table(view, table);
-        val = table;
-
-        obj = val;
+        obj = val.as<sol::table>();
         break;
     }
     store[key.data()] = {type, obj};
@@ -189,86 +172,6 @@ sol::table store::serialize_table(sol::state_view& view, sol::table& table)
     };
     table.for_each(fx);
     return table;
-}
-
-void table_meta_new_index(sol::table table, sol::object key, sol::object value, sol::this_state ts)
-{
-    sol::state_view view(ts);
-    if(value.get_type() == sol::type::userdata)
-    {
-        value = serialize_table_nested_value(value, view);
-    }
-    table[key] = value;
-}
-
-sol::object table_meta_index(sol::table table, sol::object key, sol::this_state ts)
-{
-    sol::state_view view(ts);
-    sol::object value = table[key];
-    if(value.get_type() == sol::type::userdata)
-    {
-        return deserialize_table_nested_value(value, view);
-    }
-    return table[key];
-}
-
-sol::object serialize_table_nested_value(const sol::object &val, sol::state_view& view)
-{
-    sol::object obj = sol::object(sol::nil);
-    if(val.is<character&>())
-    {
-        character& chara = val.as<character&>();
-        if(chara.idx == -1 || chara.state == 0)
-        {
-            obj = sol::object(sol::nil);
-        }
-        else
-        {
-            obj = sol::make_object(view, store::character_ref(chara.idx));
-        }
-    }
-    else if(val.is<item&>())
-    {
-        item& i = val.as<item&>();
-        if(i.idx == -1 || i.number == 0)
-        {
-            obj = sol::object(sol::nil);
-        }
-        else
-        {
-            obj = sol::make_object(view, store::item_ref(i.idx));
-        }
-    }
-    else if(val.is<position_t&>())
-    {
-        position_t pos = val.as<position_t>();
-        obj = sol::make_object(view, pos);
-    }
-    else
-    {
-        std::cout << val.is<character>() << std::endl;
-        assert(0);
-    }
-    return obj;
-}
-
-sol::object deserialize_table_nested_value(const sol::object& obj, sol::state_view& view)
-{
-    if (obj.is<store::character_ref>()) {
-        return deserialize_character(obj.as<store::character_ref>(), view);
-    }
-    else if (obj.is<store::item_ref>())
-    {
-        return deserialize_item(obj.as<store::item_ref>(), view);
-    }
-    else if (obj.is<position_t>())
-    {
-        return deserialize_position(obj.as<position_t>(), view);
-    }
-    else {
-        assert(0);
-        return sol::nil;
-    }
 }
 
 sol::object store::get(std::string key, sol::this_state tstate)
