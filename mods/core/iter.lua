@@ -21,4 +21,4 @@ function Iter.rectangle_iter (x, y, sx, sy)
    return Iter.rectangle_iter_step, {sx=sx, sy=sy, x=x}, {x=x, y=y}
 end
 
-Elona.Iter = Iter
+return Iter

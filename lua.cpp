@@ -42,6 +42,9 @@ lua_env::lua_env()
     event_manager::init(*this);
 
     //dump_state();
+
+    scan_all_mods(filesystem::dir::mods());
+    load_core_mod(filesystem::dir::mods());
 }
 
 event_manager& lua_env::get_event_manager()
@@ -129,6 +132,17 @@ void create_named_registry(const std::string& name)
 
 }
 
+void lua_env::load_mod_in_global_env(const fs::path& path, mod_info& mod)
+{
+    auto result = this->lua->safe_script_file(filesystem::make_preferred_path_in_utf8(path / mod.name / "init.lua"));
+    if (!result.valid())
+    {
+        sol::error err = result;
+        report_error(err);
+        throw new std::runtime_error("Failed initializing mod "s + mod.name);
+    }
+}
+
 void lua_env::load_mod(const fs::path& path, mod_info& mod)
 {
     // create character/item/map/global tables
@@ -146,8 +160,13 @@ void lua_env::load_mod(const fs::path& path, mod_info& mod)
     // add reference to global API table as Elona so the mod can use it
 }
 
-void lua_env::load_all_mods(const fs::path& mods_dir)
+void lua_env::scan_all_mods(const fs::path& mods_dir)
 {
+    if(stage != mod_stage_t::not_started)
+    {
+        throw new std::runtime_error("Mods have already been scanned!");
+    }
+
     const std::string init_script = "init.lua";
 
     // TODO: [dependency management] order mods and always load core first.
@@ -169,13 +188,54 @@ void lua_env::load_all_mods(const fs::path& mods_dir)
             this->mods.emplace(mod_name, std::move(info));
         }
     }
+    stage = mod_stage_t::scan_finished;
+}
 
+void lua_env::load_core_mod(const fs::path& mods_dir)
+{
+    if(stage != mod_stage_t::scan_finished)
+    {
+        throw new std::runtime_error("Mods haven't been scanned yet!");
+    }
+
+    auto val = this->mods.find("core");
+    if (val == this->mods.end())
+    {
+        throw new std::runtime_error("Core mod was not found. Does \"mods/core\" exist?");
+    }
+
+    // Load the core mod before any others, because there is a need
+    // for things on the Lua side to be made read-only after the core
+    // mod is loaded.
+    load_mod_in_global_env(mods_dir, val->second);
+
+    // Make the core API table read-only.
+    lua->safe_script(R"(Elona = Elona.ReadOnly.make_read_only(Elona))");
+
+    stage = mod_stage_t::core_mod_loaded;
+}
+
+void lua_env::load_all_mods(const fs::path& mods_dir)
+{
+    if(stage != mod_stage_t::core_mod_loaded)
+    {
+        throw new std::runtime_error("Core mod wasn't loaded!");
+    }
     for (auto &&pair : this->mods)
     {
         auto mod = pair.second;
-        load_mod(mods_dir, mod);
+        if(mod.name == "core")
+        {
+            continue;
+        }
+        else
+        {
+            load_mod(mods_dir, mod);
+        }
         ELONA_LOG("Loaded mod " << mod.name);
     }
+
+    stage = mod_stage_t::all_mods_loaded;
 }
 
 void lua_env::create_mod_info(const std::string& name, mod_info& mod)
@@ -190,6 +250,10 @@ void lua_env::create_mod_info(const std::string& name, mod_info& mod)
 
 void lua_env::run_startup_script(const std::string& name)
 {
+    if(stage < mod_stage_t::core_mod_loaded)
+    {
+        throw new std::runtime_error("Core mod wasn't loaded!");
+    }
     if(this->mods.find(name) != this->mods.end())
     {
         throw new std::runtime_error("Startup script was already run.");
@@ -219,10 +283,20 @@ void lua_env::run_startup_script(const std::string& name)
 
 
 // For testing use
-void lua_env::run_mod_from_script(const std::string& script)
+void lua_env::load_mod_from_script(const std::string& name, const std::string& script)
 {
+    if(stage < mod_stage_t::core_mod_loaded)
+    {
+        throw new std::runtime_error("Core mod wasn't loaded!");
+    }
+    {
+        auto val = mods.find(name);
+        if(val != mods.end())
+            throw new std::runtime_error("Mod "s + name + " was already initialized."s);
+    }
+
     mod_info info;
-    create_mod_info("testing_mod", info);
+    create_mod_info(name, info);
 
     auto result = this->lua->safe_script(script, info.env);
     if (!result.valid())
@@ -232,7 +306,7 @@ void lua_env::run_mod_from_script(const std::string& script)
         throw new std::runtime_error("Failed initializing mod "s + info.name);
     }
 
-    this->mods.emplace("testing_mod", std::move(info));
+    this->mods.emplace(name, std::move(info));
 }
 
 void lua_env::run_in_mod(const std::string& name, const std::string& script)

@@ -24,13 +24,25 @@ struct mod_info
     lua::store store;
 };
 
+enum class mod_stage_t : unsigned
+{
+    not_started,
+    scan_finished,
+    core_mod_loaded,
+    all_mods_loaded,
+};
+
 class lua_env
 {
 public:
     lua_env();
     ~lua_env() = default;
     std::shared_ptr<sol::state> get_state() { return lua; }
+
+    void scan_all_mods(const fs::path&);
+    void load_core_mod(const fs::path&);
     void load_all_mods(const fs::path&);
+
     void run_startup_script(const std::string&);
 
     void on_chara_creation(character&);
@@ -39,7 +51,7 @@ public:
     event_manager& get_event_manager();
 
     // For testing use
-    void run_mod_from_script(const std::string& script);
+    void load_mod_from_script(const std::string& name, const std::string& script);
     void run_in_mod(const std::string& name, const std::string& script);
     const mod_info& get_mod(const std::string& name) const {
         auto val = mods.find(name);
@@ -49,11 +61,13 @@ public:
     }
 private:
     void load_mod(const fs::path& path, mod_info&);
+    void load_mod_in_global_env(const fs::path& path, mod_info& mod);
     void create_mod_info(const std::string&, mod_info&);
 private:
     std::shared_ptr<sol::state> lua;
     std::unique_ptr<event_manager> event_mgr;
     std::unordered_map<std::string, mod_info> mods;
+    mod_stage_t stage = mod_stage_t::not_started;
 };
 
 void init();
