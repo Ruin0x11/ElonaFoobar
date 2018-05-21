@@ -26,9 +26,6 @@ void store::init(sol::state& state)
 
 void store::init(sol::state& state, sol::environment& env)
 {
-    if(env["Store"].valid()) // already exists
-        return;
-
     sol::table Store = state.create_table("Store");
     bind(state, Store);
 
@@ -39,7 +36,7 @@ void store::bind(sol::state& state, sol::table& Store)
 {
     sol::table metatable = state.create_table_with();
 
-    metatable[sol::meta_function::new_index] = [this](sol::table table, std::string key, const sol::object &val, sol::this_state tstate){
+    metatable[sol::meta_function::new_index] = [this](sol::table table, std::string key, sol::object val, sol::this_state tstate){
         sol::state_view view(tstate);
         set(key, val, view);
     };
@@ -54,7 +51,7 @@ void store::bind(sol::state& state, sol::table& Store)
     Store[sol::metatable_key] = metatable;
 }
 
-void store::set(std::string key, const sol::object &val, sol::state_view& view)
+void store::set(std::string key, sol::object &val, sol::state_view& view)
 {
     store::object obj;
     auto type = val.get_type();
@@ -90,9 +87,13 @@ void store::set(std::string key, const sol::object &val, sol::state_view& view)
         metatable[sol::meta_function::new_index] = table_meta_new_index;
         metatable[sol::meta_function::index] = table_meta_index;
 
+        // Convert all types on this table to serializable ones.
         sol::table table = val;
         table[sol::metatable_key] = metatable;
-        obj = table;
+        serialize_table(view, table);
+        val = table;
+
+        obj = val;
         break;
     }
     store[key.data()] = {type, obj};
@@ -137,7 +138,7 @@ store::object store::serialize_userdata(const sol::object &val)
     return obj;
 }
 
-void store::convert_table_value(sol::object& value, sol::state& state)
+void store::convert_table_value(sol::object& value, sol::state_view& view)
 {
     sol::type valuetype = value.get_type();
     switch (valuetype) {
@@ -151,11 +152,11 @@ void store::convert_table_value(sol::object& value, sol::state& state)
         store::object obj = serialize_userdata(value);
         if(obj.type() == typeid(character_ref))
         {
-            value = sol::make_object(state, boost::get<character_ref>(obj));
+            value = sol::make_object(view, boost::get<character_ref>(obj));
         }
         else if(obj.type() == typeid(item_ref))
         {
-            value = sol::make_object(state, boost::get<item_ref>(obj));
+            value = sol::make_object(view, boost::get<item_ref>(obj));
         }
         else if(obj.type() == typeid(position_t))
         {
@@ -170,7 +171,7 @@ void store::convert_table_value(sol::object& value, sol::state& state)
     case sol::type::table:
     {
         sol::table t = value;
-        value = serialize_table(state, t);
+        value = serialize_table(view, t);
     }
     break;
     default:
@@ -180,11 +181,11 @@ void store::convert_table_value(sol::object& value, sol::state& state)
     }
 }
 
-sol::table store::serialize_table(sol::state& state, sol::table& table)
+sol::table store::serialize_table(sol::state_view& view, sol::table& table)
 {
     auto fx = [&](sol::object key, sol::object value) {
-        convert_table_value(key, state);
-        convert_table_value(value, state);
+        convert_table_value(key, view);
+        convert_table_value(value, view);
     };
     table.for_each(fx);
     return table;
@@ -245,6 +246,7 @@ sol::object serialize_table_nested_value(const sol::object &val, sol::state_view
     }
     else
     {
+        std::cout << val.is<character>() << std::endl;
         assert(0);
     }
     return obj;

@@ -19,7 +19,8 @@ TEST_CASE("Test that strings can be set/retrieved", "[Lua: Store]")
     store.init(sol);
 
     auto view = sol::state_view(sol);
-    store.set("my_string"s, sol::make_object(sol, "dood"), view);
+    auto obj = sol::make_object(sol, "dood");
+    store.set("my_string"s, obj, view);
 
     std::string my_string = sol["Store"]["my_string"];
     REQUIRE(my_string == std::string("dood"));
@@ -38,7 +39,8 @@ TEST_CASE("Test that booleans can be set/retrieved", "[Lua: Store]")
     store.init(sol);
 
     auto view = sol::state_view(sol);
-    store.set("my_bool"s, sol::make_object(sol, false), view);
+    auto obj = sol::make_object(sol, false);
+    store.set("my_bool"s, obj, view);
 
     bool my_bool = sol["Store"]["my_bool"];
     REQUIRE(my_bool == false);
@@ -58,7 +60,8 @@ TEST_CASE("Test that integers can be set/retrieved", "[Lua: Store]")
     store.init(sol);
 
     auto view = sol::state_view(sol);
-    store.set("my_int"s, sol::make_object(sol, 42), view);
+    auto obj = sol::make_object(sol, 42);
+    store.set("my_int"s, obj, view);
 
     int my_int = sol["Store"]["my_int"];
     REQUIRE(my_int == 42);
@@ -133,7 +136,8 @@ TEST_CASE("Test that tables can be retrieved", "[Lua: Store]")
                                                 3, sol::nil, // does nothing
                                                 "bell"," *リン* ");
     auto view = sol::state_view(sol);
-    store.set("my_table"s, sol::object(my_table), view);
+    auto obj = sol::object(my_table);
+    store.set("my_table"s, obj, view);
 
     my_table = sol["Store"]["my_table"];
 
@@ -195,7 +199,8 @@ TEST_CASE("Test that character references can be set", "[Lua: Store]")
     sol.set("idx", idx);
 
     auto view = sol::state_view(sol);
-    store.set("my_chara"s, sol::make_object(sol, my_chara), view);
+    auto obj = sol::make_object(sol, my_chara);
+    store.set("my_chara"s, obj, view);
 
     SECTION("valid reference")
     {
@@ -230,7 +235,8 @@ TEST_CASE("Test that item references can be set", "[Lua: Store]")
     sol.set("idx", idx);
 
     auto view = sol::state_view(sol);
-    store.set("my_item"s, sol::make_object(sol, my_item), view);
+    auto obj = sol::make_object(sol, my_item);
+    store.set("my_item"s, obj, view);
 
     SECTION("valid reference")
     {
@@ -263,7 +269,8 @@ TEST_CASE("Test that positions can be set", "[Lua: Store]")
     position_t my_position = { 24, 47 };
 
     auto view = sol::state_view(sol);
-    store.set("my_position"s, sol::make_object(sol, my_position), view);
+    auto obj = sol::make_object(sol, my_position);
+    store.set("my_position"s, obj, view);
 
     my_position = sol["Store"]["my_position"];
     REQUIRE(my_position.x == 24);
@@ -272,7 +279,7 @@ TEST_CASE("Test that positions can be set", "[Lua: Store]")
     REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_position"].y == 47))"));
 }
 
-TEST_CASE("Test isolation between environments")
+TEST_CASE("Test isolation between environments", "[Lua: Store]")
 {
     sol::state sol;
     sol.open_libraries(sol::lib::base);
@@ -289,4 +296,48 @@ TEST_CASE("Test isolation between environments")
 
     REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["message"] == "dood"))", first_env));
     REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["message"] == "putit"))", second_env));
+}
+
+TEST_CASE("Test validity of character references inside tables", "[Lua: Store]")
+{
+    sol::state sol;
+    sol.open_libraries(sol::lib::base);
+    elona::lua::store store;
+    store.init(sol);
+
+    sol.new_usertype<character>( "LuaCharacter",
+                                 "idx", sol::readonly(&character::idx),
+                                 "state", sol::readonly(&character::state)
+        );
+
+    elona::testing::start_in_debug_map();
+    REQUIRE(elona::chara_create(-1, PUTIT_PROTO_ID, 0, 0));
+    int idx = elona::rc;
+    elona::character& my_chara = elona::cdata(idx);
+    sol.set("idx", idx);
+
+    sol.set("my_chara", sol::make_reference(sol,my_chara));
+    REQUIRE_NOTHROW(sol.safe_script(R"(Store["my_table"] = {})"));
+
+
+    REQUIRE_NOTHROW(sol.safe_script(R"(Store["my_table"][0] = my_chara)"));
+
+    SECTION("valid reference")
+    {
+        my_chara = sol["Store"]["my_table"][0];
+        REQUIRE_NOTHROW(sol.safe_script(R"(print(Store["my_table"][0].state))"));
+        REQUIRE(my_chara.idx == idx);
+        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_table"][0].idx == idx))"));
+    }
+    SECTION("invalid reference")
+    {
+        elona::chara_vanquish(idx);
+        elona::chara_delete(idx);
+        REQUIRE_NOTHROW(sol.safe_script(R"(print(my_chara.state))"));
+        REQUIRE_NOTHROW(sol.safe_script(R"(print(Store["my_table"][0].state))"));
+        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_table"][0].idx == idx))"));
+        sol::object thing = sol["Store"]["my_table"][0];
+        REQUIRE(thing == sol::nil);
+        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_table"][0] == nil))"));
+    }
 }
