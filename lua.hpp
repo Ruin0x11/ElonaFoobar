@@ -1,9 +1,11 @@
 #pragma once
 
 #include "thirdparty/sol2/sol.hpp"
-#include "filesystem.hpp"
-#include "event_manager.hpp"
 #include "character.hpp"
+#include "event_manager.hpp"
+#include "filesystem.hpp"
+#include "handle_manager.hpp"
+#include "item.hpp"
 #include "lua_store.hpp"
 #include <map>
 #include <vector>
@@ -16,6 +18,7 @@ namespace lua
 using namespace std::literals::string_literals;
 
 class event_manager;
+class handle_manager;
 
 struct mod_info
 {
@@ -46,9 +49,12 @@ public:
     void run_startup_script(const std::string&);
 
     void on_chara_creation(character&);
+    void on_item_creation(item&);
     void on_chara_removal(character&);
+    void on_item_removal(item&);
 
     event_manager& get_event_manager();
+    handle_manager& get_handle_manager();
 
     // For testing use
     void load_mod_from_script(const std::string& name, const std::string& script);
@@ -66,6 +72,7 @@ private:
 private:
     std::shared_ptr<sol::state> lua;
     std::unique_ptr<event_manager> event_mgr;
+    std::unique_ptr<handle_manager> handle_mgr;
     std::unordered_map<std::string, mod_info> mods;
     mod_stage_t stage = mod_stage_t::not_started;
 };

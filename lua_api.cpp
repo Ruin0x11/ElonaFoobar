@@ -477,17 +477,20 @@ void init_usertypes(lua_env& lua)
                                         "hp", sol::readonly(&character::hp),
                                         "max_hp", sol::readonly(&character::max_hp),
                                         "mp", sol::readonly(&character::mp),
-                                        "max_mp", sol::readonly( &character::max_mp),
+                                        "max_mp", sol::readonly(&character::max_mp),
                                         "sp", sol::readonly(&character::sp),
-                                        "max_sp", sol::readonly( &character::max_sp),
+                                        "max_sp", sol::readonly(&character::max_sp),
                                         "shop_rank", &character::shop_rank,
                                         "character_role", &character::character_role,
-                                        "idx", sol::readonly(&character::idx)
+                                        "idx", sol::readonly(&character::idx),
+                                        "position", &character::position
         );
     lua.get_state()->new_usertype<item>( "LuaItem",
                                      "curse_state", &item::curse_state,
                                      "identify_state", &item::identification_state,
-                                     "idx", sol::readonly(&item::idx)
+                                     "idx", sol::readonly(&item::idx),
+                                     "position", &item::position,
+                                     "number", &item::number
         );
 }
 

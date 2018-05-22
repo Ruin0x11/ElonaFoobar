@@ -87,6 +87,7 @@ set(CORE_SOURCES
     get_random_item_id.cpp
     get_random_npc_id.cpp
     god.cpp
+    handle_manager.cpp
     i18n.cpp
     init.cpp
     initialize_map.cpp
@@ -327,6 +328,7 @@ if(WITH_TESTS)
   set(TEST_SOURCES
     tests/tests.cpp
     tests/lua_api.cpp
+    tests/lua_handles.cpp
     tests/lua_mods.cpp
     tests/lua_store.cpp
     tests/serialization.cpp

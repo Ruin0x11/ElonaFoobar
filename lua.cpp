@@ -41,6 +41,8 @@ lua_env::lua_env()
     event_mgr = std::make_unique<event_manager>(this);
     event_manager::init(*this);
 
+    handle_mgr = std::make_unique<handle_manager>(this);
+
     //dump_state();
 
     scan_all_mods(filesystem::dir::mods());
@@ -50,6 +52,11 @@ lua_env::lua_env()
 event_manager& lua_env::get_event_manager()
 {
     return *event_mgr;
+}
+
+handle_manager& lua_env::get_handle_manager()
+{
+    return *handle_mgr;
 }
 
 void report_error(sol::error err)
@@ -62,6 +69,8 @@ void report_error(sol::error err)
 
 void lua_env::on_chara_creation(character& chara)
 {
+    handle_mgr->on_chara_creation(chara);
+
     // TODO handle deserialization separately from creation from scratch
     // TODO only handle deserialization for characters that actually exist
     // for each mod, init its extra data for the character
@@ -84,26 +93,29 @@ void lua_env::on_chara_creation(character& chara)
     }
 }
 
- void on_item_creation(int id)
+void lua_env::on_item_creation(item& item)
  {
+     handle_mgr->on_item_creation(item);
      // for each mod, init its extra data for the item
      // for each mod, run item creation callback
      //this->get_event_manager()->run_callbacks<event_kind_t::item_initialized>(item);
  }
 
 
-void lua_env::on_chara_removal(character&)
+void lua_env::on_chara_removal(character& chara)
 {
+    handle_mgr->on_chara_removal(chara);
     // for each mod, invalidate global chara state
     // for each mod, run chara removal callback
     //this->get_event_manager()->run_callbacks<event_kind_t::character_removed>(chara);
 }
-//
-// void on_item_removal(int id)
-// {
-//     // for each mod, invalidate global item state
-//     // for each mod, run item removal callback
-// }
+
+void lua_env::on_item_removal(item& item)
+{
+    handle_mgr->on_item_removal(item);
+    // for each mod, invalidate global item state
+    // for each mod, run item removal callback
+}
 
 
 void init_global(lua_env& lua)

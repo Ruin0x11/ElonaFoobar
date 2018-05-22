@@ -7,6 +7,7 @@
 #include "item.hpp"
 #include "item_db.hpp"
 #include "item_material.hpp"
+#include "lua.hpp"
 #include "map_cell.hpp"
 #include "variables.hpp"
 #include "random.hpp"
@@ -457,6 +458,8 @@ int do_create_item(int slot, int x, int y)
     {
         inv[ci].number = initnum;
     }
+
+    lua::lua.get_handle_manager().on_item_creation(inv[ci]);
 
     if (nostack == 1)
     {

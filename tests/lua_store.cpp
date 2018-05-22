@@ -290,6 +290,8 @@ TEST_CASE("Test isolation between environments", "[Lua: Store]")
     elona::lua::store second_store;
     first_store.init(sol, first_env);
     second_store.init(sol, second_env);
+    first_env["Store"] = first_store;
+    second_env["Store"] = second_store;
 
     REQUIRE_NOTHROW(sol.safe_script(R"(Store["message"] = "dood")", first_env));
     REQUIRE_NOTHROW(sol.safe_script(R"(Store["message"] = "putit")", second_env));
@@ -327,12 +329,12 @@ TEST_CASE("Test multiple table assignment", "[Lua: Store]")
     REQUIRE(c == 0);
 }
 
-TEST_CASE("Test prevention of reassignment of Store", "[Lua: Store]")
-{
-    sol::state sol;
-    sol.open_libraries(sol::lib::base);
-    elona::lua::store store;
-    store.init(sol);
-
-    REQUIRE_THROWS(sol.safe_script(R"(Store = {})"));
-}
+// TEST_CASE("Test prevention of reassignment of Store", "[Lua: Store]")
+// {
+//     sol::state sol;
+//     sol.open_libraries(sol::lib::base);
+//     elona::lua::store store;
+//     store.init(sol);
+//
+//     REQUIRE_THROWS(sol.safe_script(R"(Store = {})"));
+// }

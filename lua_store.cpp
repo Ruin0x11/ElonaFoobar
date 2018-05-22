@@ -20,21 +20,17 @@ void store::init(sol::state& state)
     if(state["Store"].valid()) // already exists
         return;
 
-    sol::table Store = state.create_table("Store");
-    bind(state, Store);
+    bind(state);
     state["Store"] = this;
 }
 
 void store::init(sol::state& state, sol::environment& env)
 {
-    sol::table Store = state.create_table_with();
-    bind(state, Store);
-    // This doesn't point to the store correctly unless it is set inside mod_info.
-    // I don't know why.
-    //env["Store"] = this;
+    bind(state);
+    // Set the pointer to this store outside of here.
 }
 
-void store::bind(sol::state& state, sol::table& Store)
+void store::bind(sol::state& state)
 {
     //sol::table metatable = state.create_table_with();
 
@@ -48,20 +44,8 @@ void store::bind(sol::state& state, sol::table& Store)
         return s.get(key, view);
     });
 
-    // metatable[sol::meta_function::new_index] = [this](sol::table table, std::string key, const sol::object val, sol::this_state tstate){
-    //     sol::state_view view(tstate);
-    //     set(key, val, view);
-    // };
-
-    // metatable[sol::meta_function::index] = [this](sol::table table, std::string key, sol::this_state tstate) {
-    //     sol::state_view view(tstate);
-    //     return get(key, view);
-    // };
-
     state.new_usertype<character_ref>( "LuaCharacterRef" );
     state.new_usertype<item_ref>( "LuaItemRef" );
-
-    //Store[sol::metatable_key] = metatable;
 }
 
 void store::set(std::string key, const sol::object &val, sol::state_view& view)

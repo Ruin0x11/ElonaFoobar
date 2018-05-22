@@ -77,7 +77,7 @@ void post_run()
 void reset_state()
 {
     //lua::clear();
-    lua::lua.load_all_mods(filesystem::dir::mods());
+    //lua::lua.load_all_mods(filesystem::dir::mods());
     initialize_elona();
 }
 

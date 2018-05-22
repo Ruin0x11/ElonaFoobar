@@ -86,52 +86,52 @@ TEST_CASE("Core API: Map", "[Lua: Elona.Map]")
 
 
 
-TEST_CASE("Test unsupported registry data type assignment", "[Lua: Serialization]")
-{
-    REQUIRE(0);
-}
-
-TEST_CASE("Test serialization/deserialization of basic data", "[Lua: Serialization]")
-{
-    REQUIRE(0);
-}
-
-TEST_CASE("Test serialization/deserialization of tables", "[Lua: Serialization]")
-{
-    REQUIRE(0);
-}
-
-TEST_CASE("Test no serialization/deserialization of metatables", "[Lua: Serialization]")
-{
-    REQUIRE(0);
-}
-
-TEST_CASE("Test serialization/deserialization of LuaCharacter", "[Lua: Serialization]")
-{
-    REQUIRE(0);
-}
-
-TEST_CASE("Test serialization/deserialization of LuaItem", "[Lua: Serialization]")
-{
-    REQUIRE(0);
-}
-
-TEST_CASE("Test serialization/deserialization of maps", "[Lua: Serialization]")
-{
-    REQUIRE(0);
-}
-
-TEST_CASE("Test serialization/deserialization of globals", "[Lua: Serialization]")
-{
-    REQUIRE(0);
-}
-
-TEST_CASE("Test validation of dead/removed LuaCharacter", "[Lua: Serialization]")
-{
-    REQUIRE(0);
-}
-
-TEST_CASE("Test validation of removed LuaItem", "[Lua: Serialization]")
-{
-    REQUIRE(0);
-}
+// TEST_CASE("Test unsupported registry data type assignment", "[Lua: Serialization]")
+// {
+//     REQUIRE(0);
+// }
+//
+// TEST_CASE("Test serialization/deserialization of basic data", "[Lua: Serialization]")
+// {
+//     REQUIRE(0);
+// }
+//
+// TEST_CASE("Test serialization/deserialization of tables", "[Lua: Serialization]")
+// {
+//     REQUIRE(0);
+// }
+//
+// TEST_CASE("Test no serialization/deserialization of metatables", "[Lua: Serialization]")
+// {
+//     REQUIRE(0);
+// }
+//
+// TEST_CASE("Test serialization/deserialization of LuaCharacter", "[Lua: Serialization]")
+// {
+//     REQUIRE(0);
+// }
+//
+// TEST_CASE("Test serialization/deserialization of LuaItem", "[Lua: Serialization]")
+// {
+//     REQUIRE(0);
+// }
+//
+// TEST_CASE("Test serialization/deserialization of maps", "[Lua: Serialization]")
+// {
+//     REQUIRE(0);
+// }
+//
+// TEST_CASE("Test serialization/deserialization of globals", "[Lua: Serialization]")
+// {
+//     REQUIRE(0);
+// }
+//
+// TEST_CASE("Test validation of dead/removed LuaCharacter", "[Lua: Serialization]")
+// {
+//     REQUIRE(0);
+// }
+//
+// TEST_CASE("Test validation of removed LuaItem", "[Lua: Serialization]")
+// {
+//     REQUIRE(0);
+// }

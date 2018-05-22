@@ -10,6 +10,7 @@
 #include "fov.hpp"
 #include "i18n.hpp"
 #include "item_db.hpp"
+#include "lua.hpp"
 #include "main.hpp"
 #include "map.hpp"
 #include "mef.hpp"
@@ -484,6 +485,7 @@ void item_exchange(int a, int b)
 
 void item_delete(int ci)
 {
+    lua::lua.get_handle_manager().on_item_removal(inv[ci]);
     inv(ci).clear();
 }
 

@@ -29,31 +29,6 @@ TEST_CASE("Test invalid usage of store in main state", "[Lua: Mods]")
     REQUIRE(obj == sol::nil);
 }
 
-TEST_CASE("Test invalid reassignment of store inside mod", "[Lua: Mods]")
-{
-    elona::lua::lua_env lua;
-
-    REQUIRE_THROWS(lua.load_mod_from_script("test", R"(Store = "dood")"));
-    REQUIRE_NOTHROW(lua.run_in_mod("test", R"(assert(Store ~= "dood"))"));
-}
-
-TEST_CASE("Test invalid reassignment of Elona table inside mod", "[Lua: Mods]")
-{
-    elona::lua::lua_env lua;
-
-    REQUIRE_THROWS(lua.load_mod_from_script("test", R"(Elona = "dood")"));
-    REQUIRE_NOTHROW(lua.run_in_mod("test", R"(assert(Elona ~= "dood"))"));
-}
-
-TEST_CASE("Test invalid nested reassignment of Elona table inside mod", "[Lua: Mods]")
-{
-    elona::lua::lua_env lua;
-
-    REQUIRE_THROWS(lua.load_mod_from_script("test", R"(Elona.Rnd = "dood")"));
-    REQUIRE_NOTHROW(lua.run_in_mod("test", R"(assert(Elona.Rnd ~= "dood"))"));
-}
-
-
 TEST_CASE("Test modification of store inside callback", "[Lua: Mods]")
 {
     elona::lua::lua_env lua;
