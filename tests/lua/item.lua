@@ -1,4 +1,4 @@
-require "tests/lua/minctest"
+require "tests/lua/support/minctest"
 
 local Item = Elona.Item
 

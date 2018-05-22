@@ -18,7 +18,7 @@ TEST_CASE("Test that all core API tables are read-only", "[Lua: API]")
     lua_testcase("api_readonly.lua");
 }
 
-TEST_CASE("Core API: chara", "[Lua: API]")
+TEST_CASE("Core API: Chara", "[Lua: API]")
 {
     lua_testcase("chara.lua");
 }
@@ -36,4 +36,10 @@ TEST_CASE("Core API: Item", "[Lua: API]")
 TEST_CASE("Core API: Map", "[Lua: API]")
 {
     lua_testcase("map.lua");
+}
+
+
+TEST_CASE("Core API: LuaCharacter", "[Lua: API]")
+{
+    lua_testcase("classes/LuaCharacter.lua");
 }

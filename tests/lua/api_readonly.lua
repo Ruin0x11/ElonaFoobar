@@ -1,4 +1,4 @@
-require "tests/lua/minctest"
+require "tests/lua/support/minctest"
 
 stds = {}
 files = {} -- so the below dofile doesn't error out

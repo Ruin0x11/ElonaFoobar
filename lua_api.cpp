@@ -510,7 +510,6 @@ bool LuaCharacter::recruit_as_ally(character& self)
     return new_ally_joins() == 1;
 }
 
-
 void init_usertypes(lua_env& lua)
 {
     lua.get_state()->new_usertype<position_t>( "LuaPosition",
