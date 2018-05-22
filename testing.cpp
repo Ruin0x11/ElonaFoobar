@@ -48,6 +48,9 @@ void start_in_debug_map()
 
 void configure_lua()
 {
+    sol::table Testing = lua::lua.get_state()->create_named_table("Testing");
+    Testing.set_function("start_in_debug_map", start_in_debug_map);
+    Testing.set_function("reset_state", reset_state);
 }
 
 void pre_init()
@@ -61,6 +64,7 @@ void pre_init()
 
     initialize_config(fs::path("tests/data/config.json"));
     config::instance().is_test = true;
+    configure_lua();
 }
 
 void post_run()

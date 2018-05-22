@@ -14,6 +14,8 @@ namespace elona
 // FIXME
 struct enc_t
 {
+    // NOTE: Don't add new fields unless you add them to serialization, which
+    // will break save compatibility.
     int id = 0;
     int power = 0;
 
@@ -26,6 +28,7 @@ struct enc_t
     template <typename Archive>
     void serialize(Archive& ar)
     {
+        // WARNING: Changing this will break save compatibility!
         ar(id);
         ar(power);
     }

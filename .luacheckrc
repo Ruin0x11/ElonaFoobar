@@ -149,6 +149,16 @@ stds.elona = {
                     "log", "dump_characters", "dump_items", "inspect"
                  }
               },
+              ReadOnly = {
+                 fields = {
+                    "make_read_only"
+                 }
+              },
+              Iter = {
+                 fields = {
+                    "rectangle_iter", "rectangle_iter_step"
+                 }
+              },
               Registry = {
                  fields = {
                     "on_event",
@@ -169,6 +179,10 @@ stds.elona = {
                  }
               },
            }
+        },
+        -- @Store@: Mod-local data storage.
+        Store = {
+           other_fields = true
         }
     },
 }

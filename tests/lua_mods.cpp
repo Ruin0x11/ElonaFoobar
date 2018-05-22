@@ -12,6 +12,15 @@
 
 using namespace elona::testing;
 
+TEST_CASE("Test MOD_NAME is defined", "[Lua: Mods]")
+{
+    elona::lua::lua_env lua;
+
+    REQUIRE_NOTHROW(lua.load_mod_from_script("my_mod", ""));
+
+    REQUIRE_NOTHROW(lua.run_in_mod("test", R"(assert(Global.MOD_NAME == "my_mod"))"));
+}
+
 TEST_CASE("Test usage of store in mod", "[Lua: Mods]")
 {
     elona::lua::lua_env lua;

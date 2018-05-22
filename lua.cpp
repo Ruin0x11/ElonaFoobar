@@ -31,7 +31,8 @@ lua_env::lua_env()
                               sol::lib::string,
                               sol::lib::math);
 
-    // Create dummy Store table to prevent crashes on access from state outside of an environment
+    // Create dummy Store table to prevent crashes on access from
+    // state outside of an environment
     lua->create_named_table("Store");
 
     init_api(*this);
@@ -73,16 +74,12 @@ void lua_env::on_chara_creation(character& chara)
 
     // TODO handle deserialization separately from creation from scratch
     // TODO only handle deserialization for characters that actually exist
-    // for each mod, init its extra data for the character
-    // for each mod, run chara creation callback
     this->get_event_manager().run_callbacks<event_kind_t::character_created>(handle_mgr->get_chara_handle(chara));
 }
 
 void lua_env::on_item_creation(item& item)
  {
      handle_mgr->create_item_handle(item);
-     // for each mod, init its extra data for the item
-     // for each mod, run item creation callback
     this->get_event_manager().run_callbacks<event_kind_t::item_created>(handle_mgr->get_item_handle(item));
  }
 
@@ -92,25 +89,18 @@ void lua_env::on_chara_removal(character& chara)
     this->get_event_manager().run_callbacks<event_kind_t::character_removed>(handle_mgr->get_chara_handle(chara));
 
     handle_mgr->remove_chara_handle(chara);
-    // for each mod, invalidate global chara state
-    // for each mod, run chara removal callback
-    //this->get_event_manager()->run_callbacks<event_kind_t::character_removed>(chara);
 }
 
 void lua_env::on_item_removal(item& item)
 {
     this->get_event_manager().run_callbacks<event_kind_t::item_removed>(handle_mgr->get_item_handle(item));
     handle_mgr->remove_item_handle(item);
-    // for each mod, invalidate global item state
-    // for each mod, run item removal callback
 }
 
 
 void init_global(lua_env& lua)
 {
     sol::table Global = lua.get_state()->create_named_table("Global");
-    Global.create_named("Callbacks");
-    Global.create_named("Init");
 }
 
 /***

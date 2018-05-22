@@ -11,6 +11,7 @@
 #include "map_cell.hpp"
 #include "position.hpp"
 #include "status_ailment.hpp"
+#include "ui.hpp"
 #include "variables.hpp"
 
 /***
@@ -287,14 +288,23 @@ void Map::bind(sol::table& Elona)
 
 namespace FOV {
 bool los(const position_t&, const position_t&);
+bool los_xy(int, int, int, int);
 bool you_see(const character&);
+bool you_see_pos(const position_t&);
+bool you_see_pos_xy(int, int);
+void refresh();
 
 void bind(sol::table& Elona);
 };
 
 bool FOV::los(const position_t& from, const position_t& to)
 {
-    return elona::fov_los(from.x, from.y, to.x, to.y) == 1;
+    return FOV::los_xy(from.x, from.y, to.x, to.y);
+}
+
+bool FOV::los_xy(int fx, int fy, int tx, int ty)
+{
+    return elona::fov_los(fx, fy, tx, ty) == 1;
 }
 
 bool FOV::you_see(const character& character)
@@ -302,11 +312,34 @@ bool FOV::you_see(const character& character)
     return elona::is_in_fov(character.idx);
 }
 
+bool FOV::you_see_pos(const position_t& pos)
+{
+    return elona::is_in_fov(pos) == 1;
+}
+
+bool FOV::you_see_pos_xy(int x, int y)
+{
+    return elona::is_in_fov(position_t(x, y)) == 1;
+}
+
+void FOV::refresh()
+{
+    gmode(2);
+    sxfix = 0;
+    syfix = 0;
+    update_scrolling_info();
+    update_slight();
+    label_1433();
+}
+
 void FOV::bind(sol::table& Elona)
 {
     sol::table FOV = Elona.create_named("FOV");
-    FOV.set_function("los", FOV::los);
-    FOV.set_function("you_see", FOV::you_see);
+    FOV.set_function("los", sol::overload(FOV::los, FOV::los_xy));
+    FOV.set_function("you_see", sol::overload(FOV::you_see,
+                                              FOV::you_see_pos,
+                                              FOV::you_see_pos_xy));
+    FOV.set_function("refresh", FOV::refresh);
 }
 
 
@@ -467,7 +500,7 @@ void LuaCharacter::mut_apply_ailment(character& self, status_ailment_t ailment, 
 void init_usertypes(lua_env& lua)
 {
     lua.get_state()->new_usertype<position_t>( "LuaPosition",
-                                           sol::constructors<position_t()>(),
+                                            sol::constructors<position_t(), position_t(int, int)>(),
                                            "x", &position_t::x,
                                            "y", &position_t::y
         );

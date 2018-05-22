@@ -62,7 +62,10 @@ lresults = function()
     else
         print("SOME TESTS FAILED (" .. ltests-lfails .. "/" .. ltests .. ")")
     end
-    return lfails ~= 0
+    local success = lfails == 0
+    ltests = 0
+    lfails = 0
+    return success
 end
 
 
@@ -77,13 +80,14 @@ lrun = function(name, testfunc)
         math.floor((os.clock() - clock) * 1000)));
 end
 
-lok = function(test)
+lok = function(test, mes)
     ltests = ltests + 1
     if not test then
         lfails = lfails + 1
-        io.write(string.format("%s:%d error \n",
+        io.write(string.format("%s:%d error: %s \n",
             debug.getinfo(2, 'S').short_src,
-            debug.getinfo(2, 'l').currentline))
+            debug.getinfo(2, 'l').currentline),
+            mes)
     end
 end
 
@@ -91,10 +95,17 @@ lequal = function(a, b)
     ltests = ltests + 1
     if a ~= b then
         lfails = lfails + 1
-        io.write(string.format("%s:%d (%d != %d)\n",
-            debug.getinfo(2, 'S').short_src,
-            debug.getinfo(2, 'l').currentline,
-            a, b))
+        if type(a) == "number" and type(b) == "number" then
+            io.write(string.format("%s:%d (%d != %d)\n",
+                debug.getinfo(2, 'S').short_src,
+                debug.getinfo(2, 'l').currentline,
+                a, b))
+        elseif type(a) == "boolean" and type(b) == "boolean" then
+            io.write(string.format("%s:%d (%s != %s)\n",
+                debug.getinfo(2, 'S').short_src,
+                debug.getinfo(2, 'l').currentline,
+                tostring(a), tostring(b)))
+        end
     end
 end
 
