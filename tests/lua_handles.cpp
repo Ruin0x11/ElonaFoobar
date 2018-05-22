@@ -44,8 +44,43 @@ TEST_CASE("Test that handle properties can be read", "[Lua: Handles]")
     }
 }
 
+TEST_CASE("Test that handle properties can be written", "[Lua: Handles]")
+{
+    start_in_debug_map();
+
+    SECTION("Characters")
+    {
+        character& chara = elona::cdata[0];
+        auto handle = elona::lua::lua.get_handle_manager().get_chara_handle(chara);
+        elona::lua::lua.get_state()->set("chara", handle);
+        REQUIRE_NOTHROW(elona::lua::lua.get_state()->safe_script(R"(chara.shop_rank = 50)"));
+        REQUIRE_NOTHROW(elona::lua::lua.get_state()->safe_script(R"(chara.position.x = 4)"));
+        REQUIRE_NOTHROW(elona::lua::lua.get_state()->safe_script(R"(chara.position.y = 8)"));
+
+        REQUIRE(chara.shop_rank == 50);
+        REQUIRE(chara.position.x == 4);
+        REQUIRE(chara.position.y == 8);
+    }
+    SECTION("Items")
+    {
+        REQUIRE(itemcreate(-1, PUTITORO_PROTO_ID, 4, 8, 3));
+        item& item = elona::inv[elona::ci];
+        auto handle = elona::lua::lua.get_handle_manager().get_item_handle(item);
+        elona::lua::lua.get_state()->set("item", handle);
+
+        REQUIRE_NOTHROW(elona::lua::lua.get_state()->safe_script(R"(item.number = 3)"));
+        REQUIRE_NOTHROW(elona::lua::lua.get_state()->safe_script(R"(item.position.x = 4)"));
+        REQUIRE_NOTHROW(elona::lua::lua.get_state()->safe_script(R"(item.position.y = 8)"));
+
+        REQUIRE(item.number == 3);
+        REQUIRE(item.position.x == 4);
+        REQUIRE(item.position.y == 8);
+    }
+}
+
 TEST_CASE("Test that handles go invalid", "[Lua: Handles]")
 {
+    REQUIRE(0);
     SECTION("Characters")
     {
 
@@ -58,6 +93,7 @@ TEST_CASE("Test that handles go invalid", "[Lua: Handles]")
 
 TEST_CASE("Test invalid references to handles in store table", "[Lua: Handles]")
 {
+    REQUIRE(0);
     SECTION("Characters")
     {
 

@@ -34,6 +34,14 @@ local function generate_metatable(core_table, prefix)
       end
       return f
    end
+   mt.__newindex = function(handle, key, value)
+      if not handle.is_valid then
+         print(debug.traceback())
+         error("Error: handle is not valid!", 2)
+      end
+
+      handle.cpp_ref[key] = value
+   end
    return mt
 end
 
