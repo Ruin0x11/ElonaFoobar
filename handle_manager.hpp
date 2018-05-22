@@ -17,10 +17,10 @@ class handle_manager
 public:
     explicit handle_manager(lua_env*);
 
-    void on_chara_creation(character& chara);
-    void on_item_creation(item& item);
-    void on_chara_removal(character& chara);
-    void on_item_removal(item& item);
+    void create_chara_handle(character& chara);
+    void create_item_handle(item& item);
+    void remove_chara_handle(character& chara);
+    void remove_item_handle(item& item);
 
     sol::object get_chara_handle(character& chara);
     sol::object get_item_handle(item& item);

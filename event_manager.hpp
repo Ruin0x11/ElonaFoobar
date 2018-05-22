@@ -28,7 +28,7 @@ enum class event_kind_t : unsigned
     character_removed,
     item_removed,
 
-    COUNT
+    COUNT // for iterating over all event kinds
 };
 
 enum class event_control_t

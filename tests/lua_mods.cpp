@@ -129,7 +129,7 @@ Elona.Event.register(Elona.Defines.EventKind.CharaCreated, my_chara_created_hand
     REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test_chara_created", R"(assert(Store.charas[idx].idx == idx))"));
 }
 
-TEST_CASE("Test character deleted callback", "[Lua: Mods]")
+TEST_CASE("Test character removed callback", "[Lua: Mods]")
 {
     start_in_debug_map();
 
@@ -151,4 +151,53 @@ Elona.Event.register(Elona.Defines.EventKind.CharaRemoved, my_chara_removed_hand
     elona::chara_delete(idx);
 
     REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test_chara_removed", R"(assert(Store.removed_idx == idx))"));
+}
+
+
+TEST_CASE("Test item created callback", "[Lua: Mods]")
+{
+    start_in_debug_map();
+
+    REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test_item_created", R"(
+function my_item_created_handler(item)
+   Store.items[item.idx] = item
+end
+
+Store.items = {}
+
+Elona.Event.register(Elona.Defines.EventKind.ItemCreated, my_item_created_handler)
+)"));
+
+    REQUIRE(elona::itemcreate(-1, PUTITORO_PROTO_ID, 4, 8, 3));
+    int idx = elona::ci;
+    REQUIRE(idx != -1);
+    elona::item& item = elona::inv[idx];
+    elona::lua::lua.get_mod("test_item_created").env.set("idx", idx);
+
+    REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test_item_created", R"(assert(Store.items[idx].idx == idx))"));
+}
+
+TEST_CASE("Test item removed callback", "[Lua: Mods]")
+{
+    start_in_debug_map();
+
+    REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test_item_removed", R"(
+function my_item_removed_handler(item)
+   Store.removed_idx = item.idx
+end
+
+Store.removed_idx = -1
+
+Elona.Event.register(Elona.Defines.EventKind.ItemRemoved, my_item_removed_handler)
+)"));
+
+    REQUIRE(elona::itemcreate(-1, PUTITORO_PROTO_ID, 4, 8, 3));
+    int idx = elona::ci;
+    elona::item& item = elona::inv[idx];
+    REQUIRE(elona::inv[idx].idx != -1);
+    elona::lua::lua.get_mod("test_item_removed").env.set("idx", idx);
+
+    elona::item_delete(idx);
+
+    REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test_item_removed", R"(assert(Store.removed_idx == idx))"));
 }

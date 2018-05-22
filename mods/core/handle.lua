@@ -92,15 +92,16 @@ function Handle.create_item_handle(cpp_ref)
 end
 
 
-function Handle.on_chara_removal(cpp_ref)
+function Handle.remove_chara_handle(cpp_ref)
     local handle = Handle.CharaHandles[cpp_ref.idx];
     handle.cpp_ref = nil
     handle.is_valid = false
     Handle.CharaHandles[cpp_ref.idx] = nil
 end
 
-function Handle.on_item_removal(cpp_ref)
+function Handle.remove_item_handle(cpp_ref)
     local handle = Handle.ItemHandles[cpp_ref.idx];
+
     handle.cpp_ref = nil
     handle.is_valid = false
     Handle.ItemHandles[cpp_ref.idx] = nil

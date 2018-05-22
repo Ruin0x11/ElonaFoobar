@@ -485,7 +485,17 @@ void item_exchange(int a, int b)
 
 void item_delete(int ci)
 {
-    lua::lua.get_handle_manager().on_item_removal(inv[ci]);
+    if(inv[ci].idx != -1)
+    {
+        // This item slot was previously occupied, but the item is now
+        // invalid.
+        lua::lua.on_item_removal(inv[ci]);
+    }
+    else
+    {
+        // This item slot has never been previously occupied (since
+        // its idx is -1), so don't run the removal callback.
+    }
     inv(ci).clear();
 }
 
