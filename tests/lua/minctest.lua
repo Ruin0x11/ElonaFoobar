@@ -58,9 +58,9 @@ local lfails = 0
 
 lresults = function()
     if (lfails == 0) then
-        print("ALL TESTS PASSED (" .. ltests .. "/" .. ltests .. ")")
+        print("ALL TESTS PASSED (" .. ltests .. "/" .. ltests .. ")\n")
     else
-        print("SOME TESTS FAILED (" .. ltests-lfails .. "/" .. ltests .. ")")
+        print("SOME TESTS FAILED (" .. ltests-lfails .. "/" .. ltests .. ")\n")
     end
     local success = lfails == 0
     ltests = 0
@@ -73,9 +73,9 @@ lrun = function(name, testfunc)
     local ts = ltests
     local fs = lfails
     local clock = os.clock()
-    io.write(string.format("\t%-16s ", name))
     testfunc()
-    io.write(string.format("pass:%2d   fail:%2d   %4dms\n",
+    io.write(string.format("\t%-16s ", name))
+    io.write(string.format("pass: %2d   fail: %2d   %4dms\n",
         (ltests-ts)-(lfails-fs), lfails-fs,
         math.floor((os.clock() - clock) * 1000)));
 end
@@ -84,7 +84,7 @@ lok = function(test, mes)
     ltests = ltests + 1
     if not test then
         lfails = lfails + 1
-        io.write(string.format("%s:%d error: %s \n",
+        io.write(string.format("FAILURE: %s:%d: %s \n",
             debug.getinfo(2, 'S').short_src,
             debug.getinfo(2, 'l').currentline),
             mes)
@@ -96,12 +96,12 @@ lequal = function(a, b)
     if a ~= b then
         lfails = lfails + 1
         if type(a) == "number" and type(b) == "number" then
-            io.write(string.format("%s:%d (%d != %d)\n",
+            io.write(string.format("FAILURE: %s:%d: (%d != %d)\n",
                 debug.getinfo(2, 'S').short_src,
                 debug.getinfo(2, 'l').currentline,
                 a, b))
-        elseif type(a) == "boolean" and type(b) == "boolean" then
-            io.write(string.format("%s:%d (%s != %s)\n",
+        else
+            io.write(string.format("FAILURE: %s:%d: (%s != %s)\n",
                 debug.getinfo(2, 'S').short_src,
                 debug.getinfo(2, 'l').currentline,
                 tostring(a), tostring(b)))
@@ -113,7 +113,7 @@ lfequal = function(a, b)
     ltests = ltests + 1
     if math.abs(a - b) > LTEST_FLOAT_TOLERANCE then
         lfails = lfails + 1
-        io.write(string.format("%s:%d (%f != %f)\n",
+        io.write(string.format("FAILURE: %s:%d: (%f != %f)\n",
             debug.getinfo(2, 'S').short_src,
             debug.getinfo(2, 'l').currentline,
             a, b))

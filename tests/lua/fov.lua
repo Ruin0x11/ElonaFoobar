@@ -7,7 +7,7 @@ lrun("test FOV.refresh", function()
         local pos = Elona.Chara.player().position
         local other = LuaPosition.new(pos.x, pos.y + 5)
         lequal(FOV.you_see(other), true)
-        Elona.Map.set_tile(5, 7, Elona.Defines.Enums.TileKind.Wall)
+        Elona.Map.set_tile(pos.x, pos.y + 2, Elona.Defines.Enums.TileKind.Wall)
         lequal(FOV.you_see(other), true)
         FOV.refresh()
         lequal(FOV.you_see(other), false)
@@ -28,7 +28,7 @@ end)
 lrun("test FOV.you_see", function()
         Testing.start_in_debug_map()
         local pos = Elona.Chara.player().position
-        local chara = Elona.Chara.create(pos.x, pos.y + 2, 3) -- putit
+        local chara = Elona.Chara.create(pos.x, pos.y + 5, 3) -- putit
         FOV.refresh()
         lequal(FOV.you_see(chara), true)
         lequal(FOV.you_see(chara.position), true)
