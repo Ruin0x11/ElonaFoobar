@@ -126,8 +126,11 @@ public:
         return events.at(event).run(callbacks::retval_type<R>{});
     }
 
+    void clear();
+
     typedef std::unordered_map<event_kind_t, callbacks> container;
 private:
+    void init_events();
     container events;
     lua_env* lua;
 };

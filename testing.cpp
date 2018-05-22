@@ -48,13 +48,6 @@ void start_in_debug_map()
 
 void configure_lua()
 {
-    // lua::sol.get()->open_libraries(sol::lib::os,
-    //                                sol::lib::io);
-    // sol::table Elona = (*lua::sol.get())["Elona"];
-    // sol::table Testing = Elona.create_named("Testing");
-    // Testing.set_function("initialize_map", initialize_map);
-    // Testing.set_function("start_in_debug_map", start_in_debug_map);
-    // Testing.set_function("reset_state", reset_state);
 }
 
 void pre_init()
@@ -78,9 +71,7 @@ void post_run()
 
 void reset_state()
 {
-    //lua::clear();
-    //lua::lua.load_all_mods(filesystem::dir::mods());
-    lua::lua.get_handle_manager().clear();
+    configure_lua();
     initialize_elona();
 }
 

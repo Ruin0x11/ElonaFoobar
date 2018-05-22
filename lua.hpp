@@ -56,6 +56,8 @@ public:
     event_manager& get_event_manager();
     handle_manager& get_handle_manager();
 
+    void clear();
+
     // For testing use
     void load_mod_from_script(const std::string& name, const std::string& script);
     void run_in_mod(const std::string& name, const std::string& script);

@@ -38,7 +38,11 @@ event_manager::event_manager(lua_env* lua)
         "AllTurnsFinished", event_kind_t::all_turns_finished,
         "MapInitialized", event_kind_t::map_initialized
         );
+    init_events();
+}
 
+void event_manager::init_events()
+{
     unsigned event_count = static_cast<unsigned>(event_kind_t::COUNT);
     for(unsigned i = 0; i < event_count; i++)
     {
@@ -70,6 +74,12 @@ void event_manager::trigger_event(event_kind_t event,
     {
         ELONA_LOG("No callbacks registered for event " << static_cast<int>(event) << ", skipping.");
     }
+}
+
+void event_manager::clear()
+{
+    events.clear();
+    init_events();
 }
 
 }

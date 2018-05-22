@@ -293,6 +293,14 @@ void lua_env::run_startup_script(const std::string& name)
     this->mods.emplace("script", std::move(script_mod));
 }
 
+void lua_env::clear()
+{
+    mods.clear();
+    handle_mgr->clear();
+    event_mgr->clear();
+    stage = mod_stage_t::not_started;
+    lua->collect_garbage();
+}
 
 // For testing use
 void lua_env::load_mod_from_script(const std::string& name, const std::string& script)

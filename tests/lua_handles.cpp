@@ -166,10 +166,10 @@ TEST_CASE("Test invalid references to handles in store table", "[Lua: Handles]")
         auto handle = elona::lua::lua.get_handle_manager().get_item_handle(item);
         elona::lua::lua.get_state()->set("item", handle);
 
-        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test", "Store.items = {[0]=item}"));
+        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test2", "Store.items = {[0]=item}"));
 
         item_delete(item.idx);
 
-        REQUIRE_THROWS(elona::lua::lua.run_in_mod("test", "print(Store.items[0].idx)"));
+        REQUIRE_THROWS(elona::lua::lua.run_in_mod("test2", "print(Store.items[0].idx)"));
     }
 }
