@@ -21,11 +21,11 @@ local function foo()
    end
 end
 
-local function my_movement_handler(chara_idx)
+local function my_movement_handler(chara)
    --local data = Storage.Chara[chara_idx]
    --Storage.Chara[chara_idx].steps = data.steps + 1
    --Elona.GUI.txt("Steps taken by " .. chara_idx .. ": " .. Storage.Chara[chara_idx].steps .. " ")
-   Elona.GUI.txt("Steps taken by " .. chara_idx .. ": " .. 0 .. " ")
+   --Elona.GUI.txt("Steps taken by " .. chara.idx .. ": " .. 0 .. " ")
 end
 
 local function my_character_init()
@@ -33,6 +33,6 @@ local function my_character_init()
 end
 
 --Elona.Registry.register_chara_init(my_character_init)
-Elona.Event.register(Defines.EventKind.CharaMoved, my_movement_handler)
+--Elona.Event.register(Defines.EventKind.CharaMoved, my_movement_handler)
 Elona.Event.register(Defines.EventKind.PlayerTurn, hoge)
 Elona.Event.register(Defines.EventKind.PlayerTurn, foo)

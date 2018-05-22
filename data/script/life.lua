@@ -68,5 +68,24 @@ local function run_life()
    Store.grid = evolve(grid)
 end
 
+local function add_chara(chara)
+   Store.stuffs[chara.idx] = Elona.Rand.rnd(42)
+   Elona.GUI.txt("I'm new: " .. chara.idx)
+end
+
+local function chara_moved(chara)
+   Elona.GUI.txt(chara.idx .. ": my thing is " .. Store.stuffs[chara.idx])
+end
+
+local function remove_chara(chara)
+   Elona.GUI.txt("I'm gone: " .. chara.idx)
+   Store.stuffs[chara.idx] = nil
+end
+
+Store.stuffs = {}
+
 Elona.Event.register(EventKind.MapInitialized, run_life)
 Elona.Event.register(EventKind.AllTurnsFinished, run_life)
+Elona.Event.register(EventKind.CharaCreated, add_chara)
+Elona.Event.register(EventKind.CharaRemoved, remove_chara)
+Elona.Event.register(EventKind.CharaMoved, chara_moved)

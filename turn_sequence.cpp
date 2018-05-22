@@ -1448,6 +1448,7 @@ turn_result_t pc_turn(bool advance_time)
 {
     if (advance_time)
     {
+        lua::lua.get_event_manager().run_callbacks<lua::event_kind_t::player_turn>();
         if (gdata_catches_god_signal)
         {
             if (rnd(1000) == 0)

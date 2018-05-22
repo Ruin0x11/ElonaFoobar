@@ -1938,8 +1938,10 @@ void chara_delete(int cc)
     }
     else
     {
-        // This character was never initialized, so don't run the removal callback.
+        // This character slot has never been previously occupied
+        // (since its idx is -1), so don't run the removal callback.
     }
+
     for (const auto& cnt : items(cc))
     {
         inv[cnt].number = 0;
