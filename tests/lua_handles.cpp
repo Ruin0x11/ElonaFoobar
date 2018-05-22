@@ -78,9 +78,26 @@ TEST_CASE("Test that handle properties can be written", "[Lua: Handles]")
     }
 }
 
+TEST_CASE("Test that handle methods can be called", "[Lua: Handles]")
+{
+    start_in_debug_map();
+
+    {
+        REQUIRE(chara_create(-1, PUTIT_PROTO_ID, 4, 8));
+        character& chara = elona::cdata[elona::rc];
+        auto handle = elona::lua::lua.get_handle_manager().get_chara_handle(chara);
+        elona::lua::lua.get_state()->set("chara", handle);
+
+        int hp_before = chara.hp;
+
+        REQUIRE_NOTHROW(elona::lua::lua.get_state()->safe_script(R"(chara:damage_hp(7))"));
+
+        REQUIRE(chara.hp == (hp_before - 7));
+    }
+}
+
 TEST_CASE("Test that handles go invalid", "[Lua: Handles]")
 {
-    REQUIRE(0);
     SECTION("Characters")
     {
 

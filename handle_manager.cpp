@@ -89,5 +89,13 @@ sol::object handle_manager::get_item_handle(item& item)
     return handle;
 }
 
+void handle_manager::clear()
+{
+    chara_handles.clear();
+    item_handles.clear();
+    handle_env["Handle"]["CharaHandles"] = this->lua->get_state()->create_table_with();
+    handle_env["Handle"]["ItemHandles"] = this->lua->get_state()->create_table_with();
+}
+
 }
 }

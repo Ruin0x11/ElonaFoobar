@@ -18,9 +18,7 @@ local function generate_metatable(core_table, prefix)
       -- Try to get a property
       local v = handle.cpp_ref[key]
       if v ~= nil then
-         if type(v) == "function" then
-            return v()
-         else
+         if type(v) ~= "function" then
             return v
          end
       end
