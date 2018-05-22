@@ -411,6 +411,7 @@ void Item::bind(sol::table& Elona)
 {
     sol::table Item = Elona.create_named("Item");
     Item.set_function("create", sol::overload(Item::create, Item::create_xy));
+    Item.set_function("has_enchantment", Item::has_enchantment);
 }
 
 

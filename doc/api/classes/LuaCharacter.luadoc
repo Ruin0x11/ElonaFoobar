@@ -4,6 +4,9 @@
 --- [R] The index of this character in the global characters array.
 -- @tfield num idx
 
+--- [RW] The character's position.
+-- @tfield LuaPosition position
+
 --- [R] The character's current HP.
 -- @tfield num hp
 

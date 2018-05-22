@@ -23,6 +23,11 @@ TEST_CASE("Core API: FOV", "[Lua: API]")
     lua_testcase("fov.lua");
 }
 
+TEST_CASE("Core API: Item", "[Lua: API]")
+{
+    lua_testcase("item.lua");
+}
+
 TEST_CASE("Core API: Map", "[Lua: API]")
 {
     lua_testcase("map.lua");
