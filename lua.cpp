@@ -69,28 +69,14 @@ void report_error(sol::error err)
 
 void lua_env::on_chara_creation(character& chara)
 {
+    std::cout << "Adding " << chara.idx << std::endl;
     handle_mgr->on_chara_creation(chara);
 
     // TODO handle deserialization separately from creation from scratch
     // TODO only handle deserialization for characters that actually exist
     // for each mod, init its extra data for the character
     // for each mod, run chara creation callback
-    for(const auto& callback : this->get_event_manager().get_callbacks(event_kind_t::character_initialized))
-    {
-        sol::table retval = callback.function.call();
-        sol::state_view view(*lua);
-        retval.for_each([&](sol::object key, sol::object value)
-        {
-            if(!key.is<std::string>())
-            {
-                assert(0);
-            }
-            else
-            {
-                mods.at(callback.mod_name).store.set(key.as<std::string>(), value, view);
-            }
-        });
-    }
+    this->get_event_manager().run_callbacks<event_kind_t::character_created>(handle_mgr->get_chara_handle(chara));
 }
 
 void lua_env::on_item_creation(item& item)
@@ -104,6 +90,9 @@ void lua_env::on_item_creation(item& item)
 
 void lua_env::on_chara_removal(character& chara)
 {
+    std::cout << "Removing " << chara.idx << std::endl;
+    this->get_event_manager().run_callbacks<event_kind_t::character_removed>(handle_mgr->get_chara_handle(chara));
+
     handle_mgr->on_chara_removal(chara);
     // for each mod, invalidate global chara state
     // for each mod, run chara removal callback

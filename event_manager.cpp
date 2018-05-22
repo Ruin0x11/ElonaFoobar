@@ -36,7 +36,9 @@ event_manager::event_manager(lua_env* lua)
         "CharaMoved", event_kind_t::chara_moved,
         "PlayerTurn", event_kind_t::player_turn,
         "AllTurnsFinished", event_kind_t::all_turns_finished,
-        "MapInitialized", event_kind_t::map_initialized
+        "MapInitialized", event_kind_t::map_initialized,
+        "CharaCreated", event_kind_t::character_created,
+        "CharaRemoved", event_kind_t::character_removed
         );
     init_events();
 }

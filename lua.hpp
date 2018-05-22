@@ -61,7 +61,7 @@ public:
     // For testing use
     void load_mod_from_script(const std::string& name, const std::string& script);
     void run_in_mod(const std::string& name, const std::string& script);
-    const mod_info& get_mod(const std::string& name) const {
+    mod_info& get_mod(const std::string& name) {
         auto val = mods.find(name);
         if(val == mods.end())
             throw new std::runtime_error("No such mod "s + name + "."s);

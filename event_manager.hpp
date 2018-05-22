@@ -25,6 +25,9 @@ enum class event_kind_t : unsigned
     character_created,
     item_created,
 
+    character_removed,
+    item_removed,
+
     COUNT
 };
 

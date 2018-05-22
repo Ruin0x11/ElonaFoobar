@@ -19,9 +19,7 @@ using namespace elona::testing;
 TEST_CASE("Test character saving and reloading", "[C++: Serialization]")
 {
     start_in_debug_map();
-    int x = 4;
-    int y = 8;
-    REQUIRE(chara_create(-1, PUTIT_PROTO_ID, x, y));
+    REQUIRE(chara_create(-1, PUTIT_PROTO_ID, 4, 8));
     int index = elona::rc;
     cdata[index].is_floating() = true;
 

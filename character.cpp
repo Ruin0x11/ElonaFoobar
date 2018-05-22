@@ -789,20 +789,18 @@ void chara_set_generation_filter()
 
 int chara_get_free_slot()
 {
-    f_at_m125 = -1;
+    int rc = -1;
     for (int cnt = ELONA_MAX_PARTY_CHARACTERS; cnt < ELONA_MAX_CHARACTERS;
          ++cnt)
     {
         if (cdata[cnt].state == 0)
         {
-            f_at_m125 = cnt;
+            rc = cnt;
             break;
         }
     }
-    return f_at_m125;
+    return rc;
 }
-
-
 
 int chara_get_free_slot_ally()
 {
@@ -996,20 +994,11 @@ void chara_place()
 }
 
 
-
 int chara_create_internal()
 {
     if (rc == -1)
     {
-        for (int cnt = ELONA_MAX_PARTY_CHARACTERS; cnt < ELONA_MAX_CHARACTERS;
-             ++cnt)
-        {
-            if (cdata[cnt].state == 0)
-            {
-                rc = cnt;
-                break;
-            }
-        }
+        rc = chara_get_free_slot();
         if (rc == -1)
         {
             rc = 56;
@@ -1940,7 +1929,17 @@ int chara_copy(int prm_848)
 
 void chara_delete(int cc)
 {
-    lua::lua.on_chara_removal(cdata[cc]);
+    if(cc != -1 && cdata[cc].idx != -1)
+    {
+        // This character slot was previously occupied, but the
+        // character died and we're trying to create a new character
+        // in it from chara_create_internal().
+        lua::lua.on_chara_removal(cdata[cc]);
+    }
+    else
+    {
+        // This character was never initialized, so don't run the removal callback.
+    }
     for (const auto& cnt : items(cc))
     {
         inv[cnt].number = 0;
