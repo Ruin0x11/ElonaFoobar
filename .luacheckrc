@@ -84,6 +84,7 @@ local std_core = {
 
 files['**/mods/'] = {std = STD_ELONA}
 files['**/mods/core'] = std_core
+files['**/tests/lua'] = {std = STD_ELONA .. "+tests"}
 
 -------------------------------------------------------------------------------
 --[STDS ELONA]--
@@ -193,6 +194,18 @@ stds.stdlib = {
         table = {
             fields = {
                "find", "size"
+            },
+        },
+    },
+}
+
+--(( tests ))--
+stds.tests = {
+    read_globals = {
+        "lrun", "lequal", "lfequal", "lok", "lresults()",
+        Testing = {
+            fields = {
+               "start_in_debug_map", "reset_state"
             },
         },
     },

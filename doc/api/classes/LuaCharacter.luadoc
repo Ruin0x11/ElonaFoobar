@@ -43,3 +43,9 @@ function damage_hp(amount) end
 -- @usage local chara = Chara.player()
 --chara:apply_ailment(Enums.StatusAilment.Blinded, 100)
 function apply_ailment(ailment, power) end
+
+--- Attempts to recruit this character as an ally of the player.
+--- This will only work if the character isn't already an ally, isn't
+--- the player, is alive and the player has a free party slot.
+-- @treturn bool true if the character was recruited successfully
+function recruit_as_ally() end

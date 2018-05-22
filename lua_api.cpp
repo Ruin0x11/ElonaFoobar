@@ -29,6 +29,7 @@ namespace Chara {
 bool is_alive(const character&);
 bool is_player(const character&);
 bool is_ally(const character&);
+bool add_ally(character&);
 sol::optional<character*> player();
 sol::optional<character*> create(const position_t&, int);
 sol::optional<character*> create_xy(int, int, int);
@@ -482,21 +483,33 @@ void Debug::bind(sol::table& Elona)
 
 namespace LuaCharacter
 {
-void mut_damage_hp(character&, int);
-void mut_apply_ailment(character&, status_ailment_t, int);
+void damage_hp(character&, int);
+void apply_ailment(character&, status_ailment_t, int);
+bool recruit_as_ally(character&);
 }
 
-void LuaCharacter::mut_damage_hp(character& self, int amount)
+void LuaCharacter::damage_hp(character& self, int amount)
 {
     assert(amount > 0); // TODO does this need verification?
     elona::dmghp(self.idx, amount, -11); // TODO defaults to unseen hand
 }
 
-void LuaCharacter::mut_apply_ailment(character& self, status_ailment_t ailment, int power)
+void LuaCharacter::apply_ailment(character& self, status_ailment_t ailment, int power)
 {
     assert(power > 0); // TODO does this need verification?
     elona::dmgcon(self.idx, ailment, power);
 }
+
+bool LuaCharacter::recruit_as_ally(character& self)
+{
+    if(!Chara::is_alive(self) || Chara::is_ally(self) || Chara::is_player(self))
+    {
+        return false;
+    }
+    elona::rc = self.idx;
+    return new_ally_joins() == 1;
+}
+
 
 void init_usertypes(lua_env& lua)
 {
@@ -506,8 +519,9 @@ void init_usertypes(lua_env& lua)
                                            "y", &position_t::y
         );
     lua.get_state()->new_usertype<character>( "LuaCharacter",
-                                        "damage_hp", &LuaCharacter::mut_damage_hp,
-                                        "apply_ailment", &LuaCharacter::mut_apply_ailment,
+                                        "damage_hp", &LuaCharacter::damage_hp,
+                                        "apply_ailment", &LuaCharacter::apply_ailment,
+                                        "recruit_as_ally", &LuaCharacter::recruit_as_ally,
                                         "hp", sol::readonly(&character::hp),
                                         "max_hp", sol::readonly(&character::max_hp),
                                         "mp", sol::readonly(&character::mp),
