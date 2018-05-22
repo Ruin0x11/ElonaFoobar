@@ -69,7 +69,6 @@ void report_error(sol::error err)
 
 void lua_env::on_chara_creation(character& chara)
 {
-    std::cout << "Adding " << chara.idx << std::endl;
     handle_mgr->on_chara_creation(chara);
 
     // TODO handle deserialization separately from creation from scratch
@@ -90,7 +89,6 @@ void lua_env::on_item_creation(item& item)
 
 void lua_env::on_chara_removal(character& chara)
 {
-    std::cout << "Removing " << chara.idx << std::endl;
     this->get_event_manager().run_callbacks<event_kind_t::character_removed>(handle_mgr->get_chara_handle(chara));
 
     handle_mgr->on_chara_removal(chara);
@@ -292,6 +290,9 @@ void lua_env::clear()
 }
 
 // For testing use
+
+// TODO expects mods to use unique names. Figure out a way to clear
+// everything Lua related easily and safely.
 void lua_env::load_mod_from_script(const std::string& name, const std::string& script)
 {
     if(stage < mod_stage_t::core_mod_loaded)

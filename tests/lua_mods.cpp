@@ -110,7 +110,7 @@ TEST_CASE("Test character created callback", "[Lua: Mods]")
 {
     start_in_debug_map();
 
-    REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test", R"(
+    REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test_chara_created", R"(
 function my_chara_created_handler(chara)
    Store.charas[chara.idx] = chara
 end
@@ -124,16 +124,16 @@ Elona.Event.register(Elona.Defines.EventKind.CharaCreated, my_chara_created_hand
     int idx = elona::rc;
     REQUIRE(idx != -1);
     elona::character& chara = elona::cdata[idx];
-    elona::lua::lua.get_mod("test").env.set("idx", idx);
+    elona::lua::lua.get_mod("test_chara_created").env.set("idx", idx);
 
-    REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test", R"(assert(Store.charas[idx].idx == idx))"));
+    REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test_chara_created", R"(assert(Store.charas[idx].idx == idx))"));
 }
 
 TEST_CASE("Test character deleted callback", "[Lua: Mods]")
 {
     start_in_debug_map();
 
-    REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test", R"(
+    REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test_chara_removed", R"(
 function my_chara_removed_handler(chara)
    Store.removed_idx = chara.idx
 end
@@ -146,9 +146,9 @@ Elona.Event.register(Elona.Defines.EventKind.CharaRemoved, my_chara_removed_hand
     REQUIRE(elona::chara_create(-1, PUTIT_PROTO_ID, 4, 8));
     int idx = elona::rc;
     elona::character& chara = elona::cdata[idx];
-    elona::lua::lua.get_mod("test").env.set("idx", idx);
+    elona::lua::lua.get_mod("test_chara_removed").env.set("idx", idx);
 
     elona::chara_delete(idx);
 
-    REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test", R"(assert(Store.removed_idx == idx))"));
+    REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test_chara_removed", R"(assert(Store.removed_idx == idx))"));
 }
