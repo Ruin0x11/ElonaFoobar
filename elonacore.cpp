@@ -12083,6 +12083,9 @@ void load_save_data(const fs::path& base_save_dir)
 {
     ELONA_LOG("Load save data: " << playerid);
 
+    // TODO instead serialize/deserialize data
+    lua::lua.get_handle_manager().clear();
+
     filemod = "";
     ctrl_file(file_operation_t::_10);
     const auto save_dir = base_save_dir / filesystem::u8path(playerid);

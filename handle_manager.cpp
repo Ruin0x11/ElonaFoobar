@@ -43,8 +43,9 @@ void handle_manager::on_item_creation(item& item)
 }
 void handle_manager::on_chara_removal(character& chara)
 {
-    // TODO make into assert
-    if (chara.state == 0 || chara_handles.find(chara.idx) == chara_handles.end())
+    // TODO should chara.state == 0 mean the handle is invalid?
+    // Some characters can die and respawn again.
+    if (chara_handles.find(chara.idx) == chara_handles.end())
     {
         handle_env["Handle"]["assert_chara_invalid"](chara);
         return;

@@ -12,6 +12,7 @@ namespace testing
 {
 
 const fs::path save_dir("tests/data/save");
+const std::string player_id = "sav_ruin";
 
 void load_previous_savefile()
 {
@@ -36,8 +37,8 @@ void start_in_debug_map()
 {
     reset_state();
     initialize_debug_globals();
-    elona::playerid = "sav_ruin";
 
+    elona::playerid = player_id;
     elona_delete(save_dir / elona::playerid);
 
     gdata_current_map = 9999; // Debug map
@@ -71,6 +72,7 @@ void pre_init()
 
 void post_run()
 {
+    elona_delete(save_dir / player_id);
     finish_elona();
 }
 

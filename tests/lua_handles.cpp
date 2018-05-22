@@ -98,25 +98,78 @@ TEST_CASE("Test that handle methods can be called", "[Lua: Handles]")
 
 TEST_CASE("Test that handles go invalid", "[Lua: Handles]")
 {
+    start_in_debug_map();
+
     SECTION("Characters")
     {
+        REQUIRE(chara_create(-1, PUTIT_PROTO_ID, 4, 8));
+        character& chara = elona::cdata[elona::rc];
+        auto handle = elona::lua::lua.get_handle_manager().get_chara_handle(chara);
+        elona::lua::lua.get_state()->set("chara", handle);
 
+        chara_delete(chara.idx);
+
+        {
+            auto result = elona::lua::lua.get_state()->safe_script(R"(print(chara.idx))", &sol::script_pass_on_error);
+            REQUIRE(!result.valid());
+        }
+        {
+            auto result = elona::lua::lua.get_state()->safe_script(R"(chara.position.x = 2)", &sol::script_pass_on_error);
+            REQUIRE(!result.valid());
+        }
+        {
+            auto result = elona::lua::lua.get_state()->safe_script(R"(chara:damage_hp(1))", &sol::script_pass_on_error);
+            REQUIRE(!result.valid());
+        }
     }
     SECTION("Items")
     {
+        REQUIRE(itemcreate(-1, PUTITORO_PROTO_ID, 4, 8, 3));
+        item& item = elona::inv[elona::ci];
+        auto handle = elona::lua::lua.get_handle_manager().get_item_handle(item);
+        elona::lua::lua.get_state()->set("item", handle);
 
+        item_delete(item.idx);
+
+        {
+            auto result = elona::lua::lua.get_state()->safe_script(R"(print(item.number))", &sol::script_pass_on_error);
+            REQUIRE(!result.valid());
+        }
+        {
+            auto result = elona::lua::lua.get_state()->safe_script(R"(item.position.x = 2)", &sol::script_pass_on_error);
+            REQUIRE(!result.valid());
+        }
     }
 }
 
 TEST_CASE("Test invalid references to handles in store table", "[Lua: Handles]")
 {
-    REQUIRE(0);
+    start_in_debug_map();
+
     SECTION("Characters")
     {
+        REQUIRE(chara_create(-1, PUTIT_PROTO_ID, 4, 8));
+        character& chara = elona::cdata[elona::rc];
+        auto handle = elona::lua::lua.get_handle_manager().get_chara_handle(chara);
+        elona::lua::lua.get_state()->set("chara", handle);
 
+        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test", "Store.charas = {[0]=chara}"));
+
+        chara_delete(chara.idx);
+
+        REQUIRE_THROWS(elona::lua::lua.run_in_mod("test", "print(Store.charas[0].idx)"));
     }
     SECTION("Items")
     {
+        REQUIRE(itemcreate(-1, PUTITORO_PROTO_ID, 4, 8, 3));
+        item& item = elona::inv[elona::ci];
+        auto handle = elona::lua::lua.get_handle_manager().get_item_handle(item);
+        elona::lua::lua.get_state()->set("item", handle);
 
+        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test", "Store.items = {[0]=item}"));
+
+        item_delete(item.idx);
+
+        REQUIRE_THROWS(elona::lua::lua.run_in_mod("test", "print(Store.items[0].idx)"));
     }
 }
