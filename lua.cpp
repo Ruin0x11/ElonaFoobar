@@ -173,8 +173,7 @@ void lua_env::scan_all_mods(const fs::path& mods_dir)
                 throw new std::runtime_error("\"script\" is a reserved mod name.");
             }
 
-            mod_info info;
-            create_mod_info(mod_name, info);
+            std::unique_ptr<mod_info> info = std::make_unique<mod_info>(mod_name, get_state());
             this->mods.emplace(mod_name, std::move(info));
         }
     }
@@ -197,7 +196,7 @@ void lua_env::load_core_mod(const fs::path& mods_dir)
     // Load the core mod before any others, because there is a need
     // for things on the Lua side to be made read-only after the core
     // mod is loaded.
-    load_mod_in_global_env(mods_dir, val->second);
+    load_mod_in_global_env(mods_dir, *val->second);
 
     // Make the core API table read-only.
     lua->safe_script(R"(Elona = Elona.ReadOnly.make_read_only(Elona))");
@@ -211,31 +210,21 @@ void lua_env::load_all_mods(const fs::path& mods_dir)
     {
         throw new std::runtime_error("Core mod wasn't loaded!");
     }
-    for (auto &&pair : this->mods)
+    for (auto& pair : this->mods)
     {
-        auto mod = pair.second;
-        if(mod.name == "core")
+        auto& mod = pair.second;
+        if(mod->name == "core")
         {
             continue;
         }
         else
         {
-            load_mod(mods_dir, mod);
+            load_mod(mods_dir, *mod);
         }
-        ELONA_LOG("Loaded mod " << mod.name);
+        ELONA_LOG("Loaded mod " << mod->name);
     }
 
     stage = mod_stage_t::all_mods_loaded;
-}
-
-void lua_env::create_mod_info(const std::string& name, mod_info& mod)
-{
-    mod.name = name;
-    mod.env = sol::environment(*(this->lua), sol::create, this->lua->globals());
-    mod.env["Global"]["MOD_NAME"] = name;
-    mod.store = lua::store();
-    mod.store.init(*this->get_state(), mod.env);
-    mod.env["Store"] = mod.store;
 }
 
 void lua_env::run_startup_script(const std::string& name)
@@ -249,12 +238,11 @@ void lua_env::run_startup_script(const std::string& name)
         throw new std::runtime_error("Startup script was already run.");
     }
 
-    mod_info script_mod;
-    create_mod_info("script", script_mod);
+    std::unique_ptr<mod_info> script_mod = std::make_unique<mod_info>("script", get_state());
 
     lua->safe_script_file(filesystem::make_preferred_path_in_utf8(
                               filesystem::dir::data() / "script"s / name),
-        script_mod.env);
+        script_mod->env);
 
     // The startup script is special since everything is deferred until the map loads.
     // So, re-run the map/character initialization things to pick up new init hooks loaded by the startup script.
@@ -271,13 +259,17 @@ void lua_env::run_startup_script(const std::string& name)
     this->mods.emplace("script", std::move(script_mod));
 }
 
+void lua_env::clear_mod_stores()
+{
+    for (auto&& pair : mods)
+    {
+        auto& mod = pair.second;
+        mod->store->clear();
+    }
+}
+
 void lua_env::clear()
 {
-    mods.clear();
-    handle_mgr->clear();
-    event_mgr->clear();
-    stage = mod_stage_t::not_started;
-    lua->collect_garbage();
 }
 
 // For testing use
@@ -296,15 +288,14 @@ void lua_env::load_mod_from_script(const std::string& name, const std::string& s
             throw new std::runtime_error("Mod "s + name + " was already initialized."s);
     }
 
-    mod_info info;
-    create_mod_info(name, info);
+    std::unique_ptr<mod_info> info = std::make_unique<mod_info>(name, get_state());
 
-    auto result = this->lua->safe_script(script, info.env);
+    auto result = this->lua->safe_script(script, info->env);
     if (!result.valid())
     {
         sol::error err = result;
         report_error(err);
-        throw new std::runtime_error("Failed initializing mod "s + info.name);
+        throw new std::runtime_error("Failed initializing mod "s + info->name);
     }
 
     this->mods.emplace(name, std::move(info));
@@ -315,7 +306,7 @@ void lua_env::run_in_mod(const std::string& name, const std::string& script)
     auto val = mods.find(name);
     if(val == mods.end())
         throw new std::runtime_error("No such mod "s + name + "."s);
-    this->lua->script(script, val->second.env);
+    this->lua->script(script, val->second->env);
 }
 
 } // namespace lua

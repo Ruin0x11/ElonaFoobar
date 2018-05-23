@@ -18,6 +18,7 @@ class store
 
 
 public:
+    void clear();
     void set(std::string key, const sol::object&, sol::state_view& view);
     sol::object get(std::string key, sol::state_view& view);
 

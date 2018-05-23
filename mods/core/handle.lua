@@ -19,6 +19,20 @@ local inspect = require "mods/core/inspect"
 Handle.CharaHandles = {}
 Handle.ItemHandles = {}
 
+local function print_handle_error(key)
+   if Elona.GUI then
+      Elona.GUI.txt_color(3)
+      Elona.GUI.txt("Error: handle is not valid!")
+      if key ~= nil then
+         Elona.GUI.txt("Indexing: " .. tostring(key))
+      end
+      Elona.GUI.txt("This means the character/item got removed.")
+      Elona.GUI.txt_color(0)
+   end
+   print("Error: handle is not valid!")
+   print(debug.traceback())
+end
+
 -- Cache for function closures resolved when indexing a handle.
 -- Creating a new closure for every method lookup is expensive.
 -- Indexed by [class_name][method_name].
@@ -29,9 +43,7 @@ local function generate_metatable(core_table, prefix)
    memoizedFuncs[prefix] = {}
    mt.__index = function(handle, key)
       if not handle.is_valid then
-         print("Error: handle is not valid!")
-         print("Indexing: " .. tostring(key))
-         print(debug.traceback())
+         print_handle_error(key)
          error("Error: handle is not valid!", 2)
       end
 
@@ -58,9 +70,7 @@ local function generate_metatable(core_table, prefix)
    end
    mt.__newindex = function(handle, key, value)
       if not handle.is_valid then
-         print("Error: handle is not valid!")
-         print("Indexing: " .. tostring(key))
-         print(debug.traceback())
+         print_handle_error(key)
          error("Error: handle is not valid!", 2)
       end
 

@@ -33,16 +33,16 @@ typedef sol::table lua_item_handle;
 
 // This is needed so if a C++ reference goes invalid, the Lua side
 // will know and be able to raise an error. But that means that the
-// handles will be passed as arguments to the API instead of the
-// underlying usertype.
+// handles (which are Lua tables) will be passed as arguments to the
+// API instead of the underlying usertype.
 
 // Note that these don't apply to methods called on the handles,
 // because the userdata metatable will be able to pass those functions
 // the raw C++ reference from inside the __index metamethod. It's just
 // that if a user passes a handle as an argument to an API function
 // implemented in C++, it's not possible to transparently get the
-// reference out of the handle without having to mashal it by the time
-// it's reached the C++ side.
+// reference out of the handle before the function is called without
+// having to marshal it by the time it's reached the C++ side.
 
 // NOTE: a side effect of this is that overloaded methods that can
 // take a handle argument must be ordered last inside sol::overload(),
@@ -255,6 +255,10 @@ bool Map::valid(const position_t& position)
 
 bool Map::valid_xy(int x, int y)
 {
+    if(World::is_in_overworld())
+    {
+        return false;
+    }
     if (x < 0 || y < 0 || x >= Map::width() || y >= Map::height())
     {
         return false;
@@ -270,6 +274,10 @@ bool Map::can_access(const position_t& position)
 
 bool Map::can_access_xy(int x, int y)
 {
+    if(World::is_in_overworld())
+    {
+        return false;
+    }
     elona::cell_check(x, y);
     return cellaccess != 0;
 }
@@ -303,6 +311,10 @@ void Map::set_tile(const position_t& position, tile_kind_t type)
 
 void Map::set_tile_xy(int x, int y, tile_kind_t type)
 {
+    if(World::is_in_overworld())
+    {
+        return;
+    }
     if(!Map::valid_xy(x, y))
     {
         return;
@@ -318,6 +330,10 @@ void Map::set_tile_memory(const position_t& position, tile_kind_t type)
 
 void Map::set_tile_memory_xy(int x, int y, tile_kind_t type)
 {
+    if(World::is_in_overworld())
+    {
+        return;
+    }
     if(!Map::valid_xy(x, y))
     {
         return;
@@ -428,142 +444,10 @@ void Rand::bind(sol::table& Elona)
     Rand.set_function("coinflip", Rand::coinflip);
 }
 
-// TODO move
-class item_iterable
-{
-public:
-    class item_iterator
-    {
-    public:
-        typedef item_iterator self_type;
-        typedef std::forward_iterator_tag iterator_category;
-        typedef sol::object value_type;
-        typedef sol::object reference;
-        typedef sol::object pointer;
-        typedef int distance_type;
-        item_iterator(int idx_) : idx(idx_) {}
-        self_type operator++() {
-            idx++;
-            while(elona::inv[idx].number == 0 && idx < 5480)
-                idx++;
-            return *this;
-        }
-        self_type operator++(int junk) {
-            self_type i = *this;
-            idx++;
-            while(elona::inv[idx].number == 0 && idx < 5480)
-                idx++;
-            return i;
-        }
-        sol::object operator*() {
-            assert(elona::inv[idx].number != 0);
-            item& item = elona::inv[idx];
-            return lua::lua.get_handle_manager().get_item_handle(item);
-        }
-        sol::object operator->() {
-            assert(elona::inv[idx].number != 0);
-            item& item = elona::inv[idx];
-            return lua::lua.get_handle_manager().get_item_handle(item);
-        }
-        bool operator==(const self_type& other) { return idx == other.idx; }
-        bool operator!=(const self_type& other) { return idx != other.idx; }
-        self_type operator=(const self_type& other) {
-            assert(elona::inv[other.idx].number != 0);
-            idx = other.idx;
-            return *this;
-        }
-    private:
-        int idx;
-    };
-
-    class const_item_iterator
-    {
-    public:
-        typedef const_item_iterator self_type;
-        typedef std::forward_iterator_tag iterator_category;
-        typedef sol::object value_type;
-        typedef sol::object reference;
-        typedef sol::object pointer;
-        typedef int distance_type;
-        const_item_iterator(int idx_) : idx(idx_) {}
-        self_type operator++() {
-            idx++;
-            while(elona::inv[idx].number == 0 && idx < 5480)
-                idx++;
-            return *this;
-        }
-        self_type operator++(int junk) {
-            self_type i = *this;
-            idx++;
-            while(elona::inv[idx].number == 0 && idx < 5480)
-                idx++;
-            return i;
-        }
-        const sol::object operator*() {
-            assert(elona::inv[idx].number != 0);
-            item& item = elona::inv[idx];
-            return lua::lua.get_handle_manager().get_item_handle(item);
-        }
-        const sol::object operator->() {
-            assert(elona::inv[idx].number != 0);
-            item& item = elona::inv[idx];
-            return lua::lua.get_handle_manager().get_item_handle(item);
-        }
-        bool operator==(const self_type& other) { return idx == other.idx; }
-        bool operator!=(const self_type& other) { return idx != other.idx; }
-        self_type operator=(const self_type& other) {
-            assert(elona::inv[other.idx].number != 0);
-            idx = other.idx;
-            return *this;
-        }
-    private:
-        int idx;
-    };
-
-public:
-    item_iterable(int start, int end)
-    {
-        begin_idx = start;
-        end_idx = end;
-
-        while(elona::inv[begin_idx].number == 0 && begin_idx < end_idx)
-            begin_idx++;
-
-        assert(begin_idx <= end_idx);
-        assert(begin_idx >= 0);
-        assert(end_idx < 5480);
-    }
-    // Constructor for iterating over items in character inventories.
-    item_iterable(const character& chara)
-    {
-        assert(chara.idx != -1);
-        const auto pair = inv_getheader(chara.idx);
-        begin_idx = pair.first;
-        end_idx = pair.first + pair.second;
-
-        while(elona::inv[begin_idx].number == 0 && begin_idx < end_idx)
-            begin_idx++;
-
-        assert(begin_idx <= end_idx);
-        assert(begin_idx >= 0);
-        assert(end_idx < 5480);
-    }
-    item_iterator begin() { return item_iterator(begin_idx); }
-    item_iterator end() { return item_iterator(end_idx); }
-    const_item_iterator begin() const { return const_item_iterator(begin_idx); }
-    const_item_iterator end() const { return const_item_iterator(end_idx); }
-private:
-    int begin_idx;
-    int end_idx;
-};
-
 namespace Item {
 sol::optional<lua_item_handle> create(const position_t&, int, int);
 sol::optional<lua_item_handle> create_xy(int, int, int, int);
 bool has_enchantment(const lua_item_handle, int);
-item_iterable iter_all();
-item_iterable iter_on_ground();
-item_iterable iter_on_chara(const lua_character_handle);
 
 void bind(sol::table& Elona);
 }
@@ -592,41 +476,19 @@ bool Item::has_enchantment(const lua_item_handle handle, int id)
     return elona::encfindspec(conv_item(handle).idx, id);
 }
 
-item_iterable Item::iter_all()
-{
-    return item_iterable(0, 5480 - 1);
-}
-
-item_iterable Item::iter_on_ground()
-{
-    const auto pair = elona::inv_getheader(-1);
-    return item_iterable(pair.first, pair.first + pair.second);
-}
-
-item_iterable Item::iter_on_chara(const lua_character_handle chara)
-{
-    return item_iterable(conv_chara(chara));
-}
-
 void Item::bind(sol::table& Elona)
 {
     sol::table Item = Elona.create_named("Item");
     Item.set_function("create", sol::overload(Item::create, Item::create_xy));
     Item.set_function("has_enchantment", Item::has_enchantment);
-    // Item.set_function("iter_all", Item::iter_all);
-    // Item.set_function("iter_on_ground", Item::iter_on_ground);
-    // Item.set_function("iter_on_chara", Item::iter_on_chara);
-
-    lua.get_state()->new_usertype<item_iterable>( "LuaItemIterable" );
-    lua.get_state()->new_usertype<item_iterable::item_iterator>( "LuaItemIterator" );
-    lua.get_state()->new_usertype<item_iterable::const_item_iterator>( "LuaConstItemIterator" );
 }
 
 
 namespace GUI {
-void txt(const std::string& message);
+void txt(const std::string&);
+void txt_color(int);
 
-void bind(sol::table& Elona);
+void bind(sol::table&);
 };
 
 void GUI::txt(const std::string& message)
@@ -634,10 +496,20 @@ void GUI::txt(const std::string& message)
     elona::txt(message);
 }
 
+void GUI::txt_color(int color)
+{
+    if(color < 0 || color > 20)
+    {
+        return;
+    }
+    elona::txtef(color);
+}
+
 void GUI::bind(sol::table& Elona)
 {
     sol::table GUI = Elona.create_named("GUI");
     GUI.set_function("txt", GUI::txt);
+    GUI.set_function("txt_color", GUI::txt_color);
 }
 
 

@@ -13,14 +13,19 @@ class lua_env;
 
 enum class event_kind_t : unsigned
 {
-    chara_moved,
-    player_turn,
-    all_turns_finished,
-
+    // == Pre-Init Stage
+    // These can be handled before the game is fully initialized.
+    // TODO deny access to most of the API here.
     map_initialized,
     character_initialized,
     item_initialized,
     game_initialized,
+
+    // == In-Game Stage ==
+    // These are only safe to handle after the game has been initialized.
+    chara_moved,
+    player_turn,
+    all_turns_finished,
 
     map_created,
     character_created,

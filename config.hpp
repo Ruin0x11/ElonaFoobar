@@ -55,6 +55,7 @@ public:
     int scrsync;
     int serverlist;
     int shadow;
+    int show_fps;
     int skiprandevents;
     int sound;
     int startrun;

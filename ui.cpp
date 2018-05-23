@@ -965,6 +965,11 @@ void render_hud()
             255);
         ++ap3;
     }
+    if (config::instance().show_fps)
+    {
+        show_fps(inf_clocky, ap3);
+        ++ap3;
+    }
     if (config::instance().hp_bar)
     {
         show_hp_bar(

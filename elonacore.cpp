@@ -6083,6 +6083,10 @@ turn_result_t exit_map()
     else
     {
         label_1738();
+
+        // Wipe all script state until serialization is supported.
+        lua::lua.clear();
+
         if (fs::exists(filesystem::dir::tmp() / (u8"mdata_"s + mid + u8".s2")))
         {
             ctrl_file(file_operation_t::_11);

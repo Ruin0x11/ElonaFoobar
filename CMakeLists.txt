@@ -330,6 +330,7 @@ if(WITH_TESTS)
     tests/lua_api.cpp
     tests/lua_handles.cpp
     tests/lua_mods.cpp
+    tests/lua_serialization.cpp
     tests/lua_store.cpp
     tests/serialization.cpp
     )

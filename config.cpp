@@ -724,6 +724,10 @@ void load_config(const fs::path& json_file)
             u8"startup_script",
             "",
             [&](auto value) { config::instance().startup_script = std::string{value}; }),
+        std::make_unique<config_integer>(
+            u8"show_fps",
+            0,
+            [&](auto value) { config::instance().show_fps = value; }),
     };
 
     picojson::value value;

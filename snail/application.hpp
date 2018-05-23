@@ -45,6 +45,10 @@ public:
         return _title;
     }
 
+    double fps()
+    {
+        return _fps_manager.actual_fps();
+    }
 
     void set_title(const std::string& title);
 

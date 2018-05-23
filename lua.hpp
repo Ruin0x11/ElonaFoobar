@@ -22,9 +22,21 @@ class handle_manager;
 
 struct mod_info
 {
+    explicit mod_info(const std::string name_, std::shared_ptr<sol::state> state) : name(name_)
+        {
+            env = sol::environment(*state, sol::create, state->globals());
+            env["Global"]["MOD_NAME"] = name;
+            store = std::make_shared<lua::store>();
+            store->init(*state, env);
+            env.set("Store", store);
+        }
+    mod_info(const mod_info&) = delete;
+    mod_info& operator=(const mod_info&) = delete;
+    ~mod_info() = default;
+
     std::string name;
     sol::environment env;
-    lua::store store;
+    std::shared_ptr<lua::store> store;
 };
 
 enum class mod_stage_t : unsigned
@@ -45,6 +57,7 @@ public:
     void scan_all_mods(const fs::path&);
     void load_core_mod(const fs::path&);
     void load_all_mods(const fs::path&);
+    void clear_mod_stores();
 
     void run_startup_script(const std::string&);
 
@@ -61,11 +74,11 @@ public:
     // For testing use
     void load_mod_from_script(const std::string& name, const std::string& script);
     void run_in_mod(const std::string& name, const std::string& script);
-    mod_info& get_mod(const std::string& name) {
+    mod_info* get_mod(const std::string& name) {
         auto val = mods.find(name);
         if(val == mods.end())
             throw new std::runtime_error("No such mod "s + name + "."s);
-        return val->second;
+        return val->second.get();
     }
 private:
     void load_mod(const fs::path& path, mod_info&);
@@ -75,7 +88,7 @@ private:
     std::shared_ptr<sol::state> lua;
     std::unique_ptr<event_manager> event_mgr;
     std::unique_ptr<handle_manager> handle_mgr;
-    std::unordered_map<std::string, mod_info> mods;
+    std::unordered_map<std::string, std::unique_ptr<mod_info>> mods;
     mod_stage_t stage = mod_stage_t::not_started;
 };
 

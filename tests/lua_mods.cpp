@@ -28,6 +28,9 @@ TEST_CASE("Test usage of store in mod", "[Lua: Mods]")
     REQUIRE_NOTHROW(lua.load_mod_from_script("test", "Store.thing = 1"));
 
     REQUIRE_NOTHROW(lua.run_in_mod("test", "assert(Store.thing == 1)"));
+    sol::state_view view(*lua.get_state());
+    int thing = lua.get_mod("test")->store->get("thing", view).as<int>();
+    assert(thing == 1);
 }
 
 TEST_CASE("Test invalid usage of store in main state", "[Lua: Mods]")
@@ -133,7 +136,7 @@ Elona.Event.register(Elona.Defines.EventKind.CharaCreated, my_chara_created_hand
     int idx = elona::rc;
     REQUIRE(idx != -1);
     elona::character& chara = elona::cdata[idx];
-    elona::lua::lua.get_mod("test_chara_created").env.set("idx", idx);
+    elona::lua::lua.get_mod("test_chara_created")->env.set("idx", idx);
 
     REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test_chara_created", R"(assert(Store.charas[idx].idx == idx))"));
 }
@@ -155,7 +158,7 @@ Elona.Event.register(Elona.Defines.EventKind.CharaRemoved, my_chara_removed_hand
     REQUIRE(elona::chara_create(-1, PUTIT_PROTO_ID, 4, 8));
     int idx = elona::rc;
     elona::character& chara = elona::cdata[idx];
-    elona::lua::lua.get_mod("test_chara_removed").env.set("idx", idx);
+    elona::lua::lua.get_mod("test_chara_removed")->env.set("idx", idx);
 
     elona::chara_delete(idx);
 
@@ -181,7 +184,7 @@ Elona.Event.register(Elona.Defines.EventKind.ItemCreated, my_item_created_handle
     int idx = elona::ci;
     REQUIRE(idx != -1);
     elona::item& item = elona::inv[idx];
-    elona::lua::lua.get_mod("test_item_created").env.set("idx", idx);
+    elona::lua::lua.get_mod("test_item_created")->env.set("idx", idx);
 
     REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test_item_created", R"(assert(Store.items[idx].idx == idx))"));
 }
@@ -204,7 +207,7 @@ Elona.Event.register(Elona.Defines.EventKind.ItemRemoved, my_item_removed_handle
     int idx = elona::ci;
     elona::item& item = elona::inv[idx];
     REQUIRE(elona::inv[idx].idx != -1);
-    elona::lua::lua.get_mod("test_item_removed").env.set("idx", idx);
+    elona::lua::lua.get_mod("test_item_removed")->env.set("idx", idx);
 
     elona::item_delete(idx);
 

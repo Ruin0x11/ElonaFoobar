@@ -9,6 +9,7 @@
 #include "map.hpp"
 #include "mef.hpp"
 #include "variables.hpp"
+#include "snail/application.hpp"
 
 
 namespace
@@ -276,6 +277,15 @@ void show_hp_bar(show_hp_bar_side side, int inf_clocky)
     }
 }
 
+void show_fps(int inf_clocky, int ap3)
+{
+    pos(66, inf_clocky + 155 - ap3 * 16);
+    bmes(
+        "FPS: "s + std::to_string(snail::application::instance().fps()),
+        255,
+        255,
+        255);
+}
 
 
 void add_damage_popup(

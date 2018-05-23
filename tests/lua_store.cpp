@@ -29,6 +29,8 @@ TEST_CASE("Test that strings can be set/retrieved", "[Lua: Store]")
     REQUIRE_NOTHROW(sol.safe_script(R"(Store["my_string"] = "putit")"));
     my_string = sol["Store"]["my_string"];
     REQUIRE(my_string == std::string("putit"));
+    my_string = store.get("my_string", view).as<std::string>();
+    REQUIRE(my_string == std::string("putit"));
 }
 
 TEST_CASE("Test that booleans can be set/retrieved", "[Lua: Store]")
@@ -48,6 +50,8 @@ TEST_CASE("Test that booleans can be set/retrieved", "[Lua: Store]")
 
     REQUIRE_NOTHROW(sol.safe_script(R"(Store["my_bool"] = true)"));
     my_bool = sol["Store"]["my_bool"];
+    REQUIRE(my_bool == true);
+    my_bool = store.get("my_bool", view).as<bool>();
     REQUIRE(my_bool == true);
 }
 
@@ -69,6 +73,8 @@ TEST_CASE("Test that integers can be set/retrieved", "[Lua: Store]")
 
     REQUIRE_NOTHROW(sol.safe_script(R"(Store["my_int"] = 84)"));
     my_int = sol["Store"]["my_int"];
+    REQUIRE(my_int == 84);
+    my_int = store.get("my_int", view).as<int>();
     REQUIRE(my_int == 84);
 }
 

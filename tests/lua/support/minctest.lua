@@ -86,8 +86,8 @@ lok = function(test, mes)
         lfails = lfails + 1
         io.write(string.format("FAILURE: %s:%d: %s \n",
             debug.getinfo(2, 'S').short_src,
-            debug.getinfo(2, 'l').currentline),
-            mes)
+            debug.getinfo(2, 'l').currentline,
+            mes))
     end
 end
 

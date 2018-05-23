@@ -185,7 +185,7 @@ local chara = Elona.Chara.create(0, 0, 3)
 idx = chara.idx
 Store.charas = {[0]=chara}
 )"));
-        int idx = elona::lua::lua.get_mod("test_invalid_chara").env["idx"];
+        int idx = elona::lua::lua.get_mod("test_invalid_chara")->env["idx"];
 
         chara_delete(idx);
 
@@ -198,7 +198,7 @@ local item = Elona.Item.create(0, 0, 792, 3)
 idx = item.idx
 Store.items = {[0]=items}
 )"));
-        int idx = elona::lua::lua.get_mod("test_invalid_item").env["idx"];
+        int idx = elona::lua::lua.get_mod("test_invalid_item")->env["idx"];
 
         item_delete(idx);
 

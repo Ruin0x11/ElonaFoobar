@@ -48,6 +48,11 @@ void store::bind(sol::state& state)
     state.new_usertype<item_ref>( "LuaItemRef" );
 }
 
+void store::clear()
+{
+    store.clear();
+}
+
 void store::set(std::string key, const sol::object &val, sol::state_view& view)
 {
     store::object obj;

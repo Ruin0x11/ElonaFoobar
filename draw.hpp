@@ -20,6 +20,7 @@ enum class show_hp_bar_side
 };
 
 void show_hp_bar(show_hp_bar_side side, int inf_clocky);
+void show_fps(int inf_clocky, int ap3);
 
 void add_damage_popup(
     const std::string& text,
