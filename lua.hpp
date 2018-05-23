@@ -31,20 +31,6 @@ struct mod_info
             store = std::make_shared<lua::store>();
             store->init(*state, env);
             env.set("Store", store);
-
-            // deny access to some unsafe functions
-            // TODO move elsewhere
-            env["rawget"] = sol::lua_nil;
-            env["rawset"] = sol::lua_nil;
-            env["require"] = sol::lua_nil;
-            env["collectgarbage"] = sol::lua_nil;
-            env["load"] = sol::lua_nil;
-            env["loadfile"] = sol::lua_nil;
-            env["dofile"] = sol::lua_nil;
-            env["loadstring"] = sol::lua_nil;
-            env["rawequal"] = sol::lua_nil;
-            env["setfenv"] = sol::lua_nil;
-            env["module"] = sol::lua_nil;
         }
     mod_info(const mod_info&) = delete;
     mod_info& operator=(const mod_info&) = delete;

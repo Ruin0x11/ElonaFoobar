@@ -11,7 +11,7 @@ namespace lua
 void event_manager::init(lua_env& lua)
 {
     sol::table core = lua.get_api_manager().get_api_table();
-    sol::table Event = core.create_named("Event");
+    sol::table Event = core["Event"];
 
     Event.set_function("register", [&lua](event_kind_t event,
                                           sol::protected_function func,
@@ -31,9 +31,9 @@ event_manager::event_manager(lua_env* lua)
     this->lua = lua;
 
     sol::table core = lua->get_api_manager().get_api_table();
-    sol::table Defines = core["Defines"];
+    sol::table Event = core.create_named("Event");
 
-    Defines["EventKind"] = Defines.create_with(
+    Event["EventKind"] = Event.create_with(
         "CharaMoved", event_kind_t::chara_moved,
         "PlayerTurn", event_kind_t::player_turn,
         "AllTurnsFinished", event_kind_t::all_turns_finished,

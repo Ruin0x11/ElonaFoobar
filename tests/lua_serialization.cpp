@@ -42,14 +42,12 @@ TEST_CASE("Test that API tables aren't reset", "[Lua: Serialization]")
 {
     elona::lua::lua_env lua;
 
-    REQUIRE_NOTHROW(lua.load_mod_from_script("test", ""));
-    REQUIRE_NOTHROW(lua.run_in_mod("test", "assert(Elona ~= nil)"));
-    REQUIRE_NOTHROW(lua.run_in_mod("test", "assert(Elona.Rand ~= nil)"));
+    REQUIRE_NOTHROW(lua.load_mod_from_script("test", R"(Rand = Elona.require("Rand"))"));
+    REQUIRE_NOTHROW(lua.run_in_mod("test", "assert(Rand ~= nil)"));
 
     lua.clear_mod_stores();
 
-    REQUIRE_NOTHROW(lua.run_in_mod("test", "assert(Elona ~= nil)"));
-    REQUIRE_NOTHROW(lua.run_in_mod("test", "assert(Elona.Rand ~= nil)"));
+    REQUIRE_NOTHROW(lua.run_in_mod("test", "assert(Rand ~= nil)"));
 }
 
 TEST_CASE("Test that globals aren't reset", "[Lua: Serialization]")
@@ -69,11 +67,13 @@ TEST_CASE("Test that store can be reset and map init hooks re-run", "[Lua: Seria
     elona::lua::lua_env lua;
 
     REQUIRE_NOTHROW(lua.load_mod_from_script("test", R"(
+local Event = Elona.require("Event")
+
 function my_map_init_hook()
    Store.val = 42
 end
 
-Elona.Event.register(Elona.Defines.EventKind.MapInitialized, my_map_init_hook)
+Event.register(Event.EventKind.MapInitialized, my_map_init_hook)
 )"));
 
     lua.get_event_manager().run_callbacks<elona::lua::event_kind_t::map_initialized>();

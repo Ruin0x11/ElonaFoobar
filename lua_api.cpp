@@ -713,8 +713,29 @@ void api_manager::load_core(lua_env& lua, const fs::path& mods_dir)
     }
 }
 
+int deny_function(lua_State* L)
+{
+    return luaL_error(L, "This function cannot be called.");
+}
+
+void setup_sandbox(mod_info& mod)
+{
+// deny access to some unsafe functions
+    static const std::string unsafe_functions[] = {
+        "rawget", "rawset", "require", "getmetatable", "setmetatable", "collectgarbage",
+        "load", "loadfile", "dofile", "loadstring", "rawequal", "setfenv", "getfenv", "module"
+    };
+
+    for(const std::string& func : unsafe_functions)
+    {
+        mod.env[func] = deny_function;
+    }
+}
+
 void api_manager::bind(lua_env& lua, mod_info& mod)
 {
+    setup_sandbox(mod);
+
     mod.env.create_named("Elona",
                          "require", sol::overload(
 
