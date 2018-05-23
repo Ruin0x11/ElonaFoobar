@@ -180,29 +180,29 @@ TEST_CASE("Test invalid references to handles from Lua side", "[Lua: Handles]")
 
     SECTION("Characters")
     {
-        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test", R"(
+        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test_invalid_chara", R"(
 local chara = Elona.Chara.create(0, 0, 3)
 idx = chara.idx
 Store.charas = {[0]=chara}
 )"));
-        int idx = elona::lua::lua.get_mod("test").env["idx"];
+        int idx = elona::lua::lua.get_mod("test_invalid_chara").env["idx"];
 
         chara_delete(idx);
 
-        REQUIRE_THROWS(elona::lua::lua.run_in_mod("test", "print(Store.charas[0].idx)"));
+        REQUIRE_THROWS(elona::lua::lua.run_in_mod("test_invalid_chara", "print(Store.charas[0].idx)"));
     }
     SECTION("Items")
     {
-        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test", R"(
+        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test_invalid_item", R"(
 local item = Elona.Item.create(0, 0, 792, 3)
 idx = item.idx
 Store.items = {[0]=items}
 )"));
-        int idx = elona::lua::lua.get_mod("test").env["idx"];
+        int idx = elona::lua::lua.get_mod("test_invalid_item").env["idx"];
 
         item_delete(idx);
 
-        REQUIRE_THROWS(elona::lua::lua.run_in_mod("test2", "print(Store.items[0].idx)"));
+        REQUIRE_THROWS(elona::lua::lua.run_in_mod("test_invalid_item", "print(Store.items[0].idx)"));
     }
 }
 
@@ -217,12 +217,12 @@ TEST_CASE("Test calling C++ functions taking handles as arguments")
         auto handle = elona::lua::lua.get_handle_manager().get_chara_handle(chara);
         elona::lua::lua.get_state()->set("chara", handle);
 
-        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test", "Store.charas = {[0]=chara}"));
-        REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test", "print(Elona.Chara.is_ally(Store.charas[0]))"));
+        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test_chara_arg", "Store.charas = {[0]=chara}"));
+        REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test_chara_arg", "print(Elona.Chara.is_ally(Store.charas[0]))"));
 
         chara_delete(chara.idx);
 
-        REQUIRE_THROWS(elona::lua::lua.run_in_mod("test", "print(Elona.Chara.is_ally(Store.charas[0]))"));
+        REQUIRE_THROWS(elona::lua::lua.run_in_mod("test_chara_arg", "print(Elona.Chara.is_ally(Store.charas[0]))"));
     }
     SECTION("Items")
     {
@@ -231,11 +231,11 @@ TEST_CASE("Test calling C++ functions taking handles as arguments")
         auto handle = elona::lua::lua.get_handle_manager().get_item_handle(item);
         elona::lua::lua.get_state()->set("item", handle);
 
-        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test2", "Store.items = {[0]=item}"));
-        REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test2", "print(Elona.Item.has_enchantment(Store.items[0], 20))"));
+        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test_item_arg", "Store.items = {[0]=item}"));
+        REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test_item_arg", "print(Elona.Item.has_enchantment(Store.items[0], 20))"));
 
         item_delete(item.idx);
 
-        REQUIRE_THROWS(elona::lua::lua.run_in_mod("test2", "print(Elona.Item.has_enchantment(Store.items[0], 20))"));
+        REQUIRE_THROWS(elona::lua::lua.run_in_mod("test_item_arg", "print(Elona.Item.has_enchantment(Store.items[0], 20))"));
     }
 }

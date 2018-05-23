@@ -78,7 +78,7 @@ sol::object handle_manager::get_chara_handle(character& chara)
     }
     if(chara_handles.find(chara.idx) == chara_handles.end())
     {
-        std::cout << "Character " << chara.idx << " not found." << std::endl;
+        //std::cout << "Character " << chara.idx << " not found." << std::endl;
         return sol::nil;
     }
     sol::object handle = handle_env["Handle"]["CharaHandles"][chara.idx];
@@ -95,7 +95,7 @@ sol::object handle_manager::get_item_handle(item& item)
     }
     if(item_handles.find(item.idx) == item_handles.end())
     {
-        std::cout << "Item " << item.idx << " not found." << std::endl;
+        //std::cout << "Item " << item.idx << " not found." << std::endl;
         return sol::nil;
     }
     sol::object handle = handle_env["Handle"]["ItemHandles"][item.idx];
