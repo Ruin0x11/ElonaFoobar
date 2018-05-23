@@ -394,7 +394,21 @@ void save(const fs::path& filepath, T& data, size_t begin, size_t end)
 }
 
 
-
+// reads or writes global save data:
+// - save game header file (on write)
+// - character/skill/inventory data for the player and characters in their party
+// - global variables
+// - NPC memory
+// - Item identification memory
+// - Foobar save data
+// - quest data
+// - list of pending events
+// - lots of things relevant to the player only, like traits/material counts/spell data/recipes...
+// - trading cards
+// - appearance of the character (PCC)
+// - adventurer news
+// - artifact discovery information
+// - other things...
 void fmode_7_8(bool read, const fs::path& dir)
 {
     if (!fs::exists(dir))
@@ -751,6 +765,7 @@ void fmode_7_8(bool read, const fs::path& dir)
 }
 
 
+// reads or writes gene data.
 void fmode_14_15(bool read)
 {
     const auto dir =
@@ -918,6 +933,9 @@ void fmode_14_15(bool read)
 }
 
 
+// reads or writes map-local data for the map with id "mid" (map data,
+// tiles, characters, skill status, map effects, character names)
+// does not read/write cdata or sdata for player or party characters.
 void fmode_1_2(bool read)
 {
     const auto dir = filesystem::dir::tmp();
@@ -1040,7 +1058,8 @@ void fmode_1_2(bool read)
 }
 
 
-
+// reads map geometry from a .map file.
+// used for regenerating the towns after a certain interval expires.
 void fmode_16()
 {
     DIM3(cmapdata, 5, 400);
@@ -1056,6 +1075,8 @@ void fmode_16()
 }
 
 
+// reads or writes a custom map.
+// this is currently never called to write anything.
 void fmode_5_6(bool read)
 {
     if (read)
@@ -1111,6 +1132,8 @@ void fmode_5_6(bool read)
 }
 
 
+// reads or writes map-local item data (inv_xx.s2)
+// does not read/write player or party character inventories.
 void fmode_3_4(bool read, const fs::path& filename)
 {
     const auto filepath = filesystem::dir::tmp() / filename;
@@ -1145,6 +1168,7 @@ void fmode_23_24(bool read, const fs::path& filepath)
 }
 
 
+// reads character and skill data when upgrading the character's home.
 void fmode_17()
 {
     const auto dir = filesystem::dir::tmp();
@@ -1225,18 +1249,24 @@ void fmode_10()
 }
 
 
+// deletes a saved game.
 void fmode_9()
 {
     elona_delete(filesystem::dir::save(playerid));
 }
 
 
+// deletes a map and optionally deletes characters/skills/items in it.
+// the optional case is so the characters/skills/items can be
+// preserved in the case of upgrading the player's home.
 void fmode_11_12(file_operation_t file_operation)
 {
     if (file_operation == file_operation_t::_12)
     {
         if (!fs::exists(filesystem::dir::tmp() / (u8"mdata_"s + mid + u8".s2")))
         {
+            // We tried preserving the characters/items, but the home
+            // map to transfer them from didn't exist.
             return;
         }
     }
@@ -1273,6 +1303,7 @@ void fmode_11_12(file_operation_t file_operation)
 }
 
 
+// deletes files inside the temporary directory (tmp/)
 void fmode_13()
 {
     for (int i = 0; i < 40; ++i)

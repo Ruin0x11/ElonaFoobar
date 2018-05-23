@@ -6078,19 +6078,21 @@ turn_result_t exit_map()
     }
     if (mdata(7) == 1)
     {
-        label_1739();
+        // This map should be saved.
+        save_map_local_data();
     }
     else
     {
-        label_1738();
+        // This is a tempory map, so wipe its data (shelter, special quest instance)
+        prepare_charas_for_map_unload();
 
-        // Wipe all script state until serialization is supported.
-        lua::lua.clear();
-
+        // delete all map-local data
         if (fs::exists(filesystem::dir::tmp() / (u8"mdata_"s + mid + u8".s2")))
         {
             ctrl_file(file_operation_t::_11);
         }
+
+        // forget about all NPCs that were here
         for (int cnt = ELONA_MAX_PARTY_CHARACTERS; cnt < ELONA_MAX_CHARACTERS;
              ++cnt)
         {
@@ -6106,13 +6108,16 @@ turn_result_t exit_map()
 
 
 
-void label_1738()
+void prepare_charas_for_map_unload()
 {
+    // interrupt continuous actions
     for (int cnt = 0; cnt < 57; ++cnt)
     {
         rowactend(cnt);
         cdata[cnt].item_which_will_be_used = 0;
     }
+
+    // remove living adventurers from the map and set their states
     for (int cnt = 16; cnt < 55; ++cnt)
     {
         if (cdata[cnt].state == 1)
@@ -6121,25 +6126,26 @@ void label_1738()
             cdata[cnt].state = 3;
         }
     }
-    return;
 }
 
 
 
-void label_1739()
+void save_map_local_data()
 {
-    label_1738();
-    for (int cnt = 0, cnt_end = (mdata(1)); cnt < cnt_end; ++cnt)
+    prepare_charas_for_map_unload();
+    for (int y = 0; cnt < mdata(1); ++y)
     {
-        y = cnt;
-        for (int cnt = 0, cnt_end = (mdata(0)); cnt < cnt_end; ++cnt)
+        for (int x = 0; x < mdata(0); ++x)
         {
-            map(cnt, y, 7) = 0;
+            map(x, y, 7) = 0;
         }
     }
+
+    // write map data and characters/skill data local to this map
     ctrl_file(file_operation_t::_2);
+
+    // write data for items/character inventories local to this map
     ctrl_file(file_operation2_t::_4, u8"inv_"s + mid + u8".s2");
-    return;
 }
 
 
@@ -19715,7 +19721,7 @@ void initialize_economy()
             }
             podata(200, p) = podata(100, p) * 5 + rnd(1000);
         }
-        label_1739();
+        save_map_local_data();
     }
     gdata_current_map = bkdata(0);
     gdata_current_dungeon_level = bkdata(1);

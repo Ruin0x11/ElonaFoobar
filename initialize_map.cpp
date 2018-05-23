@@ -927,6 +927,8 @@ label_1741_internal:
             }
             else
             {
+                // Move existing characters/items to the middle of the
+                // map if the home was upgraded.
                 ctrl_file(file_operation2_t::_3, u8"inv_"s + mid + u8".s2");
                 for (const auto& cnt : items(-1))
                 {
