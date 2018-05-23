@@ -18,7 +18,7 @@ TEST_CASE("Test MOD_NAME is defined", "[Lua: Mods]")
 
     REQUIRE_NOTHROW(lua.load_mod_from_script("my_mod", ""));
 
-    REQUIRE_NOTHROW(lua.run_in_mod("my_mod", R"(assert(Global.MOD_NAME == "my_mod"))"));
+    REQUIRE_NOTHROW(lua.run_in_mod("my_mod", R"(assert(_MOD_NAME == "my_mod"))"));
 }
 
 TEST_CASE("Test sandboxing removes unsafe functions", "[Lua: Mods]")
@@ -29,6 +29,8 @@ TEST_CASE("Test sandboxing removes unsafe functions", "[Lua: Mods]")
 
     REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(rawset(_G, "assert", nil))"));
     REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(rawget(_G, "assert"))"));
+    REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(rawequal(1, 1))"));
+    REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(rawlen({}))"));
     REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(require "mods/core/init")"));
     REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(collectgarbage())"));
     REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(loadstring("i = 1"))"));
@@ -37,10 +39,13 @@ TEST_CASE("Test sandboxing removes unsafe functions", "[Lua: Mods]")
     REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(load("return function(a,b) return a+b end"))"));
     REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(setmetatable(_G, {}))"));
     REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(getmetatable(_G))"));
-    REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(rawequal(1, 1))"));
     REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(module(..., package.seeall))"));
     REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(setfenv(print, {}))"));
     REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(getfenv(print))"));
+    REQUIRE_NOTHROW(lua.run_in_mod("my_mod", R"(assert(package == nil))"));
+    REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(package.loadlib("LibSDL2.dll", "main")())"));
+
+    REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(rawlen = nil; rawlen({}))"));
 }
 
 TEST_CASE("Test no access to os/io", "[Lua: Mods]")

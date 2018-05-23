@@ -26,8 +26,11 @@ struct mod_info
 {
     explicit mod_info(const std::string name_, std::shared_ptr<sol::state> state) : name(name_)
         {
-            env = sol::environment(*state, sol::create, state->globals());
-            env["Global"]["MOD_NAME"] = name;
+            env = sol::environment(*state, sol::create);
+
+            setup_sandbox(*state, env);
+
+            env["_MOD_NAME"] = name;
             store = std::make_shared<lua::store>();
             store->init(*state, env);
             env.set("Store", store);
@@ -35,6 +38,19 @@ struct mod_info
     mod_info(const mod_info&) = delete;
     mod_info& operator=(const mod_info&) = delete;
     ~mod_info() = default;
+
+    static void setup_sandbox(const sol::state& state, sol::environment& env)
+    {
+        // whitelist functions that are safe for usage in user-written scripts
+        static const std::string safe_functions[] = {
+            "assert", "type", "pairs", "ipairs", "next", "print"
+        };
+
+        for(const std::string& function_name : safe_functions)
+        {
+            env[function_name] = state[function_name];
+        }
+    }
 
     std::string name;
     sol::environment env;
@@ -99,12 +115,7 @@ private:
 
 void init();
 void init_api(lua_env&);
-void init_global(lua_env&);
 void clear();
-void init_init_hooks(lua_env&);
-void clear_init_hooks(lua_env&);
-void run_file(const fs::path&);
-void on_map_loaded();
 
 extern lua_env lua;
 

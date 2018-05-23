@@ -55,11 +55,11 @@ TEST_CASE("Test that globals aren't reset", "[Lua: Serialization]")
     elona::lua::lua_env lua;
 
     REQUIRE_NOTHROW(lua.load_mod_from_script("test", ""));
-    REQUIRE_NOTHROW(lua.run_in_mod("test", R"(assert(Global.MOD_NAME == "test"))"));
+    REQUIRE_NOTHROW(lua.run_in_mod("test", R"(assert(_MOD_NAME == "test"))"));
 
     lua.clear_mod_stores();
 
-    REQUIRE_NOTHROW(lua.run_in_mod("test", R"(assert(Global.MOD_NAME == "test"))"));
+    REQUIRE_NOTHROW(lua.run_in_mod("test", R"(assert(_MOD_NAME == "test"))"));
 }
 
 TEST_CASE("Test that store can be reset and map init hooks re-run", "[Lua: Serialization]")

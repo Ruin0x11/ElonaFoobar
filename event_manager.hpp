@@ -71,7 +71,7 @@ public:
 
     void push(sol::environment &env, sol::protected_function &function)
     {
-        std::string mod_name = env["Global"]["MOD_NAME"];
+        std::string mod_name = env["_MOD_NAME"];
         functions.emplace_back(env, function, mod_name);
     }
 

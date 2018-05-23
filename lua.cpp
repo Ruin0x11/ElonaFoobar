@@ -35,8 +35,6 @@ lua_env::lua_env()
     // state outside of an environment
     lua->create_named_table("Store");
 
-    init_global(*this);
-
     // Make sure the API environment is initialized first so any
     // dependent managers can add new internal C++ methods to it (like
     // the event manager registering Elona.Event)
@@ -103,12 +101,6 @@ void lua_env::on_item_removal(item& item)
 {
     this->get_event_manager().run_callbacks<event_kind_t::item_removed>(handle_mgr->get_item_handle(item));
     handle_mgr->remove_item_handle(item);
-}
-
-
-void init_global(lua_env& lua)
-{
-    sol::table Global = lua.get_state()->create_named_table("Global");
 }
 
 /***

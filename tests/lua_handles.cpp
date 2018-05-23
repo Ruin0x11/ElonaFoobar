@@ -242,14 +242,14 @@ print(Chara.is_ally(Store.charas[0]))
         REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test_item_arg", "Store.items = {[0]=item}"));
         REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test_item_arg", R"(
 local Item = Elona.require("Item")
-print(Item.has_enchantment(Store.items[0], 20))
+Item.has_enchantment(Store.items[0], 20)
 )"));
 
         item_delete(item.idx);
 
         REQUIRE_THROWS(elona::lua::lua.run_in_mod("test_item_arg", R"(
 local Item = Elona.require("Item")
-print(Item.has_enchantment(Store.items[0], 20))
+Item.has_enchantment(Store.items[0], 20)
 )"));
     }
 }
