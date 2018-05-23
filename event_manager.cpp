@@ -14,7 +14,7 @@ void event_manager::init(lua_env& lua)
     sol::table Event = Elona.create_named("Event");
 
     Event.set_function("register", [&lua](event_kind_t event,
-                                          sol::function func,
+                                          sol::protected_function func,
                                           sol::this_environment this_env) {
                            sol::environment& env = this_env;
                            lua.get_event_manager().register_event(event, env, func);
@@ -57,7 +57,7 @@ void event_manager::init_events()
 
 void event_manager::register_event(event_kind_t event,
                                    sol::environment& env,
-                                   sol::function& callback)
+                                   sol::protected_function& callback)
 {
     auto iter = events.find(event);
     if(iter != events.end())

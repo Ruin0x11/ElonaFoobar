@@ -12085,6 +12085,7 @@ void load_save_data(const fs::path& base_save_dir)
 
     // TODO instead serialize/deserialize data
     lua::lua.get_handle_manager().clear();
+    lua::lua.get_event_manager().clear();
 
     filemod = "";
     ctrl_file(file_operation_t::_10);

@@ -13,6 +13,7 @@
 #include "status_ailment.hpp"
 #include "ui.hpp"
 #include "variables.hpp"
+#include <iterator>
 
 /***
  * See doc/api for the API documentation.
@@ -25,55 +26,106 @@ namespace elona
 namespace lua
 {
 
+typedef sol::table lua_character_handle;
+typedef sol::table lua_item_handle;
+
+// Marshal Lua handles to a C++ references.
+
+// This is needed so if a C++ reference goes invalid, the Lua side
+// will know and be able to raise an error. But that means that the
+// handles will be passed as arguments to the API instead of the
+// underlying usertype.
+
+// Note that these don't apply to methods called on the handles,
+// because the userdata metatable will be able to pass those functions
+// the raw C++ reference from inside the __index metamethod. It's just
+// that if a user passes a handle as an argument to an API function
+// implemented in C++, it's not possible to transparently get the
+// reference out of the handle without having to mashal it by the time
+// it's reached the C++ side.
+
+// NOTE: a side effect of this is that overloaded methods that can
+// take a handle argument must be ordered last inside sol::overload(),
+// because if an argument can be converted to a Lua table the handler
+// for the Lua table will be called first (since handles are Lua
+// tables), which is wrong. It also means that overloaded methods
+// cannot take either a character or item.
+
+character& conv_chara(lua_character_handle handle)
+{
+    sol::object obj = handle["cpp_ref"];
+    bool is_valid = handle["is_valid"];
+    if(!is_valid || !obj.is<character&>())
+    {
+        std::cerr << "Handle not valid" << std::endl;
+        throw new sol::error("not valid handle");
+    }
+    return obj.as<character&>();
+}
+
+item& conv_item(lua_item_handle handle)
+{
+    sol::object obj = handle["cpp_ref"];
+    bool is_valid = handle["is_valid"];
+    if(!is_valid || !obj.is<item&>())
+    {
+        std::cerr << "Handle not valid" << std::endl;
+        throw new sol::error("not valid handle");
+    }
+    return obj.as<item&>();
+}
+
 namespace Chara {
-bool is_alive(const character&);
-bool is_player(const character&);
-bool is_ally(const character&);
-bool add_ally(character&);
-sol::optional<character*> player();
-sol::optional<character*> create(const position_t&, int);
-sol::optional<character*> create_xy(int, int, int);
+bool is_alive(const lua_character_handle);
+bool is_player(const lua_character_handle);
+bool is_ally(const lua_character_handle);
+bool add_ally(lua_character_handle);
+sol::optional<lua_character_handle> player();
+sol::optional<lua_character_handle> create(const position_t&, int);
+sol::optional<lua_character_handle> create_xy(int, int, int);
 
 void bind(sol::table& Elona);
 };
 
-bool Chara::is_alive(const character& character)
+bool Chara::is_alive(const lua_character_handle handle)
 {
-    return character.state == 1;
+    return conv_chara(handle).state == 1;
 }
 
-bool Chara::is_player(const character& character)
+bool Chara::is_player(const lua_character_handle handle)
 {
-    return character.idx == 0;
+    return conv_chara(handle).idx == 0;
 }
 
-bool Chara::is_ally(const character& character)
+bool Chara::is_ally(const lua_character_handle handle)
 {
-    return !Chara::is_player(character) && character.idx <= 16;
+    return !Chara::is_player(handle) && conv_chara(handle).idx <= 16;
 }
 
-sol::optional<character*> Chara::player()
+sol::optional<lua_character_handle> Chara::player()
 {
     if(elona::cdata[0].state == 0) {
         return sol::nullopt;
     }
     else
     {
-        return &elona::cdata[0];
+        lua_character_handle handle = lua::lua.get_handle_manager().get_chara_handle(elona::cdata[0]);
+        return handle;
     }
 }
 
-sol::optional<character*> Chara::create(const position_t& position, int id)
+sol::optional<lua_character_handle> Chara::create(const position_t& position, int id)
 {
     return Chara::create_xy(position.x, position.y, id);
 }
 
-sol::optional<character*> Chara::create_xy(int x, int y, int id)
+sol::optional<lua_character_handle> Chara::create_xy(int x, int y, int id)
 {
     elona::flt();
     if(elona::chara_create(-1, id, x, y) != 0)
     {
-        return &elona::cdata[elona::rc];
+        lua_character_handle handle = lua::lua.get_handle_manager().get_chara_handle(elona::cdata[elona::rc]);
+        return handle;
     }
     else
     {
@@ -290,7 +342,7 @@ void Map::bind(sol::table& Elona)
 namespace FOV {
 bool los(const position_t&, const position_t&);
 bool los_xy(int, int, int, int);
-bool you_see(const character&);
+bool you_see(const lua_character_handle);
 bool you_see_pos(const position_t&);
 bool you_see_pos_xy(int, int);
 void refresh();
@@ -308,9 +360,9 @@ bool FOV::los_xy(int fx, int fy, int tx, int ty)
     return elona::fov_los(fx, fy, tx, ty) == 1;
 }
 
-bool FOV::you_see(const character& character)
+bool FOV::you_see(const lua_character_handle handle)
 {
-    return elona::is_in_fov(character.idx);
+    return elona::is_in_fov(conv_chara(handle).idx);
 }
 
 bool FOV::you_see_pos(const position_t& pos)
@@ -337,9 +389,9 @@ void FOV::bind(sol::table& Elona)
 {
     sol::table FOV = Elona.create_named("FOV");
     FOV.set_function("los", sol::overload(FOV::los, FOV::los_xy));
-    FOV.set_function("you_see", sol::overload(FOV::you_see,
-                                              FOV::you_see_pos,
-                                              FOV::you_see_pos_xy));
+    FOV.set_function("you_see", sol::overload(FOV::you_see_pos,
+                                              FOV::you_see_pos_xy,
+                                              FOV::you_see));
     FOV.set_function("refresh", FOV::refresh);
 }
 
@@ -376,26 +428,158 @@ void Rand::bind(sol::table& Elona)
     Rand.set_function("coinflip", Rand::coinflip);
 }
 
+// TODO move
+class item_iterable
+{
+public:
+    class item_iterator
+    {
+    public:
+        typedef item_iterator self_type;
+        typedef std::forward_iterator_tag iterator_category;
+        typedef sol::object value_type;
+        typedef sol::object reference;
+        typedef sol::object pointer;
+        typedef int distance_type;
+        item_iterator(int idx_) : idx(idx_) {}
+        self_type operator++() {
+            idx++;
+            while(elona::inv[idx].number == 0 && idx < 5480)
+                idx++;
+            return *this;
+        }
+        self_type operator++(int junk) {
+            self_type i = *this;
+            idx++;
+            while(elona::inv[idx].number == 0 && idx < 5480)
+                idx++;
+            return i;
+        }
+        sol::object operator*() {
+            assert(elona::inv[idx].number != 0);
+            item& item = elona::inv[idx];
+            return lua::lua.get_handle_manager().get_item_handle(item);
+        }
+        sol::object operator->() {
+            assert(elona::inv[idx].number != 0);
+            item& item = elona::inv[idx];
+            return lua::lua.get_handle_manager().get_item_handle(item);
+        }
+        bool operator==(const self_type& other) { return idx == other.idx; }
+        bool operator!=(const self_type& other) { return idx != other.idx; }
+        self_type operator=(const self_type& other) {
+            assert(elona::inv[other.idx].number != 0);
+            idx = other.idx;
+            return *this;
+        }
+    private:
+        int idx;
+    };
+
+    class const_item_iterator
+    {
+    public:
+        typedef const_item_iterator self_type;
+        typedef std::forward_iterator_tag iterator_category;
+        typedef sol::object value_type;
+        typedef sol::object reference;
+        typedef sol::object pointer;
+        typedef int distance_type;
+        const_item_iterator(int idx_) : idx(idx_) {}
+        self_type operator++() {
+            idx++;
+            while(elona::inv[idx].number == 0 && idx < 5480)
+                idx++;
+            return *this;
+        }
+        self_type operator++(int junk) {
+            self_type i = *this;
+            idx++;
+            while(elona::inv[idx].number == 0 && idx < 5480)
+                idx++;
+            return i;
+        }
+        const sol::object operator*() {
+            assert(elona::inv[idx].number != 0);
+            item& item = elona::inv[idx];
+            return lua::lua.get_handle_manager().get_item_handle(item);
+        }
+        const sol::object operator->() {
+            assert(elona::inv[idx].number != 0);
+            item& item = elona::inv[idx];
+            return lua::lua.get_handle_manager().get_item_handle(item);
+        }
+        bool operator==(const self_type& other) { return idx == other.idx; }
+        bool operator!=(const self_type& other) { return idx != other.idx; }
+        self_type operator=(const self_type& other) {
+            assert(elona::inv[other.idx].number != 0);
+            idx = other.idx;
+            return *this;
+        }
+    private:
+        int idx;
+    };
+
+public:
+    item_iterable(int start, int end)
+    {
+        begin_idx = start;
+        end_idx = end;
+
+        while(elona::inv[begin_idx].number == 0 && begin_idx < end_idx)
+            begin_idx++;
+
+        assert(begin_idx <= end_idx);
+        assert(begin_idx >= 0);
+        assert(end_idx < 5480);
+    }
+    // Constructor for iterating over items in character inventories.
+    item_iterable(const character& chara)
+    {
+        assert(chara.idx != -1);
+        const auto pair = inv_getheader(chara.idx);
+        begin_idx = pair.first;
+        end_idx = pair.first + pair.second;
+
+        while(elona::inv[begin_idx].number == 0 && begin_idx < end_idx)
+            begin_idx++;
+
+        assert(begin_idx <= end_idx);
+        assert(begin_idx >= 0);
+        assert(end_idx < 5480);
+    }
+    item_iterator begin() { return item_iterator(begin_idx); }
+    item_iterator end() { return item_iterator(end_idx); }
+    const_item_iterator begin() const { return const_item_iterator(begin_idx); }
+    const_item_iterator end() const { return const_item_iterator(end_idx); }
+private:
+    int begin_idx;
+    int end_idx;
+};
 
 namespace Item {
-sol::optional<item*> create(const position_t&, int, int);
-sol::optional<item*> create_xy(int, int, int, int);
-bool has_enchantment(const item&, int);
+sol::optional<lua_item_handle> create(const position_t&, int, int);
+sol::optional<lua_item_handle> create_xy(int, int, int, int);
+bool has_enchantment(const lua_item_handle, int);
+item_iterable iter_all();
+item_iterable iter_on_ground();
+item_iterable iter_on_chara(const lua_character_handle);
 
 void bind(sol::table& Elona);
 }
 
-sol::optional<item*> Item::create(const position_t& position, int id, int number)
+sol::optional<lua_item_handle> Item::create(const position_t& position, int id, int number)
 {
     return Item::create_xy(position.x, position.y, id, number);
 }
 
-sol::optional<item*> Item::create_xy(int x, int y, int id, int number)
+sol::optional<lua_item_handle> Item::create_xy(int x, int y, int id, int number)
 {
     elona::flt();
     if(elona::itemcreate(-1, id, x, y, number) != 0)
     {
-        return &elona::inv[elona::ci]; // TODO deglobalize ci
+        lua_item_handle handle = lua::lua.get_handle_manager().get_item_handle(elona::inv[elona::ci]); // TODO deglobalize ci
+        return handle;
     }
     else
     {
@@ -403,9 +587,25 @@ sol::optional<item*> Item::create_xy(int x, int y, int id, int number)
     }
 }
 
-bool Item::has_enchantment(const item& item, int id)
+bool Item::has_enchantment(const lua_item_handle handle, int id)
 {
-    return elona::encfindspec(item.idx, id);
+    return elona::encfindspec(conv_item(handle).idx, id);
+}
+
+item_iterable Item::iter_all()
+{
+    return item_iterable(0, 5480 - 1);
+}
+
+item_iterable Item::iter_on_ground()
+{
+    const auto pair = elona::inv_getheader(-1);
+    return item_iterable(pair.first, pair.first + pair.second);
+}
+
+item_iterable Item::iter_on_chara(const lua_character_handle chara)
+{
+    return item_iterable(conv_chara(chara));
 }
 
 void Item::bind(sol::table& Elona)
@@ -413,6 +613,13 @@ void Item::bind(sol::table& Elona)
     sol::table Item = Elona.create_named("Item");
     Item.set_function("create", sol::overload(Item::create, Item::create_xy));
     Item.set_function("has_enchantment", Item::has_enchantment);
+    // Item.set_function("iter_all", Item::iter_all);
+    // Item.set_function("iter_on_ground", Item::iter_on_ground);
+    // Item.set_function("iter_on_chara", Item::iter_on_chara);
+
+    lua.get_state()->new_usertype<item_iterable>( "LuaItemIterable" );
+    lua.get_state()->new_usertype<item_iterable::item_iterator>( "LuaItemIterator" );
+    lua.get_state()->new_usertype<item_iterable::const_item_iterator>( "LuaConstItemIterator" );
 }
 
 
@@ -502,7 +709,8 @@ void LuaCharacter::apply_ailment(character& self, status_ailment_t ailment, int 
 
 bool LuaCharacter::recruit_as_ally(character& self)
 {
-    if(!Chara::is_alive(self) || Chara::is_ally(self) || Chara::is_player(self))
+    // can't use Chara methods because they take a handle...
+    if(self.state == 0 || (self.idx != 0 && self.idx <= 16) || self.idx == 0)
     {
         return false;
     }

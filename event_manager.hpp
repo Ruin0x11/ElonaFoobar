@@ -1,5 +1,6 @@
 #pragma once
 
+#include "optional.hpp"
 #include "lua.hpp"
 #include <map>
 
@@ -43,10 +44,10 @@ class callbacks
 public:
     struct callback_t
     {
-        sol::function function;
+        sol::protected_function function;
         sol::environment env;
         std::string mod_name;
-        callback_t(sol::environment _env, sol::function _function, std::string _mod_name)
+        callback_t(sol::environment _env, sol::protected_function _function, std::string _mod_name)
         {
             env = _env;
             function = _function;
@@ -63,7 +64,7 @@ public:
     const_iterator begin() const { return functions.begin(); }
     const_iterator end() const { return functions.end(); }
 
-    void push(sol::environment &env, sol::function &function)
+    void push(sol::environment &env, sol::protected_function &function)
     {
         std::string mod_name = env["Global"]["MOD_NAME"];
         functions.emplace_back(env, function, mod_name);
@@ -74,18 +75,34 @@ public:
     {
         for (const auto iter : functions)
         {
-            iter.function.call(std::forward<Args>(args)...);
+            auto result = iter.function.call(std::forward<Args>(args)...);
+            if(!result.valid())
+            {
+                sol::error err = result;
+                std::cerr << "Script error: " << err.what() << std::endl;
+                return;
+            }
         }
     }
 
     template<typename R, typename... Args>
-    void run(retval_type<R>, Args&&... args)
+    optional<R> run(retval_type<R>, Args&&... args)
     {
-        R retval;
+        R retval = none;
 
         for (const auto& iter : functions)
         {
-            retval = iter.function.call(std::forward<Args>(args)...);
+            auto result = iter.function.call(std::forward<Args>(args)...);
+            if(!result.valid())
+            {
+                sol::error err = result;
+                std::cerr << "Script error: " << err.what() << std::endl;
+                return none;
+            }
+            else
+            {
+                retval = result.value();
+            }
         }
 
         return retval;
@@ -104,7 +121,7 @@ public:
     /***
      * Registers a new event handler from a mod's environment.
      */
-    void register_event(event_kind_t, sol::environment&, sol::function&);
+    void register_event(event_kind_t, sol::environment&, sol::protected_function&);
 
     /***
      * Runs all callbacks for this event in the order they were registered.

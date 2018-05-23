@@ -79,5 +79,5 @@ void reset_state()
     initialize_elona();
 }
 
-}
-}
+} // namespace testing
+} // namespace elona

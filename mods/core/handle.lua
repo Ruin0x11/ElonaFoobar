@@ -29,6 +29,8 @@ local function generate_metatable(core_table, prefix)
    memoizedFuncs[prefix] = {}
    mt.__index = function(handle, key)
       if not handle.is_valid then
+         print("Error: handle is not valid!")
+         print("Indexing: " .. tostring(key))
          print(debug.traceback())
          error("Error: handle is not valid!", 2)
       end
@@ -56,6 +58,8 @@ local function generate_metatable(core_table, prefix)
    end
    mt.__newindex = function(handle, key, value)
       if not handle.is_valid then
+         print("Error: handle is not valid!")
+         print("Indexing: " .. tostring(key))
          print(debug.traceback())
          error("Error: handle is not valid!", 2)
       end
