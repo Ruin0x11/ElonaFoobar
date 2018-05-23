@@ -99,7 +99,6 @@ set(CORE_SOURCES
     log.cpp
     lua.cpp
     lua_api.cpp
-    lua_registry.cpp
     lua_store.cpp
     magic.cpp
     main_menu.cpp

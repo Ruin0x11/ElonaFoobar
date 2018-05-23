@@ -35,9 +35,12 @@ lua_env::lua_env()
     // state outside of an environment
     lua->create_named_table("Store");
 
-    init_api(*this);
-    init_registry(*this);
     init_global(*this);
+
+    // Make sure the API environment is initialized first so any
+    // dependent managers can add new internal C++ methods to it (like
+    // the event manager registering Elona.Event)
+    api_mgr = std::make_unique<api_manager>(this);
 
     event_mgr = std::make_unique<event_manager>(this);
     event_manager::init(*this);
@@ -48,6 +51,11 @@ lua_env::lua_env()
 
     scan_all_mods(filesystem::dir::mods());
     load_core_mod(filesystem::dir::mods());
+}
+
+api_manager& lua_env::get_api_manager()
+{
+    return *api_mgr;
 }
 
 event_manager& lua_env::get_event_manager()
@@ -117,22 +125,6 @@ void create_new_environment(const std::string& id)
 
 }
 
-void create_named_registry(const std::string& name)
-{
-
-}
-
-void lua_env::load_mod_in_global_env(const fs::path& path, mod_info& mod)
-{
-    auto result = this->lua->safe_script_file(filesystem::make_preferred_path_in_utf8(path / mod.name / "init.lua"));
-    if (!result.valid())
-    {
-        sol::error err = result;
-        report_error(err);
-        throw new std::runtime_error("Failed initializing mod "s + mod.name);
-    }
-}
-
 void lua_env::load_mod(const fs::path& path, mod_info& mod)
 {
     // create character/item/map/global tables
@@ -174,6 +166,7 @@ void lua_env::scan_all_mods(const fs::path& mods_dir)
             }
 
             std::unique_ptr<mod_info> info = std::make_unique<mod_info>(mod_name, get_state());
+            api_mgr->bind(*this, *info);
             this->mods.emplace(mod_name, std::move(info));
         }
     }
@@ -196,10 +189,10 @@ void lua_env::load_core_mod(const fs::path& mods_dir)
     // Load the core mod before any others, because there is a need
     // for things on the Lua side to be made read-only after the core
     // mod is loaded.
-    load_mod_in_global_env(mods_dir, *val->second);
+    api_mgr->load_core(*this, mods_dir);
+    stage = mod_stage_t::core_mod_loaded;
 
-    // Make the core API table read-only.
-    lua->safe_script(R"(Elona = Elona.ReadOnly.make_read_only(Elona))");
+    // lua->safe_script(R"(Elona = Elona.ReadOnly.make_read_only(Elona))");
 
     stage = mod_stage_t::core_mod_loaded;
 }
@@ -239,6 +232,7 @@ void lua_env::run_startup_script(const std::string& name)
     }
 
     std::unique_ptr<mod_info> script_mod = std::make_unique<mod_info>("script", get_state());
+    api_mgr->bind(*this, *script_mod);
 
     lua->safe_script_file(filesystem::make_preferred_path_in_utf8(
                               filesystem::dir::data() / "script"s / name),
@@ -289,6 +283,7 @@ void lua_env::load_mod_from_script(const std::string& name, const std::string& s
     }
 
     std::unique_ptr<mod_info> info = std::make_unique<mod_info>(name, get_state());
+    api_mgr->bind(*this, *info);
 
     auto result = this->lua->safe_script(script, info->env);
     if (!result.valid())

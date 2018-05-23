@@ -6133,7 +6133,7 @@ void prepare_charas_for_map_unload()
 void save_map_local_data()
 {
     prepare_charas_for_map_unload();
-    for (int y = 0; cnt < mdata(1); ++y)
+    for (int y = 0; y < mdata(1); ++y)
     {
         for (int x = 0; x < mdata(0); ++x)
         {

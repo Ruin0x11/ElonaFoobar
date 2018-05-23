@@ -6,6 +6,7 @@
 #include "filesystem.hpp"
 #include "handle_manager.hpp"
 #include "item.hpp"
+#include "lua_api.hpp"
 #include "lua_store.hpp"
 #include <map>
 #include <vector>
@@ -17,6 +18,7 @@ namespace lua
 
 using namespace std::literals::string_literals;
 
+class api_manager;
 class event_manager;
 class handle_manager;
 
@@ -29,6 +31,20 @@ struct mod_info
             store = std::make_shared<lua::store>();
             store->init(*state, env);
             env.set("Store", store);
+
+            // deny access to some unsafe functions
+            // TODO move elsewhere
+            env["rawget"] = sol::lua_nil;
+            env["rawset"] = sol::lua_nil;
+            env["require"] = sol::lua_nil;
+            env["collectgarbage"] = sol::lua_nil;
+            env["load"] = sol::lua_nil;
+            env["loadfile"] = sol::lua_nil;
+            env["dofile"] = sol::lua_nil;
+            env["loadstring"] = sol::lua_nil;
+            env["rawequal"] = sol::lua_nil;
+            env["setfenv"] = sol::lua_nil;
+            env["module"] = sol::lua_nil;
         }
     mod_info(const mod_info&) = delete;
     mod_info& operator=(const mod_info&) = delete;
@@ -66,6 +82,7 @@ public:
     void on_chara_removal(character&);
     void on_item_removal(item&);
 
+    api_manager& get_api_manager();
     event_manager& get_event_manager();
     handle_manager& get_handle_manager();
 
@@ -81,11 +98,13 @@ public:
         return val->second.get();
     }
 private:
+    void bind_api(mod_info& mod);
     void load_mod(const fs::path& path, mod_info&);
     void load_mod_in_global_env(const fs::path& path, mod_info& mod);
     void create_mod_info(const std::string&, mod_info&);
 private:
     std::shared_ptr<sol::state> lua;
+    std::unique_ptr<api_manager> api_mgr;
     std::unique_ptr<event_manager> event_mgr;
     std::unique_ptr<handle_manager> handle_mgr;
     std::unordered_map<std::string, std::unique_ptr<mod_info>> mods;
@@ -94,14 +113,10 @@ private:
 
 void init();
 void init_api(lua_env&);
-void init_registry(lua_env&);
 void init_global(lua_env&);
-void init_registry_storage(lua_env&);
 void clear();
-void clear_registry_storage(lua_env&);
 void init_init_hooks(lua_env&);
 void clear_init_hooks(lua_env&);
-void create_named_registry(const std::string&);
 void run_file(const fs::path&);
 void on_map_loaded();
 

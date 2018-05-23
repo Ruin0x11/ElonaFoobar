@@ -660,25 +660,83 @@ void init_enums(sol::table& Elona)
         );
 }
 
-void init_api(lua_env& lua)
+api_manager::api_manager(lua_env* lua)
 {
-    sol::table Elona = lua.get_state()->create_named_table("Elona");
+    this->lua = lua;
+    this->api_env = sol::environment(*(this->lua->get_state()),
+                                     sol::create,
+                                     this->lua->get_state()->globals());
 
-    Chara::bind(Elona);
-    Pos::bind(Elona);
-    World::bind(Elona);
-    FOV::bind(Elona);
-    Magic::bind(Elona);
-    Item::bind(Elona);
-    Rand::bind(Elona);
-    GUI::bind(Elona);
-    Map::bind(Elona);
-    Debug::bind(Elona);
+    // Bind the API tables at e.g. Elona["core"]["Chara"]
+    sol::table Elona = api_env.create_named("Elona");
+    sol::table core = Elona.create_named("core");
 
-    init_usertypes(lua);
-    init_enums(Elona);
+    Chara::bind(core);
+    Pos::bind(core);
+    World::bind(core);
+    FOV::bind(core);
+    Magic::bind(core);
+    Item::bind(core);
+    Rand::bind(core);
+    GUI::bind(core);
+    Map::bind(core);
+    Debug::bind(core);
+
+    init_enums(core);
+
+    // register usertypes globally, so the handle manager can get at them.
+    init_usertypes(*lua);
 }
 
+sol::optional<sol::table> api_manager::try_find_api(const std::string& parent, const std::string& module)
+{
+    sol::optional<sol::table> table = api_env["Elona"][parent];
+    if (!table)
+    {
+        return sol::nullopt;
+    }
+    sol::optional<sol::table> result = (*table)[module];
+    return result;
+}
+
+void api_manager::load_core(lua_env& lua, const fs::path& mods_dir)
+{
+    auto result = lua.get_state()->safe_script_file(filesystem::make_preferred_path_in_utf8(
+                                           mods_dir / "core" / "init.lua"),
+                                       api_env);
+    if (!result.valid())
+    {
+        sol::error err = result;
+        std::string what = err.what();
+        ELONA_LOG(what);
+        throw new std::runtime_error("Failed initializing core mod!");
+    }
+}
+
+void api_manager::bind(lua_env& lua, mod_info& mod)
+{
+    mod.env.create_named("Elona",
+                         "require", sol::overload(
+
+                             [&lua](const std::string& parent, const std::string& module) {
+                                 sol::optional<sol::table> result = sol::nullopt;
+                                 result = lua.get_api_manager().try_find_api(parent, module);
+                                 return result;
+                             },
+
+                             // If no mod name is provided, assume it is "core".
+                             [&lua](const std::string& module) {
+                                 sol::optional<sol::table> result = sol::nullopt;
+                                 result = lua.get_api_manager().try_find_api("core", module);
+                                 return result;
+                             }
+                             ));
+}
+
+sol::table api_manager::get_api_table()
+{
+    return api_env["Elona"]["core"];
+}
 
 } // name lua
 

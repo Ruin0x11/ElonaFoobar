@@ -21,6 +21,15 @@ TEST_CASE("Test MOD_NAME is defined", "[Lua: Mods]")
     REQUIRE_NOTHROW(lua.run_in_mod("my_mod", R"(assert(Global.MOD_NAME == "my_mod"))"));
 }
 
+TEST_CASE("Test sandboxing removes unsafe functions", "[Lua: Mods]")
+{
+    elona::lua::lua_env lua;
+
+    REQUIRE_NOTHROW(lua.load_mod_from_script("my_mod", ""));
+
+    REQUIRE_THROWS(lua.run_in_mod("my_mod", R"(rawset(_G, "assert", nil))"));
+}
+
 TEST_CASE("Test usage of store in mod", "[Lua: Mods]")
 {
     elona::lua::lua_env lua;
