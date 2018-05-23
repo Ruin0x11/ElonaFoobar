@@ -733,9 +733,32 @@ void api_manager::bind(lua_env& lua, mod_info& mod)
                              ));
 }
 
+
 sol::table api_manager::get_api_table()
 {
     return api_env["Elona"]["core"];
+}
+
+
+// for testing usage
+void api_manager::bind(lua_env& lua)
+{
+    lua.get_state()->create_named_table("Elona",
+                         "require", sol::overload(
+
+                             [&lua](const std::string& parent, const std::string& module) {
+                                 sol::optional<sol::table> result = sol::nullopt;
+                                 result = lua.get_api_manager().try_find_api(parent, module);
+                                 return result;
+                             },
+
+                             // If no mod name is provided, assume it is "core".
+                             [&lua](const std::string& module) {
+                                 sol::optional<sol::table> result = sol::nullopt;
+                                 result = lua.get_api_manager().try_find_api("core", module);
+                                 return result;
+                             }
+                             ));
 }
 
 } // name lua

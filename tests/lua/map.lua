@@ -1,6 +1,8 @@
 require "tests/lua/support/minctest"
 
-local Map = Elona.Map
+local Map = Elona.require("Map")
+
+local Defines = Elona.require("Defines")
 
 lrun("test Map.width/Map.height", function()
         Testing.start_in_debug_map()
@@ -31,7 +33,7 @@ lrun("test Map.can_access", function()
         lequal(Map.can_access(pos), true)
         lequal(Map.can_access(pos.x, pos.y), true)
 
-        Map.set_tile(5, 5, Elona.Defines.Enums.TileKind.Wall)
+        Map.set_tile(5, 5, Defines.Enums.TileKind.Wall)
         lequal(Map.can_access(pos), false)
         lequal(Map.can_access(pos.x, pos.y), false)
 end)

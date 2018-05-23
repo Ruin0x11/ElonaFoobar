@@ -17,6 +17,7 @@ class api_manager
 {
 public:
     static void bind(lua_env&, mod_info&);
+    static void bind(lua_env&);
 public:
     explicit api_manager(lua_env*);
     void load_core(lua_env&, const fs::path&);
