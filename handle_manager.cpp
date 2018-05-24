@@ -76,15 +76,15 @@ sol::object handle_manager::get_chara_handle(character& chara)
     if(chara.idx == -1)
     {
         ELONA_LOG("Tried getting handle to character of index -1");
-        return sol::nil;
+        return sol::lua_nil;
     }
     if(chara_handles.find(chara.idx) == chara_handles.end())
     {
         //std::cout << "Character " << chara.idx << " not found." << std::endl;
-        return sol::nil;
+        return sol::lua_nil;
     }
     sol::object handle = handle_env["Handle"]["CharaHandles"][chara.idx];
-    assert(handle != sol::nil);
+    assert(handle != sol::lua_nil);
     return handle;
 }
 
@@ -93,15 +93,15 @@ sol::object handle_manager::get_item_handle(item& item)
     if(item.idx == -1)
     {
         ELONA_LOG("Tried getting handle to item of index -1");
-        return sol::nil;
+        return sol::lua_nil;
     }
     if(item_handles.find(item.idx) == item_handles.end())
     {
         //std::cout << "Item " << item.idx << " not found." << std::endl;
-        return sol::nil;
+        return sol::lua_nil;
     }
     sol::object handle = handle_env["Handle"]["ItemHandles"][item.idx];
-    assert(handle != sol::nil);
+    assert(handle != sol::lua_nil);
     return handle;
 }
 

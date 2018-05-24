@@ -79,7 +79,7 @@ TEST_CASE("Test invalid usage of store in main state", "[Lua: Mods]")
 
     // Accessed from main state, not the mod's environment
     sol::object obj = (*lua.get_state())["Store"]["thing"];
-    REQUIRE(obj == sol::nil);
+    REQUIRE(obj == sol::lua_nil);
 }
 
 TEST_CASE("Test modification of store inside callback", "[Lua: Mods]")

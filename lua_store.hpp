@@ -50,7 +50,7 @@ private:
      */
     sol::object deserialize_userdata(const store::object&, sol::state_view&);
 private:
-    std::unordered_map<std::string, std::pair<sol::type, object>> store;
+    std::unordered_map<std::string, std::pair<sol::type, object>> store_inner;
 };
 
 sol::object deserialize_character(store::character_ref, sol::state_view&);

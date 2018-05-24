@@ -50,7 +50,7 @@ void store::bind(sol::state& state)
 
 void store::clear()
 {
-    store.clear();
+    store_inner.clear();
 }
 
 void store::set(std::string key, const sol::object &val, sol::state_view& view)
@@ -81,18 +81,18 @@ void store::set(std::string key, const sol::object &val, sol::state_view& view)
         obj = val.as<sol::table>();
         break;
     }
-    store[key.data()] = {type, obj};
+    store_inner[key.data()] = {type, obj};
 }
 
 store::object store::serialize_userdata(const sol::object &val)
 {
-    store::object obj = sol::nil;
+    store::object obj = sol::lua_nil;
     if(val.is<character&>())
     {
         character& chara = val.as<character&>();
         if(chara.idx == -1 || chara.state == 0)
         {
-            obj = sol::nil;
+            obj = sol::lua_nil;
         }
         else
         {
@@ -104,7 +104,7 @@ store::object store::serialize_userdata(const sol::object &val)
         item& i = val.as<item&>();
         if(i.idx == -1 || i.number == 0)
         {
-            obj = sol::nil;
+            obj = sol::lua_nil;
         }
         else
         {
@@ -178,9 +178,9 @@ sol::table store::serialize_table(sol::state_view& view, sol::table& table)
 
 sol::object store::get(std::string key, sol::state_view& view)
 {
-    auto val = store.find(key.data());
-    if (val == store.end())
-        return sol::nil;
+    auto val = store_inner.find(key.data());
+    if (val == store_inner.end())
+        return sol::lua_nil;
 
     const auto& pair = val->second;
     const auto& type = pair.first;
@@ -210,7 +210,7 @@ sol::object store::get(std::string key, sol::state_view& view)
         // set metatable here
         return boost::get<sol::table>(obj);
     }
-    return sol::nil;
+    return sol::lua_nil;
 }
 
 sol::object deserialize_character(store::character_ref idx, sol::state_view& view)
@@ -220,7 +220,7 @@ sol::object deserialize_character(store::character_ref idx, sol::state_view& vie
     // Check to make sure this reference is still valid.
     if(elona::cdata(idx).state == 0)
     {
-        return sol::nil;
+        return sol::lua_nil;
     }
 
     return sol::make_reference(view, elona::cdata(static_cast<int>(idx)));
@@ -233,7 +233,7 @@ sol::object deserialize_item(store::item_ref idx, sol::state_view& view)
     // Check to make sure this reference is still valid.
     if(elona::inv(idx).number == 0)
     {
-        return sol::nil;
+        return sol::lua_nil;
     }
 
     return sol::make_reference(view, elona::inv(static_cast<int>(idx)));
@@ -259,7 +259,7 @@ sol::object store::deserialize_userdata(const store::object& obj, sol::state_vie
     }
     else {
         assert(0);
-        return sol::nil;
+        return sol::lua_nil;
     }
 }
 
