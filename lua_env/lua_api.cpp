@@ -239,7 +239,7 @@ void Magic::cast(lua_character_handle caster,
     try
     {
         elona::cc = conv_chara(caster).idx;
-        elona::tc = conv_chara(caster).idx;
+        elona::tc = conv_chara(target).idx;
         elona::efid = effect_id;
         elona::efp = effect_power;
         elona::magic();

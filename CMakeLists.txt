@@ -146,27 +146,10 @@ endif()
 
 # Executable
 if(WITH_TESTS)
-  add_library(${PROJECT_NAME} ${CORE_SOURCES})
-  add_executable(${PROJECT_NAME}_bin WIN32 MACOSX_BUNDLE main.cpp)
-  target_link_libraries(${PROJECT_NAME}_bin ${PROJECT_NAME})
-  set_target_properties(${PROJECT_NAME}_bin PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
-
-  INSTALL(TARGETS ElonaFoobar_bin
-    BUNDLE DESTINATION . COMPONENT Runtime
-    RUNTIME DESTINATION bin COMPONENT Runtime)
-
+  # Build test executable instead
   set (CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/catch})
   add_library(Catch INTERFACE)
   target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
-
-  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-                     COMMAND ${CMAKE_COMMAND} -E copy_directory
-                     "${CMAKE_CURRENT_SOURCE_DIR}/tests/data"
-                     "$<TARGET_FILE_DIR:${PROJECT_NAME}>/tests/data")
-  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-                     COMMAND ${CMAKE_COMMAND} -E copy_directory
-                     "${CMAKE_CURRENT_SOURCE_DIR}/tests/lua"
-                     "$<TARGET_FILE_DIR:${PROJECT_NAME}>/tests/lua")
 
   # Test sources
   set(TEST_SOURCES
@@ -179,9 +162,18 @@ if(WITH_TESTS)
     tests/lua_store.cpp
     tests/serialization.cpp
     )
-  add_executable(test_runner ${TEST_SOURCES})
-  target_link_libraries(test_runner Catch)
-  target_link_libraries(test_runner ${PROJECT_NAME})
+
+  add_executable(${PROJECT_NAME} ${CORE_SOURCES} ${TEST_SOURCES})
+  target_link_libraries(${PROJECT_NAME} Catch)
+
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                     COMMAND ${CMAKE_COMMAND} -E copy_directory
+                     "${CMAKE_CURRENT_SOURCE_DIR}/tests/data"
+                     "$<TARGET_FILE_DIR:${PROJECT_NAME}>/tests/data")
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                     COMMAND ${CMAKE_COMMAND} -E copy_directory
+                     "${CMAKE_CURRENT_SOURCE_DIR}/tests/lua"
+                     "$<TARGET_FILE_DIR:${PROJECT_NAME}>/tests/lua")
 else()
   add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${CORE_SOURCES} main.cpp)
 

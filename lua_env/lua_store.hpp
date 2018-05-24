@@ -36,7 +36,7 @@ class store
 
 
 public:
-    void clear() { store.clear(); }
+    void clear() { store_inner.clear(); }
     void set(std::string key, const sol::object&);
     sol::object get(std::string key, sol::state_view& view);
 
@@ -90,7 +90,7 @@ private:
 
     static sol::object deserialize_position(position_t, sol::state_view&);
 private:
-    std::unordered_map<std::string, std::pair<sol::type, object>> store;
+    std::unordered_map<std::string, std::pair<sol::type, object>> store_inner;
 };
 
 
