@@ -1102,7 +1102,6 @@ int chara_create_internal()
     cdata[rc].idx = rc;
     initialize_character();
 
-    std::cout << "Created " << rc << std::endl;
     lua::lua.on_chara_creation(cdata[rc]);
 
     rtval = rc;
@@ -1601,6 +1600,12 @@ void chara_refresh(int cc)
     refresh_burden_state();
     refreshspeed(cc);
     cdata[cc].needs_refreshing_status() = false;
+
+    auto handle = lua::lua.get_handle_manager().get_chara_handle(cdata[cc]);
+    if(handle != sol::lua_nil)
+    {
+        lua::lua.get_event_manager().run_callbacks<lua::event_kind_t::character_refreshed>(handle);
+    }
 }
 
 int relationbetween(int c1, int c2)

@@ -45,14 +45,16 @@ event_manager::event_manager(lua_env* lua)
         "MapInitialized", event_kind_t::map_initialized,
         "GameInitialized", event_kind_t::game_initialized,
 
-        // TODO implement everywhere chara.state is set to 0
+        // TODO trigger everywhere chara.state is set to 0
         "CharaRemoved", event_kind_t::character_removed,
-        // TODO implement everywhere item.number is set to 0
+        // TODO trigger everywhere item.number is set to 0
         "ItemRemoved", event_kind_t::item_removed,
+
+        "CharaRefreshed", event_kind_t::character_refreshed,
 
         "CharaKilled", event_kind_t::character_killed,
 
-        "CharaMoved", event_kind_t::chara_moved,
+        "CharaMoved", event_kind_t::character_moved,
         "PlayerTurn", event_kind_t::player_turn,
         "AllTurnsFinished", event_kind_t::all_turns_finished
         );

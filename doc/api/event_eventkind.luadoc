@@ -28,6 +28,14 @@ module "Event.EventKind"
 -- @event CharaRemoved
 -- @tfield LuaCharacter chara the character that was removed
 
+--- Fired after a character is refreshed. This means various
+-- attributes like speed are recalculated. Also, intrinsic character
+-- flags (the first 32) will be automatically set from their prototype
+-- definitions on refresh. This currently means if you want to set a
+-- character's intrinsic flag, you have to do so on this event.
+-- @event CharaRefreshed
+-- @tfield LuaCharacter chara the character that was refreshed
+
 --- Fired after a character was killed. This might not remove the
 --- character, because they might revive at some later time (like NPCs
 --- in towns). As such, you shouldn't remove the character's data from

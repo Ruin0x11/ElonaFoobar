@@ -29,11 +29,13 @@ enum class event_kind_t : unsigned
     character_removed,
     item_removed,
 
+    character_refreshed,
+
     // Triggered when a character is killed, regardless of revive type.
     character_killed,
 
     // Turn lifecycle events
-    chara_moved,
+    character_moved,
     player_turn,
     all_turns_finished,
 
