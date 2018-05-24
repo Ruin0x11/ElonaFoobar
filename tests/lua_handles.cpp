@@ -5,8 +5,8 @@
 #include "../character.hpp"
 #include "../item.hpp"
 #include "../itemgen.hpp"
-#include "../lua.hpp"
-#include "../lua_store.hpp"
+#include "../lua_env/lua_env.hpp"
+#include "../lua_env/lua_store.hpp"
 #include "../testing.hpp"
 #include "../variables.hpp"
 

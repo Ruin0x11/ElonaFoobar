@@ -1,9 +1,9 @@
 #include "handle_manager.hpp"
-#include "character.hpp"
-#include "config.hpp"
-#include "item.hpp"
-#include "log.hpp"
-#include "lua.hpp"
+#include "../character.hpp"
+#include "../config.hpp"
+#include "../item.hpp"
+#include "../log.hpp"
+#include "lua_env.hpp"
 #include <cassert>
 #include <set>
 
@@ -126,5 +126,5 @@ void handle_manager::clear_map_local_handles()
     }
 }
 
-}
-}
+} // namespace lua
+} // namespace elona

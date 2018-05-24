@@ -1,7 +1,7 @@
 #pragma once
 
-#include "optional.hpp"
-#include "lua.hpp"
+#include "../optional.hpp"
+#include "lua_env.hpp"
 #include <map>
 
 namespace elona
@@ -11,6 +11,12 @@ namespace lua
 
 class lua_env;
 
+/***
+ * Enumeration for all possible events that can be triggered.
+ *
+ * NOTE: If you change this, be sure to update the constructor for
+ * event_manager so the event kind is bound to Lua.
+ */
 enum class event_kind_t : unsigned
 {
     // Triggered when brand-new object instances are created (not loaded).
@@ -42,13 +48,9 @@ enum class event_kind_t : unsigned
     COUNT // for iterating over all event kinds
 };
 
-enum class event_control_t
-{
-    next,
-    no_process_rest,
-    end_turn,
-};
-
+/***
+ * Contains a list of callbacks to be run in a defined order.
+ */
 class callbacks
 {
 public:
@@ -74,10 +76,17 @@ public:
     const_iterator begin() const { return functions.begin(); }
     const_iterator end() const { return functions.end(); }
 
-    void push(sol::environment &env, sol::protected_function &function)
+    /***
+     * Adds a callback to the callback list.
+     *
+     * Assumes the Lua environment passed in belongs to a mod, since
+     * this will be bound to the Lua Event API.
+     */
+    void push(sol::environment &mod_env, sol::protected_function &function)
     {
-        std::string mod_name = env["_MOD_NAME"];
-        functions.emplace_back(env, function, mod_name);
+        sol::optional<std::string> mod_name = mod_env["_MOD_NAME"];
+        assert(mod_name != sol::nullopt);
+        functions.emplace_back(mod_env, function, *mod_name);
     }
 
     template<typename... Args>
@@ -121,13 +130,22 @@ private:
     callback_container functions;
 };
 
+/***
+ * Manages a list of callbacks for each event type. Allows triggering
+ * callbacks from C++ with any arguments needed.
+ */
 class event_manager
 {
 
 public:
+    /***
+     * Binds the Lua Event API and the EventKind enum to the lua_env's
+     * API manager.
+     */
     static void init(lua_env&);
 public:
     explicit event_manager(lua_env*);
+
     /***
      * Registers a new event handler from a mod's environment.
      */

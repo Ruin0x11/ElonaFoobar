@@ -1,18 +1,18 @@
-#include "lua.hpp"
+#include "lua_env.hpp"
 
-#include "character.hpp"
-#include "dmgheal.hpp"
-#include "enchantment.hpp"
-#include "fov.hpp"
-#include "item.hpp"
-#include "itemgen.hpp"
-#include "log.hpp"
-#include "map.hpp"
-#include "map_cell.hpp"
-#include "position.hpp"
-#include "status_ailment.hpp"
-#include "ui.hpp"
-#include "variables.hpp"
+#include "../character.hpp"
+#include "../dmgheal.hpp"
+#include "../enchantment.hpp"
+#include "../fov.hpp"
+#include "../item.hpp"
+#include "../itemgen.hpp"
+#include "../log.hpp"
+#include "../map.hpp"
+#include "../map_cell.hpp"
+#include "../position.hpp"
+#include "../status_ailment.hpp"
+#include "../ui.hpp"
+#include "../variables.hpp"
 #include <iterator>
 
 /***
@@ -29,27 +29,35 @@ namespace lua
 typedef sol::table lua_character_handle;
 typedef sol::table lua_item_handle;
 
-// Marshal Lua handles to a C++ references.
-
-// This is needed so if a C++ reference goes invalid, the Lua side
-// will know and be able to raise an error. But that means that the
-// handles (which are Lua tables) will be passed as arguments to the
-// API instead of the underlying usertype.
-
-// Note that these don't apply to methods called on the handles,
-// because the userdata metatable will be able to pass those functions
-// the raw C++ reference from inside the __index metamethod. It's just
-// that if a user passes a handle as an argument to an API function
-// implemented in C++, it's not possible to transparently get the
-// reference out of the handle before the function is called without
-// having to marshal it by the time it's reached the C++ side.
-
-// NOTE: a side effect of this is that overloaded methods that can
-// take a handle argument must be ordered last inside sol::overload(),
-// because if an argument can be converted to a Lua table the handler
-// for the Lua table will be called first (since handles are Lua
-// tables), which is wrong. It also means that overloaded methods
-// cannot take either a character or item.
+/***
+ * The below two functions marshal Lua handles to a C++ references.
+ *
+ * These are needed so if a C++ reference goes invalid, the Lua side
+ * will know and be able to raise an error. But that means that the
+ * handles (which are Lua tables) will be passed as arguments to the
+ * API instead of the underlying usertype. So, we need to attempt to
+ * unwrap the underlying C++ reference using sol's as<T>(). We can
+ * also check for handle validity here.
+ *
+ * Note that these don't apply to methods called on the handles,
+ * because the handle's metatable will be able to pass those functions
+ * the raw C++ reference from inside the __index metamethod. It's just
+ * that if a user passes a handle as an argument to an API function
+ * implemented in C++, it's not possible to transparently get the
+ * reference out of the handle before the function is called in C++,
+ * so we have to marshal it by the time it's reached the C++ side.
+ *
+ * NOTE: a side effect of this is that overloaded methods that can
+ * take a handle argument MUST be ordered last inside sol::overload(),
+ * because if an argument can be converted to a Lua table the handler
+ * for the Lua handle will be called first (since handles are Lua
+ * tables), which is wrong. It also means that overloaded methods
+ * cannot take either a character or item (but the only real
+ * similarity between the two is the position field, so that should be
+ * okay).
+ *
+ * See mods/core/handle.lua for the Lua side of things.
+ */
 
 character& conv_chara(lua_character_handle handle)
 {
@@ -601,6 +609,15 @@ void Debug::bind(sol::table& Elona)
     Debug.set_function("dump_items", Debug::dump_items);
 }
 
+
+/***
+ * Methods on usertype classes.
+ *
+ * The below methods do not take handles as a first argument, because
+ * handles can transparently pass their underlying C++ references to
+ * them.
+ */
+
 namespace LuaCharacter
 {
 void damage_hp(character&, int);
@@ -641,6 +658,9 @@ void LuaCharacter::set_flag(character& self, int flag, bool value)
     self._flags[flag] = value ? 1 : 0;
 }
 
+/***
+ * Set up usertype tables in Sol so we can call methods on them.
+ */
 void init_usertypes(lua_env& lua)
 {
     lua.get_state()->new_usertype<position_t>( "LuaPosition",
@@ -774,7 +794,6 @@ void init_enums(sol::table& Elona)
 }
 
 
-
 api_manager::api_manager(lua_env* lua)
 {
     this->lua = lua;
@@ -803,14 +822,15 @@ api_manager::api_manager(lua_env* lua)
     init_usertypes(*lua);
 }
 
-sol::optional<sol::table> api_manager::try_find_api(const std::string& parent, const std::string& module)
+sol::optional<sol::table> api_manager::try_find_api(const std::string& module_namespace,
+                                                    const std::string& module_name)
 {
-    sol::optional<sol::table> table = api_env["Elona"][parent];
+    sol::optional<sol::table> table = api_env["Elona"][module_namespace];
     if (!table)
     {
         return sol::nullopt;
     }
-    sol::optional<sol::table> result = (*table)[module];
+    sol::optional<sol::table> result = (*table)[module_name];
     return result;
 }
 
@@ -881,6 +901,5 @@ void api_manager::bind(lua_env& lua)
                              ));
 }
 
-} // name lua
-
+} // namespace lua
 } // namespace elona

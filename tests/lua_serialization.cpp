@@ -6,7 +6,7 @@
 #include "../filesystem.hpp"
 #include "../item.hpp"
 #include "../itemgen.hpp"
-#include "../lua.hpp"
+#include "../lua_env/lua_env.hpp"
 #include "../testing.hpp"
 #include "../variables.hpp"
 

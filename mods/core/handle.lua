@@ -1,17 +1,30 @@
 --- Lua-side storage for safe references to C++ objects.
----
---- Whenever a new object is initialized, a corresponding handle will
---- be created here to track the object's lifetime in an isolated Lua
---- environment managed by a C++ handle manager. If the object is no
---- longer valid for use (a character died, or an item was destroyed),
---- the C++ side will set the Lua side's handle to be invalid. An
---- error will be thrown on trying to access or write to anything on
---- an invalid handle. Since objects are identified by simple integer
---- ids, this also allows for relatively simple serialization of such
---- references to C++ objects from Lua, allowing us to save the state
---- of any mods that are in use along with the base save data.
----
---- Borrowed from https://eliasdaler.github.io/game-object-references/
+--
+-- Whenever a new object is initialized, a corresponding handle will
+-- be created here to track the object's lifetime in an isolated Lua
+-- environment managed by a C++ handle manager. If the object is no
+-- longer valid for use (a character died, or an item was destroyed),
+-- the C++ side will set the Lua side's handle to be invalid. An
+-- error will be thrown on trying to access or write to anything on
+-- an invalid handle. Since objects are identified by simple integer
+-- ids, this also allows for relatively simple serialization of such
+-- references to C++ objects from Lua, allowing us to save the state
+-- of any mods that are in use along with the base save data.
+--
+-- This mechanism is a solution for the problem of what happens when a
+-- user assigns a C++ object reference to a deeply nested Lua table,
+-- then that reference goes invalid on the C++ side. Originally an
+-- approach was attempted where the C++ storage mechanism bound to Lua
+-- attempted to detect invalid references when they were accessed.
+-- This didn't work, because it didn't solve the problem of what
+-- happens when the reference is assigned to a nested Lua table which
+-- is referenced in the C++ storage. The C++ code would have to
+-- iterate every possible nested table value to check for any invalid
+-- references. This solution is more lightweight and robust since a
+-- simple flag can be set on a handle and all references to it will be
+-- updated automatically.
+--
+-- Borrowed from https://eliasdaler.github.io/game-object-references/
 
 local Handle = {}
 local inspect = require "mods/core/inspect"
@@ -24,11 +37,11 @@ local function print_handle_error(key)
 
    if Elona.GUI then
       Elona.GUI.txt_color(3)
-      Elona.GUI.txt("Error: handle is not valid!")
+      Elona.GUI.txt("Error: handle is not valid! ")
       if key ~= nil then
-         Elona.GUI.txt("Indexing: " .. tostring(key))
+         Elona.GUI.txt("Indexing: " .. tostring(key) .. " ")
       end
-      Elona.GUI.txt("This means the character/item got removed.")
+      Elona.GUI.txt("This means the character/item got removed. ")
       Elona.GUI.txt_color(0)
    end
    print("Error: handle is not valid!")

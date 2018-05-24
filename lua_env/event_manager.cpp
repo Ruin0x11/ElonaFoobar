@@ -1,38 +1,15 @@
 #include "event_manager.hpp"
 
-#include "log.hpp"
-#include "lua.hpp"
+#include "../log.hpp"
+#include "lua_env.hpp"
 
 namespace elona
 {
 namespace lua
 {
 
-void event_manager::init(lua_env& lua)
+void init_event_kinds(sol::table& Event)
 {
-    sol::table core = lua.get_api_manager().get_api_table();
-    sol::table Event = core["Event"];
-
-    Event.set_function("register", [&lua](event_kind_t event,
-                                          sol::protected_function func,
-                                          sol::this_environment this_env) {
-                           sol::environment& env = this_env;
-                           lua.get_event_manager().register_event(event, env, func);
-                       });
-
-    Event.set_function("trigger", [&lua](event_kind_t event,
-                                         sol::table data) {
-                           lua.get_event_manager().trigger_event(event, data);
-                       });
-}
-
-event_manager::event_manager(lua_env* lua)
-{
-    this->lua = lua;
-
-    sol::table core = lua->get_api_manager().get_api_table();
-    sol::table Event = core.create_named("Event");
-
     Event["EventKind"] = Event.create_with(
         "MapCreated", event_kind_t::map_created,
         "CharaCreated", event_kind_t::character_created,
@@ -58,6 +35,31 @@ event_manager::event_manager(lua_env* lua)
         "PlayerTurn", event_kind_t::player_turn,
         "AllTurnsFinished", event_kind_t::all_turns_finished
         );
+}
+
+void event_manager::init(lua_env& lua)
+{
+    sol::table core = lua.get_api_manager().get_api_table();
+    sol::table Event = core.create_named("Event");
+
+    Event.set_function("register", [&lua](event_kind_t event,
+                                          sol::protected_function func,
+                                          sol::this_environment this_env) {
+                           sol::environment& env = this_env;
+                           lua.get_event_manager().register_event(event, env, func);
+                       });
+
+    Event.set_function("trigger", [&lua](event_kind_t event,
+                                         sol::table data) {
+                           lua.get_event_manager().trigger_event(event, data);
+                       });
+
+    init_event_kinds(Event);
+}
+
+event_manager::event_manager(lua_env* lua)
+{
+    this->lua = lua;
     init_events();
 }
 
@@ -102,5 +104,5 @@ void event_manager::clear()
     init_events();
 }
 
-}
-}
+} // namespace lua
+} // namespace elona

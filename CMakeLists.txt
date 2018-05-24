@@ -77,7 +77,6 @@ set(CORE_SOURCES
     enchantment.cpp
     equipment.cpp
     event.cpp
-    event_manager.cpp
     filesystem.cpp
     fish.cpp
     food.cpp
@@ -87,7 +86,6 @@ set(CORE_SOURCES
     get_random_item_id.cpp
     get_random_npc_id.cpp
     god.cpp
-    handle_manager.cpp
     i18n.cpp
     init.cpp
     initialize_map.cpp
@@ -97,9 +95,6 @@ set(CORE_SOURCES
     item_material.cpp
     itemgen.cpp
     log.cpp
-    lua.cpp
-    lua_api.cpp
-    lua_store.cpp
     magic.cpp
     main_menu.cpp
     map.cpp
@@ -129,6 +124,11 @@ set(CORE_SOURCES
     ui.cpp
     variables.cpp
     wish.cpp
+    lua_env/event_manager.cpp
+    lua_env/handle_manager.cpp
+    lua_env/lua_env.cpp
+    lua_env/lua_api.cpp
+    lua_env/lua_store.cpp
     ${PROJECT_BINARY_DIR}/version.cpp
 )
 

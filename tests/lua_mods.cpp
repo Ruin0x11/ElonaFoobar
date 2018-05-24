@@ -7,13 +7,13 @@
 #include "../filesystem.hpp"
 #include "../item.hpp"
 #include "../itemgen.hpp"
-#include "../lua.hpp"
+#include "../lua_env/lua_env.hpp"
 #include "../testing.hpp"
 #include "../variables.hpp"
 
 using namespace elona::testing;
 
-TEST_CASE("Test MOD_NAME is defined", "[Lua: Mods]")
+TEST_CASE("Test that _MOD_NAME is defined", "[Lua: Mods]")
 {
     elona::lua::lua_env lua;
 
@@ -22,7 +22,7 @@ TEST_CASE("Test MOD_NAME is defined", "[Lua: Mods]")
     REQUIRE_NOTHROW(lua.run_in_mod("my_mod", R"(assert(_MOD_NAME == "my_mod"))"));
 }
 
-TEST_CASE("Test sandboxing removes unsafe functions", "[Lua: Mods]")
+TEST_CASE("Test that sandboxing removes unsafe functions", "[Lua: Mods]")
 {
     elona::lua::lua_env lua;
 

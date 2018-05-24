@@ -1,11 +1,11 @@
-#include "lua.hpp"
-#include "elona.hpp"
-#include "config.hpp"
+#include "lua_env.hpp"
+#include "../character.hpp"
+#include "../config.hpp"
+#include "../elona.hpp"
+#include "../filesystem.hpp"
+#include "../log.hpp"
+#include "../variables.hpp"
 #include "event_manager.hpp"
-#include "character.hpp"
-#include "filesystem.hpp"
-#include "log.hpp"
-#include "variables.hpp"
 #include <vector>
 #include <map>
 
@@ -120,6 +120,7 @@ void lua_env::on_chara_creation(character& chara)
     handle_mgr->create_chara_handle(chara);
 
     auto handle = handle_mgr->get_chara_handle(chara);
+    assert(handle != sol::lua_nil);
     event_mgr->run_callbacks<event_kind_t::character_created>(handle);
 }
 
@@ -129,6 +130,7 @@ void lua_env::on_item_creation(item& item)
     handle_mgr->create_item_handle(item);
 
     auto handle = handle_mgr->get_item_handle(item);
+    assert(handle != sol::lua_nil);
     event_mgr->run_callbacks<event_kind_t::item_created>(handle);
 }
 
@@ -150,21 +152,6 @@ void lua_env::on_item_removal(item& item)
     handle_mgr->remove_item_handle(item);
 }
 
-
-/***
- * This does various things:
- * - Creates a new sol::environment for the script instance to run.
- * - Registers the new environment in the known list of environments.
- * - Makes the core API tables read-only.
- *
- * This shouldn't be called if the mod won't be executing any lua code
- * (only has data.lua)
- */
-void create_new_environment(const std::string& id)
-{
-
-}
-
 void lua_env::load_mod(const fs::path& path, mod_info& mod)
 {
     // create character/item/map/global tables
@@ -184,7 +171,7 @@ void lua_env::load_mod(const fs::path& path, mod_info& mod)
 
 void lua_env::scan_all_mods(const fs::path& mods_dir)
 {
-    if(stage != mod_stage_t::not_started)
+    if(stage != mod_loading_stage_t::not_started)
     {
         throw new std::runtime_error("Mods have already been scanned!");
     }
@@ -210,12 +197,12 @@ void lua_env::scan_all_mods(const fs::path& mods_dir)
             this->mods.emplace(mod_name, std::move(info));
         }
     }
-    stage = mod_stage_t::scan_finished;
+    stage = mod_loading_stage_t::scan_finished;
 }
 
 void lua_env::load_core_mod(const fs::path& mods_dir)
 {
-    if(stage != mod_stage_t::scan_finished)
+    if(stage != mod_loading_stage_t::scan_finished)
     {
         throw new std::runtime_error("Mods haven't been scanned yet!");
     }
@@ -230,16 +217,16 @@ void lua_env::load_core_mod(const fs::path& mods_dir)
     // for things on the Lua side to be made read-only after the core
     // mod is loaded.
     api_mgr->load_core(*this, mods_dir);
-    stage = mod_stage_t::core_mod_loaded;
+    stage = mod_loading_stage_t::core_mod_loaded;
 
     // lua->safe_script(R"(Elona = Elona.ReadOnly.make_read_only(Elona))");
 
-    stage = mod_stage_t::core_mod_loaded;
+    stage = mod_loading_stage_t::core_mod_loaded;
 }
 
 void lua_env::load_all_mods(const fs::path& mods_dir)
 {
-    if(stage != mod_stage_t::core_mod_loaded)
+    if(stage != mod_loading_stage_t::core_mod_loaded)
     {
         throw new std::runtime_error("Core mod wasn't loaded!");
     }
@@ -257,12 +244,12 @@ void lua_env::load_all_mods(const fs::path& mods_dir)
         ELONA_LOG("Loaded mod " << mod->name);
     }
 
-    stage = mod_stage_t::all_mods_loaded;
+    stage = mod_loading_stage_t::all_mods_loaded;
 }
 
 void lua_env::run_startup_script(const std::string& name)
 {
-    if(stage < mod_stage_t::core_mod_loaded)
+    if(stage < mod_loading_stage_t::core_mod_loaded)
     {
         throw new std::runtime_error("Core mod wasn't loaded!");
     }
@@ -329,7 +316,7 @@ void lua_env::clear()
 // everything Lua related easily and safely.
 void lua_env::load_mod_from_script(const std::string& name, const std::string& script)
 {
-    if(stage < mod_stage_t::core_mod_loaded)
+    if(stage < mod_loading_stage_t::core_mod_loaded)
     {
         throw new std::runtime_error("Core mod wasn't loaded!");
     }

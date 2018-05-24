@@ -7,7 +7,7 @@
 #include "draw.hpp"
 #include "i18n.hpp"
 #include "input.hpp"
-#include "lua.hpp"
+#include "lua_env/lua_env.hpp"
 #include "macro.hpp"
 #include "main_menu.hpp"
 #include "menu.hpp"

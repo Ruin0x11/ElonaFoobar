@@ -10,7 +10,7 @@
 #include "event.hpp"
 #include "item.hpp"
 #include "itemgen.hpp"
-#include "lua.hpp"
+#include "lua_env/lua_env.hpp"
 #include "map_cell.hpp"
 #include "mef.hpp"
 #include "random.hpp"

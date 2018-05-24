@@ -2,7 +2,7 @@
 #include "config.hpp"
 #include "foobar_save.hpp"
 #include "init.hpp"
-#include "lua.hpp"
+#include "lua_env/lua_env.hpp"
 #include "variables.hpp"
 #include "version.hpp"
 

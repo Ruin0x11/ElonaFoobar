@@ -13,7 +13,7 @@
 #include "i18n.hpp"
 #include "item.hpp"
 #include "item_db.hpp"
-#include "lua.hpp"
+#include "lua_env/lua_env.hpp"
 #include "map_cell.hpp"
 #include "quest.hpp"
 #include "range.hpp"

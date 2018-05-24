@@ -1,10 +1,10 @@
 #include "lua_store.hpp"
 
-#include "character.hpp"
-#include "item.hpp"
-#include "optional.hpp"
-#include "position.hpp"
-#include "thirdparty/sol2/sol.hpp"
+#include "../thirdparty/sol2/sol.hpp"
+#include "../character.hpp"
+#include "../item.hpp"
+#include "../optional.hpp"
+#include "../position.hpp"
 #include <vector>
 #include <unordered_map>
 #include <boost/variant.hpp>
@@ -36,24 +36,15 @@ void store::bind(sol::state& state)
 
     state.new_usertype<lua::store>("LuaStore",
                                    sol::meta_function::new_index , [](lua::store& s, std::string key, const sol::object val, sol::this_state tstate){
-        sol::state_view view(tstate);
-        s.set(key, val, view);
+        s.set(key, val);
                                    },
                                    sol::meta_function::index , [](lua::store& s, std::string key, sol::this_state tstate) {
         sol::state_view view(tstate);
         return s.get(key, view);
     });
-
-    state.new_usertype<character_ref>( "LuaCharacterRef" );
-    state.new_usertype<item_ref>( "LuaItemRef" );
 }
 
-void store::clear()
-{
-    store.clear();
-}
-
-void store::set(std::string key, const sol::object &val, sol::state_view& view)
+void store::set(std::string key, const sol::object &val)
 {
     store::object obj;
     auto type = val.get_type();
@@ -87,31 +78,10 @@ void store::set(std::string key, const sol::object &val, sol::state_view& view)
 store::object store::serialize_userdata(const sol::object &val)
 {
     store::object obj = sol::nil;
-    if(val.is<character&>())
-    {
-        character& chara = val.as<character&>();
-        if(chara.idx == -1 || chara.state == 0)
-        {
-            obj = sol::nil;
-        }
-        else
-        {
-            obj = character_ref(chara.idx);
-        }
-    }
-    else if(val.is<item&>())
-    {
-        item& i = val.as<item&>();
-        if(i.idx == -1 || i.number == 0)
-        {
-            obj = sol::nil;
-        }
-        else
-        {
-            obj = item_ref(i.idx);
-        }
-    }
-    else if(val.is<position_t&>())
+
+    // Characters and items will be stored in handle tables already.
+    // There is no need to serialize them.
+    if(val.is<position_t&>())
     {
         position_t pos = val.as<position_t>();
         obj = pos;
@@ -135,15 +105,7 @@ void store::convert_table_value(sol::object& value, sol::state_view& view)
     case sol::type::userdata:
     {
         store::object obj = serialize_userdata(value);
-        if(obj.type() == typeid(character_ref))
-        {
-            value = sol::make_object(view, boost::get<character_ref>(obj));
-        }
-        else if(obj.type() == typeid(item_ref))
-        {
-            value = sol::make_object(view, boost::get<item_ref>(obj));
-        }
-        else if(obj.type() == typeid(position_t))
+        if(obj.type() == typeid(position_t))
         {
             // do nothing
         }
@@ -207,53 +169,21 @@ sol::object store::get(std::string key, sol::state_view& view)
     case sol::type::poly:break;
     case sol::type::table:
         assert(obj.type() == typeid(sol::table));
-        // set metatable here
         return boost::get<sol::table>(obj);
     }
     return sol::nil;
 }
 
-sol::object deserialize_character(store::character_ref idx, sol::state_view& view)
-{
-    assert(idx != -1);
-
-    // Check to make sure this reference is still valid.
-    if(elona::cdata(idx).state == 0)
-    {
-        return sol::nil;
-    }
-
-    return sol::make_reference(view, elona::cdata(static_cast<int>(idx)));
-}
-
-sol::object deserialize_item(store::item_ref idx, sol::state_view& view)
-{
-    assert(idx != -1);
-
-    // Check to make sure this reference is still valid.
-    if(elona::inv(idx).number == 0)
-    {
-        return sol::nil;
-    }
-
-    return sol::make_reference(view, elona::inv(static_cast<int>(idx)));
-}
-
-sol::object deserialize_position(const position_t pos, sol::state_view& view)
+sol::object store::deserialize_position(const position_t pos, sol::state_view& view)
 {
     return sol::make_object(view, pos);
 }
 
 sol::object store::deserialize_userdata(const store::object& obj, sol::state_view& view)
 {
-    if (obj.type() == typeid(character_ref)) {
-        return deserialize_character(boost::get<character_ref>(obj), view);
-    }
-    else if (obj.type() == typeid(item_ref))
-    {
-        return deserialize_item(boost::get<item_ref>(obj), view);
-    }
-    else if (obj.type() == typeid(position_t))
+    // Characters and items will be stored in handle tables already.
+    // There is no need to deserialize them.
+    if (obj.type() == typeid(position_t))
     {
         return deserialize_position(boost::get<position_t>(obj), view);
     }

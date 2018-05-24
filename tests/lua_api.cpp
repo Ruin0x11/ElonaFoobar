@@ -1,7 +1,7 @@
 #include "../thirdparty/catch/catch.hpp"
 
 #include "../filesystem.hpp"
-#include "../lua.hpp"
+#include "../lua_env/lua_env.hpp"
 #include "../testing.hpp"
 
 using namespace std::literals::string_literals;

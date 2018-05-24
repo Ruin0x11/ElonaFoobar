@@ -5,7 +5,7 @@
 #include "../character.hpp"
 #include "../item.hpp"
 #include "../itemgen.hpp"
-#include "../lua_store.hpp"
+#include "../lua_env/lua_store.hpp"
 #include "../testing.hpp"
 #include "../variables.hpp"
 
@@ -20,7 +20,7 @@ TEST_CASE("Test that strings can be set/retrieved", "[Lua: Store]")
 
     auto view = sol::state_view(sol);
     auto obj = sol::make_object(sol, "dood");
-    store.set("my_string"s, obj, view);
+    store.set("my_string"s, obj);
 
     std::string my_string = sol["Store"]["my_string"];
     REQUIRE(my_string == std::string("dood"));
@@ -42,7 +42,7 @@ TEST_CASE("Test that booleans can be set/retrieved", "[Lua: Store]")
 
     auto view = sol::state_view(sol);
     auto obj = sol::make_object(sol, false);
-    store.set("my_bool"s, obj, view);
+    store.set("my_bool"s, obj);
 
     bool my_bool = sol["Store"]["my_bool"];
     REQUIRE(my_bool == false);
@@ -65,7 +65,7 @@ TEST_CASE("Test that integers can be set/retrieved", "[Lua: Store]")
 
     auto view = sol::state_view(sol);
     auto obj = sol::make_object(sol, 42);
-    store.set("my_int"s, obj, view);
+    store.set("my_int"s, obj);
 
     int my_int = sol["Store"]["my_int"];
     REQUIRE(my_int == 42);
@@ -143,7 +143,7 @@ TEST_CASE("Test that tables can be retrieved", "[Lua: Store]")
                                                 "bell"," *リン* ");
     auto view = sol::state_view(sol);
     auto obj = sol::object(my_table);
-    store.set("my_table"s, obj, view);
+    store.set("my_table"s, obj);
 
     my_table = sol["Store"]["my_table"];
 
@@ -187,79 +187,6 @@ TEST_CASE("Test that tables can be retrieved", "[Lua: Store]")
     REQUIRE(iterations == tablesize);
 }
 
-TEST_CASE("Test that character references can be set", "[Lua: Store]")
-{
-    sol::state sol;
-    sol.open_libraries(sol::lib::base);
-    elona::lua::store store;
-    store.init(sol);
-
-    sol.new_usertype<character>( "LuaCharacter",
-                                 "idx", sol::readonly(&character::idx)
-        );
-
-    elona::testing::start_in_debug_map();
-    REQUIRE(elona::chara_create(-1, PUTIT_PROTO_ID, 0, 0));
-    int idx = elona::rc;
-    elona::character& my_chara = elona::cdata(idx);
-    sol.set("idx", idx);
-
-    auto view = sol::state_view(sol);
-    auto obj = sol::make_object(sol, my_chara);
-    store.set("my_chara"s, obj, view);
-
-    SECTION("valid reference")
-    {
-        my_chara = sol["Store"]["my_chara"];
-        REQUIRE(my_chara.idx == idx);
-        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_chara"].idx == idx))"));
-    }
-    SECTION("invalid reference")
-    {
-        elona::chara_delete(idx);
-        sol::object thing = sol["Store"]["my_chara"];
-        REQUIRE(thing == sol::nil);
-        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_chara"] == nil))"));
-    }
-}
-
-TEST_CASE("Test that item references can be set", "[Lua: Store]")
-{
-    sol::state sol;
-    sol.open_libraries(sol::lib::base);
-    elona::lua::store store;
-    store.init(sol);
-
-    sol.new_usertype<item>( "LuaItem",
-                            "idx", sol::readonly(&item::idx)
-        );
-
-    elona::testing::start_in_debug_map();
-    REQUIRE(itemcreate(-1, PUTITORO_PROTO_ID, 0, 0, 3));
-    int idx = elona::ci;
-    elona::item& my_item = elona::inv(idx);
-    sol.set("idx", idx);
-
-    auto view = sol::state_view(sol);
-    auto obj = sol::make_object(sol, my_item);
-    store.set("my_item"s, obj, view);
-
-    SECTION("valid reference")
-    {
-        my_item = sol["Store"]["my_item"];
-        REQUIRE(my_item.idx == idx);
-        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_item"].idx == idx))"));
-    }
-
-    SECTION("invalid reference")
-    {
-        elona::item_delete(idx);
-        sol::object thing = sol["Store"]["my_item"];
-        REQUIRE(thing == sol::nil);
-        REQUIRE_NOTHROW(sol.safe_script(R"(assert(Store["my_item"] == nil))"));
-    }
-}
-
 TEST_CASE("Test that positions can be set", "[Lua: Store]")
 {
     sol::state sol;
@@ -276,7 +203,7 @@ TEST_CASE("Test that positions can be set", "[Lua: Store]")
 
     auto view = sol::state_view(sol);
     auto obj = sol::make_object(sol, my_position);
-    store.set("my_position"s, obj, view);
+    store.set("my_position"s, obj);
 
     my_position = sol["Store"]["my_position"];
     REQUIRE(my_position.x == 24);

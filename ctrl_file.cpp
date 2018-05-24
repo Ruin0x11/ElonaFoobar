@@ -9,7 +9,7 @@
 #include "mef.hpp"
 #include "putit.hpp"
 #include "variables.hpp"
-#include "lua.hpp"
+#include "lua_env/lua_env.hpp"
 
 using namespace elona;
 

@@ -10,7 +10,7 @@
 #include "fov.hpp"
 #include "i18n.hpp"
 #include "item_db.hpp"
-#include "lua.hpp"
+#include "lua_env/lua_env.hpp"
 #include "main.hpp"
 #include "map.hpp"
 #include "mef.hpp"
