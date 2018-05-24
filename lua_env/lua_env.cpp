@@ -44,11 +44,6 @@ lua_env::lua_env()
     event_manager::init(*this);
 
     handle_mgr = std::make_unique<handle_manager>(this);
-
-    //dump_state();
-
-    scan_all_mods(filesystem::dir::mods());
-    load_core_mod(filesystem::dir::mods());
 }
 
 api_manager& lua_env::get_api_manager()

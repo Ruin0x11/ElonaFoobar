@@ -139,7 +139,7 @@ TEST_CASE("Test that tables can be retrieved", "[Lua: Store]")
     sol::table my_table = sol.create_table_with(0, 42,
                                                 1, "Scut!",
                                                 2, false,
-                                                3, sol::nil, // does nothing
+                                                3, sol::lua_nil, // does nothing
                                                 "bell"," *リン* ");
     auto view = sol::state_view(sol);
     auto obj = sol::object(my_table);

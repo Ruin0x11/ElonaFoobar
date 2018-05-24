@@ -805,6 +805,10 @@ int run()
 
     initialize_config(filesystem::dir::exe() / u8"config.json");
     initialize_elona();
+
+    lua::lua.scan_all_mods(filesystem::dir::mods());
+    lua::lua.load_core_mod(filesystem::dir::mods());
+
     start_elona();
 
     return 0;

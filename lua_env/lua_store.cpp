@@ -72,7 +72,7 @@ void store::set(std::string key, const sol::object &val)
         obj = val.as<sol::table>();
         break;
     }
-    store[key.data()] = {type, obj};
+    store_inner[key.data()] = {type, obj};
 }
 
 store::object store::serialize_userdata(const sol::object &val)
@@ -140,9 +140,9 @@ sol::table store::serialize_table(sol::state_view& view, sol::table& table)
 
 sol::object store::get(std::string key, sol::state_view& view)
 {
-    auto val = store.find(key.data());
-    if (val == store.end())
-        return sol::nil;
+    auto val = store_inner.find(key.data());
+    if (val == store_inner.end())
+        return sol::lua_nil;
 
     const auto& pair = val->second;
     const auto& type = pair.first;
@@ -171,7 +171,7 @@ sol::object store::get(std::string key, sol::state_view& view)
         assert(obj.type() == typeid(sol::table));
         return boost::get<sol::table>(obj);
     }
-    return sol::nil;
+    return sol::lua_nil;
 }
 
 sol::object store::deserialize_position(const position_t pos, sol::state_view& view)
@@ -189,7 +189,7 @@ sol::object store::deserialize_userdata(const store::object& obj, sol::state_vie
     }
     else {
         assert(0);
-        return sol::nil;
+        return sol::lua_nil;
     }
 }
 
