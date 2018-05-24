@@ -76,11 +76,19 @@ void report_error(sol::error err)
 // Handlers for existing characters/items being loaded from save archives
 void lua_env::on_chara_loaded(character& chara)
 {
+    if(chara.state == 0)
+    {
+        return;
+    }
     handle_mgr->create_chara_handle(chara);
 }
 
 void lua_env::on_item_loaded(item& item)
 {
+    if(item.number == 0)
+    {
+        return;
+    }
     handle_mgr->create_item_handle(item);
 }
 
@@ -88,11 +96,19 @@ void lua_env::on_item_loaded(item& item)
 // Handlers for characters/items being unloaded when another save archive is loaded
 void lua_env::on_chara_unloaded(character& chara)
 {
+    if(chara.state == 0)
+    {
+        return;
+    }
     handle_mgr->remove_chara_handle(chara);
 }
 
 void lua_env::on_item_unloaded(item& item)
 {
+    if(item.number == 0)
+    {
+        return;
+    }
     handle_mgr->remove_item_handle(item);
 }
 
@@ -100,18 +116,20 @@ void lua_env::on_item_unloaded(item& item)
 // Handlers for brand-new instances of characters/objects being created
 void lua_env::on_chara_creation(character& chara)
 {
+    assert(chara.state != 0);
     handle_mgr->create_chara_handle(chara);
 
-    auto handle = handle_mgr->get_chara_handle(chara)
+    auto handle = handle_mgr->get_chara_handle(chara);
     event_mgr->run_callbacks<event_kind_t::character_created>(handle);
 }
 
 void lua_env::on_item_creation(item& item)
 {
+    assert(item.number != 0);
     handle_mgr->create_item_handle(item);
 
-    auto handle = handle_mgr->get_item_handle(item)
-    event_mgr->run_callbacks<event_kind_t::item_created>();
+    auto handle = handle_mgr->get_item_handle(item);
+    event_mgr->run_callbacks<event_kind_t::item_created>(handle);
 }
 
 
@@ -284,11 +302,27 @@ void lua_env::clear_mod_stores()
     }
 }
 
-void lua_env::clear()
-{
-}
 
 // For testing use
+
+void lua_env::clear()
+{
+    for(int i = 0; i < 5480; i++)
+    {
+        if(inv[i].number != 0)
+        {
+            on_item_unloaded(inv[i]);
+        }
+    }
+
+    for(int i = 0; i < ELONA_MAX_CHARACTERS; i++)
+    {
+        if(cdata[i].state != 0)
+        {
+            on_chara_unloaded(cdata[i]);
+        }
+    }
+}
 
 // TODO expects mods to use unique names. Figure out a way to clear
 // everything Lua related easily and safely.

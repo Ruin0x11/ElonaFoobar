@@ -1,16 +1,17 @@
 --- Allows you to register new event callbacks when initializing mods.
---  @usage local Event = Elona.require("Event")
+-- @see Event.EventKind
+-- @usage local Event = Elona.require("Event")
 module "Event"
 
 --- Registers a new event handler.
 --- This function will append a new callback hander for the given
 --- event to the end of the callback list for that event. Then, when
 --- the event is fired, each callback in the list will be run in the
---- order in which they were registered. the callback will receive an
---- <code>event</code> parameter containing relevant data for that
---- callback. This parameter will differ between event types. Read the
---- documentation for the event you're handling to see the available
---- event parameters for it.
+--- order in which they were registered. The callbacks will receive
+--- the arguments specified in the documentation for the event. These
+--- arguments will differ between event types. Read the documentation
+--- for the event you're handling to see the available event
+--- arguments for it.
 -- @tparam Event.EventKind event_id the event kind to register
 -- @tparam function handler the handler for this event
 -- @usage local GUI = Elona.require("GUI")

@@ -1933,10 +1933,10 @@ int chara_copy(int prm_848)
 
 void chara_killed(character& chara)
 {
-    // Regardless of whether or not this character revives, run the
-    // character killed callback.
-    auto handle = lua::lua.get_handle_manager()->get_chara_handle(chara);
-    lua::lua.get_event_manager()->run_callbacks<lua::event_kind_t::character_killed>(handle);
+    // Regardless of whether or not this character will revive, run
+    // the character killed callback.
+    auto handle = lua::lua.get_handle_manager().get_chara_handle(chara);
+    lua::lua.get_event_manager().run_callbacks<lua::event_kind_t::character_killed>(handle);
 
     if(chara.state == 0)
     {
@@ -1958,12 +1958,12 @@ void chara_killed(character& chara)
 void chara_delete(int cc)
 {
     int state = cdata[cc].state;
-    if(cc != -1 && cdata[cc].idx != -1 && (state == 0 || state == 2 || state == 4))
+    if(cc != -1 && cdata[cc].idx != -1 && state != 0)
     {
-        // This character slot was previously occupied and currently
-        // valid. If the state were 0, 2 or 4, then chara_killed would have
-        // been called to run the chara removal handler for the Lua
-        // state. We'll have to run it now.
+        // This character slot was previously occupied and is
+        // currently valid. If the state were 0, then chara_killed
+        // would have been called to run the chara removal handler for
+        // the Lua state. We'll have to run it now.
         lua::lua.on_chara_removal(cdata[cc]);
     }
     else

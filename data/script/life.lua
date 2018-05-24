@@ -1,6 +1,8 @@
-local Map = Elona.Map
-local Enums = Elona.Defines.Enums
-local EventKind = Elona.Defines.EventKind
+local Map = Elona.require("Map")
+local Enums = Elona.require("Enums")
+local Event = Elona.require("Event")
+local Rand = Elona.require("Rand")
+local GUI = Elona.require("GUI")
 
 local function my_map_init(w, h)
    local grid = {}
@@ -8,7 +10,7 @@ local function my_map_init(w, h)
       grid[i] = {}
 
       for j = 1, h do
-         grid[i][j] = Elona.Rand.rnd(2)
+         grid[i][j] = Rand.rnd(2)
       end
    end
    return {grid=grid} -- Now you can use Storage.Map.grid
@@ -69,17 +71,17 @@ local function run_life()
 end
 
 local function add_chara(chara)
-   Store.stuffs[chara.idx] = Elona.Rand.rnd(42)
-   Elona.GUI.txt("I'm new: " .. chara.idx)
+   Store.stuffs[chara.idx] = Rand.rnd(42)
+   GUI.txt("I'm new: " .. chara.idx)
 end
 
 local function chara_moved(chara)
-   Elona.GUI.txt(chara.idx .. ": my thing is " .. Store.stuffs[chara.idx])
+   GUI.txt(chara.idx .. ": my thing is " .. Store.stuffs[chara.idx] .. " ")
 end
 
 local function remove_chara(chara)
    Elona.GUI.txt("I'm gone: " .. chara.idx)
-   Store.stuffs[chara.idx] = nil
+   stuffs[chara.idx] = nil
 end
 
 Store.stuffs = {}

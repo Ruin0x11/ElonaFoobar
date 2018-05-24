@@ -75,6 +75,7 @@ void post_run()
 
 void reset_state()
 {
+    lua::lua.clear(); // Unload character/item data while they're still available.
     configure_lua();
     initialize_elona();
 }

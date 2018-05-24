@@ -79,7 +79,7 @@ namespace Chara {
 bool is_alive(const lua_character_handle);
 bool is_player(const lua_character_handle);
 bool is_ally(const lua_character_handle);
-bool add_ally(lua_character_handle);
+bool flag(const lua_character_handle, int);
 sol::optional<lua_character_handle> player();
 sol::optional<lua_character_handle> create(const position_t&, int);
 sol::optional<lua_character_handle> create_xy(int, int, int);
@@ -89,6 +89,11 @@ void bind(sol::table& Elona);
 
 bool Chara::is_alive(const lua_character_handle handle)
 {
+    bool is_valid = handle["is_valid"];
+    if(!is_valid)
+    {
+        return false;
+    }
     return conv_chara(handle).state == 1;
 }
 
@@ -100,6 +105,15 @@ bool Chara::is_player(const lua_character_handle handle)
 bool Chara::is_ally(const lua_character_handle handle)
 {
     return !Chara::is_player(handle) && conv_chara(handle).idx <= 16;
+}
+
+bool Chara::flag(const lua_character_handle handle, int flag)
+{
+    if(flag < 5 || flag > 991 || (flag > 32 && flag < 960))
+    {
+        return false;
+    }
+    return conv_chara(handle)._flags[flag] == 1;
 }
 
 sol::optional<lua_character_handle> Chara::player()
@@ -139,6 +153,7 @@ void Chara::bind(sol::table& Elona)
     Chara.set_function("is_alive", Chara::is_alive);
     Chara.set_function("is_player", Chara::is_player);
     Chara.set_function("is_ally", Chara::is_ally);
+    Chara.set_function("flag", Chara::flag);
     Chara.set_function("player", Chara::player);
     Chara.set_function("create", sol::overload(Chara::create, Chara::create_xy));
 }
@@ -195,30 +210,55 @@ void World::bind(sol::table& Elona)
 
 
 namespace Magic {
-void cast(int, int, const position_t&);
+void cast_self(lua_character_handle, int, int, const position_t&);
+void cast(lua_character_handle, lua_character_handle, int, int);
 
 void bind(sol::table& Elona);
 }
 
-void Magic::cast(int effect_id, int effect_power, const position_t& target_location)
+void Magic::cast_self(lua_character_handle caster,
+                      int effect_id,
+                      int effect_power,
+                      const position_t& target_location)
+{
+    elona::tlocx = target_location.x;
+    elona::tlocy = target_location.y;
+    Magic::cast(caster, caster, effect_id, effect_power);
+}
+
+void Magic::cast(lua_character_handle caster,
+                 lua_character_handle target,
+                 int effect_id,
+                 int effect_power)
 {
     int ccbk = elona::cc;
     int tcbk = elona::tc;
-    elona::cc = 0;
-    elona::tc = 0;
-    elona::efid = effect_id;
-    elona::efp = effect_power;
-    elona::tlocx = target_location.x;
-    elona::tlocy = target_location.y;
-    elona::magic();
-    elona::cc = ccbk;
-    elona::tc = tcbk;
+
+    try
+    {
+        elona::cc = conv_chara(caster).idx;
+        elona::tc = conv_chara(caster).idx;
+        elona::efid = effect_id;
+        elona::efp = effect_power;
+        elona::magic();
+        elona::cc = ccbk;
+        elona::tc = tcbk;
+    }
+    catch(std::exception& e)
+    {
+        // Always reset the values of cc/tc if a handle is invalid.
+        elona::cc = ccbk;
+        elona::tc = tcbk;
+
+        // Throw the exception so the calling script receives it.
+        throw e;
+    }
 }
 
 void Magic::bind(sol::table& Elona)
 {
     sol::table Magic = Elona.create_named("Magic");
-    Magic.set_function("cast", Magic::cast);
+    Magic.set_function("cast", sol::overload(Magic::cast_self, Magic::cast));
 }
 
 namespace Map {
@@ -565,7 +605,7 @@ namespace LuaCharacter
 void damage_hp(character&, int);
 void apply_ailment(character&, status_ailment_t, int);
 bool recruit_as_ally(character&);
-bool set_flag(character&, int);
+void set_flag(character&, int, bool);
 }
 
 void LuaCharacter::damage_hp(character& self, int amount)
@@ -593,11 +633,11 @@ bool LuaCharacter::recruit_as_ally(character& self)
 
 void LuaCharacter::set_flag(character& self, int flag, bool value)
 {
-    if(flag < 5 || flag >= 991 || (flag > 32 && flag < 960))
+    if(flag < 5 || flag > 991 || (flag > 32 && flag < 960))
     {
         return;
     }
-    character._flags[flag] = value ? 1 : 0;
+    self._flags[flag] = value ? 1 : 0;
 }
 
 void init_usertypes(lua_env& lua)

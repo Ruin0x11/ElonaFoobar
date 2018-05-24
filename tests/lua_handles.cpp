@@ -217,10 +217,12 @@ TEST_CASE("Test calling C++ functions taking handles as arguments")
         REQUIRE(chara_create(-1, PUTIT_PROTO_ID, 4, 8));
         character& chara = elona::cdata[elona::rc];
         auto handle = elona::lua::lua.get_handle_manager().get_chara_handle(chara);
-        elona::lua::lua.get_state()->set("chara", handle);
 
-        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test_chara_arg", "Store.charas = {[0]=chara}"));
+        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test_chara_arg", "Store.charas = {}"));
+        elona::lua::lua.get_mod("test_chara_arg")->env.set("chara", handle);
+
         REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test_chara_arg", R"(
+Store.charas[0] = chara
 local Chara = Elona.require("Chara")
 print(Chara.is_ally(Store.charas[0]))
 )"));
@@ -237,10 +239,12 @@ print(Chara.is_ally(Store.charas[0]))
         REQUIRE(itemcreate(-1, PUTITORO_PROTO_ID, 4, 8, 3));
         item& item = elona::inv[elona::ci];
         auto handle = elona::lua::lua.get_handle_manager().get_item_handle(item);
-        elona::lua::lua.get_state()->set("item", handle);
 
-        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test_item_arg", "Store.items = {[0]=item}"));
+        REQUIRE_NOTHROW(elona::lua::lua.load_mod_from_script("test_item_arg", "Store.items = {}"));
+        elona::lua::lua.get_mod("test_item_arg")->env.set("item", handle);
+
         REQUIRE_NOTHROW(elona::lua::lua.run_in_mod("test_item_arg", R"(
+Store.items[0] = item
 local Item = Elona.require("Item")
 Item.has_enchantment(Store.items[0], 20)
 )"));

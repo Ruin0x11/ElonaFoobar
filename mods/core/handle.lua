@@ -20,6 +20,8 @@ Handle.CharaHandles = {}
 Handle.ItemHandles = {}
 
 local function print_handle_error(key)
+   if is_test then return end
+
    if Elona.GUI then
       Elona.GUI.txt_color(3)
       Elona.GUI.txt("Error: handle is not valid!")

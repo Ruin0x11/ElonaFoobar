@@ -1,5 +1,6 @@
 #include "handle_manager.hpp"
 #include "character.hpp"
+#include "config.hpp"
 #include "item.hpp"
 #include "log.hpp"
 #include "lua.hpp"
@@ -18,6 +19,7 @@ handle_manager::handle_manager(lua_env* lua)
                                         sol::create,
                                         this->lua->get_state()->globals());
 
+    this->lua->get_state()->set("is_test", config::instance().is_test);
     this->lua->get_state()->safe_script(R"(Handle = require "mods/core/handle")", this->handle_env);
 }
 

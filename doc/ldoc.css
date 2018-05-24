@@ -181,7 +181,7 @@ div.section-item-header .section-item-title {
 
 /* example pages */
 
-pre.code.example{margin:0 0 1em}
+pre.code.example{margin:0 0 1em;}
 pre.code.example code h2{display:none}
 pre.code.example code pre{margin:0}
 
@@ -189,7 +189,7 @@ pre.code.example code pre{margin:0}
 /* usage code */
 
 pre{background-color:#282828}
-code{background-color:#282828;color:#C8C8C8;font-size:1.1rem;padding:.2em;}
+code{background-color:#282828;color:#C8C8C8;font-size:1.1rem;padding:.2em;line-height:1.5rem;}
 pre.code code{background-color:#282828;color:#C8C8C8;font-size:1.1rem}
 pre.code .comment{color:#75715e}
 pre.code .constant{color:#66D9EF}
