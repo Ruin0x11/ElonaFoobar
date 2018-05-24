@@ -1,17 +1,18 @@
-local Map = Elona.Map
-local Enums = Elona.Defines.Enums
-local Storage = Elona.Registry.Data["script"]
+local Map = Elona.require("Map")
+local Enums = Elona.require("Enums")
+local Event = Elona.require("Event")
+local Rand = Elona.require("Rand")
 
-local function my_map_init(w, h)
+local function create_life_grid()
    local grid = {}
-   for i = 1, w do
+   for i = 1, Map.width() do
       grid[i] = {}
 
-      for j = 1, h do
-         grid[i][j] = Elona.Rand.rnd(2)
+      for j = 1, Map.height() do
+         grid[i][j] = Rand.rnd(2)
       end
    end
-   return {grid=grid} -- Now you can use Storage.Map.grid
+   return grid
 end
 
 -- Appropriated from https://rosettacode.org/wiki/Conway%27s_Game_of_Life#Lua
@@ -48,21 +49,26 @@ local function evolve(cell)
 end
 
 local function run_life()
-   local grid = Storage.Map.grid
-   for y = 1, Map.width() do
-      for x = 1, Map.height() do
-         if Storage.Map.grid[x][y] == 1 and Map.can_access(x, y) then
-            Map.set_tile(x, y, Enums.TileKind.Wall)
-            Map.set_tile_memory(x, y, Enums.TileKind.Wall)
-         else
-            Map.set_tile(x, y, Enums.TileKind.Room)
-            Map.set_tile_memory(x, y, Enums.TileKind.Room)
+   if not Map.is_overworld() then
+      local grid = Store.grid
+      if grid == nil then
+         Store.grid = create_life_grid()
+         grid = Store.grid
+      end
+      for y = 1, Map.width() do
+         for x = 1, Map.height() do
+            if Store.grid[x][y] == 1 and Map.can_access(x, y) then
+               Map.set_tile(x, y, Enums.TileKind.Wall)
+               Map.set_tile_memory(x, y, Enums.TileKind.Wall)
+            else
+               Map.set_tile(x, y, Enums.TileKind.Room)
+               Map.set_tile_memory(x, y, Enums.TileKind.Room)
+            end
          end
       end
+      Store.grid = evolve(grid)
    end
-   Storage.Map.grid = evolve(grid)
 end
 
-Elona.Registry.register_map_init(my_map_init)
-Elona.Event.register(Elona.Defines.EventKind.initialized_map, run_life)
-Elona.Event.register(Elona.Defines.EventKind.all_turns_finished, run_life)
+Event.register(Event.EventKind.MapInitialized, run_life)
+Event.register(Event.EventKind.AllTurnsFinished, run_life)

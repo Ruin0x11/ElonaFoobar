@@ -285,7 +285,7 @@ void lua_env::run_startup_script(const std::string& name)
     for (int chara_id = 0; chara_id < ELONA_MAX_CHARACTERS; chara_id++) {
         if(elona::cdata[chara_id].state != 0)
         {
-            on_chara_loaded(elona::cdata[chara_id]);
+            on_chara_creation(elona::cdata[chara_id]);
         }
     }
     ELONA_LOG("Loaded startup script " << name);

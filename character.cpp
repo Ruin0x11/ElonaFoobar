@@ -1102,6 +1102,7 @@ int chara_create_internal()
     cdata[rc].idx = rc;
     initialize_character();
 
+    std::cout << "Created " << rc << std::endl;
     lua::lua.on_chara_creation(cdata[rc]);
 
     rtval = rc;

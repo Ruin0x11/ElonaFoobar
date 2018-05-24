@@ -184,7 +184,6 @@ void Pos::bind(sol::table& Elona)
 
 namespace World {
 int time();
-bool is_in_overworld();
 
 void bind(sol::table& Elona);
 };
@@ -195,11 +194,6 @@ int World::time()
         + gdata_day * 24
         + gdata_month * 24 * 30
         + gdata_year * 24 * 30 * 12;
-}
-
-bool World::is_in_overworld()
-{
-    return elona::mdata(2) == 0;
 }
 
 void World::bind(sol::table& Elona)
@@ -264,6 +258,7 @@ void Magic::bind(sol::table& Elona)
 namespace Map {
 int width();
 int height();
+bool is_overworld();
 bool valid(const position_t&);
 bool valid_xy(int, int);
 bool can_access(const position_t&);
@@ -288,6 +283,11 @@ int Map::height()
     return mdata(1);
 }
 
+bool Map::is_overworld()
+{
+    return elona::mdata(2) == 0;
+}
+
 bool Map::valid(const position_t& position)
 {
     return Map::valid_xy(position.x, position.y);
@@ -295,7 +295,7 @@ bool Map::valid(const position_t& position)
 
 bool Map::valid_xy(int x, int y)
 {
-    if(World::is_in_overworld())
+    if(Map::is_overworld())
     {
         return false;
     }
@@ -314,7 +314,7 @@ bool Map::can_access(const position_t& position)
 
 bool Map::can_access_xy(int x, int y)
 {
-    if(World::is_in_overworld())
+    if(Map::is_overworld())
     {
         return false;
     }
@@ -351,7 +351,7 @@ void Map::set_tile(const position_t& position, tile_kind_t type)
 
 void Map::set_tile_xy(int x, int y, tile_kind_t type)
 {
-    if(World::is_in_overworld())
+    if(Map::is_overworld())
     {
         return;
     }
@@ -370,7 +370,7 @@ void Map::set_tile_memory(const position_t& position, tile_kind_t type)
 
 void Map::set_tile_memory_xy(int x, int y, tile_kind_t type)
 {
-    if(World::is_in_overworld())
+    if(Map::is_overworld())
     {
         return;
     }
@@ -387,6 +387,7 @@ void Map::bind(sol::table& Elona)
     sol::table Map = Elona.create_named("Map");
     Map.set_function("width", Map::width);
     Map.set_function("height", Map::height);
+    Map.set_function("is_overworld", Map::is_overworld);
     Map.set_function("valid", sol::overload(Map::valid, Map::valid_xy));
     Map.set_function("can_access", sol::overload(Map::can_access, Map::can_access_xy));
     Map.set_function("bound_within", Map::bound_within);
