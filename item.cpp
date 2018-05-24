@@ -503,7 +503,6 @@ void item_delete(int ci)
 
 
 
-
 void item_num(int ci, int delta)
 {
     inv[ci].number += delta;
@@ -2130,8 +2129,7 @@ int inv_compress(int owner)
         if (mode != 6)
         {
             if (inv[slot].position.x >= 0 && inv[slot].position.x < mdata(0)
-                && inv[slot].position.y >= 0
-                && inv[slot].position.y < mdata(1))
+                && inv[slot].position.y >= 0 && inv[slot].position.y < mdata(1))
             {
                 cell_refresh(inv[slot].position.x, inv[slot].position.y);
             }

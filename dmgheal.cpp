@@ -14,8 +14,8 @@
 #include "item.hpp"
 #include "map_cell.hpp"
 #include "mef.hpp"
-#include "status_ailment.hpp"
 #include "quest.hpp"
+#include "status_ailment.hpp"
 #include "variables.hpp"
 
 
@@ -23,8 +23,6 @@
 namespace elona
 {
 
-
-int prm_853;
 int dmg_at_m141 = 0;
 
 
@@ -72,7 +70,6 @@ int dmghp(int target, int amount, int source, int element, int prm_857)
     int se_at_m141 = 0;
     elona_vector1<int> p_at_m141;
     int exp_at_m141 = 0;
-    elona::prm_853 = target;
     ele_at_m141 = element;
     if (txt3rd == 0)
     {
@@ -84,7 +81,7 @@ int dmghp(int target, int amount, int source, int element, int prm_857)
     }
     if (cdata[target].state != 1)
     {
-        end_dmghp();
+        end_dmghp(target);
         return 0;
     }
     dmg_at_m141 = amount * (1 + (cdata[target].furious > 0));
@@ -1395,23 +1392,23 @@ int dmghp(int target, int amount, int source, int element, int prm_857)
                 }
             }
         }
-        end_dmghp();
+        end_dmghp(target);
 
         chara_killed(cdata[target]); // Run Lua callbacks.
 
         return 0;
     }
-    end_dmghp();
+    end_dmghp(target);
     return 1;
 }
 
 
 
-void end_dmghp()
+void end_dmghp(int target)
 {
-    if (cdata[prm_853].is_hung_on_sand_bag())
+    if (cdata[target].is_hung_on_sand_bag())
     {
-        if (is_in_fov(prm_853))
+        if (is_in_fov(target))
         {
             txt(u8"("s + dmg_at_m141 + u8")"s + lang(u8" "s, ""s));
             if (rnd(20) == 0)
@@ -1535,4 +1532,4 @@ bool actionsp(int cc, int sp)
 
 
 
-}
+} // namespace elona

@@ -13,8 +13,8 @@
 #include "lua_env/lua_env.hpp"
 #include "map_cell.hpp"
 #include "mef.hpp"
-#include "random.hpp"
 #include "quest.hpp"
+#include "random.hpp"
 #include "ui.hpp"
 #include "variables.hpp"
 

@@ -9,8 +9,8 @@
 #include "item_material.hpp"
 #include "lua_env/lua_env.hpp"
 #include "map_cell.hpp"
-#include "variables.hpp"
 #include "random.hpp"
+#include "variables.hpp"
 
 namespace elona
 {
