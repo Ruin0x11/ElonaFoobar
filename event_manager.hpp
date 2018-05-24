@@ -13,26 +13,29 @@ class lua_env;
 
 enum class event_kind_t : unsigned
 {
-    // == Pre-Init Stage
-    // These can be handled before the game is fully initialized.
-    // TODO deny access to most of the API here.
+    // Triggered when brand-new object instances are created (not loaded).
+    map_created,
+    character_created,
+    item_created,
+
+    // Triggered after either creation or loading.
     map_initialized,
     character_initialized,
     item_initialized,
     game_initialized,
 
-    // == In-Game Stage ==
-    // These are only safe to handle after the game has been initialized.
+    // Triggered when this slot becomes invalid (chara.state = 0 or item.number = 0).
+    // Doesn't trigger if a character dies but can revive (chara.state != 0).
+    character_removed,
+    item_removed,
+
+    // Triggered when a character is killed, regardless of revive type.
+    character_killed,
+
+    // Turn lifecycle events
     chara_moved,
     player_turn,
     all_turns_finished,
-
-    map_created,
-    character_created,
-    item_created,
-
-    character_removed,
-    item_removed,
 
     COUNT // for iterating over all event kinds
 };

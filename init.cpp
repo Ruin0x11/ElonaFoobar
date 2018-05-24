@@ -50,6 +50,8 @@ namespace
 
 void main_loop()
 {
+    lua::lua.get_event_manager().run_callbacks<lua::event_kind_t::game_initialized>();
+
     while (true)
     {
         bool finished = turn_wrapper();

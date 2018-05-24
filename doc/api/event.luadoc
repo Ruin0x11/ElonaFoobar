@@ -1,5 +1,5 @@
 --- Allows you to register new event callbacks when initializing mods.
---  @usage local Event = Elona.Event
+--  @usage local Event = Elona.require("Event")
 module "Event"
 
 --- Registers a new event handler.
@@ -11,17 +11,19 @@ module "Event"
 --- callback. This parameter will differ between event types. Read the
 --- documentation for the event you're handling to see the available
 --- event parameters for it.
--- @tparam Defines.EventKind event_id the event kind to register
+-- @tparam Event.EventKind event_id the event kind to register
 -- @tparam function handler the handler for this event
--- @usage local function my_chara_moved_handler(event)
---     local chara_idx = event.chara_idx
---     GUI.txt("A character with ID " .. chara_idx .. " moved. ")
+-- @usage local GUI = Elona.require("GUI")
+-- local Event = Elona.require("Event")
+-- local function my_chara_moved_handler(chara)
+--     GUI.txt("A character with ID " .. chara.idx .. " is about to move. ")
 -- end
 --
--- Event.register(Defines.EventKind.chara_moved, my_chara_moved_handler)
+-- Event.register(Event.EventKind.CharaMoved, my_chara_moved_handler)
 function register(event_id, handler) end
 
---- Removes an event handler.
--- @tparam Defines.EventKind event_id the event type to remove the handler from
--- @tparam function handler the handler to remove
-function remove(event_id, handler) end
+--- Triggers an event from a Lua script.
+--- WARNING: This does not currently stop recursion!
+-- @tparam Event.EventKind event the event to trigger
+-- @tparam table data the event data
+function trigger(event, data) end

@@ -72,36 +72,66 @@ void report_error(sol::error err)
 	ELONA_LOG(what);
 }
 
-// TODO mods_iterator
 
+// Handlers for existing characters/items being loaded from save archives
+void lua_env::on_chara_loaded(character& chara)
+{
+    handle_mgr->create_chara_handle(chara);
+}
+
+void lua_env::on_item_loaded(item& item)
+{
+    handle_mgr->create_item_handle(item);
+}
+
+
+// Handlers for characters/items being unloaded when another save archive is loaded
+void lua_env::on_chara_unloaded(character& chara)
+{
+    handle_mgr->remove_chara_handle(chara);
+}
+
+void lua_env::on_item_unloaded(item& item)
+{
+    handle_mgr->remove_item_handle(item);
+}
+
+
+// Handlers for brand-new instances of characters/objects being created
 void lua_env::on_chara_creation(character& chara)
 {
     handle_mgr->create_chara_handle(chara);
 
-    // TODO handle deserialization separately from creation from scratch
-    // TODO only handle deserialization for characters that actually exist
-    this->get_event_manager().run_callbacks<event_kind_t::character_created>(handle_mgr->get_chara_handle(chara));
+    auto handle = handle_mgr->get_chara_handle(chara)
+    event_mgr->run_callbacks<event_kind_t::character_created>(handle);
 }
 
 void lua_env::on_item_creation(item& item)
- {
-     handle_mgr->create_item_handle(item);
-    this->get_event_manager().run_callbacks<event_kind_t::item_created>(handle_mgr->get_item_handle(item));
- }
+{
+    handle_mgr->create_item_handle(item);
+
+    auto handle = handle_mgr->get_item_handle(item)
+    event_mgr->run_callbacks<event_kind_t::item_created>();
+}
 
 
+// Handlers for invalidation of characters/items (character death, item count is 0)
 void lua_env::on_chara_removal(character& chara)
 {
-    this->get_event_manager().run_callbacks<event_kind_t::character_removed>(handle_mgr->get_chara_handle(chara));
+    auto handle = handle_mgr->get_chara_handle(chara);
+    event_mgr->run_callbacks<event_kind_t::character_removed>(handle);
 
     handle_mgr->remove_chara_handle(chara);
 }
 
 void lua_env::on_item_removal(item& item)
 {
-    this->get_event_manager().run_callbacks<event_kind_t::item_removed>(handle_mgr->get_item_handle(item));
+    auto handle = handle_mgr->get_item_handle(item);
+    event_mgr->run_callbacks<event_kind_t::item_removed>(handle);
+
     handle_mgr->remove_item_handle(item);
 }
+
 
 /***
  * This does various things:
@@ -237,7 +267,7 @@ void lua_env::run_startup_script(const std::string& name)
     for (int chara_id = 0; chara_id < ELONA_MAX_CHARACTERS; chara_id++) {
         if(elona::cdata[chara_id].state != 0)
         {
-            on_chara_creation(elona::cdata[chara_id]);
+            on_chara_loaded(elona::cdata[chara_id]);
         }
     }
     ELONA_LOG("Loaded startup script " << name);

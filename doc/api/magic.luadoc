@@ -1,5 +1,5 @@
 --- Functions for working with magic.
---  @usage local Magic = Elona.Magic
+--  @usage local Magic = Elona.require("Magic")
 module "Magic"
 
 --- Makes the player cast a spell.

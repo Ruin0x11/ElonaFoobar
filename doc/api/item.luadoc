@@ -1,8 +1,9 @@
 --- Functions for working with items.
---  @usage local Item = Elona.Item
+--  @usage local Item = Elona.require("Item")
 module "Item"
 
---- Attempts to create an item of the given quantity at a position. Returns the item stack if it was created, nil otherwise.
+--- Attempts to create an item of the given quantity at a position.
+--- Returns the item stack if it was created, nil otherwise.
 -- @function create
 -- @tparam LuaPosition position (const) position to create the item at
 -- @tparam num id the item prototype id

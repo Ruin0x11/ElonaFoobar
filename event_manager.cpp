@@ -34,14 +34,27 @@ event_manager::event_manager(lua_env* lua)
     sol::table Event = core.create_named("Event");
 
     Event["EventKind"] = Event.create_with(
+        "MapCreated", event_kind_t::map_created,
+        "CharaCreated", event_kind_t::character_created,
+        "ItemCreated", event_kind_t::item_created,
+
+        // TODO implement
+        // "CharaInitialized", event_kind_t::character_initialized,
+        // TODO implement
+        // "ItemInitialized", event_kind_t::item_initialized,
+        "MapInitialized", event_kind_t::map_initialized,
+        "GameInitialized", event_kind_t::game_initialized,
+
+        // TODO implement everywhere chara.state is set to 0
+        "CharaRemoved", event_kind_t::character_removed,
+        // TODO implement everywhere item.number is set to 0
+        "ItemRemoved", event_kind_t::item_removed,
+
+        "CharaKilled", event_kind_t::character_killed,
+
         "CharaMoved", event_kind_t::chara_moved,
         "PlayerTurn", event_kind_t::player_turn,
-        "AllTurnsFinished", event_kind_t::all_turns_finished,
-        "MapInitialized", event_kind_t::map_initialized,
-        "CharaCreated", event_kind_t::character_created,
-        "CharaRemoved", event_kind_t::character_removed,
-        "ItemCreated", event_kind_t::item_created,
-        "ItemRemoved", event_kind_t::item_removed
+        "AllTurnsFinished", event_kind_t::all_turns_finished
         );
     init_events();
 }

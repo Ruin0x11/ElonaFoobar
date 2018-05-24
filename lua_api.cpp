@@ -565,6 +565,7 @@ namespace LuaCharacter
 void damage_hp(character&, int);
 void apply_ailment(character&, status_ailment_t, int);
 bool recruit_as_ally(character&);
+bool set_flag(character&, int);
 }
 
 void LuaCharacter::damage_hp(character& self, int amount)
@@ -590,6 +591,15 @@ bool LuaCharacter::recruit_as_ally(character& self)
     return new_ally_joins() == 1;
 }
 
+void LuaCharacter::set_flag(character& self, int flag, bool value)
+{
+    if(flag < 5 || flag >= 991 || (flag > 32 && flag < 960))
+    {
+        return;
+    }
+    character._flags[flag] = value ? 1 : 0;
+}
+
 void init_usertypes(lua_env& lua)
 {
     lua.get_state()->new_usertype<position_t>( "LuaPosition",
@@ -601,6 +611,7 @@ void init_usertypes(lua_env& lua)
                                         "damage_hp", &LuaCharacter::damage_hp,
                                         "apply_ailment", &LuaCharacter::apply_ailment,
                                         "recruit_as_ally", &LuaCharacter::recruit_as_ally,
+                                        "set_flag", &LuaCharacter::set_flag,
                                         "hp", sol::readonly(&character::hp),
                                         "max_hp", sol::readonly(&character::max_hp),
                                         "mp", sol::readonly(&character::mp),
@@ -623,8 +634,7 @@ void init_usertypes(lua_env& lua)
 
 void init_enums(sol::table& Elona)
 {
-    sol::table Defines = Elona.create_named("Defines");
-    sol::table Enums = Defines.create_named("Enums");
+    sol::table Enums = Elona.create_named("Enums");
 
     Enums["IdentifyState"] = Enums.create_with(
         "Unidentified", identification_state_t::unidentified,
@@ -658,7 +668,71 @@ void init_enums(sol::table& Elona)
         "Room", tile_kind_t::room,
         "Fog", tile_kind_t::fog
         );
+    Enums["CharaFlag"] = Enums.create_with(
+        "IsFloating", 5,
+        "IsInvisible", 6,
+        "CanSeeInvisible", 7,
+        "IsImmuneToConfusion", 8,
+        "IsImmuneToBlindness", 9,
+        "IsImmuneToFear", 10,
+        "IsImmuneToSleep", 11,
+        "IsImmuneToParalyzation", 12,
+        "IsImmuneToPoison", 13,
+        "CanDigestRottenFood", 14,
+        "IsProtectedFromThieves", 15,
+        "IsIncognito", 16,
+        "DropsGold", 17,
+        "Explodes", 18,
+        "IsDeathMaster", 19,
+        "CanCastRapidMagic", 20,
+        "HasLayHand", 21,
+        "IsSuitableForMount", 22,
+        "Splits", 23,
+        "HasCursedEquipments", 24,
+        "IsUnsuitableForMount", 25,
+        "IsImmuneToElementalDamage", 26,
+        "Splits2", 27,
+        "IsMetal", 28,
+        "CuresBleedingQuickly", 29,
+        "HasPowerBash", 30,
+        "IsImmuneToMine", 31,
+        "IsQuickTempered", 32,
+        "IsLivestock", 960,
+        "IsMarried", 961,
+        "HasMadeGene", 962,
+        "IsEscorted", 963,
+        "IsTemporary", 964,
+        "IsSilent", 965,
+        "HasBeenUsedStethoscope", 966,
+        "HasOwnSprite", 967,
+        "IsLeashed", 968,
+        "IsContracting", 969,
+        "IsQuestTarget", 970,
+        "IsEscortedInSubQuest", 971,
+        "WillExplodeSoon", 972,
+        "IsSentencedDaeth", 973,
+        "IsLayHandAvailable", 974,
+        "IsRidden", 975,
+        "IsLordOfDungeon", 976,
+        "HasOwnName", 977,
+        "IsPregnant", 978,
+        "DoesNotSearchEnemy", 979,
+        "IsContractingWithReaper", 980,
+        "NeedsRefreshingStatus", 981,
+        "VisitedJustNow", 982,
+        "BreaksIntoDebris", 983,
+        "IsBestFriend", 984,
+        "IsHungOnSandBag", 985,
+        "HasAnorexia", 986,
+        "WasPassedItemByYouJustNow", 987,
+        "CuresMpFrequently", 988,
+        "HasCustomTalk", 989,
+        "HasLearnedWords", 990,
+        "OnlyChristmas", 991
+        );
 }
+
+
 
 api_manager::api_manager(lua_env* lua)
 {

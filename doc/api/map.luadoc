@@ -1,6 +1,6 @@
 --- Functions for working with the current map.
 --- There is only ever one map loaded at a given time.
---  @usage local Map = Elona.Map
+--  @usage local Map = Elona.require("Map")
 module "Map"
 
 --- Returns the current map's width. This is only valid until the map changes.
@@ -35,12 +35,12 @@ function random_pos() end
 -- @tparam LuaPosition position (const) the map position
 -- @tparam Enums.TileKind kind (const) the tile kind to set
 -- @usage Map.set_tile(10, 10, Enums.TileKind.Room)
--- @see Defines.Enums.TileKind
+-- @see Enums.TileKind
 function set_tile(position, kind) end
 
 --- Sets the player's memory of a tile position to the given tile kind.
 -- @tparam LuaPosition position (const) the map position
 -- @tparam Enums.TileKind kind (const) the tile kind to set
 -- @usage Map.set_tile_memory(10, 10, Enums.TileKind.Room)
--- @see Defines.Enums.TileKind
+-- @see Enums.TileKind
 function set_memory(position, kind) end

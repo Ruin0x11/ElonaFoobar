@@ -2670,6 +2670,7 @@ label_1741_internal:
     randomize();
     mdata(19) = gdata(184);
     mdata(21) = 1;
+    lua::lua.get_event_manager().run_callbacks<lua::event_kind_t::map_created>();
 label_1742_internal:
     if (gdata_current_map == 4)
     {
@@ -2970,6 +2971,8 @@ label_1744_internal:
     label_1746();
     label_1439();
     update_scrolling_info();
+
+    lua::lua.get_event_manager().run_callbacks<lua::event_kind_t::map_initialized>();
 
     if (mdata(6) == 3)
     {

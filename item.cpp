@@ -482,7 +482,9 @@ void item_exchange(int a, int b)
 }
 
 
-
+// TODO this only runs after an invalid item slot is replaced by a new
+// item. The callbacks actually need to run wherever item.number is
+// set to 0, which is in many more places.
 void item_delete(int ci)
 {
     if(inv[ci].idx != -1)

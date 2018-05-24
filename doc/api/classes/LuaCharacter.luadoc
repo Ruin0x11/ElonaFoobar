@@ -38,7 +38,7 @@
 function damage_hp(amount) end
 
 --- Applies a status ailment to this character.
--- @tparam Defines.Enums.StatusAilment ailment the kind of status ailment
+-- @tparam Enums.StatusAilment ailment the kind of status ailment
 -- @tparam num power the power of the status ailment
 -- @usage local chara = Chara.player()
 --chara:apply_ailment(Enums.StatusAilment.Blinded, 100)
@@ -49,3 +49,10 @@ function apply_ailment(ailment, power) end
 --- the player, is alive and the player has a free party slot.
 -- @treturn bool true if the character was recruited successfully
 function recruit_as_ally() end
+
+--- Sets a flag on a character.
+-- @tparam Enums.CharaFlag flag the flag to set
+-- @tparam bool value the flag's new value
+-- @usage local chara = Chara.player()
+--chara:set_flag(Enums.CharaFlag.IsFloating, true)
+function set_flag(flag, value) end

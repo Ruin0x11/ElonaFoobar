@@ -11,7 +11,7 @@
 -- @tfield num number
 
 --- [RW] The curse state of this item.
--- @tfield Defines.Enums.CurseState curse_state
+-- @tfield Enums.CurseState curse_state
 
 --- [RW] The identification state of this item.
--- @tfield Defines.Enums.IdentifyState identify_state
+-- @tfield Enums.IdentifyState identify_state

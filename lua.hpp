@@ -79,6 +79,10 @@ public:
 
     void run_startup_script(const std::string&);
 
+    void on_chara_loaded(character&);
+    void on_item_loaded(item&);
+    void on_chara_unloaded(character&);
+    void on_item_unloaded(item&);
     void on_chara_creation(character&);
     void on_item_creation(item&);
     void on_chara_removal(character&);
