@@ -5,6 +5,7 @@
 #include "../testing.hpp"
 
 using namespace std::literals::string_literals;
+using namespace elona;
 
 void lua_testcase(const std::string& filename)
 {
@@ -17,6 +18,8 @@ void lua_testcase(const std::string& filename)
 TEST_CASE("Test Elona.require", "[Lua: API]")
 {
     elona::lua::lua_env lua;
+    lua.scan_all_mods(filesystem::dir::mods());
+    lua.load_core_mod(filesystem::dir::mods());
 
     REQUIRE_NOTHROW(lua.load_mod_from_script("test", R"(
 local Rand = Elona.require("Rand")

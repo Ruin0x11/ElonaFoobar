@@ -80,6 +80,8 @@ void post_run()
 void reset_state()
 {
     lua::lua.clear(); // Unload character/item data while they're still available.
+    lua::lua.scan_all_mods(filesystem::dir::mods());
+    lua::lua.load_core_mod(filesystem::dir::mods());
     configure_lua();
     initialize_elona();
 }

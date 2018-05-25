@@ -25,7 +25,6 @@ namespace lua
  * write to it like any Lua table, with these exceptions:
  *
  * - Table keys have to be strings.
- *
  * - The store can't be set by setting a new table on it as it
  *   overwrites the original reference. TODO: This needs to be
  *   prevented somehow by overriding the mod environment's metatable

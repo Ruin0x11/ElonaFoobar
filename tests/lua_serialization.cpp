@@ -15,6 +15,8 @@ using namespace elona::testing;
 TEST_CASE("Test that store can be reset", "[Lua: Serialization]")
 {
     elona::lua::lua_env lua;
+    lua.scan_all_mods(elona::filesystem::dir::mods());
+    lua.load_core_mod(elona::filesystem::dir::mods());
 
     REQUIRE_NOTHROW(lua.load_mod_from_script("test", "Store.thing = 1"));
 
@@ -26,6 +28,8 @@ TEST_CASE("Test that store can be reset", "[Lua: Serialization]")
 TEST_CASE("Test that store can be reset across mods", "[Lua: Serialization]")
 {
     elona::lua::lua_env lua;
+    lua.scan_all_mods(elona::filesystem::dir::mods());
+    lua.load_core_mod(elona::filesystem::dir::mods());
 
     REQUIRE_NOTHROW(lua.load_mod_from_script("test1", "Store.mine = false; Store.thing = 1"));
     REQUIRE_NOTHROW(lua.load_mod_from_script("test2", "Store.theirs = true; Store.thing = 2"));
@@ -41,6 +45,8 @@ TEST_CASE("Test that store can be reset across mods", "[Lua: Serialization]")
 TEST_CASE("Test that API tables aren't reset", "[Lua: Serialization]")
 {
     elona::lua::lua_env lua;
+    lua.scan_all_mods(elona::filesystem::dir::mods());
+    lua.load_core_mod(elona::filesystem::dir::mods());
 
     REQUIRE_NOTHROW(lua.load_mod_from_script("test", R"(Rand = Elona.require("Rand"))"));
     REQUIRE_NOTHROW(lua.run_in_mod("test", "assert(Rand ~= nil)"));
@@ -53,6 +59,8 @@ TEST_CASE("Test that API tables aren't reset", "[Lua: Serialization]")
 TEST_CASE("Test that globals aren't reset", "[Lua: Serialization]")
 {
     elona::lua::lua_env lua;
+    lua.scan_all_mods(elona::filesystem::dir::mods());
+    lua.load_core_mod(elona::filesystem::dir::mods());
 
     REQUIRE_NOTHROW(lua.load_mod_from_script("test", ""));
     REQUIRE_NOTHROW(lua.run_in_mod("test", R"(assert(_MOD_NAME == "test"))"));
@@ -65,6 +73,8 @@ TEST_CASE("Test that globals aren't reset", "[Lua: Serialization]")
 TEST_CASE("Test that store can be reset and map init hooks re-run", "[Lua: Serialization]")
 {
     elona::lua::lua_env lua;
+    lua.scan_all_mods(elona::filesystem::dir::mods());
+    lua.load_core_mod(elona::filesystem::dir::mods());
 
     REQUIRE_NOTHROW(lua.load_mod_from_script("test", R"(
 local Event = Elona.require("Event")

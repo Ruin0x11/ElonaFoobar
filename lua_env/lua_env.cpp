@@ -305,6 +305,10 @@ void lua_env::clear()
             on_chara_unloaded(cdata[i]);
         }
     }
+    clear_mod_stores();
+    mods.clear();
+    lua->collect_garbage();
+    stage = mod_loading_stage_t::not_started;
 }
 
 // TODO expects mods to use unique names. Figure out a way to clear

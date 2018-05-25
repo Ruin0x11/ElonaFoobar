@@ -30,7 +30,7 @@ typedef sol::table lua_character_handle;
 typedef sol::table lua_item_handle;
 
 /***
- * The below two functions marshal Lua handles to a C++ references.
+ * The below two functions marshal Lua handles to C++ references.
  *
  * These are needed so if a C++ reference goes invalid, the Lua side
  * will know and be able to raise an error. But that means that the
@@ -82,6 +82,7 @@ item& conv_item(lua_item_handle handle)
     }
     return obj.as<item&>();
 }
+
 
 namespace Chara {
 bool is_alive(const lua_character_handle);
@@ -658,8 +659,9 @@ void LuaCharacter::set_flag(character& self, int flag, bool value)
     self._flags[flag] = value ? 1 : 0;
 }
 
+
 /***
- * Set up usertype tables in Sol so we can call methods on them.
+ * Set up usertype tables in Sol so we can call methods with them.
  */
 void init_usertypes(lua_env& lua)
 {
@@ -730,6 +732,7 @@ void init_enums(sol::table& Elona)
         "Fog", tile_kind_t::fog
         );
     Enums["CharaFlag"] = Enums.create_with(
+        // Intrinsic flags (reset on every character refresh)
         "IsFloating", 5,
         "IsInvisible", 6,
         "CanSeeInvisible", 7,
@@ -758,6 +761,8 @@ void init_enums(sol::table& Elona)
         "HasPowerBash", 30,
         "IsImmuneToMine", 31,
         "IsQuickTempered", 32,
+
+        // Mutable flags
         "IsLivestock", 960,
         "IsMarried", 961,
         "HasMadeGene", 962,
@@ -848,16 +853,10 @@ void api_manager::load_core(lua_env& lua, const fs::path& mods_dir)
     }
 }
 
-int deny_function(lua_State* L)
-{
-    return luaL_error(L, "This function cannot be called.");
-}
-
 void api_manager::bind(lua_env& lua, mod_info& mod)
 {
     mod.env.create_named("Elona",
                          "require", sol::overload(
-
                              [&lua](const std::string& parent, const std::string& module) {
                                  sol::optional<sol::table> result = sol::nullopt;
                                  result = lua.get_api_manager().try_find_api(parent, module);
@@ -873,19 +872,17 @@ void api_manager::bind(lua_env& lua, mod_info& mod)
                              ));
 }
 
-
 sol::table api_manager::get_api_table()
 {
     return api_env["Elona"]["core"];
 }
 
 
-// for testing usage
+// For testing use
 void api_manager::bind(lua_env& lua)
 {
     lua.get_state()->create_named_table("Elona",
                          "require", sol::overload(
-
                              [&lua](const std::string& parent, const std::string& module) {
                                  sol::optional<sol::table> result = sol::nullopt;
                                  result = lua.get_api_manager().try_find_api(parent, module);
