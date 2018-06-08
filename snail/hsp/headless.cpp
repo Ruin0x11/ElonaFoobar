@@ -7,6 +7,10 @@ namespace snail
 namespace hsp
 {
 
+void invert_buffer_region(int, int, int, int)
+{
+}
+
 int timeGetTime()
 {
     return 0;

@@ -422,6 +422,9 @@ void initialize_elona()
     redraw();
     buffer(3, 1440, 800);
     picload(filesystem::dir::graphic() / u8"interface.bmp", 1);
+    invert_buffer_region(0, 656, 144, 144);
+    invert_buffer_region(144, 704, 48, 48);
+    invert_buffer_region(144, 752, 864, 48);
     buffer(4, windoww, windowh);
     buffer(8, windoww, windowh);
     gsel(0);

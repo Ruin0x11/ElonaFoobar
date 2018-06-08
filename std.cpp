@@ -486,6 +486,11 @@ int instr(const std::string& str, size_t pos, const std::string pattern)
 }
 
 
+void invert_buffer_region(int x, int y, int width, int height)
+{
+  snail::hsp::invert_buffer_region(x, y, width, height);
+}
+
 
 int stoi(const std::string& s)
 {

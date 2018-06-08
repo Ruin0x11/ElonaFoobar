@@ -443,6 +443,7 @@ void gzoom(
 
 int instr(const std::string& str, size_t pos, const std::string pattern);
 
+void invert_buffer_region(int, int, int, int);
 
 int stoi(const std::string&);
 

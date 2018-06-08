@@ -4,6 +4,8 @@
 #include "../color.hpp"
 #include "../detail/sdl.hpp"
 #include <unordered_map>
+#include <iostream>
+#include <cassert>
 
 
 namespace {
@@ -114,8 +116,6 @@ TexBuffer& current_tex_buffer()
     return tex_buffers[current_buffer];
 }
 
-
-
 void set_blend_mode()
 {
     switch (current_tex_buffer().mode)
@@ -211,7 +211,89 @@ namespace font_detail
 std::unordered_map<font_cache_key, font_t> font_cache;
 }
 
-// TODO place all this in detail
+void invert_buffer_region(int x, int y, int width, int height)
+{
+  int sx = x + width;
+  int sy = y + height;
+  int tw = detail::current_tex_buffer().tex_width;
+  int th = detail::current_tex_buffer().tex_height;
+
+  if (x < 0 || y < 0
+      || sx > tw
+      || sy > th)
+  {
+    return;
+  }
+
+  auto temp_texture = snail::detail::enforce_sdl(::SDL_CreateTexture(
+      application::instance().get_renderer().ptr(),
+      SDL_PIXELFORMAT_ARGB8888,
+      SDL_TEXTUREACCESS_TARGET,
+      width,
+      height));
+
+  const auto save =
+      application::instance().get_renderer().render_target();
+  application::instance().get_renderer().set_render_target(temp_texture);
+
+  // source is current tex buffer.
+  // destination is temporary texture.
+  application::instance().get_renderer().render_image(detail::current_tex_buffer().texture,
+                                                      x, y, width, height,
+                                                      0, 0, width, height);
+
+  Uint32* raw_pixels = new Uint32[width * height];
+  int pitch = width * 4;
+
+  ::SDL_Rect dst = {0, 0, width, height};
+
+  elona::snail::detail::enforce_sdl(::SDL_RenderReadPixels(
+      application::instance().get_renderer().ptr(),
+      &dst, SDL_PIXELFORMAT_ARGB8888, raw_pixels, pitch));
+
+  ::SDL_DestroyTexture(temp_texture);
+
+  auto inv_texture = snail::detail::enforce_sdl(::SDL_CreateTexture(
+      application::instance().get_renderer().ptr(),
+      SDL_PIXELFORMAT_ARGB8888,
+      SDL_TEXTUREACCESS_STREAMING,
+      width,
+      height));
+
+  void* raw;
+  elona::snail::detail::enforce_sdl(::SDL_LockTexture(inv_texture, nullptr, &raw, &pitch));
+
+  Uint32 *pixels = static_cast<Uint32*>(raw);
+
+  std::cout << detail::current_tex_buffer().tex_width << std::endl;
+  for (int ix = x; ix < width; ++ix)
+  {
+    for (int iy = y; iy < height; ++iy)
+    {
+      size_t idx = ix * height + iy;
+      unsigned char a, r, g, b;
+      assert(idx < width * height);
+
+      a = pixels[idx] >> 24 & 0xFF;
+      r = pixels[idx] >> 16 & 0xFF;
+      g = pixels[idx] >>  8 & 0xFF;
+      b = pixels[idx]       & 0xFF;
+
+      // r = 255 - r;
+      // g = 255 - g;
+      // b = 255 - b;
+
+      pixels[idx] = a << 24 | r << 16 | g << 8 | b;
+    }
+  }
+
+  application::instance().get_renderer().set_render_target(save);
+  application::instance().get_renderer().render_image(inv_texture,
+                                                      0, 0, width, height,
+                                                      x, y, width, height);
+  ::SDL_UnlockTexture(inv_texture);
+  ::SDL_DestroyTexture(inv_texture);
+}
 
 int timeGetTime()
 {

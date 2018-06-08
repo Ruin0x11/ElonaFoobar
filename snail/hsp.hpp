@@ -28,6 +28,7 @@ inline T clamp(const T& x, const T& min, const T& max)
     return std::min(std::max(x, min), max);
 }
 
+void invert_buffer_region(int, int, int, int);
 int timeGetTime();
 void mes(const std::string& text);
 void mesbox(std::string& buffer);
