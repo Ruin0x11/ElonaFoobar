@@ -33,7 +33,10 @@ inline void randomize(
 // [0, max)
 inline int rnd(int max)
 {
-    assert(max > 0);
+    if (max <= 0)
+    {
+        return 0;
+    }
 
     return std::uniform_int_distribution<>{0, max - 1}(detail::engine);
 }
