@@ -1275,6 +1275,7 @@ void fmode_17()
 }
 
 
+// deletes all files inside the temporary directory (tmp/)
 void fmode_10()
 {
     for (const auto& entry : filesystem::dir_entries(
@@ -1297,9 +1298,9 @@ void fmode_9()
 // deletes a map and optionally deletes characters/skills/items in it.
 // the optional case is so the characters/skills/items can be
 // preserved in the case of upgrading the player's home.
-void fmode_11_12(file_operation_t file_operation)
+void fmode_11_12(bool preserve_items)
 {
-    if (file_operation == file_operation_t::_12)
+    if (preserve_items)
     {
         if (!fs::exists(filesystem::dir::tmp() / (u8"mdata_"s + mid + u8".s2")))
         {
@@ -1314,7 +1315,7 @@ void fmode_11_12(file_operation_t file_operation)
 
     fs::remove_all(filepath);
     fileadd(filepath, 1);
-    if (file_operation == file_operation_t::_11)
+    if (!preserve_items)
     {
         filepath = filesystem::dir::tmp() / (u8"cdata_"s + mid + u8".s2");
         fs::remove_all(filepath);
@@ -1341,7 +1342,7 @@ void fmode_11_12(file_operation_t file_operation)
 }
 
 
-// deletes files inside the temporary directory (tmp/)
+// deletes files inside the temporary directory (tmp/) for an area
 void fmode_13()
 {
     for (int i = 0; i < 40; ++i)
@@ -1369,31 +1370,37 @@ namespace elona
 
 void ctrl_file(file_operation_t file_operation)
 {
+    bool is_read;
     notesel(filemod);
     gdata_play_time = gdata_play_time + timeGetTime() / 1000 - time_begin;
     time_begin = timeGetTime() / 1000;
 
     switch (file_operation)
     {
-    case file_operation_t::_1:
-    case file_operation_t::_2:
-        fmode_1_2(file_operation == file_operation_t::_1);
+    case file_operation_t::map_read:
+    case file_operation_t::map_write:
+        is_read = file_operation == file_operation_t::map_read;
+        fmode_1_2(is_read);
         break;
-    case file_operation_t::_5:
-    case file_operation_t::_6:
-        fmode_5_6(file_operation == file_operation_t::_5);
+    case file_operation_t::custom_map_read:
+    case file_operation_t::custom_map_write:
+        is_read = file_operation == file_operation_t::custom_map_read;
+        fmode_5_6(is_read);
         break;
-    case file_operation_t::_9: fmode_9(); break;
-    case file_operation_t::_10: fmode_10(); break;
-    case file_operation_t::_11:
-    case file_operation_t::_12: fmode_11_12(file_operation); break;
-    case file_operation_t::_13: fmode_13(); break;
-    case file_operation_t::_14:
-    case file_operation_t::_15:
-        fmode_14_15(file_operation == file_operation_t::_15);
+    case file_operation_t::save_game_delete: fmode_9(); break;
+    case file_operation_t::temp_dir_delete: fmode_10(); break;
+    case file_operation_t::map_delete:
+    case file_operation_t::map_delete_preserve_items:
+        fmode_11_12(file_operation == file_operation_t::map_delete_preserve_items);
         break;
-    case file_operation_t::_17: fmode_17(); break;
-    case file_operation_t::_16: fmode_16(); break;
+    case file_operation_t::temp_dir_delete_area: fmode_13(); break;
+    case file_operation_t::gene_write:
+    case file_operation_t::gene_read:
+        is_read = file_operation == file_operation_t::gene_read;
+        fmode_14_15(is_read);
+        break;
+    case file_operation_t::map_load_map_obj_files: fmode_16(); break;
+    case file_operation_t::map_home_upgrade: fmode_17(); break;
     default: assert(0);
     }
 }
@@ -1401,23 +1408,27 @@ void ctrl_file(file_operation_t file_operation)
 
 void ctrl_file(file_operation2_t file_operation, const fs::path& filepath)
 {
+    bool is_read;
     notesel(filemod);
     gdata_play_time = gdata_play_time + timeGetTime() / 1000 - time_begin;
     time_begin = timeGetTime() / 1000;
 
     switch (file_operation)
     {
-    case file_operation2_t::_3:
-    case file_operation2_t::_4:
-        fmode_3_4(file_operation == file_operation2_t::_3, filepath);
+    case file_operation2_t::map_items_read:
+    case file_operation2_t::map_items_write:
+        is_read = file_operation == file_operation2_t::map_items_read;
+        fmode_3_4(is_read, filepath);
         break;
-    case file_operation2_t::_7:
-    case file_operation2_t::_8:
-        fmode_7_8(file_operation == file_operation2_t::_7, filepath);
+    case file_operation2_t::global_read:
+    case file_operation2_t::global_write:
+        is_read = file_operation == file_operation2_t::global_read;
+        fmode_7_8(is_read, filepath);
         break;
-    case file_operation2_t::_23:
-    case file_operation2_t::_24:
-        fmode_23_24(file_operation == file_operation2_t::_24, filepath);
+    case file_operation2_t::deck_write:
+    case file_operation2_t::deck_read:
+        is_read = file_operation == file_operation2_t::deck_read;
+        fmode_23_24(is_read, filepath);
         break;
     default: assert(0);
     }

@@ -2844,11 +2844,11 @@ turn_result_t do_open_command()
                 return turn_result_t::pc_turn_user_error;
             }
         }
-        ctrl_file(file_operation2_t::_4, u8"shoptmp.s2");
+        ctrl_file(file_operation2_t::map_items_write, u8"shoptmp.s2");
         if (fs::exists(
                 filesystem::dir::tmp() / (u8"shop"s + invfile + u8".s2")))
         {
-            ctrl_file(file_operation2_t::_3, u8"shop"s + invfile + u8".s2");
+            ctrl_file(file_operation2_t::map_items_read, u8"shop"s + invfile + u8".s2");
         }
         else
         {
@@ -2892,8 +2892,8 @@ turn_result_t do_open_command()
         {
             refweight = inv_weight(-1) + 2500;
         }
-        ctrl_file(file_operation2_t::_4, u8"shop"s + invfile + u8".s2");
-        ctrl_file(file_operation2_t::_3, u8"shoptmp.s2");
+        ctrl_file(file_operation2_t::map_items_write, u8"shop"s + invfile + u8".s2");
+        ctrl_file(file_operation2_t::map_items_read, u8"shoptmp.s2");
         if (refweight != 0)
         {
             inv[container_ci].weight = refweight;
@@ -3638,7 +3638,7 @@ turn_result_t do_get_command()
             adata(16, area) = 0;
             removeworker(area);
             label_1749();
-            ctrl_file(file_operation_t::_13);
+            ctrl_file(file_operation_t::temp_dir_delete_area);
             snd(58);
             txt(lang(u8"建物を撤去した。"s, u8"You remove the building."s));
             return turn_result_t::turn_end;

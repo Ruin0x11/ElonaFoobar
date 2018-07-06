@@ -79,8 +79,8 @@ label_17401:
     if (mode == 3)
     {
         lua::lua.get_handle_manager().clear_map_local_handles();
-        ctrl_file(file_operation_t::_1);
-        ctrl_file(file_operation2_t::_3, u8"inv_"s + mid + u8".s2");
+        ctrl_file(file_operation_t::map_read);
+        ctrl_file(file_operation2_t::map_items_read, u8"inv_"s + mid + u8".s2");
         goto label_1744_internal;
     }
     if (getkey(snail::key::backspace))
@@ -94,14 +94,14 @@ label_17401:
                 3);
             if (stat == 6)
             {
-                ctrl_file(file_operation_t::_11);
+                ctrl_file(file_operation_t::map_delete);
             }
         }
     }
     if (fs::exists(filesystem::dir::tmp() / (u8"mdata_"s + mid + u8".s2")))
     {
         lua::lua.get_handle_manager().clear_map_local_handles();
-        ctrl_file(file_operation_t::_1);
+        ctrl_file(file_operation_t::map_read);
         if (mdata(7) == 0)
         {
             goto label_1741_internal;
@@ -115,7 +115,7 @@ label_17401:
                 goto label_1741_internal;
             }
         }
-        ctrl_file(file_operation2_t::_3, u8"inv_"s + mid + u8".s2");
+        ctrl_file(file_operation2_t::map_items_read, u8"inv_"s + mid + u8".s2");
         if (mode == 2)
         {
             map_placeplayer();
@@ -933,7 +933,7 @@ label_1741_internal:
             {
                 // Move existing characters/items to the middle of the
                 // map if the home was upgraded.
-                ctrl_file(file_operation2_t::_3, u8"inv_"s + mid + u8".s2");
+                ctrl_file(file_operation2_t::map_items_read, u8"inv_"s + mid + u8".s2");
                 for (const auto& cnt : items(-1))
                 {
                     if (inv[cnt].number == 0)
@@ -944,7 +944,7 @@ label_1741_internal:
                     inv[cnt].position.y = mdata(1) / 2;
                     cell_refresh(inv[cnt].position.x, inv[cnt].position.y);
                 }
-                ctrl_file(file_operation_t::_17);
+                ctrl_file(file_operation_t::map_home_upgrade);
                 for (int cnt = ELONA_MAX_PARTY_CHARACTERS;
                      cnt < ELONA_MAX_CHARACTERS;
                      ++cnt)
