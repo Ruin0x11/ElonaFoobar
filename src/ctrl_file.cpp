@@ -705,6 +705,21 @@ void fmode_7_8(bool read, const fs::path& dir)
     }
 
     {
+        const auto filepath = dir / u8"mod.s1";
+        if (read)
+        {
+            if (fs::exists(filepath))
+            {
+                lua::lua.get_serial_manager().load_data(filepath, lua::mod_save_t::global);
+            }
+        }
+        else
+        {
+            lua::lua.get_serial_manager().save_data(filepath, lua::mod_save_t::global);
+        }
+    }
+
+    {
         const auto filepath = dir / u8"art.log";
         if (!read)
         {
@@ -1159,9 +1174,11 @@ void fmode_5_6(bool read)
 
 // reads or writes map-local item data (inv_xx.s2)
 // does not read/write player or party character inventories.
+// also reads/writes map-local mod data (mod_inv_xx.s2).
 void fmode_3_4(bool read, const fs::path& filename)
 {
     const auto filepath = filesystem::dir::tmp() / filename;
+    const auto mod_filepath = filesystem::dir::tmp() / (u8"mod_" + filename.string());
     if (read)
     {
         for (int index = 1320; index < 5480; index++)
@@ -1169,6 +1186,12 @@ void fmode_3_4(bool read, const fs::path& filename)
             lua::lua.on_item_unloaded(inv[index]);
         }
         load(filepath, inv, 1320, 5480);
+
+        if (fs::exists(mod_filepath))
+        {
+            lua::lua.get_serial_manager().load_data(mod_filepath, lua::mod_save_t::map_local);
+        }
+
         for (int index = 1320; index < 5480; index++)
         {
             inv[index].index = index;
@@ -1179,6 +1202,7 @@ void fmode_3_4(bool read, const fs::path& filename)
     {
         fileadd(filepath);
         save(filepath, inv, 1320, 5480);
+        lua::lua.get_serial_manager().save_data(mod_filepath, lua::mod_save_t::map_local);
     }
 }
 
@@ -1327,6 +1351,9 @@ void fmode_11_12(bool preserve_items)
         fs::remove_all(filepath);
         fileadd(filepath, 1);
         filepath = filesystem::dir::tmp() / (u8"inv_"s + mid + u8".s2");
+        fs::remove_all(filepath);
+        fileadd(filepath, 1);
+        filepath = filesystem::dir::tmp() / (u8"mod_"s + mid + u8".s2");
         fs::remove_all(filepath);
         fileadd(filepath, 1);
     }

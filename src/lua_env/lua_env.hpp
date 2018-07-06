@@ -22,14 +22,14 @@ using namespace std::literals::string_literals;
 class api_manager;
 class event_manager;
 class handle_manager;
+class serial_manager;
 
 /***
  * Stores the Lua environment and internal storage for a single mod.
  *
  * Mods each have a sanitized environment with a whitelist of safe
- * functions, so things like dofile can't be called. They also have an
- * internal C++ storage object for storing, serializing and
- * deserializing mod data alongside the base game data.
+ * functions, so things like dofile can't be called. They also have
+ * Lua tables for storing data alongside the base game data.
  */
 struct mod_info
 {
@@ -71,6 +71,8 @@ enum class mod_loading_stage_t : unsigned
  */
 class lua_env
 {
+    // Needs access to mod list so they can be saved/loaded.
+    friend class serial_manager;
 public:
     lua_env();
     ~lua_env() = default;
@@ -196,6 +198,7 @@ public:
     api_manager& get_api_manager();
     event_manager& get_event_manager();
     handle_manager& get_handle_manager();
+    serial_manager& get_serial_manager();
 
 
     //****************** Methods for testing use *******************//
