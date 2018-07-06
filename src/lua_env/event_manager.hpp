@@ -197,7 +197,6 @@ private:
  */
 class event_manager
 {
-
 public:
     /***
      * Binds the Lua Event API and the EventKind enum to the lua_env's

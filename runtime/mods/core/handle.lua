@@ -90,6 +90,10 @@ local function generate_metatable(core_table, prefix)
 
       handle.cpp_ref[key] = value
    end
+   mt.__serialize = function(value)
+      -- Assumes the value has an index available.
+      return value.is_valid and { __kind = prefix, index = value.index }
+   end
    return mt
 end
 
@@ -191,6 +195,5 @@ function Handle.iter_items(from, to)
    end
    return iter, {handles=Handle.ItemHandles, to=to}, from
 end
-
 
 return Handle

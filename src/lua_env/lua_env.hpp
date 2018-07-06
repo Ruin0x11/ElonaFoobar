@@ -8,6 +8,7 @@
 #include "../thirdparty/sol2/sol.hpp"
 #include "event_manager.hpp"
 #include "handle_manager.hpp"
+#include "serial_manager.hpp"
 #include "lua_api.hpp"
 #include "lua_store.hpp"
 
@@ -289,6 +290,7 @@ private:
     std::unique_ptr<api_manager> api_mgr;
     std::unique_ptr<event_manager> event_mgr;
     std::unique_ptr<handle_manager> handle_mgr;
+    std::unique_ptr<serial_manager> serial_mgr;
     std::unordered_map<std::string, std::unique_ptr<mod_info>> mods;
 
     /***

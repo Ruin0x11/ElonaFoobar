@@ -62,6 +62,10 @@ public:
      */
     void clear_map_local_handles();
 
+    // Used by the serial_manager to resolve the actual handles from
+    // serialized indices.
+    sol::environment get_handle_env() { return handle_env; }
+
 private:
     void bind(lua_env&);
 

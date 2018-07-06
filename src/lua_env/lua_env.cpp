@@ -41,6 +41,8 @@ lua_env::lua_env()
     event_manager::init(*this);
 
     handle_mgr = std::make_unique<handle_manager>(this);
+
+    serial_mgr = std::make_unique<serial_manager>(this);
 }
 
 api_manager& lua_env::get_api_manager()
@@ -56,6 +58,11 @@ event_manager& lua_env::get_event_manager()
 handle_manager& lua_env::get_handle_manager()
 {
     return *handle_mgr;
+}
+
+serial_manager& lua_env::get_serial_manager()
+{
+    return *serial_mgr;
 }
 
 void report_error(sol::error err)
