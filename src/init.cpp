@@ -164,14 +164,14 @@ void start_elona()
     gdata_hour = 16;
     gdata_minute = 10;
     quickpage = 1;
-    if (config::instance().noadebug)
+    if (config::get<bool>("debug.noa_debug"))
     {
         mode = 4;
         initialize_game();
         main_loop();
         return;
     }
-    else if (config::instance().startup_script != ""s)
+    else if (config::get<std::string>("foobar.startup_script") != ""s)
     {
         mode = 6;
         initialize_game();
@@ -642,17 +642,17 @@ void initialize_elona()
     initialize_home_adata();
     initialize_damage_popups();
     load_character_sprite();
-    if (config::instance().music == "direct_music" && DMINIT() == 0)
+    if (config::get<std::string>("screen.music") == "direct_music" && DMINIT() == 0)
     {
-        config::instance().music = "mci";
+        config::set("screen.music", "mci");
     }
     DSINIT();
-    if (config::instance().joypad == 1)
+    if (config::get<bool>("input.joypad"))
     {
         DIINIT();
         if (DIGETJOYNUM() == 0)
         {
-            config::instance().joypad = 0;
+            config::set("input.joypad", false);
         }
     }
     initialize_sound_file();
@@ -748,7 +748,7 @@ void initialize_elona()
     invicon(28) = -1;
     invicon(29) = -1;
 
-    if (config::instance().autonumlock)
+    if (config::get<bool>("input.autodisable_numlock"))
     {
         snail::input::instance().disable_numlock();
     }
@@ -767,7 +767,7 @@ int run()
     load_config2(config_file);
 
     title(u8"Elona Foobar version "s + latest_version.short_string(),
-          config::instance().display_mode,
+          config::get<std::string>("screen.display_mode"),
           config_get_fullscreen_mode());
 
     initialize_config(config_file);
@@ -1126,7 +1126,7 @@ void initialize_game()
     mtilefilecur = -1;
     firstturn = 1;
     msgtemp = u8"  Lafrontier presents Elona ver 1.22. Welcome traveler! "s;
-    if (config::instance().net)
+    if (config::get<bool>("net.enabled"))
     {
         initialize_server_info();
     }
@@ -1152,9 +1152,9 @@ void initialize_game()
         playerid = u8"sav_testbed"s;
         initialize_debug_globals();
         initialize_testbed();
-        if (config::instance().startup_script != ""s)
+        if (config::get<std::string>("foobar.startup_script") != ""s)
         {
-            lua::lua->run_startup_script(config::instance().startup_script);
+            lua::lua->run_startup_script(config::get<std::string>("foobar.startup_script"));
             script_loaded = true;
         }
         mode = 2;

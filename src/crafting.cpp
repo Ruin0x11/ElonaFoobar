@@ -1119,7 +1119,7 @@ label_1857_internal:
     {
         redraw();
     }
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, 0);

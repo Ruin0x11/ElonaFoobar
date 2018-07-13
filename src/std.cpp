@@ -320,7 +320,8 @@ void font(int size, snail::font_t::style_t style)
 {
     const auto& filepath = filesystem::path(u8"font")
         / filesystem::u8path(lang(
-              config::instance().font1, config::instance().font2));
+              config::get<std::string>("font.japanese"),
+              config::get<std::string>("font.english")));
     snail::hsp::font(size, style, filepath);
 }
 

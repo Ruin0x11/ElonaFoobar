@@ -409,7 +409,7 @@ void label_1888()
             magic();
             snd(63);
             mode = 0;
-            await(config::instance().animewait * 20);
+            await(config::get<int>("anime.anime_wait") * 20);
         }
         cdata[0].god_id = core_god::int2godid(inv[ci].param1);
         switch_religion();

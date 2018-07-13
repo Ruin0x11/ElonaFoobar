@@ -354,7 +354,7 @@ label_2699_internal:
     }
     ++t;
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check(key_wait_delay_t::none);
     if (key == key_north)
     {
@@ -838,7 +838,7 @@ label_2705_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, cs = i);
@@ -948,7 +948,7 @@ turn_result_t show_chat_history()
     }
     redraw();
 label_2708_internal:
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     if (menucycle == 1)
@@ -1079,7 +1079,7 @@ turn_result_t show_message_log()
 
     redraw();
 label_2711_internal:
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     if (menucycle == 1)
@@ -1278,7 +1278,7 @@ label_2729_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, 0);
@@ -1438,7 +1438,7 @@ label_2029_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     commark(1) = page * 1000 + cs;
@@ -1661,7 +1661,7 @@ label_2009_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     commark(0) = page * 1000 + cs;
@@ -2787,7 +2787,7 @@ label_2035_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     if (page == 0)
@@ -3185,7 +3185,7 @@ label_2052_internal:
     }
     cs_bk = cs;
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, 0);
@@ -3426,7 +3426,7 @@ label_1861_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, 0);
@@ -3822,7 +3822,7 @@ label_2041_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     set_pcc_info(cs);
@@ -4034,7 +4034,7 @@ int label_2044()
             cs_bk = cs;
         }
         redraw();
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         key_check();
         cursor_check();
         if (cs != 0)
@@ -4603,7 +4603,7 @@ label_1970_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_INDEX(p);
@@ -4988,7 +4988,7 @@ label_1973_internal:
     }
 label_1974_internal:
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     if (menucycle == 1)
@@ -5065,7 +5065,7 @@ label_1974_internal:
 
 turn_result_t show_quest_board()
 {
-    if (config::instance().extrahelp)
+    if (config::get<bool>("game.extra_help"))
     {
         if (gdata(204) == 0)
         {
@@ -5248,7 +5248,7 @@ label_1978_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, 0);
@@ -5465,7 +5465,7 @@ label_1982_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, 0);
@@ -5587,7 +5587,7 @@ label_1986_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, 0);
@@ -5738,7 +5738,7 @@ label_1990_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, 0);
@@ -5813,7 +5813,7 @@ int select_alias(int val0)
             list(0, 0) = 0;
         }
         redraw();
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         key_check();
         cursor_check();
         ELONA_GET_SELECTED_INDEX_THIS_PAGE(p);
@@ -5941,7 +5941,7 @@ label_2272_internal:
         }
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, 0);
@@ -6136,7 +6136,7 @@ label_2278_internal:
         }
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     if (menucycle == 1)
@@ -6322,7 +6322,7 @@ label_2283_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, 0);
@@ -6486,7 +6486,7 @@ label_1887_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(rtval, snd(40));
@@ -6891,7 +6891,7 @@ label_1961_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, 0);
@@ -7059,7 +7059,7 @@ label_1965_internal:
     redraw();
 label_1966_internal:
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     p = -1;
@@ -7171,7 +7171,7 @@ label_2016_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, cs = i);
@@ -7298,7 +7298,7 @@ label_2023_internal:
     }
 label_2024_internal:
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     if (key == key_pageup)
@@ -7679,7 +7679,7 @@ label_2070_internal:
         }
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     if (key == key_pageup)

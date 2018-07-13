@@ -283,9 +283,9 @@ void lua_env::run_startup_script(const std::string& name)
     ELONA_LOG("Loaded startup script " << name);
     txtef(8);
     txt(lang(
-        u8"スクリプト"s + config::instance().startup_script
+        u8"スクリプト"s + config::get<std::string>("foobar.startup_script")
             + u8"が読み込まれました。"s,
-        u8"Loaded script "s + config::instance().startup_script + u8". "s));
+        u8"Loaded script "s + config::get<std::string>("foobar.startup_script") + u8". "s));
     txtnew();
 
     this->mods.emplace("script", std::move(script_mod));

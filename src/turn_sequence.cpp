@@ -1000,9 +1000,9 @@ turn_result_t pass_one_turn(bool label_2738_flg)
         {
             if (cdata[cc].choked)
             {
-                await(config::instance().animewait * 6);
+                await(config::get<int>("anime.anime_wait") * 6);
             }
-            await(config::instance().animewait * 3);
+            await(config::get<int>("anime.anime_wait") * 3);
             sxfix = 0;
             syfix = 0;
             update_screen();
@@ -1220,7 +1220,7 @@ turn_result_t turn_end()
             if (cc != 0)
             {
                 update_screen();
-                await(config::instance().animewait * 10);
+                await(config::get<int>("anime.anime_wait") * 10);
             }
             txtef(9);
             txt(u8" *tick* "s);
@@ -1265,7 +1265,7 @@ turn_result_t pc_turn(bool advance_time)
         }
         if (gdata(30))
         {
-            await(config::instance().wait1 / 3);
+            await(config::get<int>("anime.general_wait") / 3);
             for (int dy = -1; dy <= 1; ++dy)
             {
                 y = cdata[0].position.y + dy;
@@ -1343,7 +1343,7 @@ turn_result_t pc_turn(bool advance_time)
         {
             autosave = 0;
             if (gdata_wizard == 0 && gdata_current_map != 40
-                && config::instance().autosave)
+                && config::get<bool>("foobar.autosave"))
             {
                 snd(44);
                 save_game();
@@ -1398,7 +1398,7 @@ turn_result_t pc_turn(bool advance_time)
                 return turn_result_t::exit_map;
             }
         label_2744_internal:
-            await(config::instance().wait1);
+            await(config::get<int>("anime.general_wait"));
             cdata[0].direction = 0;
             key_check();
             f = 0;
@@ -1518,13 +1518,13 @@ label_2747:
         return turn_result_t::turn_end;
     }
     ++t;
-    if (t % config::instance().scrsync == 1)
+    if (t % config::get<int>("anime.screen_refresh") == 1)
     {
         ++scrturn;
         label_1420();
     }
 
-    if (config::instance().net && config::instance().netwish && key == ""s)
+    if (config::get<bool>("net.enabled") && config::get<bool>("net.wish") && key == ""s)
     {
         ++chatturn;
         if (chatturn % 250 == 1)
@@ -1538,7 +1538,7 @@ label_2747:
                 s(2) = strmid(s, 0, 4);
                 if (s(2) == u8"chat"s)
                 {
-                    if (config::instance().netchat)
+                    if (config::get<bool>("net.chat"))
                     {
                         continue;
                     }
@@ -1564,7 +1564,7 @@ label_2747:
         txt(s);
     }
 
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check(key_wait_delay_t::walk_run);
 
     if (ginfo(2) != 0)

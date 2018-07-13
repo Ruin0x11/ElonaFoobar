@@ -778,7 +778,7 @@ void draw_items(int x, int y, int dx, int dy, int scrturn)
                 }
                 else
                 {
-                    if (config::instance().objectshadow
+                    if (config::get<bool>("screen.object_shadows")
                         && item_chips[p_].shadow)
                     {
                         gmode(2, 70);
@@ -873,7 +873,7 @@ void draw_items(int x, int y, int dx, int dy, int scrturn)
             }
             else
             {
-                if (config::instance().objectshadow && item_chips[p_].shadow)
+                if (config::get<bool>("screen.object_shadows") && item_chips[p_].shadow)
                 {
                     gmode(2, 80);
                     if (item_chips[p_].height == inf_tiles)
@@ -1412,7 +1412,7 @@ void cell_draw()
     // Work around
     light_ *= 1.3;
 
-    if (config::instance().shadow)
+    if (config::get<bool>("screen.high_quality_shadows"))
     {
         render_shadow_high(light_, sxfix_, syfix_);
     }

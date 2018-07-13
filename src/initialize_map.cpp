@@ -3332,7 +3332,7 @@ label_1744_internal:
     }
     if (mdata(6) == 1)
     {
-        if (config::instance().extrahelp)
+        if (config::get<bool>("game.extra_help"))
         {
             if (gdata(202) == 0)
             {
@@ -3350,7 +3350,7 @@ label_1744_internal:
     }
     if (mdata(6) == 3)
     {
-        if (config::instance().extrahelp)
+        if (config::get<bool>("game.extra_help"))
         {
             if (gdata(203) == 0)
             {
@@ -3368,7 +3368,7 @@ label_1744_internal:
     }
     if (gdata_current_map == 30)
     {
-        if (config::instance().extrahelp)
+        if (config::get<bool>("game.extra_help"))
         {
             if (gdata(214) == 0)
             {

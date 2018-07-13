@@ -68,7 +68,7 @@ public:
             variable = false;
         }
 
-        config::instance().set(key, variable);
+        config::instance().set_option(key, variable);
     }
     std::string get_message() { return variable ? yes : no; }
 
@@ -121,7 +121,7 @@ public:
     void change(int delta)
     {
         variable = clamp(variable + delta, min, max);
-        config::instance().set(key, variable);
+        config::instance().set_option(key, variable);
     }
 
     std::string get_message()
@@ -181,7 +181,7 @@ public:
             && variants.at(index).value == spec::unknown_enum_variant)
         {
             index = 1;
-            config::instance().set(key, variants.at(index).value);
+            config::instance().set_option(key, variants.at(index).value);
         }
     }
 
@@ -202,7 +202,7 @@ public:
         {
             index = 1;
         }
-        config::instance().set(key, variants.at(index).value);
+        config::instance().set_option(key, variants.at(index).value);
     }
 
     std::string get_message()
@@ -462,15 +462,15 @@ void visit_config_item(config& conf, const spec_key& current_key, config_screen&
 
     if (conf.get_def().is<spec::bool_def>(key))
     {
-        add_config_item_yesno(key, locale_key, conf.get<bool>(key), ret);
+        add_config_item_yesno(key, locale_key, conf.get_option<bool>(key), ret);
     }
     else if (conf.get_def().is<spec::int_def>(key))
     {
-        add_config_item_integer(key, locale_key, conf.get<int>(key), conf.get_def(), ret);
+        add_config_item_integer(key, locale_key, conf.get_option<int>(key), conf.get_def(), ret);
     }
     else if (conf.get_def().is<spec::enum_def>(key))
     {
-        add_config_item_choice(key, locale_key, conf.get<std::string>(key), conf.get_def(), ret);
+        add_config_item_choice(key, locale_key, conf.get_option<std::string>(key), conf.get_def(), ret);
     }
     else if (conf.get_def().is<spec::string_def>(key))
     {
@@ -678,7 +678,7 @@ set_option_begin:
             }
             // if (submenu == 3)
             // {
-            //     if (config::instance().net == 0)
+            //     if (!config::get<bool>("net.enabled"))
             //     {
             //         if (cnt >= 1)
             //         {
@@ -706,7 +706,7 @@ set_option_begin:
             cs_bk = cs;
         }
         redraw();
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         key_check();
         cursor_check();
         ELONA_GET_SELECTED_ITEM(p, cs = i);
@@ -750,7 +750,7 @@ set_option_begin:
                 config::instance().write();
                 if (mode == 0)
                 {
-                    if (config::instance().net)
+                    if (config::get<bool>("net.enabled"))
                     {
                         initialize_server_info();
                     }

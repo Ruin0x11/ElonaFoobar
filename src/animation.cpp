@@ -55,7 +55,7 @@ void play_animation_8(int anicol)
         pos(anidx + inf_tiles / 2, anidy + 16);
         grotate(1, 0, 960, 48, 48, i + 40, i + 40, 5 * i);
         redraw();
-        await(config::instance().animewait);
+        await(config::get<int>("anime.anime_wait"));
     }
 }
 
@@ -108,11 +108,11 @@ void play_animation_6_5_7_11(int animeid, int anicol)
     {
         if (animeid == 11)
         {
-            await(config::instance().animewait / 4);
+            await(config::get<int>("anime.anime_wait") / 4);
         }
         else
         {
-            await(config::instance().animewait);
+            await(config::get<int>("anime.anime_wait"));
         }
         int acnt2 = i * 2;
         pos(ax - inf_tiles / 2, ay - inf_tiles / 2);
@@ -174,7 +174,7 @@ void play_animation_3(int anicol, int anisound)
                 }
             }
         }
-        await(config::instance().animewait);
+        await(config::get<int>("anime.anime_wait"));
         redraw();
     }
     if (anisound)
@@ -266,7 +266,7 @@ void play_animation_17_2(int animeid, int anicol, int anisound)
         gmode(0);
         pos(0, 0);
         gcopy(4, 0, 0, windoww, windowh);
-        await(config::instance().animewait);
+        await(config::get<int>("anime.anime_wait"));
     }
     if (anisound)
     {
@@ -361,7 +361,7 @@ void play_animation_0(int anicol, int anisound)
             }
             ++ap(cnt);
         }
-        await(config::instance().animewait * 1.75);
+        await(config::get<int>("anime.anime_wait") * 1.75);
         redraw();
     }
     if (anisound)
@@ -406,7 +406,7 @@ void play_animation_15()
         pos(ax, ay - inf_tiles / 2);
         gcopy(4, 0, 0, inf_tiles, inf_tiles);
         gmode(2);
-        await(config::instance().animewait);
+        await(config::get<int>("anime.anime_wait"));
     }
 }
 
@@ -483,7 +483,7 @@ void play_animation_ranged_attack(int animeid, int anicol, int anisound)
         pos(ax, ay - inf_tiles / 2);
         gcopy(4, 0, 0, inf_tiles, inf_tiles);
         gmode(2);
-        await(config::instance().animewait);
+        await(config::get<int>("anime.anime_wait"));
     }
     if (anisound)
     {
@@ -512,7 +512,7 @@ void play_animation_9()
         pos(anidx + 16, anidy + 16);
         grotate(1, 0, 960, 48, 48, cnt * 8 + 18, cnt * 8 + 18, 0.5 * cnt - 0.8);
         redraw();
-        await(config::instance().animewait);
+        await(config::get<int>("anime.anime_wait"));
     }
 }
 
@@ -607,7 +607,7 @@ void play_animation_12()
         pos(anidx - 24, anidy - 48);
         gcopy(4, 0, 0, 96, 144);
         gmode(2);
-        await(config::instance().animewait);
+        await(config::get<int>("anime.anime_wait"));
     }
 }
 
@@ -640,7 +640,7 @@ void play_animation_20()
             pos(anidx, anidy - cnt * 96);
             gcopy(7, cnt2 / 2 * 96, (cnt == 0) * 96, 96, 96);
         }
-        await(config::instance().animewait * 2.25);
+        await(config::get<int>("anime.anime_wait") * 2.25);
         redraw();
     }
 }
@@ -766,7 +766,7 @@ void play_animation_19()
         {
             break;
         }
-        await(config::instance().animewait * 2.25);
+        await(config::get<int>("anime.anime_wait") * 2.25);
         redraw();
     }
 }
@@ -841,10 +841,10 @@ void play_animation_22()
         {
             break;
         }
-        await(config::instance().animewait * 3);
+        await(config::get<int>("anime.anime_wait") * 3);
         redraw();
     }
-    await(config::instance().animewait);
+    await(config::get<int>("anime.anime_wait"));
     pos(0, 0);
     gmode(0);
     gcopy(4, 0, 0, windoww, windowh);
@@ -914,10 +914,10 @@ void play_animation_21()
         {
             break;
         }
-        await(config::instance().animewait * 3);
+        await(config::get<int>("anime.anime_wait") * 3);
         redraw();
     }
-    await(config::instance().animewait);
+    await(config::get<int>("anime.anime_wait"));
     pos(0, 0);
     gmode(0);
     gcopy(4, 0, 0, windoww, windowh);
@@ -970,7 +970,7 @@ void play_animation_14_16(int animeid)
         pos(ax - 16, ay - 16);
         gcopy(4, 0, 0, 64, 64);
         gmode(2);
-        await(config::instance().animewait);
+        await(config::get<int>("anime.anime_wait"));
     }
 }
 
@@ -992,7 +992,7 @@ void play_animation(int animeid)
 {
     if (mode == 9)
         return;
-    if (config::instance().animewait == 0)
+    if (config::get<int>("anime.anime_wait") == 0)
         return;
 
     if (animeid != 21)

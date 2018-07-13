@@ -679,7 +679,7 @@ void show_hp_bar(show_hp_bar_side side, int inf_clocky)
                 gcopy(3, 480 - width, 517, width, 3, width * 3, 9);
 
                 // Show leash icon.
-                if (config::instance().leash_icon && cdata[i].is_leashed())
+                if (config::get<bool>("foobar.leash_icon") && cdata[i].is_leashed())
                 {
                     constexpr int leash = 631;
                     prepare_item_image(leash, 2);
@@ -771,7 +771,7 @@ void clear_damage_popups()
 
 void show_damage_popups()
 {
-    if (config::instance().damage_popup == 0)
+    if (config::get<bool>("foobar.damage_popup") == 0)
     {
         return;
     }

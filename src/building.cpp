@@ -480,7 +480,7 @@ void prompt_hiring()
         {
             snd(12);
             cdata[0].gold -= calchirecost(tc) * 20;
-            await(config::instance().animewait * 10);
+            await(config::get<int>("anime.anime_wait") * 10);
             cdata[tc].state = 1;
             lua::lua->on_chara_loaded(cdata[tc]);
             txtef(2);
@@ -512,7 +512,7 @@ void start_home_map_mode()
     tile = 0;
     while (1)
     {
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         int stat = target_position();
         if (stat == -1)
         {
@@ -622,7 +622,7 @@ void show_home_value()
     while (1)
     {
         redraw();
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         key_check();
         cursor_check();
         if (key == key_cancel)
@@ -1079,7 +1079,7 @@ void show_shop_log()
     }
     if (sold == 0)
     {
-        if (!config::instance().hideshopresult)
+        if (!config::get<bool>("game.hide_shop_updates"))
         {
             txt(shop_mark
                 + i18n::s.get(
@@ -1090,7 +1090,7 @@ void show_shop_log()
     }
     else
     {
-        if (!config::instance().hideshopresult)
+        if (!config::get<bool>("game.hide_shop_updates"))
         {
             s = i18n::s.get("core.locale.building.shop.log.gold", income(0));
             if (income(1) != 0)

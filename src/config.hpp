@@ -22,6 +22,16 @@ class config
 public:
     static config& instance();
 
+    template <typename T>
+    static T get(const std::string& key) {
+        return config::instance().get_option<T>("core.config." + key);
+    }
+
+    static void set(const std::string& key, const hcl::Value value)
+    {
+        return config::instance().set_option("core.config." + key, value);
+    }
+
     config() {}
     ~config() = default;
 
@@ -136,43 +146,38 @@ public:
     {
         def.inject_enum(key, variants, default_variant);
 
+        auto enum_def = def.get<spec::enum_def>(key);
         if (storage.find(key) != storage.end())
         {
             // Check if this enum has an invalid value. If so, set it to the default.
-            auto enum_def = def.get<spec::enum_def>(key);
-            std::string current = get<std::string>(key);
+            std::string current = get_option<std::string>(key);
             if (!enum_def.get_index_of(current))
             {
                 ELONA_LOG("Config key "s << key << " had invalid variant "s << current << ". "s <<
                           "("s << def.type_to_string(key) << ")"s <<
                           "Setting to "s << enum_def.get_default() << "."s);
-                set(key, enum_def.get_default());
+                set_option(key, enum_def.get_default());
             }
         }
     }
 
-    template <typename T>
-    T get(const std::string& key)
+    bool has_option(const std::string& key)
     {
-        if (storage.find(key) == storage.end())
-        {
-            // TODO fallback to default specified in config definition instead
-            throw std::runtime_error("No such config value " + key);
-        }
-        if (!storage[key].is<T>())
-        {
-            throw std::runtime_error("Expected type \"" + def.type_to_string(key) + "\" for key " + key);
-        }
+        return storage.find(key) != storage.end() || getters.find(key) != getters.end();
+    }
 
+    template <typename T>
+    T get_option(const std::string& key) const
+    {
         try
         {
             if (getters.find(key) != getters.end())
             {
-                return getters[key]().as<T>();
+                return getters.at(key)().as<T>();
             }
             else
             {
-                return storage[key].as<T>();
+                return storage.at(key).as<T>();
             }
         }
         catch (std::exception& e)
@@ -181,7 +186,7 @@ public:
         }
     }
 
-    void set(const std::string& key, const hcl::Value value)
+    void set_option(const std::string& key, const hcl::Value value)
     {
         ELONA_LOG("Set config option: " << key << " to " << value);
 

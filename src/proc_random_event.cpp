@@ -526,7 +526,7 @@ int proc_random_event()
 
 int show_random_event_window(const std::string& file)
 {
-    if (config::instance().skiprandevents)
+    if (config::get<bool>("screen.skip_random_events"))
     {
         if (listmax <= 1)
         {
@@ -613,7 +613,7 @@ label_1897_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(rtval, snd(40));

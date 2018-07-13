@@ -79,7 +79,7 @@ config def {
             window_anime = false
 
             screen_refresh = {
-                default = 2
+                default = 3
                 min = 0
                 max = 15
             }
@@ -160,25 +160,25 @@ config def {
 
             walk_wait = {
                 default = 5
-                min = 0
+                min = 1
                 max = 10
             }
 
             start_run_wait = {
                 default = 2
                 min = 0
-                max = 5
+                max = 20
             }
 
             run_wait = {
                 default = 2
-                min = 0
+                min = 1
                 max = 10
             }
 
             attack_wait = {
                 default = 4
-                min = 0
+                min = 1
                 max = 10
             }
 

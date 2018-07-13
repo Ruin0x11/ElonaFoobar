@@ -700,17 +700,18 @@ void auto_turn(int delay)
         return;
 
     autoturn = 1;
-    if (config::instance().autoturn == "normal")
+    std::string speed = config::get<std::string>("anime.auto_turn_speed");
+    if (speed == "normal")
     {
         await(delay);
         ++scrturn;
     }
-    if (config::instance().autoturn != "highest" || firstautoturn == 1)
+    if (speed != "highest" || firstautoturn == 1)
     {
         screenupdate = -1;
         update_screen();
     }
-    if (config::instance().autoturn == "normal")
+    if (speed == "normal")
     {
         redraw();
     }
@@ -898,7 +899,7 @@ void initialize_picfood()
 
 void finish_elona()
 {
-    if (config::instance().autonumlock)
+    if (config::get<bool>("input.autodisable_numlock"))
     {
         snail::input::instance().restore_numlock();
     }
@@ -2136,7 +2137,7 @@ void animeload(int prm_807, int prm_808)
     {
         return;
     }
-    if (config::instance().animewait == 0)
+    if (config::get<int>("anime.anime_wait") == 0)
     {
         return;
     }
@@ -2153,7 +2154,7 @@ void animeload(int prm_807, int prm_808)
     gsel(0);
     gmode(2);
     i_at_m133(0) = 5;
-    i_at_m133(1) = config::instance().animewait * 3.5;
+    i_at_m133(1) = config::get<int>("anime.anime_wait") * 3.5;
     r_at_m133 = 0;
     if (prm_807 == 8)
     {
@@ -2162,21 +2163,21 @@ void animeload(int prm_807, int prm_808)
     if (prm_807 == 10)
     {
         i_at_m133(0) = 8;
-        i_at_m133(1) = config::instance().animewait * 2.5;
+        i_at_m133(1) = config::get<int>("anime.anime_wait") * 2.5;
         r_at_m133 = 0.2;
         snd(119);
     }
     if (prm_807 == 11)
     {
         i_at_m133(0) = 5;
-        i_at_m133(1) = config::instance().animewait * 3.5;
+        i_at_m133(1) = config::get<int>("anime.anime_wait") * 3.5;
         r_at_m133 = 0;
         snd(118);
     }
     if (prm_807 == 14)
     {
         i_at_m133(0) = 6;
-        i_at_m133(1) = config::instance().animewait * 3.5;
+        i_at_m133(1) = config::get<int>("anime.anime_wait") * 3.5;
     }
     for (int cnt = 0, cnt_end = (i_at_m133); cnt < cnt_end; ++cnt)
     {
@@ -2199,7 +2200,7 @@ void animeblood(int cc, int animation_type, int element)
 {
     if (is_in_fov(cc) == 0)
         return;
-    if (config::instance().animewait == 0)
+    if (config::get<int>("anime.anime_wait") == 0)
         return;
 
     int cnt2_at_m133 = 0;
@@ -2306,7 +2307,7 @@ void animeblood(int cc, int animation_type, int element)
         redraw();
         pos(dx_at_m133 - 48, dy_at_m133 - 56);
         gcopy(4, 0, 0, 144, 160);
-        await(config::instance().animewait * (ele2_at_m133 == 0 ? 1.75 : 2.75));
+        await(config::get<int>("anime.anime_wait") * (ele2_at_m133 == 0 ? 1.75 : 2.75));
     }
 
     gmode(2);
@@ -5152,7 +5153,7 @@ void auto_identify()
             item_identify(
                 inv[ci], identification_state_t::completely_identified);
             itemmemory(0, inv[ci].id) = 1;
-            if (!config::instance().hideautoidentify)
+            if (!config::get<bool>("game.hide_autoidentify"))
             {
                 txt(lang(
                     u8"バックパックの中の"s + s + u8"は"s + itemname(ci)
@@ -5167,7 +5168,7 @@ void auto_identify()
         {
             if (p > rnd(p(1)))
             {
-                if (!config::instance().hideautoidentify)
+                if (!config::get<bool>("game.hide_autoidentify"))
                 {
                     txt(lang(
                         u8"バックパックの中の"s + itemname(ci) + u8"は"s
@@ -5328,7 +5329,7 @@ turn_result_t exit_map()
     gdata(171) = 0;
     if (mdata(6) == 5)
     {
-        if (config::instance().extrahelp)
+        if (config::get<bool>("game.extra_help"))
         {
             if (gdata(201) == 0)
             {
@@ -8097,7 +8098,7 @@ void supply_income()
     ctrl_file(file_operation2_t::_4, u8"shop"s + invfile + u8".s2");
     ctrl_file(file_operation2_t::_3, u8"shoptmp.s2");
     mode = 0;
-    if (config::instance().extrahelp)
+    if (config::get<bool>("game.extra_help"))
     {
         if (gdata(216) == 0)
         {
@@ -8317,7 +8318,7 @@ int key_direction()
 
 turn_result_t step_into_gate()
 {
-    if (config::instance().extrahelp)
+    if (config::get<bool>("game.extra_help"))
     {
         if (gdata(217) == 0)
         {
@@ -8396,7 +8397,7 @@ label_19431_internal:
         ++listmax;
         noteunsel();
     }
-    if (config::instance().net != 0)
+    if (config::get<bool>("net.enabled"))
     {
         if (comctrl == 1)
         {
@@ -8489,7 +8490,7 @@ label_1945_internal:
         cs_bk = cs;
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, 0);
@@ -8749,7 +8750,7 @@ label_1948_internal:
     }
     txttargetnpc(tlocx, tlocy);
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     if (homemapmode == 1)
     {
@@ -8975,7 +8976,7 @@ label_1956_internal:
     }
     gmode(2);
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     int a{};
     a = stick();
     if (a == stick_key::mouse_left)
@@ -10636,7 +10637,7 @@ label_2128_internal:
     pos(x - 48 - 24, y - 48 - 24);
     gcopy(4, 0, 0, 144, 144);
     gmode(2);
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check(key_wait_delay_t::walk_run);
     x = cdata[0].position.x;
     y = cdata[0].position.y;
@@ -10755,7 +10756,7 @@ turn_result_t do_debug_console()
     mesbox(buff, true);
     while (1)
     {
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         int a{};
         a = stick();
         if (a == stick_key::escape)
@@ -10823,7 +10824,7 @@ void disarm_trap()
 void proc_trap()
 {
 label_21451_internal:
-    if (config::instance().scroll)
+    if (config::get<bool>("anime.scroll"))
     {
         if (cc == 0)
         {
@@ -11101,7 +11102,7 @@ void label_2151()
     {
         gmode(4, cnt * 10);
         label_2149();
-        await(config::instance().animewait * 10);
+        await(config::get<int>("anime.anime_wait") * 10);
     }
     gmode(2);
     cc = 0;
@@ -11156,7 +11157,7 @@ void label_2151()
         gdata_minute = 0;
         cc = 0;
         label_2149();
-        await(config::instance().animewait * 25);
+        await(config::get<int>("anime.anime_wait") * 25);
     }
     if (gdata(98) != 0)
     {
@@ -13564,7 +13565,7 @@ turn_result_t proc_movement_event()
 
 void proc_autopick()
 {
-    if (!config::instance().use_autopick)
+    if (!config::get<bool>("foobar.autopick"))
         return;
     if (key_ctrl)
         return;
@@ -13735,7 +13736,7 @@ void label_2206()
                     dirsub,
                     rnd(2));
                 if (keybd_wait <= config::instance().walkwait
-                            * config::instance().startrun
+                            * config::get<int>("input.start_run_wait")
                     || cdata[0].turn % 2 == 0 || mdata(6) == 1)
                 {
                     snd(83 + foot % 3);
@@ -13762,7 +13763,7 @@ void label_2206()
                 txt(mapname(feat(2) + feat(3) * 100, true));
                 if (adata(16, feat(2) + feat(3) * 100) == 8)
                 {
-                    if (config::instance().extrahelp)
+                    if (config::get<bool>("game.extra_help"))
                     {
                         if (gdata(206) == 0)
                         {
@@ -13860,7 +13861,7 @@ void label_2206()
             }
             if (feat(1) >= 24 && feat(1) <= 28)
             {
-                if (config::instance().extrahelp)
+                if (config::get<bool>("game.extra_help"))
                 {
                     if (gdata(205) == 0)
                     {
@@ -14284,7 +14285,7 @@ turn_result_t try_to_open_locked_door()
             {
                 screenupdate = -1;
                 update_screen();
-                await(config::instance().animewait * 5);
+                await(config::get<int>("anime.anime_wait") * 5);
                 return turn_result_t::turn_end;
             }
             feat(2) = 0;
@@ -14345,7 +14346,7 @@ turn_result_t try_to_open_locked_door()
     }
     if (cc == 0)
     {
-        await(config::instance().animewait * 5);
+        await(config::get<int>("anime.anime_wait") * 5);
     }
     return turn_result_t::turn_end;
 }
@@ -14613,7 +14614,7 @@ label_22191_internal:
         attackdmg = dmg;
         if (cc == 0)
         {
-            if (config::instance().attackanime)
+            if (config::get<bool>("anime.attack_anime"))
             {
                 aniref = dmg * 100 / cdata[tc].max_hp;
                 play_animation(12);
@@ -15696,7 +15697,7 @@ void do_play_scene()
     {
         gdata_played_scene = sceneid;
     }
-    if (config::instance().story == 0 || (en == 1 && sceneid != 0))
+    if (!config::get<bool>("game.story") || (en == 1 && sceneid != 0))
     {
         return;
     }
@@ -16145,7 +16146,7 @@ void weather_changes()
         }
         if (gdata_weather == 4)
         {
-            if (config::instance().extrahelp)
+            if (config::get<bool>("game.extra_help"))
             {
                 if (gdata(211) == 0)
                 {
@@ -16163,7 +16164,7 @@ void weather_changes()
         }
         if (gdata_weather == 2)
         {
-            if (config::instance().extrahelp)
+            if (config::get<bool>("game.extra_help"))
             {
                 if (gdata(212) == 0)
                 {
@@ -16181,7 +16182,7 @@ void weather_changes()
         }
         if (gdata_weather == 1)
         {
-            if (config::instance().extrahelp)
+            if (config::get<bool>("game.extra_help"))
             {
                 if (gdata(213) == 0)
                 {
@@ -16236,7 +16237,7 @@ void weather_changes()
     }
     if (gdata_continuous_active_hours >= 15)
     {
-        if (config::instance().extrahelp)
+        if (config::get<bool>("game.extra_help"))
         {
             if (gdata(209) == 0)
             {
@@ -16254,7 +16255,7 @@ void weather_changes()
     }
     if (cdata[0].nutrition < 5000)
     {
-        if (config::instance().extrahelp)
+        if (config::get<bool>("game.extra_help"))
         {
             if (gdata(210) == 0)
             {
@@ -16563,7 +16564,7 @@ void conquer_lesimas()
 
     while (1)
     {
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         key_check();
         cursor_check();
         if (key == key_cancel)

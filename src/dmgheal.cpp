@@ -554,9 +554,9 @@ int dmghp(int victim_id, int amount, int damage_source, int element, int element
         {
             if (victim.max_hp / 4 > victim.hp)
             {
-                if (config::instance().sound)
+                if (config::get<bool>("screen.sound"))
                 {
-                    if (config::instance().heart == 1)
+                    if (config::get<bool>("screen.heartbeat"))
                     {
                         if (!CHECKPLAY(32))
                         {

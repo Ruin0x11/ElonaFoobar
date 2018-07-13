@@ -73,7 +73,7 @@ label_19341_internal:
                 txt(i18n::s.get_enum("core.locale.blending.sounds", rnd(2)));
             }
             redraw();
-            await(config::instance().animewait * 5);
+            await(config::get<int>("anime.anime_wait") * 5);
             gdata_minute = 0;
             cc = 0;
             --cdata[cc].continuous_action_turn;
@@ -846,7 +846,7 @@ label_1925_internal:
     pos(wx + 10, wy + wh - 100);
     gcopy(3, 960, 96, 80, 90);
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, 0);
@@ -977,7 +977,7 @@ label_1928_internal:
     pos(wx + 10, wy + wh - 100);
     gcopy(3, 960, 96, 80, 90);
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     ELONA_GET_SELECTED_ITEM(p, 0);

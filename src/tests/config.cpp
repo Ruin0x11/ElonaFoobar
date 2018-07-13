@@ -102,8 +102,8 @@ config def {
     bar = "baz"
 })", R"(config core {})");
 
-    REQUIRE(conf.get<bool>("core.config.foo") == false);
-    REQUIRE(conf.get<std::string>("core.config.bar") == "baz");
+    REQUIRE(conf.get_option<bool>("core.config.foo") == false);
+    REQUIRE(conf.get_option<std::string>("core.config.bar") == "baz");
 }
 
 TEST_CASE("Test loading config with out-of-bounds value", "[Config: Loading]")
@@ -125,8 +125,8 @@ config def {
     bar = -1
 })");
 
-    REQUIRE(conf.get<int>("core.config.foo") == 100);
-    REQUIRE(conf.get<int>("core.config.bar") == 0);
+    REQUIRE(conf.get_option<int>("core.config.foo") == 100);
+    REQUIRE(conf.get_option<int>("core.config.bar") == 0);
 }
 
 TEST_CASE("Test value getter", "[Config: Loading]")
@@ -139,8 +139,8 @@ config def {
     REQUIRE_NOTHROW(conf.bind_getter("core.config.foo", [&]() { return "hoge"; }));
     REQUIRE_THROWS(conf.bind_getter("core.config.baz", [&]() { return "hoge"; }));
 
-    REQUIRE(conf.get<std::string>("core.config.foo") == "hoge");
-    REQUIRE_THROWS(conf.get<std::string>("core.config.baz"));
+    REQUIRE(conf.get_option<std::string>("core.config.foo") == "hoge");
+    REQUIRE_THROWS(conf.get_option<std::string>("core.config.baz"));
 }
 
 TEST_CASE("Test value setter", "[Config: Loading]")
@@ -155,11 +155,11 @@ config def {
     REQUIRE_NOTHROW(conf.bind_setter<std::string>("core.config.foo", [&](auto value) { result = value; }));
     REQUIRE_THROWS(conf.bind_setter<std::string>("core.config.baz", [&](auto value) { result = value; }));
 
-    REQUIRE_NOTHROW(conf.set("core.config.foo", "hoge"));
+    REQUIRE_NOTHROW(conf.set_option("core.config.foo", "hoge"));
     REQUIRE(result == "hoge");
 
     result = "";
-    REQUIRE_THROWS(conf.set("core.config.baz", "hoge"));
+    REQUIRE_THROWS(conf.set_option("core.config.baz", "hoge"));
     REQUIRE(result == "");
 }
 
@@ -191,5 +191,5 @@ config core {
 )");
 
     REQUIRE_NOTHROW(conf.inject_enum("core.config.foo", {"foo", "bar", "baz"}, "baz"));
-    REQUIRE(conf.get<std::string>("core.config.foo") == "baz");
+    REQUIRE(conf.get_option<std::string>("core.config.foo") == "baz");
 }

@@ -100,7 +100,7 @@ int show_prompt(int x, int y, int width, show_prompt_type type, int val4)
             font(14 - en * 2);
         }
         redraw();
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         key_check();
         cursor_check();
         int ret = -1;
@@ -180,7 +180,7 @@ void input_number_dialog(int x, int y, int max_number)
         mes(inputlog2);
         color(0, 0, 0);
         redraw();
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         key_check();
         if (key == key_enter)
         {
@@ -301,7 +301,7 @@ bool input_text_dialog(
             --cnt;
             continue;
         }
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         window2(x, y, dx, 36, 0, 2);
         draw("label_input", x + dx / 2 - 60, y - 32);
 
@@ -431,14 +431,15 @@ void key_check(key_wait_delay_t delay_type)
     bool delay_enter = false;
     static int enter_held_frames{};
     static int shortcut_held_frames{};
+    int alert_wait = config::get<int>("anime.alert_wait");
 
     if (msgalert == 1)
     {
-        if (config::instance().alert > 1)
+        if (alert_wait > 1)
         {
-            for (int i = 0; i < config::instance().alert; ++i)
+            for (int i = 0; i < alert_wait; ++i)
             {
-                await(config::instance().wait1);
+                await(config::get<int>("anime.general_wait"));
             }
             keylog = "";
         }
@@ -610,7 +611,7 @@ void key_check(key_wait_delay_t delay_type)
         enter_held_frames = 0;
     }
 
-    if (config::instance().joypad)
+    if (config::get<bool>("input.joypad"))
     {
         int j_at_m19 = 0;
         DIGETJOYSTATE(j_at_m19, 0);
@@ -833,15 +834,15 @@ void key_check(key_wait_delay_t delay_type)
         {
             if (keybd_attacking != 0)
             {
-                if (keybd_wait % config::instance().attackwait != 0)
+                if (keybd_wait % config::get<int>("input.attack_wait") != 0)
                 {
                     key = ""s;
                 }
             }
-            else if (config::instance().scroll == 0)
+            else if (config::get<bool>("anime.scroll") == 0)
             {
                 if (keybd_wait
-                    < config::instance().walkwait * config::instance().startrun)
+                    < config::instance().walkwait * config::get<int>("input.start_run_wait"))
                 {
                     if (keybd_wait % config::instance().walkwait != 0)
                     {
@@ -853,7 +854,7 @@ void key_check(key_wait_delay_t delay_type)
                     running = 1;
                     if (keybd_wait < 100000)
                     {
-                        if (keybd_wait % config::instance().runwait != 0)
+                        if (keybd_wait % config::get<int>("input.run_wait") != 0)
                         {
                             key = ""s;
                         }
@@ -870,11 +871,11 @@ void key_check(key_wait_delay_t delay_type)
                     }
                 }
             }
-            else if (keybd_wait > config::instance().startrun)
+            else if (keybd_wait > config::get<int>("input.start_run_wait"))
             {
-                if (config::instance().runscroll == 0)
+                if (!config::get<bool>("anime.scroll_when_run"))
                 {
-                    if (keybd_wait % config::instance().runwait != 0)
+                    if (keybd_wait % config::get<int>("input.run_wait") != 0)
                     {
                         key = "";
                     }
@@ -882,16 +883,17 @@ void key_check(key_wait_delay_t delay_type)
                 running = 1;
             }
         }
-        else if (keybd_wait < config::instance().select_fast_start * config::instance().select_wait)
+        else if (keybd_wait < config::get<int>("input.select_fast_start_wait")
+                 * config::get<int>("input.select_wait"))
         {
-            if (keybd_wait % config::instance().select_wait != 0)
+            if (keybd_wait % config::get<int>("input.select_wait") != 0)
             {
                 key = "";
             }
         }
         else if (keybd_wait < 1000)
         {
-            if (keybd_wait % config::instance().select_fast_wait != 0)
+            if (keybd_wait % config::get<int>("input.select_fast_wait") != 0)
             {
                 key = ""s;
             }
@@ -915,7 +917,7 @@ void key_check(key_wait_delay_t delay_type)
     }
 
     bool shortcut{};
-    int shortcut_delay = config::instance().keywait;
+    int shortcut_delay = config::get<int>("input.key_wait");
     if (delay_type == key_wait_delay_t::walk_run)
     {
         shortcut_delay = 1;
@@ -970,7 +972,7 @@ void wait_key_released()
 {
     while (1)
     {
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         int result{};
         result = stick(stick_key::mouse_left | stick_key::mouse_right);
         if (result == 0)
@@ -993,7 +995,7 @@ void wait_key_pressed(bool only_enter_or_cancel)
 
     while (1)
     {
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         key_check();
         if (only_enter_or_cancel)
         {

@@ -745,7 +745,7 @@ void proc_event()
             gmode(4, p(3) * 10);
             gcopy_c(7, i / 3 % 2 * 192, 192, 96, 96, 192, 96);
             redraw();
-            await(config::instance().animewait * 3.5);
+            await(config::get<int>("anime.anime_wait") * 3.5);
         }
         gmode(2);
         update_entire_screen();
@@ -873,7 +873,7 @@ void proc_event()
                 {
                     snd(45);
                 }
-                await(config::instance().animewait);
+                await(config::get<int>("anime.anime_wait"));
             }
         }
         break;

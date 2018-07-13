@@ -3994,7 +3994,7 @@ label_2181_internal:
         break;
     case 464:
     {
-        bool fastest = config::instance().animewait == 0;
+        bool fastest = config::get<int>("anime.anime_wait") == 0;
         std::string messages;
 
         animeload(10, tc);
@@ -4030,7 +4030,7 @@ label_2181_internal:
             else
             {
                 txt(message);
-                await(config::instance().animewait * 4);
+                await(config::get<int>("anime.anime_wait") * 4);
                 redraw();
             }
         }

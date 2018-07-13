@@ -103,7 +103,7 @@ void anime_halt()
     gsel(0);
     for (int cnt = 0; cnt < 12; ++cnt)
     {
-        await(config::instance().wait1 / 3);
+        await(config::get<int>("anime.general_wait") / 3);
         draw("label_more", x_at_txtfunc, y_at_txtfunc + 12 - cnt, 120, cnt * 2 + 1);
         redraw();
     }
@@ -111,7 +111,7 @@ void anime_halt()
     snd(20);
     for (int cnt = 0; cnt < 7; ++cnt)
     {
-        await(config::instance().wait1 / 3);
+        await(config::get<int>("anime.general_wait") / 3);
         pos(x_at_txtfunc, y_at_txtfunc);
         gcopy(3, 672, 504, 120, 24);
         if (cnt != 6)
@@ -248,10 +248,10 @@ void txt_conv()
         {
             msg_newline();
             tnew = 0;
-            if (config::instance().msgtrans)
+            if (config::get<int>("message.transparency"))
             {
                 p_at_txtfunc = (windoww - inf_msgx) / 192;
-                gmode(4, config::instance().msgtrans * 20);
+                gmode(4, config::get<int>("message.transparency") * 20);
                 for (int i = 0; i < p_at_txtfunc + 1; ++i)
                 {
                     if (i == p_at_txtfunc)
@@ -266,7 +266,7 @@ void txt_conv()
                     gcopy(3, 496, 536, x_at_txtfunc, inf_msgspace * 3);
                 }
             }
-            if (config::instance().msgaddtime)
+            if (config::get<bool>("message.add_timestamps"))
             {
                 msgtemp(0) = u8"["s + gdata_minute + u8"] " + msgtemp(0);
             }

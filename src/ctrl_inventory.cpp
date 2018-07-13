@@ -1032,7 +1032,7 @@ label_2061_internal:
         }
     }
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     invmark(invctrl) = page * 1000 + cs;

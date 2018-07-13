@@ -265,9 +265,9 @@ struct MessageBox
         }
         else
         {
-            if (input.is_pressed(key::enter, config::instance().keywait)
+            if (input.is_pressed(key::enter, config::get<int>("input.key_wait"))
                 || input.is_pressed(
-                       key::keypad_enter, config::instance().keywait))
+                       key::keypad_enter, config::get<int>("input.key_wait")))
             {
                 // New line.
                 buffer += '\n';

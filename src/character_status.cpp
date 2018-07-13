@@ -40,7 +40,7 @@ void modcorrupt(int prm_815)
         {
             txtef(8);
             txt(i18n::s.get("core.locale.chara.corruption.symptom"));
-            if (config::instance().extrahelp)
+            if (config::get<bool>("game.extra_help"))
             {
                 if (gdata(215) == 0)
                 {

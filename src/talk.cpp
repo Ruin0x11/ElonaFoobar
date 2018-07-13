@@ -48,7 +48,7 @@ void talk_to_npc()
     keyhalt = 1;
     if (cdata[tc].character_role == 1005)
     {
-        if (config::instance().extrahelp)
+        if (config::get<bool>("game.extra_help"))
         {
             if (gdata(207) == 0)
             {
@@ -68,7 +68,7 @@ void talk_to_npc()
     }
     if (cdata[tc].character_role == 7)
     {
-        if (config::instance().extrahelp)
+        if (config::get<bool>("game.extra_help"))
         {
             if (gdata(208) == 0)
             {
@@ -367,7 +367,7 @@ talk_result_t talk_house_visitor()
                     itemcreate(-1, 704, -1, -1, 0);
                     txt(i18n::s.get("core.locale.food.vomits", cdata[tc]));
                     snd(104);
-                    await(config::instance().animewait / 2);
+                    await(config::get<int>("anime.anime_wait") / 2);
                     update_screen();
                 }
             }
@@ -1412,7 +1412,7 @@ label_2258_internal:
     }
     cs_bk = cs;
     redraw();
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     int a{};

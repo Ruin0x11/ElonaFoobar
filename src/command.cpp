@@ -1186,7 +1186,7 @@ label_1953_internal:
         render_hud();
         redraw();
     }
-    await(config::instance().wait1);
+    await(config::get<int>("anime.general_wait"));
     key_check();
     cursor_check();
     if (key == key_target)
@@ -2886,7 +2886,7 @@ turn_result_t do_movement_command()
         tc = cellchara;
         if (cdata[tc].relationship >= 10
             || (cdata[tc].relationship == -1
-                && !config::instance().attack_neutral_npcs)
+                && !config::get<bool>("game.attack_neutral_npcs"))
             || (cdata[tc].relationship == 0
                 && (adata(16, gdata_current_map) == 101
                     || adata(16, gdata_current_map) == 102 || key_shift)))
@@ -2897,7 +2897,7 @@ turn_result_t do_movement_command()
                 {
                     goto label_2204_internal;
                 }
-                if (config::instance().scroll)
+                if (config::get<bool>("anime.scroll"))
                 {
                     cdata[0].next_position.x = cdata[tc].position.x;
                     cdata[0].next_position.y = cdata[tc].position.y;

@@ -60,7 +60,7 @@ main_menu_result_t character_making_select_race()
         list(0, listmax) = 0;
         ++listmax;
     }
-    if (config::instance().extrarace)
+    if (config::get<bool>("balance.extra_race"))
     {
         for (const auto& race : the_race_db.get_available_races(true))
         {
@@ -140,7 +140,7 @@ main_menu_result_t character_making_select_race()
             show_race_or_class_info(0);
         }
         redraw();
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         key_check();
         cursor_check();
         ELONA_GET_SELECTED_INDEX(p);
@@ -234,7 +234,7 @@ main_menu_result_t character_making_select_sex(bool advanced_to_next_menu)
         }
         cs_bk = cs;
         redraw();
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         key_check();
         cursor_check();
         if (key == key_select(0))
@@ -289,7 +289,7 @@ main_menu_result_t character_making_select_class(bool advanced_to_next_menu)
         listn(1, listmax) = class_.get().id;
         ++listmax;
     }
-    if (config::instance().extraclass)
+    if (config::get<bool>("balance.extra_class"))
     {
         for (const auto& class_ : the_class_db.get_available_classes(true))
         {
@@ -351,7 +351,7 @@ main_menu_result_t character_making_select_class(bool advanced_to_next_menu)
             show_race_or_class_info(1);
             redraw();
         }
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         key_check();
         cursor_check();
         ELONA_GET_SELECTED_INDEX(p);
@@ -496,7 +496,7 @@ main_menu_result_t character_making_role_attributes(bool advanced_to_next_menu)
         }
         cs_bk = cs;
         redraw();
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         key_check();
         cursor_check();
         ELONA_GET_SELECTED_INDEX_THIS_PAGE(p);
@@ -687,7 +687,7 @@ main_menu_result_t character_making_select_alias(bool advanced_to_next_menu)
         }
 
         redraw();
-        await(config::instance().wait1);
+        await(config::get<int>("anime.general_wait"));
         key_check();
         cursor_check();
         ELONA_GET_SELECTED_INDEX_THIS_PAGE(p);
