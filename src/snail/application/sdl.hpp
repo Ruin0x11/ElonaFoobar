@@ -74,6 +74,18 @@ public:
         return _window_pos;
     }
 
+    bool has_subwindow() const noexcept
+    {
+        return _has_subwindow;
+    }
+
+    bool was_size_changed_just_now() noexcept
+    {
+        bool result = _size_changed_just_now;
+        _size_changed_just_now = false;
+        return result;
+    }
+
     bool was_focus_lost_just_now() noexcept
     {
         bool result = _focus_lost_just_now;
@@ -164,6 +176,9 @@ public:
     void set_display_mode(const std::string&);
     void set_display_mode(const ::SDL_DisplayMode);
 
+    // For Android
+    void set_subwindow_display_mode(const std::string&);
+    void set_fullscreen_scale(float);
 
 private:
     detail::sdl_core _sdl_core;
@@ -181,6 +196,8 @@ private:
 
     size_t _frame = 0;
     bool _will_quit = false;
+    bool _has_subwindow = false;
+    bool _size_changed_just_now = false;
     bool _focus_lost_just_now = false;
     std::unique_ptr<window> _window;
     std::unique_ptr<renderer> _renderer;

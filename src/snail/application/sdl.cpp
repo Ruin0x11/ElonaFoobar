@@ -6,6 +6,18 @@
 #include <sstream>
 #include "../input.hpp"
 #include "../touch_input.hpp"
+#include <boost/lexical_cast.hpp>
+
+
+#include <android/log.h>
+
+#define  LOG_TAG    "ElonaFoobar"
+
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+#define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG,__VA_ARGS__)
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+
 
 
 namespace elona
@@ -199,15 +211,24 @@ void application::on_size_changed(const ::SDL_WindowEvent& event)
 {
     int new_width = event.data1;
     int new_height = event.data2;
+    LOGD("BEF %d %d %d %d", _physical_width, _physical_height, _width, _height);
 
     _physical_width = new_width;
     _physical_height = new_height;
 
-    if (!is_android)
+    if (is_android && !has_subwindow())
     {
-        _width = new_width;
-        _height = new_height;
+        bool device_is_portrait = _physical_width < _physical_height;
+        bool window_is_portrait = _width < _height;
+        if (device_is_portrait != window_is_portrait)
+        {
+            int tmp = _width;
+            _width = _height;
+            _height = tmp;
+            LOGD("ROT %d %d", _width, _height);
+        }
     }
+    LOGD("SIZ %d %d %d %d", _physical_width, _physical_height, _width, _height);
 
     update_orientation();
 
@@ -215,6 +236,8 @@ void application::on_size_changed(const ::SDL_WindowEvent& event)
     {
         touch_input::instance().initialize_quick_actions();
     }
+
+    _size_changed_just_now = true;
 }
 
 
@@ -340,19 +363,64 @@ void application::set_display_mode(::SDL_DisplayMode display_mode)
         _window->set_size(display_mode.w, display_mode.h);
     }
 
-    // We want the actual rendered size kept separate from the
-    // device's size on Android.
-    if (!is_android)
+    // Keep the actual rendered size separate from the device's size
+    // on Android.
+    if (is_android)
+    {
+        _physical_width = display_mode.w;
+        _physical_height = display_mode.h;
+    }
+    else
     {
         _width = display_mode.w;
         _height = display_mode.h;
-        _physical_width = _width;
-        _physical_height = _height;
     }
 
     _window->move_to_center();
 
     update_orientation();
+}
+
+void application::set_subwindow_display_mode(const std::string& mode)
+{
+    size_t found;
+
+    // Parse a string like "800x600" for width and height
+    if ((found = mode.find("x")) != std::string::npos)
+    {
+        std::string width_s = mode.substr(0, found);
+        std::string height_s = mode.substr(found+1);
+
+        try
+        {
+            int width = boost::lexical_cast<int>(width_s);
+            int height = boost::lexical_cast<int>(height_s);
+
+            if (width < 800 || height < 600)
+            {
+                throw std::logic_error("Subwindow resolution too small: " + mode);
+            }
+
+            _width = width;
+            _height = height;
+        }
+        catch (boost::bad_lexical_cast)
+        {
+            throw std::logic_error("Invalid subwindow mode string: " + mode);
+        }
+    }
+    else
+    {
+        throw std::logic_error("Invalid subwindow mode string: " + mode);
+    }
+
+    _has_subwindow = true;
+}
+
+void application::set_fullscreen_scale(float scale)
+{
+    _width = (float)_physical_width / scale;
+    _height = (float)_physical_height / scale;
 }
 
 void application::update_orientation()
@@ -424,26 +492,28 @@ static rect calculate_android_window_pos_landscape(
 
 rect application::calculate_android_window_pos()
 {
-    int x, y, width, height;
-
-    x = 0;
-    y = 0;
-
-    if (_orientation == screen_orientation::portrait)
+    if (_has_subwindow)
     {
-        return calculate_android_window_pos_portrait(_width,
-                                                     _height,
-                                                     _physical_width);
+        if (_orientation == screen_orientation::portrait)
+        {
+            return calculate_android_window_pos_portrait(_width,
+                                                         _height,
+                                                         _physical_width);
+        }
+        else
+        {
+            return calculate_android_window_pos_landscape(_width,
+                                                          _height,
+                                                          _physical_width,
+                                                          _physical_height);
+        }
     }
     else
     {
-        return calculate_android_window_pos_landscape(_width,
-                                                      _height,
-                                                      _physical_width,
-                                                      _physical_height);
+        LOGD("WWWW %d %d %d", _physical_width, _physical_height,
+             static_cast<int>(_orientation));
+        return {0, 0, _physical_width, _physical_height};
     }
-
-    return {x, y, width, height};
 }
 
 

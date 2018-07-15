@@ -113,4 +113,8 @@ void show_title(const std::string& title);
 
 
 
+void handle_window_resize();
+
+
+
 } // namespace elona

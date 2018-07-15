@@ -19,30 +19,34 @@ config def {
 
             fullscreen_android = {
                 platform = "android"
+                preload = true
                 default = false
             }
 
             fullscreen_scale = {
                 platform = "android"
+                preload = true
 
-                default = 4
+                default = 10 # * 0.25 = 2.50
                 min = 4 # * 0.25 = 1.00
-                max = 8 # * 0.25 = 2.00
+                max = 12 # * 0.25 = 3.00
             }
 
-            classic_display_mode = {
+            window_mode = {
                 platform = "android"
+                preload = true
 
                 type = "enum"
-                preload = true
-                # These are the screen resolutions that are supported by vanilla Elona.
-                variants = ["800x600", "800x696", "1024x768",
-                    "1152x864", "1280x768", "1280x1024"]
-                default = "800x600"
+                translate_variants = false
+                variants = ["800x600", "1024x600", "1280x720",
+                    "800x696", "1024x768", "1152x864",
+                    "1280x768", "1280x1024"]
+                default = "1024x600"
             }
 
             orientation = {
                 platform = "android"
+                preload = true
 
                 type = "enum"
                 variants = ["sensor_landscape", "sensor_portrait", "sensor",
@@ -297,7 +301,13 @@ config def {
             leash_icon = true
             autopick = true
             autosave = false
-            damage_popup = true
+            damage_popup = {
+                default = true
+
+                platform_default {
+                    android = false
+                }
+            }
 
             startup_script = {
                 default = ""

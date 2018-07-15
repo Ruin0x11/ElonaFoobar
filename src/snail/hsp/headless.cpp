@@ -101,7 +101,10 @@ void line(int, int, int, int, const snail::color&)
 {
 }
 
-void title(const std::string&, const std::string&, window::fullscreen_mode_t)
+void title(const std::string&,
+           const std::string&,
+           window::fullscreen_mode_t,
+           float scale)
 {
 }
 

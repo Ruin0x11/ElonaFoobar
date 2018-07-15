@@ -2748,4 +2748,15 @@ void show_title(const std::string& title)
 
 
 
+void handle_window_resize()
+{
+    windoww = snail::application::instance().width();
+    windowh = snail::application::instance().height();
+    initialize_ui_constants();
+    buffer(4, windoww, windowh);
+    buffer(8, windoww, windowh);
+}
+
+
+
 } // namespace elona

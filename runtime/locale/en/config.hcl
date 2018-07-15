@@ -49,6 +49,11 @@ locale {
                     no = "Off"
                 }
 
+                windowed_fullscreen {
+                    yes = "Fullscreen"
+                    no = "Windowed"
+                }
+
                 unsupported {
                     yes = "No(unsupported)"
                     no = "No(unsupported)"
@@ -86,6 +91,16 @@ locale {
                 display_mode {
                     name = "Screen Resolution*"
                     # Variants are injected at runtime.
+                }
+                fullscreen_android {
+                    name = "Screen Mode*"
+                    yes_no = core.locale.config.common.yes_no.windowed_fullscreen
+                }
+                fullscreen_scale {
+                    name = "Fullscreen Scale*"
+                }
+                window_mode {
+                    name = "Window Size*"
                 }
                 orientation {
                     name = "Screen Orientation"

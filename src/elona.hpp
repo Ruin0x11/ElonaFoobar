@@ -540,7 +540,8 @@ void title(
     const std::string& title_str,
     const std::string& display_mode = "",
     snail::window::fullscreen_mode_t fullscreen_mode =
-        snail::window::fullscreen_mode_t::windowed);
+    snail::window::fullscreen_mode_t::windowed,
+    float scale = 1.0);
 
 
 int wpeek(int x, size_t index);

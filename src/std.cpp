@@ -16,6 +16,7 @@
 #include "elona.hpp"
 #include "log.hpp"
 #include "macro.hpp"
+#include "ui.hpp"
 #include "util.hpp"
 #include "variables.hpp"
 #ifdef ELONA_OS_WINDOWS
@@ -104,8 +105,15 @@ void await(int msec)
 {
     snail::hsp::await(msec);
 
-    // Potentially quicksave if SDL detects that the app's focus was
-    // lost and the player is being queried for input at pc_turn().
+    if (snail::application::instance().was_size_changed_just_now())
+    {
+        handle_window_resize();
+        LOGD("SIZECHANGE %d %d", windoww, windowh);
+    }
+
+    // On Android, potentially quicksave if SDL detects that the app's
+    // focus was lost and the player is being queried for input in
+    // pc_turn().
     if (defines::is_android
         && snail::application::instance().was_focus_lost_just_now())
     {
@@ -827,9 +835,10 @@ std::string strmid(const std::string& source, int pos, int length)
 void title(
     const std::string& title_str,
     const std::string& display_mode,
-    snail::window::fullscreen_mode_t fullscreen_mode)
+    snail::window::fullscreen_mode_t fullscreen_mode,
+    float scale)
 {
-    snail::hsp::title(title_str, display_mode, fullscreen_mode);
+    snail::hsp::title(title_str, display_mode, fullscreen_mode, scale);
 }
 
 

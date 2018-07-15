@@ -121,7 +121,9 @@ int current_buffer;
 std::vector<TexBuffer> tex_buffers;
 ::SDL_Texture* tmp_buffer;
 ::SDL_Texture* tmp_buffer_slow;
-::SDL_Texture* android_display_region;
+::SDL_Texture* android_subwindow_display_region;
+::SDL_Texture* android_landscape_display_region;
+::SDL_Texture* android_portrait_display_region;
 
 TexBuffer& current_tex_buffer()
 {
@@ -138,6 +140,9 @@ void setup_buffers()
         1024,
         1024));
 
+    int max_size = std::max(application::instance().width(),
+                            application::instance().height());
+
     // Slow buffer for texture copies larger than 1024 pixels.
     // The only real places where this gets used seem to be when
     // rendering the message box and when rendering fullscreen
@@ -150,19 +155,67 @@ void setup_buffers()
         // larger than the size of the screen, because the player wouldn't
         // see the rest of the texture. That should save some cycles on less
         // powerful GPUs.
-        std::max(1024, application::instance().width()),
-        std::max(1024, application::instance().height())));
+        std::max(1024, max_size),
+        std::max(1024, max_size)));
 
-    if (application::is_android) {
-        // Output texture for Android. This is so the game window can
-        // be placed such that it covers only part of the actual
-        // screen, or scaled up and down.
-    detail::android_display_region = snail::detail::enforce_sdl(::SDL_CreateTexture(
-        application::instance().get_renderer().ptr(),
-        SDL_PIXELFORMAT_ARGB8888,
-        SDL_TEXTUREACCESS_TARGET,
-        application::instance().width(),
-        application::instance().height()));
+    if (application::is_android)
+    {
+        if (application::instance().has_subwindow())
+        {
+            // Subwindow texture for Android. This is so the game window
+            // can be placed such that it covers only part of the actual
+            // screen, or scaled up and down.
+            detail::android_subwindow_display_region = snail::detail::enforce_sdl(::SDL_CreateTexture(
+                application::instance().get_renderer().ptr(),
+                SDL_PIXELFORMAT_ARGB8888,
+                SDL_TEXTUREACCESS_TARGET,
+                application::instance().width(),
+                application::instance().height()));
+
+            application::instance().register_finalizer([]() {
+                ::SDL_DestroyTexture(detail::android_subwindow_display_region);
+            });
+        }
+        else
+        {
+            // Portait and landscape target textures. Could be
+            // optimized by freeing/allocating a single texture on
+            // rotation change.
+
+            // Assumption is width/height are landscape-based.
+            int width =  application::instance().width();
+            int height = application::instance().height();
+
+            bool is_portrait = width < height;
+
+            if (is_portrait)
+            {
+                int tmp = width;
+                width = height;
+                height = tmp;
+            }
+
+            LOGD("ILANDSCAPE %d %d", width, height);
+            LOGD("IPORTRAIT  %d %d", height, width);
+
+            detail::android_landscape_display_region =
+                snail::detail::enforce_sdl(::SDL_CreateTexture(
+                    application::instance().get_renderer().ptr(),
+                    SDL_PIXELFORMAT_ARGB8888,
+                    SDL_TEXTUREACCESS_TARGET,
+                    width, height));
+            detail::android_portrait_display_region =
+                snail::detail::enforce_sdl(::SDL_CreateTexture(
+                    application::instance().get_renderer().ptr(),
+                    SDL_PIXELFORMAT_ARGB8888,
+                    SDL_TEXTUREACCESS_TARGET,
+                    height, width));
+
+            application::instance().register_finalizer([]() {
+                ::SDL_DestroyTexture(detail::android_portrait_display_region);
+                ::SDL_DestroyTexture(detail::android_landscape_display_region);
+            });
+        }
     }
 
     application::instance().register_finalizer([]() {
@@ -296,11 +349,6 @@ struct MessageBox
                 // New line.
                 buffer += '\n';
             }
-
-            if (buffer.size() > 0)
-            {
-                LOGD("BUF %s", buffer.c_str());
-            }
         }
     }
 
@@ -386,21 +434,47 @@ void pos(int x, int y)
     detail::current_tex_buffer().y = y;
 }
 
-static void redraw_android()
+static ::SDL_Texture* get_android_display_region()
+{
+    SDL_Texture* target;
+
+    if (application::instance().has_subwindow())
+    {
+        target = detail::android_subwindow_display_region;
+    }
+    else if (application::instance().orientation() ==
+             application::screen_orientation::portrait)
+    {
+        target = detail::android_portrait_display_region;
+    }
+    else
+    {
+        target = detail::android_landscape_display_region;
+    }
+
+    return target;
+}
+
+static void redraw_android_display_region()
 {
     auto& renderer = application::instance().get_renderer();
     rect pos = application::instance().window_pos();
 
     renderer.set_render_target(nullptr);
     renderer.clear();
-    renderer.render_image(detail::android_display_region,
+    renderer.render_image(get_android_display_region(),
                           pos.x, pos.y,
                           pos.width, pos.height);
+}
+
+static void redraw_android()
+{
+    redraw_android_display_region();
 
     auto itr = font_detail::font_cache.find({14, font_t::style_t::regular});
     if (itr != std::end(font_detail::font_cache))
     {
-        renderer.set_font(itr->second);
+        application::instance().get_renderer().set_font(itr->second);
     }
     touch_input::instance().draw_quick_actions();
 }
@@ -410,7 +484,7 @@ void redraw()
     ::SDL_Texture* target = nullptr;
     if (application::is_android)
     {
-        target = detail::android_display_region;
+        target = get_android_display_region();
     }
 
     auto& renderer = application::instance().get_renderer();
@@ -826,18 +900,36 @@ void line(int x1, int y1, int x2, int y2, const snail::color& color)
 }
 
 
+static void title_android(const std::string& display_mode, float scale)
+{
+    application::instance()
+        .set_display_mode(application::instance().get_default_display_mode());
+    application::instance()
+        .set_fullscreen_mode(window::fullscreen_mode_t::fullscreen);
+    if (display_mode != "")
+    {
+        // Window
+        application::instance().set_subwindow_display_mode(display_mode);
+    }
+    else
+    {
+        // Fullscreen
+        application::instance().set_fullscreen_scale(scale);
+    }
+}
+
 
 void title(
     const std::string& title_str,
     const std::string& display_mode,
-    window::fullscreen_mode_t fullscreen_mode)
+    window::fullscreen_mode_t fullscreen_mode,
+    float scale)
 {
     application::instance().initialize(title_str);
 
     if (application::is_android)
     {
-        application::instance().set_display_mode(application::instance().get_default_display_mode());
-        application::instance().set_fullscreen_mode(window::fullscreen_mode_t::fullscreen);
+        title_android(display_mode, scale);
     }
     else if (display_mode != "__unknown__")
     {

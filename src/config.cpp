@@ -258,8 +258,8 @@ void config_query_language()
 void load_config(const fs::path& hcl_file)
 {
     auto& conf = config::instance();
+    std::string orientation;
 
-    // TODO do inversions
     CONFIG_OPTION("anime.alert_wait"s,                int,         config::instance().alert);
     CONFIG_OPTION("anime.anime_wait"s,                int,         config::instance().animewait);
     CONFIG_OPTION("anime.attack_anime"s,              bool,        config::instance().attackanime);
@@ -384,10 +384,12 @@ void load_config(const fs::path& hcl_file)
         });
 
     conf.bind_setter<std::string>("core.config.screen.orientation",
-                                  &convert_and_set_requested_orientation);
+                                  [&orientation](auto value) { orientation = value; });
 
     std::ifstream ifs{filesystem::make_preferred_path_in_utf8(hcl_file.native())};
     conf.load(ifs, hcl_file.string(), false);
+
+    convert_and_set_requested_orientation(orientation);
 
     key_prev = key_northwest;
     key_next = key_northeast;
@@ -489,7 +491,7 @@ void load_config2(const fs::path& hcl_file)
     CONFIG_OPTION("ui.clock_x"s,          int,         inf_clockx);
     CONFIG_OPTION("ui.clock_w"s,          int,         inf_clockw);
     CONFIG_OPTION("ui.clock_h"s,          int,         inf_clockh);
-    CONFIG_OPTION("game.default_save"s,   std::string, defload);    // TODO runtime enum
+    CONFIG_OPTION("game.default_save"s,   std::string, defload);
     CONFIG_OPTION("debug.wizard"s,        bool,        config::instance().wizard);
     CONFIG_OPTION("screen.display_mode"s, std::string, config::instance().display_mode);
 

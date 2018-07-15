@@ -404,7 +404,7 @@ void initialize_elona()
         jp ? filesystem::dir::locale() / "jp"
            : filesystem::dir::locale() / "en");
 
-    initialize_ui_constants();
+    handle_window_resize();
     gsel(0);
     boxf();
     redraw();
@@ -418,8 +418,6 @@ void initialize_elona()
     pos(144, 752);
     picload(filesystem::dir::graphic() / u8"interface_ex3.png", 1);
 
-    buffer(4, windoww, windowh);
-    buffer(8, windoww, windowh);
     gsel(0);
     buffer(1, 1584, 1200);
     picload(filesystem::dir::graphic() / u8"item.bmp", 1);
@@ -758,6 +756,31 @@ void initialize_elona()
     }
 }
 
+static void initialize_screen()
+{
+    std::string display_mode = config::instance().display_mode;
+
+    if (defines::is_android)
+    {
+        if (config::instance().get<bool>("core.config.screen.fullscreen_android"))
+        {
+            display_mode = "";
+        }
+        else
+        {
+            display_mode = config::instance()
+                .get<std::string>("core.config.screen.window_mode");
+        }
+    }
+
+    int scale = config::instance().get<int>("core.config.screen.fullscreen_scale");
+
+    title(u8"Elona Foobar version "s + latest_version.short_string(),
+          display_mode,
+          config_get_fullscreen_mode(),
+          (float)scale * 0.25);
+}
+
 int run()
 {
     const fs::path config_file = filesystem::dir::exe() / u8"config.hcl";
@@ -770,9 +793,7 @@ int run()
     config::instance().init(config_def_file);
     load_config2(config_file);
 
-    title(u8"Elona Foobar version "s + latest_version.short_string(),
-          config::instance().display_mode,
-          config_get_fullscreen_mode());
+    initialize_screen();
 
     initialize_config(config_file);
     init_assets();

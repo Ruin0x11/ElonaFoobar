@@ -53,6 +53,11 @@ locale {
                     no = "無効"
                 }
 
+                windowed_fullscreen {
+                    yes = "フルスクリーン"
+                    no = "ウィンドウ"
+                }
+
                 unsupported {
                     yes = "オフ(未実装)"
                     no = "オフ(未実装)"
@@ -89,6 +94,16 @@ locale {
                 display_mode {
                     name = "画面の大きさ*"
                     # Variants are injected at runtime.
+                }
+                fullscreen_android {
+                    name = "画面モード*"
+                    yes_no = core.locale.config.common.yes_no.windowed_fullscreen
+                }
+                fullscreen_scale {
+                    name = "フルスクリーンスケール*"
+                }
+                window_mode {
+                    name = "ウィンドウの大きさ*"
                 }
                 orientation {
                     name = "ローテーション"

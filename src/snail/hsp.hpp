@@ -74,7 +74,8 @@ void line(int x1, int y1, int x2, int y2, const snail::color& color);
 void title(
     const std::string& title_str,
     const std::string& display_mode,
-    window::fullscreen_mode_t fullscreen_mode);
+    window::fullscreen_mode_t fullscreen_mode,
+    float scale);
 
 } // namespace hsp
 } // namespace snail
