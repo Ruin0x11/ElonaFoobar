@@ -1,4 +1,5 @@
 #include "ability.hpp"
+#include "asura/asura.hpp"
 #include "audio.hpp"
 #include "building.hpp"
 #include "calc.hpp"
@@ -89,10 +90,10 @@ label_17401:
     {
         if (fs::exists(filesystem::dir::tmp() / (u8"mdata_"s + mid + u8".s2")))
         {
-            int stat = dialog(
+            auto stat = dialog(
                 i18n::s.get("core.locale.map.prompt_initialize"),
-                3);
-            if (stat == 6)
+                dialog_type_t::warning_yes_no);
+            if (stat == asura::dialog::response::yes)
             {
                 ctrl_file(file_operation_t::_11);
             }

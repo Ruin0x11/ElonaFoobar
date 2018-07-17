@@ -400,7 +400,7 @@ void buffer(int window_id, int width = 0, int heihgt = 0);
 void color(int r, int g, int b);
 
 
-int dialog(const std::string& message, int = 0);
+asura::dialog::response dialog(const std::string& message, dialog_type_t = dialog_type_t::info_ok);
 
 
 

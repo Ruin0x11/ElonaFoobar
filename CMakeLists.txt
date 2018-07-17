@@ -51,6 +51,28 @@ enable_language(CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
+# Set Linux flag
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
+
+# Set the type of GUI to use
+if(LINUX)
+  file(GLOB PLATFORM_SRC src/asura/fltk/*.cpp)
+elseif(APPLE)
+  file(GLOB PLATFORM_SRC src/asura/cocoa/*.cpp)
+
+  # Compile .cpp as Objective-C++
+  set_source_files_properties(${PLATFORM_SRC} src/asura/asura.cpp PROPERTIES
+    COMPILE_FLAGS "-x objective-c++")
+elseif(MSVC)
+  file(GLOB PLATFORM_SRC src/asura/windows/*.cpp)
+else()
+  file(GLOB PLATFORM_SRC src/asura/reference/*.cpp)
+endif()
+
+
 # Source files
 set(CORE_SOURCES
   src/ability.cpp

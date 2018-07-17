@@ -107,4 +107,16 @@ enum class turn_result_t
     ctrl_inventory,
 };
 
+enum class dialog_type_t
+{
+    info_ok = 0,
+    warning_ok = 1,
+    info_yes_no = 2,
+    warning_yes_no = 3,
+    open_file = 16,
+    save_as = 17,
+    color_selection = 32,
+    color_selection_with_matrix = 33,
+};
+
 } // namespace elona

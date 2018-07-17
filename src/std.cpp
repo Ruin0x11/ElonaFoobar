@@ -7,6 +7,7 @@
 #include <sstream>
 
 
+#include "asura/asura.hpp"
 #include "snail/android.hpp"
 #include "snail/application.hpp"
 #include "snail/hsp.hpp"
@@ -261,70 +262,31 @@ void color(int r, int g, int b)
 
 
 
-#if defined(ELONA_OS_WINDOWS)
-std::wstring get_utf16(const std::string& str)
-{
-    if (str.empty())
-        return std::wstring();
-    int sz = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), 0, 0);
-    std::wstring res(sz, 0);
-    MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &res[0], sz);
-    return res;
-}
-
-int dialog_windows(const std::string& message, int option)
-{
-    UINT type = MB_ICONINFORMATION;
-    int ret = 0;
-    if (option == 1 || option == 3)
-    {
-        type = MB_ICONWARNING;
+asura::dialog::response dialog(const std::string& message, dialog_type_t option) {
+    asura::dialog::message_type type =
+        asura::dialog::message_type::information;
+    asura::dialog::response res = asura::dialog::response::ok;
+    if (option == dialog_type_t::warning_ok
+        || option == dialog_type_t::warning_yes_no) {
+        type = asura::dialog::message_type::warning;
     }
-    std::wstring message_wstr = get_utf16(message);
     switch (option)
     {
-    case 0: // Info, OK
-    case 1: // Warning, OK
-        MessageBoxW(NULL, message_wstr.c_str(), L"Message", MB_OK | type);
-        return DIALOG_OK;
-    case 2: // Info, Yes/No
-    case 3: // Warning, Yes/No
-        ret = MessageBoxW(
-            NULL, message_wstr.c_str(), L"Message", MB_YESNO | type);
-        if (ret == IDYES)
-        {
-            return DIALOG_YES;
-        }
-        else
-        {
-            return DIALOG_NO;
-        }
-    case 16: // Open file dialog
-    case 17: // Save as dialog
-    case 32: // Color selection
-    case 33: // Color selection with matrix
-    default: return 0;
+    case dialog_type_t::info_ok:
+    case dialog_type_t::warning_ok:
+        res = asura::dialog::ok(message, type);
+        return res;
+    case dialog_type_t::info_yes_no:
+    case dialog_type_t::warning_yes_no:
+        res = asura::dialog::yes_or_no(message, type);
+        return res;
+    case dialog_type_t::open_file:
+    case dialog_type_t::save_as:
+    case dialog_type_t::color_selection:
+    case dialog_type_t::color_selection_with_matrix:
+    default:
+        return res;
     }
-}
-#elif defined(ELONA_OS_MACOS)
-int dialog_macos(const std::string& message, int option)
-{
-    std::cout << message << std::endl;
-    return 1;
-}
-#endif
-
-int dialog(const std::string& message, int option)
-{
-#if defined(ELONA_OS_WINDOWS)
-    return dialog_windows(message, option);
-#elif defined(ELONA_OS_MACOS)
-    return dialog_macos(message, option);
-#else
-    UNUSED(message);
-    UNUSED(option);
-    return 0;
-#endif
 }
 
 
