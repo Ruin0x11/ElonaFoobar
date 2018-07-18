@@ -263,22 +263,26 @@ void color(int r, int g, int b)
 
 
 asura::dialog::response dialog(const std::string& message, dialog_type_t option) {
-    asura::dialog::message_type type =
-        asura::dialog::message_type::information;
-    asura::dialog::response res = asura::dialog::response::ok;
+    using namespace asura;
+
+    dialog::state state = {message};
+    dialog::message_type type =
+        dialog::message_type::information;
+    dialog::response res = dialog::response::ok;
+
     if (option == dialog_type_t::warning_ok
         || option == dialog_type_t::warning_yes_no) {
-        type = asura::dialog::message_type::warning;
+        type = dialog::message_type::warning;
     }
     switch (option)
     {
     case dialog_type_t::info_ok:
     case dialog_type_t::warning_ok:
-        res = asura::dialog::ok(message, type);
+        res = dialog::ok(state, type);
         return res;
     case dialog_type_t::info_yes_no:
     case dialog_type_t::warning_yes_no:
-        res = asura::dialog::yes_or_no(message, type);
+        res = dialog::yes_or_no(state, type);
         return res;
     case dialog_type_t::open_file:
     case dialog_type_t::save_as:

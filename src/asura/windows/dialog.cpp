@@ -14,9 +14,13 @@ static UINT get_message_type(dialog::message_type message_type)
     }
 }
 
-dialog::response ok(const std::string& message, dialog::message_type message_type)
+dialog::response ok(dialog::state& state, dialog::message_type message_type)
 {
-    std::wstring message_wstr = utf8_to_utf_16(message);
+    std::string message = state.message;
+    if (state.submessage != "")
+        message += "\n" + state.submessage;
+
+    std::wstring message_wstr = utf8_to_utf16(message);
     UINT type = get_message_type(message_type);
 
     MessageBoxW(NULL, message_wstr.c_str(), L"Message", MB_OK | type);
@@ -24,9 +28,13 @@ dialog::response ok(const std::string& message, dialog::message_type message_typ
     return dialog::response::ok;
 }
 
-dialog::response yes_or_no(const std::string& message, dialog::message_type message_type)
+dialog::response yes_or_no(dialog::state& state, dialog::message_type message_type)
 {
-    std::wstring message_wstr = utf8_to_utf_16(message);
+    std::string message = state.message;
+    if (state.submessage != "")
+        message += "\n" + state.submessage;
+
+    std::wstring message_wstr = utf8_to_utf16(message);
     UINT type = get_message_type(message_type);
 
     UINT ret = MessageBoxW(NULL, message_wstr.c_str(), L"Message", MB_YESNO | type);

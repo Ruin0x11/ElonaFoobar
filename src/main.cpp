@@ -1,6 +1,5 @@
 #include <iostream>
 #include <stdexcept>
-#include <sstream>
 #include <SDL.h>
 #include "asura/asura.hpp"
 #include "defines.hpp"
@@ -21,10 +20,9 @@ void report_error(const char* what)
 #elif defined(ELONA_OS_ANDROID)
     LOGD("Error: %s", what);
 #endif
-    std::ostringstream ss;
-    ss << "A fatal error has occurred: " << std::endl;
-    ss << std::string(what) << std::endl;
-    asura::dialog::ok(ss.str(), asura::dialog::message_type::error);
+    asura::dialog::state state = {"A fatal error has occurred:", std::string(what)};
+    asura::dialog::ok(state,
+                      asura::dialog::message_type::error);
 
     ELONA_LOG("Error: " << what);
     std::cerr << "Error: " << what << std::endl;
@@ -46,6 +44,8 @@ int main(int argc, char** argv)
 
     try
     {
+        asura::dialog::state state = {"yn"};
+        asura::dialog::yes_or_no(state, asura::dialog::message_type::warning);
         throw std::runtime_error(std::string("asd"));
         return run();
     }

@@ -7,14 +7,17 @@ enum class buttons
     yes_no,
 };
 
-static dialog::response dialog(const std::string& message,
+static dialog::response dialog(dialog::state& state,
                         dialog::message_type message_type,
                         buttons buttons)
 {
     @autoreleasepool
     {
         NSAlert* alert = [[[NSAlert alloc] init] autorelease];
-        [alert setInformativeText:[NSString stringWithUTF8String:message.c_str()]];
+        [alert setMessageText:[NSString stringWithUTF8String:state.message.c_str()]];
+
+        if (state.submessage() != "")
+            [alert setInformativeText:[NSString stringWithUTF8String:state.submessage.c_str()]];
 
         switch(buttons) {
         case buttons::ok:
@@ -56,14 +59,14 @@ static dialog::response dialog(const std::string& message,
     }
 }
 
-dialog::response ok(const std::string& message, dialog::message_type message_type)
+dialog::response ok(dialog::state& state, dialog::message_type message_type)
 {
-    return dialog(message, message_type, buttons::ok);
+    return dialog(state, message_type, buttons::ok);
 }
 
-dialog::response yes_or_no(const std::string& message, dialog::message_type message_type)
+dialog::response yes_or_no(dialog::state& state, dialog::message_type message_type)
 {
-    return dialog(message, message_type, buttons::yes_no);
+    return dialog(state, message_type, buttons::yes_no);
 }
 
 }

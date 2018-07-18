@@ -15,32 +15,34 @@ static GtkMessageType get_message_type(dialog::message_type message_type)
     }
 }
 
-dialog::response ok(const std::string& message, dialog::message_type message_type)
+dialog::response ok(dialog::state& state, dialog::message_type message_type)
 {
     GtkMessageType type = get_message_type(message_type);
 
     GtkWidget* dialog = gtk_message_dialog_new(
         NULL, GTK_DIALOG_MODAL, type, GTK_BUTTONS_OK,
-        message.c_str());
+        state.message.c_str());
 
-    gtk_message_dialog_format_secondary_text(
-        GTK_MESSAGE_DIALOG(dialog), "astring");
+    if (state.submessage != "")
+        gtk_message_dialog_format_secondary_text(
+            GTK_MESSAGE_DIALOG(dialog), state.submessage.c_str());
 
     gtk_dialog_run(GTK_DIALOG(dialog));
 
     return dialog::response::ok;
 }
 
-dialog::response yes_or_no(const std::string& message, dialog::message_type message_type)
+dialog::response yes_or_no(dialog::state& state, dialog::message_type message_type)
 {
     GtkMessageType type = get_message_type(message_type);
 
     GtkWidget* dialog = gtk_message_dialog_new(
         NULL, GTK_DIALOG_MODAL, type, GTK_BUTTONS_YES_NO,
-        message.c_str());
+        state.message.c_str());
 
-    gtk_message_dialog_format_secondary_text(
-        GTK_MESSAGE_DIALOG(dialog), "astring");
+    if (state.submessage != "")
+        gtk_message_dialog_format_secondary_text(
+            GTK_MESSAGE_DIALOG(dialog), state.submessage.c_str());
 
     auto response = gtk_dialog_run(GTK_DIALOG(dialog));
 

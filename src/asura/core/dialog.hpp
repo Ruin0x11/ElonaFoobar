@@ -1,6 +1,17 @@
 namespace dialog
 {
 
+struct state
+{
+    state(std::string message) : message(message) {}
+    state(std::string message, std::string submessage)
+        : message(message)
+        , submessage(submessage) {}
+
+    std::string message;
+    std::string submessage;
+};
+
 enum class response : int
 {
   ok = 1,
@@ -15,7 +26,7 @@ enum class message_type
   error
 };
 
-response ok(const std::string&, message_type = message_type::information);
-response yes_or_no(const std::string&, message_type = message_type::information);
+response ok(dialog::state&, message_type = message_type::information);
+response yes_or_no(dialog::state&, message_type = message_type::information);
 
 }

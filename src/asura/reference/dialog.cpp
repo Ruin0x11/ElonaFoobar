@@ -1,12 +1,12 @@
 namespace dialog
 {
 
-dialog::response ok(const std::string& message, dialog::message_type message_type)
+dialog::response ok(dialog::state&, dialog::message_type)
 {
     return dialog::response::ok;
 }
 
-dialog::response yes_or_no(const std::string& message, dialog::message_type message_type)
+dialog::response yes_or_no(dialog::state&, dialog::message_type)
 {
     return dialog::response::yes;
 }
