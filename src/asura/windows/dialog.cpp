@@ -1,9 +1,18 @@
-#include "util.hpp"
-
-static UINT get_message_type(dialog::message_type);
-
-namespace dialog_impl
+namespace dialog
 {
+
+static UINT get_message_type(dialog::message_type message_type)
+{
+    switch(message_type)
+    {
+    case dialog::message_type::information:
+        return MB_ICONINFORMATION;
+    case dialog::message_type::warning:
+        return MB_ICONWARNING;
+    case dialog::message_type::error:
+        return MB_ICONSTOP;
+    }
+}
 
 dialog::response ok(const std::string& message, dialog::message_type message_type)
 {
@@ -31,18 +40,4 @@ dialog::response yes_or_no(const std::string& message, dialog::message_type mess
     }
 }
 
-}
-
-
-static UINT get_message_type(dialog::message_type message_type)
-{
-    switch(message_type)
-    {
-    case dialog::message_type::information:
-        return MB_ICONINFORMATION;
-    case dialog::message_type::warning:
-        return MB_ICONWARNING;
-    case dialog::message_type::error:
-        return MB_ICONSTOP;
-    }
 }

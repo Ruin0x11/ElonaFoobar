@@ -1,5 +1,5 @@
-#include "platform.hpp"
+#include "util.hpp"
 
-#include "browser.cpp"
+#include "app.cpp"
 #include "dialog.cpp"
 #include "util.cpp"

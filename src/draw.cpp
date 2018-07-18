@@ -1228,7 +1228,7 @@ void bmes(
 
 
 
-void init_assets()
+void initialize_assets()
 {
     const auto filepath = filesystem::dir::exe() / "assets.hcl";
     std::ifstream in{filepath.native()};

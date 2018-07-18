@@ -1,4 +1,2 @@
-#include "platform.hpp"
-
-#include "browser.cpp"
+#include "app.cpp"
 #include "dialog.cpp"

@@ -1,4 +1,4 @@
-namespace dialog_impl
+namespace dialog
 {
 
 enum class buttons
@@ -7,7 +7,9 @@ enum class buttons
     yes_no,
 };
 
-dialog::response dialog(const std::string& message, dialog::message_type message_type, buttons buttons)
+static dialog::response dialog(const std::string& message,
+                        dialog::message_type message_type,
+                        buttons buttons)
 {
     @autoreleasepool
     {
@@ -25,9 +27,15 @@ dialog::response dialog(const std::string& message, dialog::message_type message
         }
 
         switch(message_type) {
-        case dialog::message_type::information: [alert setAlertStyle:NSAlertStyleInformational]; break;
-        case dialog::message_type::warning:     [alert setAlertStyle:NSAlertStyleWarning]; break;
-        case dialog::message_type::error:       [alert setAlertStyle:NSAlertStyleCritical]; break;
+        case dialog::message_type::information:
+            [alert setAlertStyle:NSAlertStyleInformational];
+            break;
+        case dialog::message_type::warning:
+            [alert setAlertStyle:NSAlertStyleWarning];
+            break;
+        case dialog::message_type::error:
+            [alert setAlertStyle:NSAlertStyleCritical];
+            break;
         }
 
         NSInteger response = [alert runModal];

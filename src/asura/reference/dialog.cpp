@@ -1,4 +1,4 @@
-namespace dialog_impl
+namespace dialog
 {
 
 dialog::response ok(const std::string& message, dialog::message_type message_type)

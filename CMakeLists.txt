@@ -57,21 +57,12 @@ if(UNIX AND NOT APPLE)
     set(LINUX TRUE)
 endif()
 
-# Set the type of GUI to use
-if(LINUX)
-  file(GLOB PLATFORM_SRC src/asura/fltk/*.cpp)
-elseif(APPLE)
+if(APPLE)
   file(GLOB PLATFORM_SRC src/asura/cocoa/*.cpp)
-
   # Compile .cpp as Objective-C++
   set_source_files_properties(${PLATFORM_SRC} src/asura/asura.cpp PROPERTIES
     COMPILE_FLAGS "-x objective-c++")
-elseif(MSVC)
-  file(GLOB PLATFORM_SRC src/asura/windows/*.cpp)
-else()
-  file(GLOB PLATFORM_SRC src/asura/reference/*.cpp)
 endif()
-
 
 # Source files
 set(CORE_SOURCES
@@ -160,6 +151,7 @@ set(CORE_SOURCES
   src/ui.cpp
   src/variables.cpp
   src/wish.cpp
+  src/asura/asura.cpp
   src/lua_env/event_manager.cpp
   src/lua_env/handle_manager.cpp
   src/lua_env/lua_env.cpp
@@ -337,6 +329,18 @@ else()
     endif()
     include_directories(${LUA_INCLUDE_DIR})
     target_link_libraries(${PROJECT_NAME} ${LUA_LIBRARIES})
+  endif()
+
+  # Use GTK3 GUI on Linux
+  if(LINUX)
+    if(NOT DEFINED GTK_INCLUDE_DIRS OR NOT DEFINED GTK_LIBRARIES)
+      find_package(PkgConfig REQUIRED)
+      pkg_check_modules(GTK REQUIRED gtk+-3.0)
+    endif()
+    add_definitions(${GTK_CFLAGS_OTHER})
+    include_directories(${GTK_INCLUDE_DIRS})
+    link_directories(${GTK_LIBRARY_DIRS})
+    target_link_libraries(${PROJECT_NAME} ${GTK_LIBRARIES})
   endif()
 
   if(NOT DEFINED SDL2_INCLUDE_DIR OR NOT DEFINED SDL2_LIBRARIES)

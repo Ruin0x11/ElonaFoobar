@@ -388,7 +388,7 @@ void application::set_subwindow_display_mode(const std::string& mode)
             _width = width;
             _height = height;
         }
-        catch (boost::bad_lexical_cast)
+        catch (const boost::bad_lexical_cast&)
         {
             throw std::logic_error("Invalid subwindow mode string: " + mode);
         }

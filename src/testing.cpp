@@ -96,7 +96,6 @@ void pre_init()
     log::initialize();
 
     initialize_cat_db();
-    configure_lua();
 
     const fs::path config_def_file =
         filesystem::dir::mods() / u8"core"s / u8"config"s / u8"config_def.hcl"s;
@@ -107,7 +106,7 @@ void pre_init()
 
     title(u8"Elona Foobar version "s + latest_version.short_string());
 
-    init_assets();
+    initialize_assets();
     initialize_config(config_file);
 
     config::instance().is_test = true;

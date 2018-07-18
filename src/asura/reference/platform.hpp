@@ -1,4 +1,2 @@
-#pragma once
-
-#include "browser.hpp"
+#include "app.hpp"
 #include "dialog.hpp"

@@ -760,7 +760,7 @@ void initialize_elona()
     }
 }
 
-static void initialize_screen()
+static void initialize_application()
 {
     std::string display_mode = config::instance().display_mode;
 
@@ -775,26 +775,34 @@ static void initialize_screen()
           config_get_fullscreen_mode());
 }
 
-int run()
+static void initialize_config_and_app()
 {
     const fs::path config_file = filesystem::dir::exe() / u8"config.hcl";
     const fs::path config_def_file =
         filesystem::dir::mods() / u8"core"s / u8"config"s / u8"config_def.hcl"s;
 
-    lua::lua = std::make_unique<lua::lua_env>();
-    initialize_cat_db();
-
     config::instance().init(config_def_file);
     load_config_pre_app_init(config_file);
 
-    initialize_screen();
+    initialize_application();
 
     initialize_config(config_file);
-    init_assets();
-    initialize_elona();
+}
 
+static void initialize_lua()
+{
+    lua::lua = std::make_unique<lua::lua_env>();
     lua::lua->scan_all_mods(filesystem::dir::mods());
     lua::lua->load_core_mod(filesystem::dir::mods());
+}
+
+int run()
+{
+    initialize_cat_db();
+    initialize_config_and_app();
+    initialize_assets();
+    initialize_elona();
+    initialize_lua();
 
     start_elona();
 

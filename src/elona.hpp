@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include "asura/asura.hpp"
 #include "enums.hpp"
 #include "gdata.hpp"
 #include "snail/color.hpp"
@@ -19,7 +20,6 @@
 #include "snail/input.hpp"
 #include "snail/window.hpp"
 #include "util.hpp"
-
 
 namespace elona
 {
