@@ -149,6 +149,7 @@ set(CORE_SOURCES
   src/lua_env/lua_env.cpp
   src/lua_env/mod_manager.cpp
   src/lua_env/registry_manager.cpp
+  src/lua_env/serial_manager.cpp
 
   src/lua_env/lua_api/lua_api_animation.cpp
   src/lua_env/lua_api/lua_api_chara.cpp

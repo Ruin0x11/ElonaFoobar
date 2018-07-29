@@ -173,7 +173,7 @@ label_1741_internal:
     {
         cnt.set_state(character::state_t::empty);
     }
-    for (int cnt = 1320; cnt < 5480; ++cnt)
+    for (int cnt = ELONA_ITEM_ON_GROUND_INDEX; cnt < ELONA_MAX_ITEMS; ++cnt)
     {
         inv[cnt].remove();
     }
@@ -967,7 +967,7 @@ label_1741_internal:
                     inv[cnt].position.y = mdata_map_height / 2;
                     cell_refresh(inv[cnt].position.x, inv[cnt].position.y);
                 }
-                ctrl_file(file_operation_t::_17);
+                ctrl_file(file_operation_t::map_home_upgrade);
                 for (auto&& cnt : cdata.others())
                 {
                     cnt.position.x = mdata_map_width / 2;
