@@ -2771,7 +2771,6 @@ label_1742_internal:
         }
         rc = cnt;
         cdata[rc].set_state(character::state_t::alive);
-        lua::lua->get_handle_manager().create_chara_handle(cdata[rc]);
         if (cdata[cnt].is_contracting() == 1)
         {
             cxinit = cdata.player().position.x;
