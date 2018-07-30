@@ -102,15 +102,45 @@ public:
 
         // NOTE: currently indexes by the object's integer ID, but
         // this may be phased out in the future.
-        sol::optional<sol::table> handle =
+        sol::object handle =
             handle_env["Handle"]["get_handle"](obj, T::lua_type());
-
-        if (!handle)
+        if (!handle.is<sol::table>())
         {
             return sol::lua_nil;
         }
-        return *handle;
+        return handle;
     }
+
+
+    sol::table
+    get_handle_range(const std::string& kind, int index_start, int index_end)
+    {
+        return handle_env["Handle"]["get_handle_range"](
+            kind, index_start, index_end);
+    }
+
+    void
+    clear_handle_range(const std::string& kind, int index_start, int index_end)
+    {
+        handle_env["Handle"]["clear_handle_range"](
+            kind, index_start, index_end);
+    }
+
+    void merge_handles(const std::string& kind, sol::table handles)
+    {
+        handle_env["Handle"]["merge_handles"](kind, handles);
+    }
+
+    template <typename T>
+    void resolve_handle(T& obj)
+    {
+        auto handle = get_handle<T>(obj);
+        if (handle != sol::lua_nil)
+        {
+            handle_env["Handle"]["set_ref"](handle, obj);
+        }
+    }
+
 
     void clear_all_handles();
 
@@ -144,6 +174,8 @@ private:
      * managed.
      */
     sol::environment handle_env;
+
+    boost::uuids::random_generator uuid_generator;
 
     lua_env* lua;
 };
