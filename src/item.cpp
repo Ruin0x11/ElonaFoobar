@@ -470,6 +470,8 @@ void item_exchange(int a, int b)
     item::copy(inv[a], tmp);
     item::copy(inv[b], inv[a]);
     item::copy(tmp, inv[b]);
+
+    lua::lua->get_handle_manager().swap_handles<item>(inv[b], inv[a]);
 }
 
 
