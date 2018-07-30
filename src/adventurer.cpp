@@ -213,7 +213,7 @@ void label_2662()
                     if (rnd(3) == 0)
                     {
                         addnews(5, rc);
-                        cdata[rc].state = 0;
+                        chara_remove(cdata[rc]);
                         create_adventurer();
                     }
                     else

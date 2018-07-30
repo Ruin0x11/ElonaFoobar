@@ -72,7 +72,6 @@ label_17401:
                 if (cdata[cnt].state == 9)
                 {
                     cdata[cnt].state = 1;
-                    lua::lua->get_handle_manager().create_chara_handle(cdata[cnt]);
                 }
             }
         }
@@ -173,7 +172,7 @@ label_1741_internal:
     for (int cnt = ELONA_MAX_PARTY_CHARACTERS; cnt < ELONA_MAX_CHARACTERS;
          ++cnt)
     {
-        cdata[cnt].state = 0;
+        chara_remove(cdata[cnt]);
     }
     for (int cnt = 1320; cnt < 5480; ++cnt)
     {
@@ -2707,7 +2706,6 @@ label_1742_internal:
         }
         rc = cnt;
         cdata[rc].state = 1;
-        lua::lua->get_handle_manager().create_chara_handle(cdata[rc]);
         if (cdata[cnt].is_contracting() == 1)
         {
             cxinit = cdata[0].position.x;
