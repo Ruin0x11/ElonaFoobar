@@ -653,9 +653,10 @@ bool chara_copy(const character& source);
 
 void chara_delete(int = 0);
 void chara_vanquish(int = 0);
-void chara_killed(character&);
-int chara_find(int id);
-int chara_find_ally(int id);
+void chara_remove(character&);
+void chara_killed(character&, int);
+int chara_find(int = 0);
+int chara_find_ally(int = 0);
 int chara_get_free_slot();
 int chara_get_free_slot_ally();
 bool chara_unequip(int);

@@ -3083,8 +3083,6 @@ void label_15380()
     cdata[rc].current_map = 0;
     cdata[rc].relationship = cdata[rc].original_relationship;
     cdata[rc].nutrition = 8000;
-    lua::lua->get_handle_manager().create_chara_handle(
-        cdata[rc]); // TODO add separate Lua event for revival
     return;
 }
 
@@ -7846,7 +7844,8 @@ void supply_income()
                 u8"You don't have to pay tax until you hit level 6."s));
         }
     }
-    ctrl_file(file_operation2_t::map_items_write, u8"shop"s + invfile + u8".s2");
+    ctrl_file(
+        file_operation2_t::map_items_write, u8"shop"s + invfile + u8".s2");
     ctrl_file(file_operation2_t::map_items_read, u8"shoptmp.s2");
     mode = 0;
     if (config::instance().extrahelp)
@@ -9823,7 +9822,9 @@ void migrate_save_data(const fs::path& save_dir)
                         }
                     }
                     // Write inv.
-                    ctrl_file(file_operation2_t::map_items_write, "inv_" + mid + ".s2");
+                    ctrl_file(
+                        file_operation2_t::map_items_write,
+                        "inv_" + mid + ".s2");
                     // Write mdata/map/cdata/sdata/mef/cdatan2/mdatan.
                     ctrl_file(file_operation_t::map_write);
                     continue;

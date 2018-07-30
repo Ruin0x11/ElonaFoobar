@@ -107,6 +107,11 @@ void handle_manager::create_item_handle_run_callbacks(item& item)
 void handle_manager::remove_chara_handle_run_callbacks(character& chara)
 {
     auto handle = get_handle(chara);
+    if (handle == sol::lua_nil)
+    {
+        return;
+    }
+
     lua->get_event_manager().run_callbacks<event_kind_t::character_removed>(
         handle);
     remove_chara_handle(chara);
@@ -115,6 +120,11 @@ void handle_manager::remove_chara_handle_run_callbacks(character& chara)
 void handle_manager::remove_item_handle_run_callbacks(item& item)
 {
     auto handle = get_handle(item);
+    if (handle == sol::lua_nil)
+    {
+        return;
+    }
+
     lua->get_event_manager().run_callbacks<event_kind_t::item_removed>(handle);
     remove_item_handle(item);
 }
@@ -140,11 +150,13 @@ void handle_manager::clear_map_local_handles()
 
 void handle_manager::print()
 {
-    lua->get_state()->safe_script(R"(
+    lua->get_state()->safe_script(
+        R"(
 local inspect = require "inspect"
 print(inspect(refs))
 print(inspect(handles_by_index))
-)", handle_env);
+)",
+        handle_env);
 }
 
 } // namespace lua
