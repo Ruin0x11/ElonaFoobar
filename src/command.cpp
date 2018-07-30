@@ -2702,7 +2702,9 @@ turn_result_t do_open_command()
         if (fs::exists(
                 filesystem::dir::tmp() / (u8"shop"s + invfile + u8".s2")))
         {
-            ctrl_file(file_operation2_t::map_items_read, u8"shop"s + invfile + u8".s2");
+            ctrl_file(
+                file_operation2_t::map_items_read,
+                u8"shop"s + invfile + u8".s2");
         }
         else
         {
@@ -2743,7 +2745,8 @@ turn_result_t do_open_command()
         {
             refweight = inv_weight(-1) + 2500;
         }
-        ctrl_file(file_operation2_t::map_items_write, u8"shop"s + invfile + u8".s2");
+        ctrl_file(
+            file_operation2_t::map_items_write, u8"shop"s + invfile + u8".s2");
         ctrl_file(file_operation2_t::map_items_read, u8"shoptmp.s2");
         if (refweight != 0)
         {

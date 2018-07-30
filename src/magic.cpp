@@ -4252,7 +4252,9 @@ label_2181_internal:
         if (fs::exists(
                 filesystem::dir::tmp() / (u8"shop"s + invfile + u8".s2")))
         {
-            ctrl_file(file_operation2_t::map_items_read, u8"shop"s + invfile + u8".s2");
+            ctrl_file(
+                file_operation2_t::map_items_read,
+                u8"shop"s + invfile + u8".s2");
         }
         else
         {
@@ -4271,7 +4273,8 @@ label_2181_internal:
         snd(100);
         ctrl_inventory();
         invcontainer = 0;
-        ctrl_file(file_operation2_t::map_items_write, u8"shop"s + invfile + u8".s2");
+        ctrl_file(
+            file_operation2_t::map_items_write, u8"shop"s + invfile + u8".s2");
         ctrl_file(file_operation2_t::map_items_read, u8"shoptmp.s2");
         mode = 0;
         break;

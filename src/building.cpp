@@ -1060,7 +1060,8 @@ void show_shop_log()
     mode = 0;
     if (gdata_current_map != area)
     {
-        ctrl_file(file_operation2_t::map_items_write, u8"inv_"s + mid + u8".s2");
+        ctrl_file(
+            file_operation2_t::map_items_write, u8"inv_"s + mid + u8".s2");
     }
     else
     {
