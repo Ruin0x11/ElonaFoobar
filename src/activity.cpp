@@ -23,8 +23,86 @@
 
 namespace elona
 {
+
+namespace
+{
+
 int digx = 0;
 int digy = 0;
+
+int activity_perform_pick_item_to_throw(
+    const character& performer,
+    const character& thrower)
+{
+    int dbid = 0;
+
+    if (encfindspec(performer.continuous_action_item, 49))
+    {
+        flt(calcobjlv(performer.quality_of_performance / 8),
+            calcfixlv(3 + (rnd(4) == 0)));
+    }
+    else
+    {
+        flt(calcobjlv(performer.quality_of_performance / 10), calcfixlv(3));
+    }
+
+    flttypemajor = choice(fsetperform);
+
+    if (gdata_executing_immediate_quest_type == 1009)
+    {
+        if (rnd(150) == 0)
+        {
+            dbid = 241;
+        }
+        if (rnd(150) == 0)
+        {
+            dbid = 622;
+        }
+        if (thrower.level > 15)
+        {
+            if (rnd(1000) == 0)
+            {
+                dbid = 725;
+            }
+        }
+        if (thrower.level > 10)
+        {
+            if (rnd(800) == 0)
+            {
+                dbid = 726;
+            }
+        }
+    }
+    else
+    {
+        if (rnd(10) == 0)
+        {
+            dbid = 724;
+        }
+        if (rnd(250) == 0)
+        {
+            dbid = 55;
+        }
+    }
+
+    return dbid;
+}
+
+void activity_perform_throw_item(character& thrower, item& thrown)
+{
+    // NOTE: may cause Lua creation callbacks to run twice.
+    thrown.modify_number(-1);
+    cell_refresh(thrown.position.x, thrown.position.y);
+    aniref(0) = thrown.image;
+    aniref(1) = thrown.color;
+    anix = thrown.position.x;
+    aniy = thrown.position.y;
+    throwing_object_animation(thrower).play();
+    thrown.modify_number(1);
+    cell_refresh(thrown.position.x, thrown.position.y);
+}
+
+} // namespace
 
 void rowact_check(int prm_789)
 {
@@ -471,83 +549,16 @@ void continuous_action_perform()
                                     {
                                         continue;
                                     }
-                                    if (encfindspec(
-                                            cdata[cc].continuous_action_item,
-                                            49))
-                                    {
-                                        flt(calcobjlv(
-                                                cdata[cc].quality_of_performance
-                                                / 8),
-                                            calcfixlv(3 + (rnd(4) == 0)));
-                                    }
-                                    else
-                                    {
-                                        flt(calcobjlv(
-                                                cdata[cc].quality_of_performance
-                                                / 10),
-                                            calcfixlv(3));
-                                    }
-                                    flttypemajor = choice(fsetperform);
-                                    dbid = 0;
-                                    if (gdata_executing_immediate_quest_type
-                                        == 1009)
-                                    {
-                                        if (rnd(150) == 0)
-                                        {
-                                            dbid = 241;
-                                        }
-                                        if (rnd(150) == 0)
-                                        {
-                                            dbid = 622;
-                                        }
-                                        if (cdata[tc].level > 15)
-                                        {
-                                            if (rnd(1000) == 0)
-                                            {
-                                                dbid = 725;
-                                            }
-                                        }
-                                        if (cdata[tc].level > 10)
-                                        {
-                                            if (rnd(800) == 0)
-                                            {
-                                                dbid = 726;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (rnd(10) == 0)
-                                        {
-                                            dbid = 724;
-                                        }
-                                        if (rnd(250) == 0)
-                                        {
-                                            dbid = 55;
-                                        }
-                                    }
+                                    dbid = activity_perform_pick_item_to_throw(
+                                        cdata[cc], cdata[tc]);
                                     int stat = itemcreate(-1, dbid, x, y, 1);
                                     if (stat != 0)
                                     {
-                                        // NOTE: may cause Lua creation
-                                        // callbacks to run twice.
-                                        inv[ci].modify_number(-1);
-                                        cell_refresh(
-                                            inv[ci].position.x,
-                                            inv[ci].position.y);
-                                        ccbk = cc;
+                                        int ccbk = cc;
                                         cc = tc;
-                                        throwing_object_animation(
-                                            inv[ci].position,
-                                            cdata[cc].position,
-                                            inv[ci].image,
-                                            inv[ci].color)
-                                            .play();
+                                        activity_perform_throw_item(
+                                            cdata[cc], inv[ci]);
                                         cc = ccbk;
-                                        inv[ci].modify_number(1);
-                                        cell_refresh(
-                                            inv[ci].position.x,
-                                            inv[ci].position.y);
                                         ++performtips;
                                     }
                                 }

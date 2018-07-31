@@ -2156,7 +2156,7 @@ void chara_killed(character& chara, int new_state)
         // newly created characters at any time. Run any Lua callbacks
         // to clean up character things, if there is a valid Lua
         // handle for it.
-        lua::lua->get_handle_manager().remove_chara_handle_run_callbacks(chara);
+        chara_remove(chara);
     }
     else if (
         chara.state() == character::state_t::villager_dead

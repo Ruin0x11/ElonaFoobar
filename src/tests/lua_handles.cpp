@@ -359,3 +359,33 @@ TEST_CASE(
     REQUIRE(pick_up_item() == 1);
     REQUIRE(handle_mgr.get_handle(inv[elona::ti]) != sol::lua_nil);
 }
+
+TEST_CASE("Test creation of item causing handle creation", "[Lua: Handles]")
+{
+    REQUIRE(false);
+}
+
+TEST_CASE("Test removal of item causing handle removal", "[Lua: Handles]")
+{
+    REQUIRE(false);
+}
+
+TEST_CASE("Test relocation of character handle", "[Lua: Handles]")
+{
+    REQUIRE(false);
+}
+
+TEST_CASE("Test separation of item handles", "[Lua: Handles]")
+{
+    REQUIRE(false);
+}
+
+TEST_CASE("Test copying of item handles", "[Lua: Handles]")
+{
+    REQUIRE(false);
+}
+
+TEST_CASE("Test swapping of item handles", "[Lua: Handles]")
+{
+    REQUIRE(false);
+}
