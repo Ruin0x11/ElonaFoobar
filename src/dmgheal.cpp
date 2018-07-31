@@ -903,22 +903,23 @@ int damage_hp(
         // can run callbacks and clean up references.
         if (victim.character_role == 0)
         {
+            chara_killed(victim, attacker);
             victim.set_state(character::state_t::empty);
         }
         else if (victim.character_role == 13)
         {
+            chara_killed(victim, attacker);
             victim.set_state(character::state_t::adventurer_dead);
             victim.time_to_revive = gdata_hour + gdata_day * 24
                 + gdata_month * 24 * 30 + gdata_year * 24 * 30 * 12 + 24
                 + rnd(12);
-            chara_killed(victim, 4);
         }
         else
         {
+            chara_killed(victim, attacker);
             victim.set_state(character::state_t::villager_dead);
             victim.time_to_revive = gdata_hour + gdata_day * 24
                 + gdata_month * 24 * 30 + gdata_year * 24 * 30 * 12 + 48;
-            chara_killed(victim, 2);
         }
         if (victim.index != 0)
         {

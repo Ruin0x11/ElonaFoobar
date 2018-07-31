@@ -403,7 +403,7 @@ void failed_to_place_character(character& cc)
         cc.set_state(character::state_t::adventurer_dead);
         cc.time_to_revive = gdata_hour + gdata_day * 24 + gdata_month * 24 * 30
             + gdata_year * 24 * 30 * 12 + 24 + rnd(12);
-        chara_killed(cdata[cc], 4);
+        chara_killed(cc);
     }
 }
 
@@ -2135,40 +2135,22 @@ void chara_remove(character& chara)
     lua::lua->get_handle_manager().remove_chara_handle_run_callbacks(chara);
 }
 
-void chara_killed(character& chara, int new_state)
+void chara_killed(character& victim)
 {
-    // Run the character killed lua callback if the character was not dead to
-    // begin with.
-    if (chara.state != 0 && chara.state != 2 && chara.state != 4
-        && chara.state != 6)
+    // Regardless of whether or not this character will revive, run
+    // the character killed callback.
+    auto victim_handle = lua::lua->get_handle_manager().get_handle(victim);
+    sol::table killer_handle = sol::lua_nil;
+    if (killer)
     {
-        auto handle = lua::lua->get_handle_manager().get_handle(chara);
-        lua::lua->get_event_manager()
-            .run_callbacks<lua::event_kind_t::character_killed>(handle);
+        killer_handle = lua::lua->get_handle_manager().get_handle(*killer);
     }
 
-    // The provided state must be 0, 2, 4 or 6.
-    chara.state = new_state;
+    lua::lua->get_event_manager()
+        .run_callbacks<lua::event_kind_t::character_killed>(
+            victim_handle, killer_handle);
 
-    if (chara.state() == character::state_t::empty)
-    {
-        // This character slot is invalid, and can be overwritten by
-        // newly created characters at any time. Run any Lua callbacks
-        // to clean up character things, if there is a valid Lua
-        // handle for it.
-        chara_remove(chara);
-    }
-    else if (
-        chara.state() == character::state_t::villager_dead
-        || chara.state() == character::state_t::adventurer_dead
-        || chara.state() == character::state_t::pet_dead)
-    {
-        // This character revives.
-    }
-    else
-    {
-        assert(false);
-    }
+    victim.set_state(new_state);
 }
 
 

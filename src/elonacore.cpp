@@ -10190,6 +10190,9 @@ void load_save_data()
     }
     refresh_speed(cdata.player());
     time_begin = timeGetTime() / 1000;
+
+    lua::lua->get_event_manager().run_callbacks<lua::event_kind_t::game_loaded>();
+
     ELONA_LOG("Load save data end: " << playerid);
 }
 
@@ -10239,6 +10242,9 @@ void save_game()
     save_t::instance().save(save_dir);
     ctrl_file(file_operation2_t::global_write, save_dir);
     save_t::instance().clear();
+
+    lua::lua->get_event_manager().run_callbacks<lua::event_kind_t::game_saved>();
+
     ELONA_LOG("Save game: finish");
 }
 
