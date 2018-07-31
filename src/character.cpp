@@ -318,7 +318,7 @@ bool chara_place_internal(
                     // TODO: Work around. Need delete him/her *completely*.
                     if (map(x, y, 1) != 0)
                     {
-                        map(x, y, 1) = 0;
+                        cell_removechara(x, y);
                     }
                     if (map(x, y, 6) != 0)
                     {
@@ -2047,7 +2047,7 @@ void chara_vanquish(int cc)
         cdata[cc].state() == character::state_t::alive
         || cdata[cc].state() == character::state_t::servant_being_selected)
     {
-        map(cdata[cc].position.x, cdata[cc].position.y, 1) = 0;
+        cell_removechara(cdata[cc]);
     }
     cdata[cc].set_state(character::state_t::empty);
     cdata[cc].character_role = 0;

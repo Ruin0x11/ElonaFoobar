@@ -1325,7 +1325,6 @@ void fmode_3_4(bool read, const fs::path& filename)
 
         tmpload(mod_filepath.filename().string());
         lua::lua->get_serial_manager().load_handles<item>(
-        save_t::instance().add(mod_filepath.filename());
             mod_filepath, lua::mod_save_t::map_local);
 
         auto& handle_mgr = lua::lua->get_handle_manager();
@@ -1337,11 +1336,9 @@ void fmode_3_4(bool read, const fs::path& filename)
     else
     {
         save_t::instance().add(filepath.filename());
-        tmpload(filename);
         save(filepath, inv, ELONA_ITEM_ON_GROUND_INDEX, ELONA_MAX_ITEMS);
 
         save_t::instance().add(mod_filepath.filename());
-        tmpload(mod_filepath.filename().string());
         lua::lua->get_serial_manager().save_handles<item>(
             mod_filepath, lua::mod_save_t::map_local);
     }

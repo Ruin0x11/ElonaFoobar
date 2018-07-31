@@ -858,7 +858,7 @@ label_1741_internal:
         {
             flt(arenaop(2), calcfixlv(3));
             chara_create(-1, 0, -3, 0);
-            map(cdata[rc].position.x, cdata[rc].position.y, 1) = 0;
+            cell_removechara(cdata[rc]);
             f = 1;
             if (arenaop == 0)
             {
@@ -2848,12 +2848,11 @@ label_1742_internal:
                 }
             }
         }
-        for (int cnt = 0, cnt_end = (mdata_map_height); cnt < cnt_end; ++cnt)
+        for (int y = 0, cnt_end = (mdata_map_height); y < cnt_end; ++y)
         {
-            y = cnt;
-            for (int cnt = 0, cnt_end = (mdata_map_width); cnt < cnt_end; ++cnt)
+            for (int x = 0, cnt_end = (mdata_map_width); x < cnt_end; ++x)
             {
-                map(cnt, y, 1) = 0;
+                cell_removechara(x, y);
             }
         }
         for (auto&& cnt : cdata.all())

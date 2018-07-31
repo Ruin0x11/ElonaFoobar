@@ -1745,7 +1745,7 @@ void ride_begin(int mount)
         cdata[mount],
         cdata[mount].current_speed));
     cdata[mount].is_ridden() = true;
-    map(cdata[mount].position.x, cdata[mount].position.y, 1) = 0;
+    cell_removechara(cdata[mount]);
     gdata_mount = mount;
     create_pcpic(0, true);
     rowactend(gdata_mount);
@@ -5384,7 +5384,7 @@ turn_result_t exit_map()
             }
             continue;
         }
-        map(cdata[cnt].position.x, cdata[cnt].position.y, 1) = 0;
+        cell_removechara(cdata[cnt]);
         if (cnt != 0)
         {
             if (cdata[cnt].current_map != 0)
@@ -5455,7 +5455,7 @@ void prepare_charas_for_map_unload()
     {
         if (cdata[cnt].state() == character::state_t::alive)
         {
-            map(cdata[cnt].position.x, cdata[cnt].position.y, 1) = 0;
+            cell_removechara(cdata[cnt]);
             cdata[cnt].set_state(character::state_t::adventurer_in_other_map);
         }
     }
@@ -5564,7 +5564,7 @@ void label_1745()
                     if (rnd(2))
                     {
                         cnt.set_state(character::state_t::empty);
-                        map(cnt.position.x, cnt.position.y, 1) = 0;
+                        cell_removechara(cdata[cnt]);
                     }
                 }
             }
@@ -5620,7 +5620,7 @@ void label_1745()
                 if (cnt.is_temporary() == 1)
                 {
                     cnt.set_state(character::state_t::empty);
-                    map(cnt.position.x, cnt.position.y, 1) = 0;
+                    cell_removechara(cdata[cnt]);
                 }
             }
         }
@@ -10483,7 +10483,7 @@ label_21451_internal:
             label_1438();
         }
     }
-    map(cdata[cc].position.x, cdata[cc].position.y, 1) = 0;
+    cell_removechara(cdata[cc]);
     cdata[cc].position.x = cdata[cc].next_position.x;
     cdata[cc].position.y = cdata[cc].next_position.y;
     map(cdata[cc].next_position.x, cdata[cc].next_position.y, 1) = cc + 1;

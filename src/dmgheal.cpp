@@ -896,7 +896,7 @@ int damage_hp(
         }
         if (gdata_mount != victim.index || victim.index == 0)
         {
-            cell_removechara(victim.position.x, victim.position.y);
+            cell_removechara(victim);
         }
 
         // This block will always mark the character as killed so mods
