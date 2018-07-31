@@ -48,7 +48,8 @@ void shop_refresh_on_talk()
     }
     else
     {
-        ctrl_file(file_operation2_t::map_items_read, u8"shop"s + invfile + u8".s2");
+        ctrl_file(
+            file_operation2_t::map_items_read, u8"shop"s + invfile + u8".s2");
     }
     invfile = cdata[tc].shop_store_id;
     shop_load_shoptmp();
@@ -57,7 +58,8 @@ void shop_refresh_on_talk()
 
 void shop_load_shoptmp()
 {
-    ctrl_file(file_operation2_t::map_items_write, u8"shop"s + invfile + u8".s2");
+    ctrl_file(
+        file_operation2_t::map_items_write, u8"shop"s + invfile + u8".s2");
     ctrl_file(file_operation2_t::map_items_read, u8"shoptmp.s2");
     mode = 0;
     return;

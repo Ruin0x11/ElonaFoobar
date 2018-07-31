@@ -73,8 +73,6 @@ void handle_manager::remove_chara_handle(character& chara)
 
 void handle_manager::remove_item_handle(item& item)
 {
-    // item.number is set to zero often, but it doesn't always seem to
-    // signify whether or not the item was deleted.
     remove_handle(item);
 }
 

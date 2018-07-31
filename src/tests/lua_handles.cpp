@@ -124,13 +124,14 @@ TEST_CASE("Test that handles go invalid", "[Lua: Handles]")
         auto handle = handle_mgr.get_handle(chara);
         elona::lua::lua->get_state()->set("chara", handle);
 
-        std::cout<<"BEGIN"<<std::endl;
+        std::cout << "BEGIN" << std::endl;
         chara_delete(chara.index);
-        std::cout<<"END"<<std::endl;
+        std::cout << "END" << std::endl;
 
         {
             auto result = elona::lua::lua->get_state()->safe_script(
-                R"(print(require("inspect").inspect(chara));print(chara.index))", &sol::script_pass_on_error);
+                R"(print(require("inspect").inspect(chara));print(chara.index))",
+                &sol::script_pass_on_error);
             REQUIRE(!result.valid());
         }
         {

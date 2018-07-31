@@ -1326,6 +1326,41 @@ void heal_insanity(character& cc, int delta)
     }
 }
 
+void dmgheal_death_by_backpack(character& chara)
+{
+    int heaviest_item_index = -1;
+    int heaviest_weight = 0;
+    std::string heaviest_item_name;
+
+    for (const auto& cnt : items(chara.index))
+    {
+        if (inv[cnt].number() == 0)
+        {
+            continue;
+        }
+        if (inv[cnt].weight > heaviest_weight)
+        {
+            heaviest_item_index = cnt;
+            heaviest_weight = inv[cnt].weight;
+        }
+    }
+    if (heaviest_item_index == -1)
+    {
+        heaviest_item_name = i18n::s.get_enum_property(
+            "core.locale.death_by.other", "backpack", 6);
+    }
+    else
+    {
+        heaviest_item_name = itemname(heaviest_item_index);
+    }
+    txt(i18n::s.get_enum_property(
+        "core.locale.death_by.other", "text", 6, chara, heaviest_item_name));
+    if (chara.index == 0)
+    {
+        ndeathcause = i18n::s.get_enum_property(
+            "core.locale.death_by.other", "death_cause", 6, heaviest_item_name);
+    }
+}
 
 
 } // namespace elona

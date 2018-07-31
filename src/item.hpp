@@ -105,6 +105,15 @@ struct item
     void modify_number(int delta);
     void remove();
 
+    int number() const
+    {
+        return number_;
+    }
+
+    void set_number(int number_);
+    void modify_number(int delta);
+    void remove();
+
 
     template <typename Archive>
     void serialize(Archive& ar)

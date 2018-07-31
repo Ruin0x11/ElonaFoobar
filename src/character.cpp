@@ -403,7 +403,7 @@ void failed_to_place_character(character& cc)
         cc.set_state(character::state_t::adventurer_dead);
         cc.time_to_revive = gdata_hour + gdata_day * 24 + gdata_month * 24 * 30
             + gdata_year * 24 * 30 * 12 + 24 + rnd(12);
-        chara_killed(cdata[cc, 4);
+        chara_killed(cdata[cc], 4);
     }
 }
 
@@ -2175,7 +2175,6 @@ void chara_killed(character& chara, int new_state)
 
 void chara_delete(int cc)
 {
-    int state = cdata[cc].state;
     if (cc != -1)
     {
         chara_remove(cdata[cc]);

@@ -482,6 +482,8 @@ void item::remove()
     lua::lua->get_handle_manager().remove_item_handle_run_callbacks(*this);
 }
 
+
+
 void item_delete(int ci)
 {
     inv[ci].remove();
