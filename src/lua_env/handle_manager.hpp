@@ -92,8 +92,6 @@ public:
         return handle_env["Handle"]["is_valid"](handle);
     }
 
-    void print();
-
 
     /***
      * Provides a Lua reference to a handle from the isolated handle
