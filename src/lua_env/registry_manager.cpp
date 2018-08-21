@@ -1,6 +1,7 @@
 #include "registry_manager.hpp"
 #include <chrono>
 #include "../hcl.hpp"
+#include "hcl_parsing_native.hpp"
 
 namespace elona
 {
@@ -20,6 +21,13 @@ registry_manager::registry_manager(lua_env* lua)
 register_data = require "private/register_data"
 )",
         registry_env);
+
+    sol::table HCL = lua->get_state()->create_table("HCL");
+    auto& state = *lua->get_state();
+    HCL["parse_file"] = [&state](const std::string& filename) {
+        return parse_hcl_native(filename, state);
+    };
+    registry_env.set("HCL", HCL);
 
     bind_api();
 }

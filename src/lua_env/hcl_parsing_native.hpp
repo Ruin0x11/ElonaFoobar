@@ -12,10 +12,11 @@ namespace lua
  * in a ~4x speedup over parsing HCL in pure Lua.
  *
  * @param filename The name of an HCL file.
+ * @param state A Lua state reference.
  *
  * @return A Lua table containing the parsed data.
  */
-sol::table parse_hcl_native(const std::string &filename);
+sol::table parse_hcl_native(const std::string& filename, sol::state& state);
 
 } // namespace lua
 } // namespace elona

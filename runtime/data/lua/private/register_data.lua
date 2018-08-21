@@ -1,4 +1,3 @@
-local HCL = require "hclua"
 local inspect = require "inspect"
 
 local function shared_keys(a, b)
@@ -19,11 +18,6 @@ local function register_data(mod_name, datatype_mod_name, datatype_name, filepat
    end
    local parsed = HCL.parse_file(filepath)
    local data = parsed[datatype_name]
-
-   -- TODO make msg a reserved keyword (_msg)
-   if parsed.msg ~= nil then
-      error(filepath .. ":" .. parsed.line .. ":" .. parsed.column .. ": " .. parsed.msg)
-   end
 
    if data == nil then
       error(filepath .. ": No data found for datatype " .. datatype_name)

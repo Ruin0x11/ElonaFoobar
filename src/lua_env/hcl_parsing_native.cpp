@@ -42,9 +42,9 @@ static void _parse_value(
     {
         // Lua tables are 1-indexed.
         int index = 1;
+        sol::table list_table = table.create_named(key);
         for (const auto& list_value : value.as<hcl::List>())
         {
-            sol::table list_table = table.create_named(key);
             _parse_value(
                 lua, list_table, sol::make_object(lua, index), list_value);
             index++;
@@ -58,7 +58,7 @@ static void _parse_value(
     }
 }
 
-sol::table parse_hcl_native(sol::state& lua, const std::string& filename)
+sol::table parse_hcl_native(const std::string& filename, sol::state& lua)
 {
     auto value = hclutil::load(filename);
     sol::table table = lua.create_table();
