@@ -27,6 +27,7 @@
 
 #include "ui/ui_menu_adventurers.hpp"
 #include "ui/ui_menu_alias.hpp"
+#include "ui/ui_menu_analyze_self.hpp"
 #include "ui/ui_menu_book.hpp"
 #include "ui/ui_menu_character_sheet.hpp"
 #include "ui/ui_menu_ctrl_ally.hpp"
@@ -1644,111 +1645,9 @@ int ctrl_ally(ctrl_ally_operation operation)
     }
 }
 
-
-
 void screen_analyze_self()
 {
-    // TODO: untranslated
-    if (rc < 0)
-    {
-        rc = tc;
-        if (rc < 0)
-        {
-            rc = 0;
-        }
-    }
-    listmax = 0;
-    page = 0;
-    pagesize = 14;
-    cs = 0;
-    cc = 0;
-    cs_bk = -1;
-    snd(26);
-    buff = "";
-    notesel(buff);
-    chara_delete(56);
-    cdata.tmp().piety_point = cdata.player().piety_point;
-    cdata.tmp().god_id = cdata.player().god_id;
-    for (int cnt = 0; cnt < 600; ++cnt)
-    {
-        sdata(cnt, rc) = 1;
-    }
-    apply_god_blessing(56);
-    if (!cdata.player().god_id.empty())
-    {
-        buff += u8"<title1>◆ "s
-            + i18n::_(u8"god", cdata.player().god_id, u8"name")
-            + u8"による能力の恩恵<def>\n"s;
-        for (int cnt = 0; cnt < 600; ++cnt)
-        {
-            p = sdata(cnt, rc) - 1;
-            cnvbonus(cnt, p);
-        }
-    }
-    refreshmode = 1;
-    chara_refresh(0);
-    refreshmode = 0;
-    buff += u8"\n"s;
-    buff += u8"<title1>◆ 特徴と特殊状態による能力の恩恵<def>\n"s;
-    listmax = noteinfo();
-label_1965_internal:
-    cs_bk = -1;
-    pagemax = (listmax - 1) / pagesize;
-    if (page < 0)
-    {
-        page = pagemax;
-    }
-    else if (page > pagemax)
-    {
-        page = 0;
-    }
-    s(0) = lang(u8"自己の分析", u8"Analyze Self");
-    s(1) = strhint2 + strhint3b;
-    display_window((windoww - 400) / 2 + inf_screenx, winposy(448), 400, 448);
-    s = lang(u8"分析結果", u8"Analysis Result");
-    display_topic(s, wx + 28, wy + 36);
-    font(14 - en * 2);
-    for (int cnt = 0, cnt_end = (pagesize); cnt < cnt_end; ++cnt)
-    {
-        p = pagesize * page + cnt;
-        if (p >= listmax)
-        {
-            break;
-        }
-        noteget(s, p);
-        pos(wx + 54, wy + 66 + cnt * 19 + 2);
-        gmes(s, wx, wy + 66 + cnt * 19 + 2, 600, {30, 30, 30}, false);
-    }
-    redraw();
-label_1966_internal:
-    redraw();
-    await(config::instance().wait1);
-    key_check();
-    cursor_check();
-    p = -1;
-    if (key == key_pageup)
-    {
-        if (pagemax != 0)
-        {
-            snd(1);
-            ++page;
-            goto label_1965_internal;
-        }
-    }
-    if (key == key_pagedown)
-    {
-        if (pagemax != 0)
-        {
-            snd(1);
-            --page;
-            goto label_1965_internal;
-        }
-    }
-    if (key == key_cancel)
-    {
-        return;
-    }
-    goto label_1966_internal;
+    ui::ui_menu_analyze_self().show();
 }
 
 int change_npc_tone()
