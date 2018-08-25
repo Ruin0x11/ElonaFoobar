@@ -1,5 +1,6 @@
 #include "ui_menu_change_appearance_equip.hpp"
 #include "../audio.hpp"
+#include "../draw.hpp"
 #include "../i18n.hpp"
 
 namespace elona
@@ -111,11 +112,7 @@ ui_menu_change_appearance_equip::on_key(const std::string& key)
 {
     if (cs != 0)
     {
-        if (key == key_enter)
-        {
-            key = key_pageup;
-        }
-        if (key == key_pageup || key == key_pagedown)
+        if (key == key_enter || key == key_pageup || key == key_pagedown)
         {
             if (pcc(20 + cs - 1, cc) == 0)
             {

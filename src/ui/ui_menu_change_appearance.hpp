@@ -6,6 +6,22 @@ namespace elona
 namespace ui
 {
 
+struct pcc_info
+{
+    enum class item_type
+    {
+        confirm,
+        change_page,
+        pcc_part
+    };
+
+    item_type item;
+    std::string name;
+    int index;
+    int current_value;
+    bool use_external_image;
+};
+
 class ui_menu_change_appearance : public ui_menu<bool>
 {
 public:

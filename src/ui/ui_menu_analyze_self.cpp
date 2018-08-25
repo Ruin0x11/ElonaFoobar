@@ -1,5 +1,9 @@
 #include "ui_menu_analyze_self.hpp"
+#include "../ability.hpp"
 #include "../audio.hpp"
+#include "../character.hpp"
+#include "../god.hpp"
+#include "../i18n.hpp"
 
 namespace elona
 {

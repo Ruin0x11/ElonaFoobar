@@ -1,9 +1,124 @@
 #include "ui_menu_change_appearance.hpp"
+#include "../audio.hpp"
+#include "../character.hpp"
+#include "../draw.hpp"
+#include "../i18n.hpp"
 
 namespace elona
 {
 namespace ui
 {
+
+static void _set_pcc_info(int list_index, pcc_info& info)
+{
+    info.item = pcc_info::item_type::pcc_part;
+    info.use_external_image = true;
+
+    if (page == 0)
+    {
+        switch (list_index)
+        {
+        case 0: info.item = pcc_info::item_type::confirm; break;
+        case 1:
+            info.index = 100;
+            info.current_value = cdata[cc].portrait;
+            break;
+        case 2:
+            info.index = 1;
+            info.current_value = pcc(1, cc) % 1000;
+            info.name = u8"hair"s;
+            break;
+        case 3:
+            info.index = 10;
+            info.current_value = pcc(10, cc) % 1000;
+            info.name = u8"subhair"s;
+            break;
+        case 4:
+            info.index = 1;
+            info.use_external_image = false;
+            info.current_value = pcc(1, cc) / 1000;
+            break;
+        case 5:
+            info.index = 15;
+            info.current_value = pcc(15, cc) % 1000;
+            info.name = u8"body"s;
+            break;
+        case 6:
+            info.index = 9;
+            info.current_value = pcc(9, cc) % 1000;
+            info.name = u8"cloth"s;
+            break;
+        case 7:
+            info.index = 7;
+            info.current_value = pcc(7, cc) % 1000;
+            info.name = u8"pants"s;
+            break;
+        case 8:
+            info.item = pcc_info::item_type::change_page;
+            info.name = "";
+            break;
+        case 9:
+            if (cc != 0)
+            {
+                info.index = 101;
+                info.current_value = cdata[cc].has_own_sprite();
+            }
+            else
+            {
+                info.index = 16;
+                info.current_value = pcc(16, cc) % 1000;
+                info.name = u8"ride"s;
+            }
+            break;
+        }
+    }
+    else
+    {
+        switch (list_index)
+        {
+        case 0:
+            info.index = 15;
+            info.use_external_image = false;
+            info.current_value = pcc(15, cc) / 1000;
+            break;
+        case 1:
+            info.index = 9;
+            info.use_external_image = false;
+            info.current_value = pcc(9, cc) / 1000;
+            break;
+        case 2:
+            info.index = 7;
+            info.use_external_image = false;
+            info.current_value = pcc(7, cc) / 1000;
+            break;
+        case 3:
+            info.index = 11;
+            info.current_value = pcc(11, cc) % 1000;
+            info.name = u8"etc"s;
+            break;
+        case 4:
+            info.index = 12;
+            info.current_value = pcc(12, cc) % 1000;
+            info.name = u8"etc"s;
+            break;
+        case 5:
+            info.index = 13;
+            info.current_value = pcc(13, cc) % 1000;
+            info.name = u8"etc"s;
+            break;
+        case 6:
+            info.index = 14;
+            info.current_value = pcc(14, cc) % 1000;
+            info.name = u8"eye"s;
+            break;
+        case 7:
+            info.item = pcc_info::item_type::change_page;
+            info.name = "";
+            break;
+        }
+    }
+} // namespace ui
+
 
 bool ui_menu_change_appearance::init()
 {
@@ -155,6 +270,8 @@ void ui_menu_change_appearance::draw()
     gmode(2);
     font(14 - en * 2);
     cs_listbk();
+
+    pcc_info info;
     for (int cnt = 0, cnt_end = (pagesize); cnt < cnt_end; ++cnt)
     {
         p = cnt;
@@ -162,25 +279,25 @@ void ui_menu_change_appearance::draw()
         {
             break;
         }
-        set_pcc_info(cnt);
+        _set_pcc_info(cnt, info);
         s = listn(0, p);
-        if (rtval >= 0)
+        if (info.item == pcc_info::item_type::pcc_part)
         {
-            if (rtval(2) >= 0)
+            if (info.current_value >= 0)
             {
-                s += u8" "s + rtval(2);
+                s += u8" "s + info.current_value;
             }
-            else if (rtval(2) == -1)
+            else if (info.current_value == -1)
             {
                 s += u8" N/A"s;
             }
             else
             {
-                s += u8" u"s + (std::abs(rtval(2)) - 1);
+                s += u8" u"s + (std::abs(info.current_value) - 1);
             }
         }
         cs_list(cs == cnt, s, wx + 60, wy + 66 + cnt * 21 - 1, 0);
-        if (rtval != -2)
+        if (info.item != pcc_info::item_type::confirm)
         {
             pos(wx + 30, wy + 66 + cnt * 21 - 5);
             gcopy(3, 312, 336, 24, 24);
@@ -197,10 +314,11 @@ void ui_menu_change_appearance::draw()
 optional<ui_menu_change_appearance::result_type>
 ui_menu_change_appearance::on_key(const std::string& key)
 {
-    set_pcc_info(cs);
+    pcc_info info;
+    _set_pcc_info(cs, info);
     p = 0;
 
-    if (rtval == -2)
+    if (info.item == pcc_info::item_type::confirm)
     {
         if (key == key_enter)
         {
@@ -212,7 +330,7 @@ ui_menu_change_appearance::on_key(const std::string& key)
             return none;
         }
     }
-    if (rtval == -1)
+    else if (info.item == pcc_info::item_type::change_page)
     {
         if (key == key_pageup || key == key_enter || key == key_pagedown)
         {
@@ -226,88 +344,92 @@ ui_menu_change_appearance::on_key(const std::string& key)
                 page = 0;
                 cs = 8;
             }
-            goto label_2040_internal;
+            set_reupdate();
+            return none;
         }
     }
-    if (key == key_pageup || key == key_enter)
+    else
     {
-        snd(5);
-        if (rtval == 100)
+        if (key == key_pageup || key == key_enter)
         {
-            if (cdata[cc].portrait < 31)
+            snd(5);
+            if (info.index == 100)
             {
-                ++cdata[cc].portrait;
+                if (cdata[cc].portrait < 31)
+                {
+                    ++cdata[cc].portrait;
+                }
+                return none;
             }
-            goto label_2041_internal;
-        }
-        if (rtval == 101)
-        {
-            cdata[cc].has_own_sprite() = true;
-            goto label_2041_internal;
-        }
-        if (rtval(1) == 0)
-        {
-            if (fs::exists(
-                    filesystem::dir::graphic()
-                    / (u8"pcc_"s + rtvaln + u8"_" + (pcc(rtval, cc) % 1000 + 1)
-                       + u8".bmp")))
+            if (info.index == 101)
             {
-                ++pcc(rtval, cc);
+                cdata[cc].has_own_sprite() = true;
+                return none;
+            }
+            if (info.use_external_image)
+            {
+                if (fs::exists(
+                        filesystem::dir::graphic()
+                        / (u8"pcc_"s + info.name + u8"_"
+                           + (pcc(info.index, cc) % 1000 + 1) + u8".bmp")))
+                {
+                    ++pcc(info.index, cc);
+                    p = 1;
+                }
+            }
+            else if (pcc(info.index, cc) / 1000 < 21)
+            {
+                pcc(info.index, cc) += 1000;
                 p = 1;
             }
         }
-        else if (pcc(rtval, cc) / 1000 < 21)
+        else if (key == key_pagedown)
         {
-            pcc(rtval, cc) += 1000;
-            p = 1;
-        }
-    }
-    else if (key == key_pagedown)
-    {
-        snd(5);
-        if (rtval == 100)
-        {
-            if (cdata[cc].portrait > -10)
+            snd(5);
+            if (info.index == 100)
             {
-                --cdata[cc].portrait;
+                if (cdata[cc].portrait > -10)
+                {
+                    --cdata[cc].portrait;
+                }
+                return none;
             }
-            goto label_2041_internal;
-        }
-        if (rtval == 101)
-        {
-            cdata[cc].has_own_sprite() = false;
-            goto label_2041_internal;
-        }
-        if (rtval(1) == 0)
-        {
-            if ((pcc(rtval, cc) % 1000 == 1 && rtval != 15)
-                || fs::exists(
-                       filesystem::dir::graphic()
-                       / (u8"pcc_"s + rtvaln + u8"_"s
-                          + (pcc(rtval, cc) % 1000 - 1) + u8".bmp"s)))
+            if (info.index == 101)
             {
-                --pcc(rtval, cc);
+                cdata[cc].has_own_sprite() = false;
+                return none;
+            }
+            if (info.use_external_image)
+            {
+                if ((pcc(info.index, cc) % 1000 == 1 && info.index != 15)
+                    || fs::exists(
+                           filesystem::dir::graphic()
+                           / (u8"pcc_"s + info.name + u8"_"s
+                              + (pcc(info.index, cc) % 1000 - 1) + u8".bmp"s)))
+                {
+                    --pcc(info.index, cc);
+                    p = 1;
+                }
+            }
+            else if (pcc(info.index, cc) / 1000 > 0)
+            {
+                pcc(info.index, cc) -= 1000;
                 p = 1;
             }
         }
-        else if (pcc(rtval, cc) / 1000 > 0)
+
+        create_pcpic(cc, false);
+
+        if (key == key_cancel)
         {
-            pcc(rtval, cc) -= 1000;
-            p = 1;
+            create_pcpic(cc, true);
+            return ui_menu_change_appearance::result::cancel();
         }
-    }
-
-    create_pcpic(cc, false);
-
-    if (key == key_cancel)
-    {
-        create_pcpic(cc, true);
-        return ui_menu_change_appearance::result::cancel();
-    }
-    else if (
-        getkey(snail::key::f1) && _operation == operation::character_making)
-    {
-        return ui_menu_change_appearance::result::finish();
+        else if (
+            getkey(snail::key::f1) && _operation == operation::character_making)
+        {
+            return ui_menu_change_appearance::result::finish();
+        }
     }
 
     return none;

@@ -1101,7 +1101,6 @@ int ai_dir_check_2();
 void help_halt();
 int winposy(int = 0, int = 0);
 void txttargetnpc(int = 0, int = 0, int = 0);
-void set_pcc_info(int);
 
 // character sheet
 void append_accuracy_info(int);
