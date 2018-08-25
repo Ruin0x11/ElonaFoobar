@@ -185,6 +185,7 @@ set(CORE_SOURCES
   src/ui/ui_menu_alias.cpp
   src/ui/ui_menu_analyze_self.cpp
   src/ui/ui_menu_book.cpp
+  src/ui/ui_menu_change_appearance.cpp
   src/ui/ui_menu_character_sheet.cpp
   src/ui/ui_menu_charamake_alias.cpp
   src/ui/ui_menu_charamake_attributes.cpp

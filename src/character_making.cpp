@@ -230,7 +230,7 @@ main_menu_result_t character_making_customize_appearance()
             "core.locale.chara_making.customize_appearance.caption");
 
         cdata.player().has_own_sprite() = true;
-        int stat = change_appearance();
+        int stat = change_appearance_character_making();
         if (stat == 0)
         {
             clear_background_in_character_making();

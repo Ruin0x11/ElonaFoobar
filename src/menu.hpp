@@ -57,6 +57,7 @@ turn_result_t show_spell_list();
 turn_result_t show_skill_list();
 void draw_spell_power_entry(int skill_id);
 int change_appearance();
+int change_appearance_character_making();
 menu_result menu_feats();
 menu_result menu_materials();
 
