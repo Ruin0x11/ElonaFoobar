@@ -119,20 +119,8 @@ static void _set_pcc_info(int list_index, pcc_info& info)
     }
 } // namespace ui
 
-
-bool ui_menu_change_appearance::init()
+static void _load_portraits()
 {
-    create_pcpic(cc, false);
-    page = 0;
-    pagesize = 19;
-    cs = 0;
-    cs_bk = -1;
-    ww = 380;
-    wh = 340;
-    wx = (windoww - ww) / 2 + inf_screenx;
-    wy = winposy(wh);
-    snd(97);
-    window_animation(wx, wy, ww, wh, 9, 7);
     gsel(4);
     pos(0, 0);
     picload(filesystem::dir::graphic() / u8"face1.bmp", 1);
@@ -148,9 +136,32 @@ bool ui_menu_change_appearance::init()
             picload(filepath, 1);
         }
     }
+}
+
+static void _draw_deco()
+{
     gsel(3);
     pos(960, 96);
     picload(filesystem::dir::graphic() / u8"deco_mirror.bmp", 1);
+}
+
+bool ui_menu_change_appearance::init()
+{
+    create_pcpic(cc, false);
+    page = 0;
+    pagesize = 19;
+    cs = 0;
+    cs_bk = -1;
+    ww = 380;
+    wh = 340;
+    wx = (windoww - ww) / 2 + inf_screenx;
+    wy = winposy(wh);
+    snd(97);
+    window_animation(wx, wy, ww, wh, 9, 7);
+
+    _load_portraits();
+    _draw_deco();
+
     gsel(0);
     windowshadow = 1;
 
@@ -284,22 +295,23 @@ static void _draw_option_arrows(int cnt)
 
 static void _draw_option(int cnt, const pcc_info& info, const std::string& text)
 {
+    std::string option_text = text;
     if (info.item == pcc_info::item_type::pcc_part)
     {
         if (info.current_value >= 0)
         {
-            text += u8" "s + info.current_value;
+            option_text += u8" "s + info.current_value;
         }
         else if (info.current_value == -1)
         {
-            text += u8" N/A"s;
+            option_text += u8" N/A"s;
         }
         else
         {
-            text += u8" u"s + (std::abs(info.current_value) - 1);
+            option_text += u8" u"s + (std::abs(info.current_value) - 1);
         }
     }
-    cs_list(cs == cnt, text, wx + 60, wy + 66 + cnt * 21 - 1, 0);
+    cs_list(cs == cnt, option_text, wx + 60, wy + 66 + cnt * 21 - 1, 0);
     if (info.item != pcc_info::item_type::confirm)
     {
         _draw_option_arrows(cnt);
