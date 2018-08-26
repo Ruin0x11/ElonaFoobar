@@ -46,6 +46,9 @@ protected:
 
 private:
     operation _operation;
+
+    int _frame = 0;
+    int _pcc_facing_direction = 0;
 };
 
 } // namespace ui

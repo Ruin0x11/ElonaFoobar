@@ -212,7 +212,7 @@ void ui_menu_change_appearance::update()
     }
 }
 
-void ui_menu_change_appearance::draw()
+static void _draw_window()
 {
     pagesize = 0;
     s(0) = i18n::s.get("core.locale.ui.appearance.basic.title");
@@ -226,47 +226,88 @@ void ui_menu_change_appearance::draw()
         wy + 36);
     pos(wx + ww - 40, wy);
     gcopy(3, 960, 96, 48, 120);
-    ++i;
-    if (i % 100 < 45)
+}
+
+static void _draw_portrait()
+{
+    if (cdata[cc].portrait >= 0)
     {
-        f = i % 16;
+        int portrait_id = cdata[cc].sex * 64 + cdata[cc].portrait;
+        pos(wx + 238, wy + 75);
+        gcopy(4, portrait_id % 16 * 48, portrait_id / 16 * 72, 48, 72, 80, 112);
     }
-    else
+    else if (cdata[cc].portrait != -1)
     {
-        ++f;
+        pos(wx + 238, wy + 75);
+        gcopy(7, std::abs((cdata[cc].portrait + 2)) * 80, 0, 80, 112, 80, 112);
     }
+}
+
+static void _draw_own_sprite(int facing_direction)
+{
+    pos(wx + 280, wy + 130);
+    gmode(2);
+    gcopy_c(
+        20 + cc,
+        facing_direction / 4 % 4 * 32,
+        facing_direction / 16 % 4 * 48,
+        32,
+        48,
+        48,
+        80);
+}
+
+static void _draw_appearance(int facing_direction)
+{
     window2(wx + 234, wy + 71, 88, 120, 1, 1);
     if (cs == 1 && page == 0)
     {
-        if (cdata[cc].portrait >= 0)
-        {
-            p = cdata[cc].sex * 64 + cdata[cc].portrait;
-            pos(wx + 238, wy + 75);
-            gcopy(4, p % 16 * 48, p / 16 * 72, 48, 72, 80, 112);
-        }
-        else if (cdata[cc].portrait != -1)
-        {
-            pos(wx + 238, wy + 75);
-            gcopy(
-                7,
-                std::abs((cdata[cc].portrait + 2)) * 80,
-                0,
-                80,
-                112,
-                80,
-                112);
-        }
+        _draw_portrait();
     }
     else if (cdata[cc].has_own_sprite() == 1)
     {
-        pos(wx + 280, wy + 130);
-        gmode(2);
-        gcopy_c(20 + cc, f / 4 % 4 * 32, f / 16 % 4 * 48, 32, 48, 48, 80);
+        _draw_own_sprite(facing_direction);
     }
     else
     {
         draw_chara(cdata[cc], wx + 280, wy + 130);
     }
+}
+
+static void _draw_option_arrows(int cnt)
+{
+    pos(wx + 30, wy + 66 + cnt * 21 - 5);
+    gcopy(3, 312, 336, 24, 24);
+    pos(wx + 175, wy + 66 + cnt * 21 - 5);
+    gcopy(3, 336, 336, 24, 24);
+}
+
+static void _draw_option(int cnt, const pcc_info& info, const std::string& text)
+{
+    if (info.item == pcc_info::item_type::pcc_part)
+    {
+        if (info.current_value >= 0)
+        {
+            text += u8" "s + info.current_value;
+        }
+        else if (info.current_value == -1)
+        {
+            text += u8" N/A"s;
+        }
+        else
+        {
+            text += u8" u"s + (std::abs(info.current_value) - 1);
+        }
+    }
+    cs_list(cs == cnt, text, wx + 60, wy + 66 + cnt * 21 - 1, 0);
+    if (info.item != pcc_info::item_type::confirm)
+    {
+        _draw_option_arrows(cnt);
+    }
+}
+
+static void _draw_options()
+{
     gmode(2);
     font(14 - en * 2);
     cs_listbk();
@@ -274,41 +315,111 @@ void ui_menu_change_appearance::draw()
     pcc_info info;
     for (int cnt = 0, cnt_end = (pagesize); cnt < cnt_end; ++cnt)
     {
-        p = cnt;
-        if (p >= listmax)
+        int index = cnt;
+        if (index >= listmax)
         {
             break;
         }
         _set_pcc_info(cnt, info);
-        s = listn(0, p);
-        if (info.item == pcc_info::item_type::pcc_part)
-        {
-            if (info.current_value >= 0)
-            {
-                s += u8" "s + info.current_value;
-            }
-            else if (info.current_value == -1)
-            {
-                s += u8" N/A"s;
-            }
-            else
-            {
-                s += u8" u"s + (std::abs(info.current_value) - 1);
-            }
-        }
-        cs_list(cs == cnt, s, wx + 60, wy + 66 + cnt * 21 - 1, 0);
-        if (info.item != pcc_info::item_type::confirm)
-        {
-            pos(wx + 30, wy + 66 + cnt * 21 - 5);
-            gcopy(3, 312, 336, 24, 24);
-            pos(wx + 175, wy + 66 + cnt * 21 - 5);
-            gcopy(3, 336, 336, 24, 24);
-        }
+        const std::string& text = listn(0, index);
+
+        _draw_option(cnt, info, text);
     }
     if (keyrange != 0)
     {
         cs_bk = cs;
     }
+}
+
+void ui_menu_change_appearance::draw()
+{
+    _draw_window();
+
+    ++_frame;
+    if (_frame % 100 < 45)
+    {
+        _pcc_facing_direction = _frame % 16;
+    }
+    else
+    {
+        ++_pcc_facing_direction;
+    }
+
+    _draw_appearance(_pcc_facing_direction);
+    _draw_options();
+}
+
+static bool _increase_option(const pcc_info& info)
+{
+    snd(5);
+    if (info.index == 100)
+    {
+        if (cdata[cc].portrait < 31)
+        {
+            ++cdata[cc].portrait;
+        }
+        return true;
+    }
+    if (info.index == 101)
+    {
+        cdata[cc].has_own_sprite() = true;
+        return true;
+    }
+    if (info.use_external_image)
+    {
+        if (fs::exists(
+                filesystem::dir::graphic()
+                / (u8"pcc_"s + info.name + u8"_"
+                   + (pcc(info.index, cc) % 1000 + 1) + u8".bmp")))
+        {
+            ++pcc(info.index, cc);
+            p = 1;
+        }
+    }
+    else if (pcc(info.index, cc) / 1000 < 21)
+    {
+        pcc(info.index, cc) += 1000;
+        p = 1;
+    }
+
+    return false;
+}
+
+static bool _decrease_option(const pcc_info& info)
+{
+    snd(5);
+    if (info.index == 100)
+    {
+        if (cdata[cc].portrait > -10)
+        {
+            --cdata[cc].portrait;
+        }
+        return true;
+    }
+    if (info.index == 101)
+    {
+        cdata[cc].has_own_sprite() = false;
+        return true;
+    }
+    if (info.use_external_image)
+    {
+        if ((pcc(info.index, cc) % 1000 == 1 && info.index != 15)
+            || fs::exists(
+                   filesystem::dir::graphic()
+                   / (u8"pcc_"s + info.name + u8"_"s
+                      + (pcc(info.index, cc) % 1000 - 1) + u8".bmp"s)))
+        {
+            --pcc(info.index, cc);
+            p = 1;
+        }
+    }
+    else if (pcc(info.index, cc) / 1000 > 0)
+    {
+        pcc(info.index, cc) -= 1000;
+        p = 1;
+    }
+
+    return false;
 }
 
 optional<ui_menu_change_appearance::result_type>
@@ -352,69 +463,16 @@ ui_menu_change_appearance::on_key(const std::string& key)
     {
         if (key == key_pageup || key == key_enter)
         {
-            snd(5);
-            if (info.index == 100)
+            if (_increase_option(info))
             {
-                if (cdata[cc].portrait < 31)
-                {
-                    ++cdata[cc].portrait;
-                }
                 return none;
-            }
-            if (info.index == 101)
-            {
-                cdata[cc].has_own_sprite() = true;
-                return none;
-            }
-            if (info.use_external_image)
-            {
-                if (fs::exists(
-                        filesystem::dir::graphic()
-                        / (u8"pcc_"s + info.name + u8"_"
-                           + (pcc(info.index, cc) % 1000 + 1) + u8".bmp")))
-                {
-                    ++pcc(info.index, cc);
-                    p = 1;
-                }
-            }
-            else if (pcc(info.index, cc) / 1000 < 21)
-            {
-                pcc(info.index, cc) += 1000;
-                p = 1;
             }
         }
         else if (key == key_pagedown)
         {
-            snd(5);
-            if (info.index == 100)
+            if (_decrease_option(info))
             {
-                if (cdata[cc].portrait > -10)
-                {
-                    --cdata[cc].portrait;
-                }
                 return none;
-            }
-            if (info.index == 101)
-            {
-                cdata[cc].has_own_sprite() = false;
-                return none;
-            }
-            if (info.use_external_image)
-            {
-                if ((pcc(info.index, cc) % 1000 == 1 && info.index != 15)
-                    || fs::exists(
-                           filesystem::dir::graphic()
-                           / (u8"pcc_"s + info.name + u8"_"s
-                              + (pcc(info.index, cc) % 1000 - 1) + u8".bmp"s)))
-                {
-                    --pcc(info.index, cc);
-                    p = 1;
-                }
-            }
-            else if (pcc(info.index, cc) / 1000 > 0)
-            {
-                pcc(info.index, cc) -= 1000;
-                p = 1;
             }
         }
 
