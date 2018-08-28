@@ -1579,6 +1579,73 @@ int generate_color(color_index_t index, int id)
     return color % 21;
 }
 
+int calc_performance_gold_earned(
+    const character& performer,
+    const character& listener)
+{
+    int gold_coefficient = performer.quality_of_performance
+            * performer.quality_of_performance
+            * (100 + inv[performer.continuous_action_item].param1 / 5) / 100
+            / 1000
+        + rnd(10);
 
+    gold_coefficient = clamp(gold_coefficient, 1, 100);
+
+    int gold_earned =
+        clamp(listener.gold * gold_coefficient / 125, 0, sdata(183, cc) * 100);
+    if (tc < 16)
+    {
+        // Only gain up to 100 gold.
+        gold_earned = rnd(gold_coefficient) + 1;
+    }
+    if ((listener.character_role >= 1000 && listener.character_role < 2000)
+        || listener.character_role == 2003)
+    {
+        gold_earned /= 5;
+    }
+
+    return gold_earned;
+}
+
+bool calc_performance_quality_chance(
+    const character& performer,
+    const character& listener)
+{
+    return rnd(sdata(183, performer.index) + 1) > rnd(listener.level * 2 + 1);
+}
+
+int calc_performance_quality_amount(const character& listener)
+{
+    return rnd(listener.level + 1) + 1;
+}
+
+bool calc_performance_interest_chance(
+    const character& performer,
+    const character& listener)
+{
+    return rnd(sdata(183, performer.index) + 1) > rnd(listener.level * 5 + 1);
+}
+
+bool calc_performance_item_chance(int perform_tips)
+{
+    return rnd(perform_tips * 2 + 2) == 0;
+}
+
+int calc_performance_extra_quality(int base_quality, int instrument_quality)
+{
+    if (base_quality > 40)
+    {
+        return base_quality * (100 + instrument_quality / 5) / 100;
+    }
+
+    return base_quality;
+}
+
+int calc_skill_exp_gain_performance(
+    const character& chara,
+    int performance_quality)
+{
+    return performance_quality - sdata(183, chara.index) + 50;
+}
 
 } // namespace elona

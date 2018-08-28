@@ -368,41 +368,23 @@ void continuous_action_perform()
                 }
                 if (rnd(3) == 0)
                 {
-                    p = cdata[cc].quality_of_performance
-                            * cdata[cc].quality_of_performance
-                            * (100
-                               + inv[cdata[cc].continuous_action_item].param1
-                                   / 5)
-                            / 100 / 1000
-                        + rnd(10);
-                    p = clamp(
-                        cdata[tc].gold * clamp(p(0), 1, 100) / 125,
-                        0,
-                        sdata(183, cc) * 100);
-                    if (tc < 16)
+                    int gold_earned =
+                        calc_performance_gold_earned(cdata[cc], cdata[tc]);
+
+                    if (gold_earned > cdata[tc].gold)
                     {
-                        p = rnd(clamp(p(0), 1, 100)) + 1;
+                        gold_earned = cdata[tc].gold;
                     }
-                    if ((cdata[tc].character_role >= 1000
-                         && cdata[tc].character_role < 2000)
-                        || cdata[tc].character_role == 2003)
-                    {
-                        p /= 5;
-                    }
-                    if (p > cdata[tc].gold)
-                    {
-                        p = cdata[tc].gold;
-                    }
-                    cdata[tc].gold -= p;
-                    earn_gold(cdata[cc], p);
-                    gold += p;
+                    cdata[tc].gold -= gold_earned;
+                    earn_gold(cdata[cc], gold_earned);
+                    gold += gold_earned;
                 }
                 if (cdata[tc].level > sdata(183, cc))
                 {
                     continue;
                 }
-                p = rnd(cdata[tc].level + 1) + 1;
-                if (rnd(sdata(183, cc) + 1) > rnd(cdata[tc].level * 2 + 1))
+                int quality_delta = calc_performance_quality_amount(cdata[tc]);
+                if (calc_performance_quality_chance(cdata[cc], cdata[tc]))
                 {
                     if (gdata_executing_immediate_quest_type == 1009)
                     {
@@ -414,11 +396,11 @@ void continuous_action_perform()
                     }
                     if (rnd(2) == 0)
                     {
-                        cdata[cc].quality_of_performance += p;
+                        cdata[cc].quality_of_performance += quality_delta;
                     }
                     else if (rnd(2) == 0)
                     {
-                        cdata[cc].quality_of_performance -= p;
+                        cdata[cc].quality_of_performance -= quality_delta;
                     }
                 }
                 if (encfindspec(cdata[cc].continuous_action_item, 60))
@@ -428,7 +410,7 @@ void continuous_action_perform()
                         dmgcon(tc, status_ailment_t::drunk, 500);
                     }
                 }
-                if (rnd(sdata(183, cc) + 1) > rnd(cdata[tc].level * 5 + 1))
+                if (calc_performance_interest_chance(cdata[cc], cdata[tc]))
                 {
                     if (rnd(3) == 0)
                     {
@@ -445,7 +427,7 @@ void continuous_action_perform()
                         {
                             if (tc >= 16)
                             {
-                                if (rnd(performtips * 2 + 2) == 0)
+                                if (calc_performance_item_chance(performtips))
                                 {
                                     x = clamp(
                                         cdata[cc].position.x - 1 + rnd(3),
@@ -612,11 +594,10 @@ void continuous_action_perform()
         txt(i18n::s.get_enum("core.locale.activity.perform.quality", quality));
     }
 
-    if (cdata[cc].quality_of_performance > 40)
-    {
-        cdata[cc].quality_of_performance = cdata[cc].quality_of_performance
-            * (100 + inv[cdata[cc].continuous_action_item].param1 / 5) / 100;
-    }
+    cdata[cc].quality_of_performance = calc_performance_extra_quality(
+        cdata[cc].quality_of_performance,
+        inv[cdata[cc].continuous_action_item].param1);
+
     if (cdata[cc].tip_gold != 0)
     {
         if (is_in_fov(cdata[cc]))
@@ -628,7 +609,8 @@ void continuous_action_perform()
         }
     }
     rowactend(cc);
-    int experience = cdata[cc].quality_of_performance - sdata(183, cc) + 50;
+    int experience = calc_skill_exp_gain_performance(
+        cdata[cc], cdata[cc].quality_of_performance);
     if (experience > 0)
     {
         chara_gain_skill_exp(cdata[cc], 183, experience, 0, 0);

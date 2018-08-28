@@ -8,6 +8,7 @@
 namespace elona
 {
 
+struct character;
 
 int calc_buff_duration(int id, int power);
 std::string get_buff_description(int id, int power);
@@ -65,5 +66,52 @@ void calcpartyscore2();
 
 int generate_color(color_index_t index, int id);
 
+
+/**
+ * Calculates the amount of gold earned from performing. It can be
+ * greater than the listener's held gold, but in that case it will be
+ * clamped later.
+ *
+ * @param performer The performing character
+ * @param listener The listening character
+ *
+ * @return The gold amount earned
+ */
+int calc_performance_gold_earned(
+    const character& performer,
+    const character& listener);
+
+/**
+ * Returns true if a performance's quality changes based on the listener.
+ */
+bool calc_performance_quality_chance(
+    const character& performer,
+    const character& listener);
+
+/**
+ * Calculates the change in performance quality.
+ */
+int calc_performance_quality_amount(const character& listener);
+
+/**
+ * Returns true if a performance interests a listener.
+ */
+bool calc_performance_interest_chance(
+    const character& performer,
+    const character& listener);
+
+/**
+ * Returns true if a performance listener throws an item.
+ */
+bool calc_performance_item_chance(int performtips);
+
+/**
+ * Calculates the quality of performance after finishing.
+ */
+int calc_performance_extra_quality(int base_quality, int instrument_quality);
+
+int calc_skill_exp_gain_performance(
+    const character& chara,
+    int performance_quality);
 
 } // namespace elona
