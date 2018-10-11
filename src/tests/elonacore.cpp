@@ -66,3 +66,14 @@ TEST_CASE("Test cutname", "[C++: Misc.]")
         cutname(u8"Gentleness of Immortality Sonya", 32)
         == u8"Gentleness of Immortality Sonya");
 }
+
+TEST_CASE("Test strlen_u", "[C++: Misc]")
+{
+    std::string it = u8"ｱ"s;
+    std::cerr << std::hex << static_cast<uint8_t>(it[0]) << std::endl;
+    std::cerr << std::hex << static_cast<uint8_t>(it[1]) << std::endl;
+    REQUIRE(strlen_u("ｱ") == 1);
+    REQUIRE(strlen_u("ア") == 2);
+    REQUIRE(strlen_u("a") == 1);
+    REQUIRE(strlen_u("ｱアa") == 5);
+}
