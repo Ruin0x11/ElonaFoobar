@@ -1,5 +1,6 @@
 #pragma once
 #include <iosfwd>
+#include "../hcl.hpp"
 #include "../optional.hpp"
 
 namespace elona
@@ -24,7 +25,8 @@ public:
 
 private:
     optional<std::string> _serialize_keybind(const Keybind& keybind);
-    optional<std::string> _serialize_joystick_key(snail::Key key);
+    optional<hcl::Object> KeybindSerializer::_serialize_joystick_binding(
+        int joystick_button);
     KeybindManager& _keybind_manager;
 };
 

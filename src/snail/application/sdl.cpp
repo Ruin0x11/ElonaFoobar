@@ -76,6 +76,8 @@ void Application::initialize(const std::string& title)
     {
         ::SDL_StartTextInput();
     }
+
+    Input::instance().joystick().open();
 }
 
 
@@ -186,6 +188,14 @@ void Application::handle_event(const ::SDL_Event& event)
     case SDL_MOUSEBUTTONUP:
     case SDL_MOUSEBUTTONDOWN:
         Input::instance()._handle_event(event.button);
+        break;
+    case SDL_JOYDEVICEADD:
+    case SDL_JOYDEVICEREMOVE:
+        Input::instance()._handle_event(event.jdevice);
+        break;
+    case SDL_JOYBUTTONUP:
+    case SDL_JOYBUTTONDOWN:
+        Input::instance()._handle_event(event.jbutton);
         break;
     case SDL_KEYUP:
     case SDL_KEYDOWN: Input::instance()._handle_event(event.key); break;

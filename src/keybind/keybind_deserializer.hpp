@@ -23,7 +23,7 @@ private:
     optional<Keybind> _deserialize_keybind(
         const hcl::Value& object,
         const std::string& id);
-    optional<snail::Key> _deserialize_key(
+    optional<int> _deserialize_joystick_binding(
         const hcl::Value& object,
         const std::string& id);
 

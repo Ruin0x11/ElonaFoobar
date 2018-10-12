@@ -11,44 +11,49 @@ public:
     {
         Keybind primary{};
         Keybind alternate{};
-        snail::Key joystick = snail::Key::none;
+        int joystick_button = -1;
 
-        // This keybind should never be able to be unset.
+        // This keybind should never be able to be unset. Examples would be the
+        // escape key to open the options menu, or the arrow keys for movement.
+        // If they were unset, reconfiguring the keybindings entirely in-game
+        // could become impossible.
         Keybind permanent{};
 
         bool matches(const Keybind& keybind) const
         {
             return primary == keybind || alternate == keybind
-                || joystick == keybind.main || permanent == keybind;
+                || permanent == keybind;
         }
 
         void clear()
         {
             primary.clear();
             alternate.clear();
-            joystick = snail::Key::none;
+            joystick_button = -1;
         }
 
-        void bind(Keybind keybind)
+        void bind(MatchedInput& matched_input)
         {
-            if (keybind_is_joystick_key(keybind.main))
+            if (!matched_input.keybind.empty())
             {
-                // Joystick buttons will not use modifier keys.
-                joystick = keybind.main;
+                if (primary.empty())
+                {
+                    primary = matched_input.keybind;
+                }
+                else if (alternate.empty())
+                {
+                    alternate = matched_input.keybind;
+                }
+                else
+                {
+                    // Clear the secondary keybinding first.
+                    alternate.clear();
+                    primary = matched_input.keybind;
+                }
             }
-            else if (primary.empty())
+            else if (matched_input.joystick_button != -1)
             {
-                primary = keybind;
-            }
-            else if (alternate.empty())
-            {
-                alternate = keybind;
-            }
-            else
-            {
-                // Clear the secondary keybinding first.
-                alternate.clear();
-                primary = keybind;
+                joystick_button = matched_input.joystick_button;
             }
         }
     };
@@ -96,7 +101,7 @@ public:
 
     std::vector<std::string> find_conflicts(
         const std::string& action_id,
-        const Keybind& keybind);
+        const MatchedInput& matched_input);
 
     Binding& binding(const std::string& action_id)
     {

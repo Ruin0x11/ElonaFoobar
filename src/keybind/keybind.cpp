@@ -96,11 +96,6 @@ optional<Keybind> Keybind::from_string(std::string str)
 }
 
 
-bool keybind_is_joystick_key(snail::Key key)
-{
-    return false;
-}
-
 bool keybind_is_bindable_key(snail::Key key)
 {
     return static_cast<bool>(keybind_key_name(key));

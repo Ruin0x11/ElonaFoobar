@@ -127,7 +127,7 @@ void KeybindManager::load_default_bindings(const ActionMap& actions)
 
 std::vector<std::string> KeybindManager::find_conflicts(
     const std::string& action_id,
-    const Keybind& keybind)
+    const MatchedInput& matched_input)
 {
     auto action_category = keybind::actions.at(action_id).category;
     std::vector<std::string> conflicts;
@@ -145,11 +145,21 @@ std::vector<std::string> KeybindManager::find_conflicts(
         if (action_could_conflict)
         {
             const auto& action_binding = binding(action_id);
-            if (action_binding.primary == keybind
-                || action_binding.alternate == keybind
-                /* || (keybind.is_joystick() && keybind.joystick == keybind.main) */)
+            if (!matched_input.keybind.empty())
             {
-                conflicts.emplace_back(action_id);
+                if (action_binding.primary == matched_input.keybind
+                    || action_binding.alternate == matched_input.keybind)
+                {
+                    conflicts.emplace_back(action_id);
+                }
+            }
+            else if (matched_input.joystick_button != -1)
+            {
+                if (action_binding.joystick_button
+                    == matched_input.joystick_button)
+                {
+                    conflicts.emplace_back(action_id);
+                }
             }
         }
     }
@@ -177,12 +187,9 @@ static std::string _binding_name(
     {
         result = binding.primary.to_string();
     }
-    else if (binding.joystick != snail::Key::none)
+    else if (binding.joystick_button != -1)
     {
-        if (auto name_opt = keybind_key_name(binding.joystick))
-        {
-            result = *name_opt;
-        }
+        result = "Joy"s + std::to_string(binding.joystick_button);
     }
 
     strutil::try_remove_prefix(result, "Keypad ");

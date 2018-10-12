@@ -55,12 +55,9 @@ private:
      */
     void _add_actions_from_category(ActionCategory category);
 
-    bool _matches(
+    optional<MatchedInput> _matches(
         const std::string& action_id,
-        snail::Key key,
         snail::ModKey modifiers);
-
-    optional<std::string> _action_for_key(const Keybind& keybind);
 
     optional<std::string> _check_movement_action(
         const std::set<snail::Key>& keys,
@@ -68,14 +65,14 @@ private:
 
     bool _is_nonmovement_key(const snail::Key& k);
 
-    optional<Keybind> _check_normal_action();
+    optional<MatchedInput> _check_normal_action(snail::ModKey modifiers);
 
     std::string _delay_movement_action(
         const std::string& action,
         snail::ModKey modifiers,
         KeyWaitDelay delay_type);
 
-    bool _delay_normal_action(const Keybind& keybind);
+    bool _delay_normal_action(const MatchedInput& input);
 
 
     std::set<std::string> _available_actions;

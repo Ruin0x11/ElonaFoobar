@@ -15,6 +15,10 @@ static const constexpr int _x_align_binding_primary = 222;
 static const constexpr int _x_align_binding_alternate = 360;
 static const constexpr int _x_align_binding_joystick = 498;
 
+static std::string _joystick_binding_name(int joystick_button)
+{
+    return "Joy"s + std::to_string(joystick_button);
+}
 
 static std::string _action_category_to_name(ActionCategory category)
 {
@@ -67,6 +71,16 @@ static std::string _get_localized_action_name(
     return localized_name;
 }
 
+static void _refresh_binding_text(
+    const KeybindManager::Binding& binding,
+    int index)
+{
+    listn(2, index) = binding.primary.to_string();
+    listn(3, index) = binding.alternate.to_string();
+    listn(4, index) = _joystick_binding_name(binding.joystick_button);
+}
+
+
 static void _push_category_name(ActionCategory action_category)
 {
     list(0, listmax) = -1;
@@ -83,8 +97,7 @@ static void _push_keybind_entry(
     list(0, listmax) = 999;
     listn(0, listmax) = action_id;
     listn(1, listmax) = localized_name;
-    listn(2, listmax) = binding.primary.to_string();
-    listn(3, listmax) = binding.alternate.to_string();
+    _refresh_binding_text(binding, listmax);
     listmax++;
 }
 
@@ -126,12 +139,12 @@ static void _draw_background()
     load_background_variants(bg_variant_buffer);
     gsel(0);
 
-    if (mode == 0)
+    if (mode == 0) // In game
     {
         screenupdate = -1;
         update_screen();
     }
-    if (mode == 10)
+    if (mode == 10) // At title screen
     {
         gsel(4);
         gmode(0);
@@ -267,6 +280,9 @@ static void _draw_keybind_entry(int cnt, const std::string& text)
 
     pos(wx + _x_align_binding_alternate, wy + 66 + cnt * 19 + 2);
     mes(listn(3, pagesize * page + cnt));
+
+    pos(wx + _x_align_binding_joystick, wy + 66 + cnt * 19 + 2);
+    mes(listn(4, pagesize * page + cnt));
 }
 
 static void _draw_text_entry(int cnt, const std::string& text)
@@ -321,15 +337,14 @@ class KeyConflictPrompt : public SimplePrompt<bool>
 {
 public:
     KeyConflictPrompt(
-        Keybind keybind,
+        MatchedInput matched_input,
         std::vector<std::string> action_ids_in_conflict)
         : SimplePrompt()
-        , _keybind(keybind)
+        , _matched_input(matched_input)
         , _action_ids_in_conflict(action_ids_in_conflict)
     {
         std::stringstream ss;
 
-        // TODO: localize
         _print_conflicts(ss);
         _message = ss.str();
     }
@@ -369,17 +384,17 @@ private:
     {
         auto& binding = KeybindManager::instance().binding(action_id);
 
-        if (binding.primary == _keybind)
+        if (binding.primary == _matched_input.keybind)
         {
             binding.primary.clear();
         }
-        if (binding.alternate == _keybind)
+        if (binding.alternate == _matched_input.keybind)
         {
             binding.alternate.clear();
         }
-        if (binding.joystick == _keybind.main)
+        if (binding.joystick_button == _matched_input.joystick_button)
         {
-            binding.joystick = snail::Key::none;
+            binding.joystick_button = -1;
         }
     }
 
@@ -403,7 +418,7 @@ private:
     }
 
 
-    Keybind _keybind;
+    MatchedInput _matched_input;
     std::vector<std::string> _action_ids_in_conflict;
 };
 
@@ -421,14 +436,14 @@ struct KeyPromptResult
     {
     }
 
-    KeyPromptResult(Type type, Keybind keybind)
+    KeyPromptResult(Type type, MatchedInput matched_input)
         : type(type)
-        , keybind(keybind)
+        , matched_input(matched_input)
     {
     }
 
     Type type;
-    Keybind keybind{};
+    MatchedInput matched_input;
 };
 
 class KeyPrompt : public SimplePrompt<KeyPromptResult>
@@ -447,8 +462,15 @@ protected:
 
         const auto& keys = snail::Input::instance().pressed_keys();
         auto modifiers = snail::Input::instance().modifiers();
+        const auto joystick_button = snail::Input::instance().joystick().poll();
 
         _last_modifiers = modifiers;
+
+        if (joystick_button != -1)
+        {
+            return KeyPromptResult{KeyPromptResult::Type::bind,
+                                   joystick_button};
+        }
 
         for (const auto& key : keys)
         {
@@ -480,29 +502,28 @@ private:
 /// Returns true if conflict was resolved, such that action can be bound
 /// without any conflicts.
 static bool _handle_conflicts(
-    const Keybind& keybind,
+    const MatchedInput& matched_input,
     const std::vector<std::string>& action_ids_in_conflict)
 {
-    return KeyConflictPrompt(keybind, action_ids_in_conflict).query();
+    return KeyConflictPrompt(matched_input, action_ids_in_conflict).query();
 }
 
-static void _bind_key(const std::string& action_id, Keybind keybind)
+static void _bind_key(const std::string& action_id, MatchedInput matched_input)
 {
     auto conflicts =
-        KeybindManager::instance().find_conflicts(action_id, keybind);
+        KeybindManager::instance().find_conflicts(action_id, matched_input);
     if (conflicts.size() > 0)
     {
-        if (!_handle_conflicts(keybind, conflicts))
+        if (!_handle_conflicts(matched_input, conflicts))
         {
             return;
         }
     }
 
     auto& binding = KeybindManager::instance().binding(action_id);
-    binding.bind(keybind);
+    binding.bind(matched_input);
 
-    listn(2, pagesize * page + cs) = binding.primary.to_string();
-    listn(3, pagesize * page + cs) = binding.alternate.to_string();
+    _refresh_binding_text(binding, pagesize * page + cs);
 }
 
 static void _unbind_key(const std::string& action_id)
@@ -510,8 +531,7 @@ static void _unbind_key(const std::string& action_id)
     auto& binding = KeybindManager::instance().binding(action_id);
     binding.clear();
 
-    listn(2, pagesize * page + cs) = binding.primary.to_string();
-    listn(3, pagesize * page + cs) = binding.alternate.to_string();
+    _refresh_binding_text(binding, pagesize * page + cs);
 }
 
 static void _prompt_for_key(const std::string& action_id)
@@ -522,7 +542,7 @@ static void _prompt_for_key(const std::string& action_id)
     switch (result.type)
     {
     case KeyPromptResult::Type::bind:
-        _bind_key(action_id, result.keybind);
+        _bind_key(action_id, result.matched_input);
         break;
     case KeyPromptResult::Type::unbind: _unbind_key(action_id); break;
     default: break;

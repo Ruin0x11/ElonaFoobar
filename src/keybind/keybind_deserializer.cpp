@@ -46,16 +46,21 @@ optional<Keybind> KeybindDeserializer::_deserialize_keybind(
     return none;
 }
 
-optional<snail::Key> KeybindDeserializer::_deserialize_key(
+optional<int> KeybindDeserializer::_deserialize_joystick_binding(
     const hcl::Value& object,
     const std::string& id)
 {
     const hcl::Value* val = object.find(id);
-    if (val && val->is<std::string>())
+    if (val && val->is<hcl::Object>())
     {
-        if (auto key = keybind_key_code(val->as<std::string>()))
+        const hcl::Value* button = val->find("button");
+        if (button && button->is<int>())
         {
-            return key;
+            int val = button->as<int>();
+            if (val > -1)
+            {
+                return val;
+            }
         }
     }
 
@@ -83,9 +88,10 @@ void KeybindDeserializer::visit_keybinding(
         binding.alternate = *keybind;
     }
 
-    if (auto key = _deserialize_key(object, "joystick"))
+    if (auto joystick_button =
+            _deserialize_joystick_binding(object, "joystick"))
     {
-        binding.joystick = *key;
+        binding.joystick_button = *joystick_button;
     }
 }
 

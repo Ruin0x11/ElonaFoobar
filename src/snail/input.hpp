@@ -3,6 +3,7 @@
 #include <array>
 #include <set>
 #include <string>
+#include <vector>
 #include "../lib/enumutil.hpp"
 #include "../lib/noncopyable.hpp"
 #include "../optional.hpp"
@@ -282,6 +283,44 @@ inline bool is_modifier(Key k)
 
 
 
+struct JoystickButtonState
+{
+    bool is_pressed() const noexcept
+    {
+        return _is_pressed;
+    }
+
+    int repeat() const noexcept
+    {
+        return _repeat;
+    }
+
+
+    void _press()
+    {
+        _is_pressed = true;
+    }
+
+
+    void _release()
+    {
+        _is_pressed = false;
+        _repeat = -1;
+    }
+
+
+    void _increase_repeat()
+    {
+        ++_repeat;
+    }
+
+private:
+    bool _is_pressed = false;
+    int _repeat = -1;
+};
+
+
+
 class Mouse
 {
 public:
@@ -328,13 +367,52 @@ private:
 
 
 
+class Joystick
+{
+public:
+    int pressed_count() const
+    {
+        return _pressed_count;
+    }
+
+    size_t size() const
+    {
+        return buttons.size();
+    }
+
+    const JoystickButtonState& operator[](size_t index) const
+    {
+        return buttons[index];
+    }
+
+    int poll() const;
+
+    void _handle_event(const ::SDL_JoyButtonEvent& event);
+
+    void update();
+    void open();
+    void close();
+
+private:
+    void _connect(int button_count);
+    void _disconnect();
+
+    int _pressed_count = 0;
+    std::vector<JoystickButtonState> buttons;
+    std::unique_ptr<::SDL_Joystick, decltype(&::SDL_JoystickClose)> _ptr;
+};
+
+
+
 class Input final : public lib::noncopyable
 {
 public:
     typedef std::set<snail::Key> PressedKeys;
 
     bool is_pressed(Key k, int key_wait = 1) const;
+    bool is_pressed(Key k, ModKey m, int key_wait = 1) const;
     bool is_pressed(Mouse::Button b) const;
+    bool is_pressed(int joystick_button) const;
     bool was_pressed_just_now(Key k) const;
     bool was_pressed_just_now(Mouse::Button b) const;
 
@@ -343,6 +421,12 @@ public:
     void show_soft_keyboard();
     void hide_soft_keyboard();
     void toggle_soft_keyboard();
+
+    bool any_pressed() const
+    {
+        return _pressed_key_identifiers.size() > 0
+            || _joystick.pressed_count() > 0;
+    }
 
     const PressedKeys& pressed_keys() const
     {
@@ -357,6 +441,11 @@ public:
     const Mouse& mouse() const
     {
         return _mouse;
+    }
+
+    const Joystick& joystick() const
+    {
+        return _joystick;
     }
 
 
@@ -429,6 +518,8 @@ public:
     void _handle_event(const ::SDL_TextEditingEvent& event);
     void _handle_event(const ::SDL_TouchFingerEvent& event);
     void _handle_event(const ::SDL_MouseButtonEvent& event);
+    void _handle_event(const ::SDL_JoyDeviceEvent& event);
+    void _handle_event(const ::SDL_JoyButtonEvent& event);
 
 
 private:
@@ -450,6 +541,7 @@ private:
     int _quick_action_repeat_wait = 2;
 
     Mouse _mouse;
+    Joystick _joystick;
 
     Input() = default;
 };

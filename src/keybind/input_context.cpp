@@ -16,8 +16,19 @@ namespace
 // changed by entering a menu, there would be no key delay and the key would be
 // counted as pressed twice.
 
-snail::Key last_held_key = snail::Key::none;
-int last_held_key_frames = 0;
+struct LastHeldInfo
+{
+    void clear()
+    {
+        input.clear();
+        frames = 0;
+    }
+
+    MatchedInput input{};
+    int frames = 0;
+};
+
+LastHeldInfo last_held;
 
 } // namespace
 
@@ -42,52 +53,58 @@ static std::map<InputContextType, std::vector<ActionCategory>> input_context_typ
 };
 // clang-format on
 
-bool InputContext::_matches(
+optional<MatchedInput> InputContext::_matches(
     const std::string& action_id,
-    snail::Key key,
     snail::ModKey modifiers)
 {
     if (_available_actions.find(action_id) == _available_actions.end())
     {
-        return false;
+        return none;
     }
 
     const auto& binding = KeybindManager::instance().binding(action_id);
 
-    if (binding.primary.main == key && binding.primary.modifiers == modifiers)
+    const auto pressed = [](const Keybind& keybind, snail::ModKey modifiers) {
+        return keybind.modifiers == modifiers
+            && snail::Input::instance().is_pressed(keybind.main, modifiers);
+    };
+
+    if (pressed(binding.primary, modifiers))
     {
-        return true;
+        return MatchedInput(action_id, binding.primary);
     }
-    if (binding.alternate.main == key
-        && binding.alternate.modifiers == modifiers)
+    if (pressed(binding.alternate, modifiers))
     {
-        return true;
+        return MatchedInput(action_id, binding.alternate);
     }
-    if (binding.permanent.main == key
-        && binding.permanent.modifiers == modifiers)
+    if (pressed(binding.permanent, modifiers))
     {
-        return true;
+        return MatchedInput(action_id, binding.permanent);
     }
-    if (binding.joystick == key)
+    if (snail::Input::instance().is_pressed(binding.joystick_button))
     {
-        return true;
+        return MatchedInput(action_id, binding.joystick_button);
     }
 
-    return false;
+    return none;
 }
 
-optional<std::string> InputContext::_action_for_key(const Keybind& keybind)
+optional<MatchedInput> InputContext::_check_normal_action(
+    snail::ModKey modifiers)
 {
+
     for (const auto& action_id : _available_actions_sorted)
     {
-        const auto& binding = KeybindManager::instance().binding(action_id);
         bool excluded =
             _excluded_categories.find(keybind::actions.at(action_id).category)
             != _excluded_categories.end();
 
-        if (!excluded && binding.matches(keybind))
+        if (!excluded)
         {
-            return action_id;
+            if (auto matched = _matches(action_id, modifiers))
+            {
+                return matched;
+            }
         }
     }
 
@@ -106,66 +123,75 @@ optional<std::string> InputContext::_check_movement_action(
     snail::ModKey key_modifiers =
         modifiers & ~(snail::ModKey::shift | snail::ModKey::alt);
 
-    for (const auto& key : keys)
+
+    // NOTE: Escape acts as both "summon the quit menu" at the main game
+    // loop and "cancel", but actual checks for escape being pressed are
+    // relatively few. Setting the global key_escape = true is to avoid
+    // having to do (action == "cancel" || action == "escape") everywhere.
+    if (_matches("escape", key_modifiers))
     {
-        // NOTE: Escape acts as both "summon the quit menu" at the main game
-        // loop and "cancel", but actual checks for escape being pressed are
-        // relatively few. Setting the global key_escape = true is to avoid
-        // having to do (action == "cancel" || action == "escape") everywhere.
-        if (_matches("escape", key, key_modifiers))
-        {
-            bool just_pressed = keywait == 0;
-            keywait = 1;
-            key_escape = true;
+        bool just_pressed = keywait == 0;
+        keywait = 1;
+        key_escape = true;
 
-            if (just_pressed)
-            {
-                return "cancel"s;
-            }
-            else
-            {
-                return ""s;
-            }
-        }
-
-        if (_matches("north", key, key_modifiers))
+        if (just_pressed)
         {
-            input |= StickKey::up;
+            return "cancel"s;
         }
-        else if (_matches("south", key, key_modifiers))
+        else
         {
-            input |= StickKey::down;
-        }
-        else if (_matches("east", key, key_modifiers))
-        {
-            input |= StickKey::left;
-        }
-        else if (_matches("west", key, key_modifiers))
-        {
-            input |= StickKey::right;
-        }
-        else if (_matches("northwest", key, key_modifiers))
-        {
-            input = StickKey::up | StickKey::left;
-        }
-        else if (_matches("northeast", key, key_modifiers))
-        {
-            input = StickKey::up | StickKey::right;
-        }
-        else if (_matches("southwest", key, key_modifiers))
-        {
-            input = StickKey::down | StickKey::left;
-        }
-        else if (_matches("southeast", key, key_modifiers))
-        {
-            input = StickKey::down | StickKey::right;
-        }
-        else if (!is_modifier(key))
-        {
-            // Encountered non-movement key, prioritize it over movement.
-            return none;
+            return ""s;
         }
     }
+
+    if (_matches("north", key_modifiers))
+    {
+        input |= StickKey::up;
+    }
+    if (_matches("south", key_modifiers))
+    {
+        input |= StickKey::down;
+    }
+    if (_matches("east", key_modifiers))
+    {
+        input |= StickKey::left;
+    }
+    if (_matches("west", key_modifiers))
+    {
+        input |= StickKey::right;
+    }
+    if (_matches("northwest", key_modifiers))
+    {
+        input = StickKey::up | StickKey::left;
+    }
+    if (_matches("northeast", key_modifiers))
+    {
+        input = StickKey::up | StickKey::right;
+    }
+    if (_matches("southwest", key_modifiers))
+    {
+        input = StickKey::down | StickKey::left;
+    }
+    if (_matches("southeast", key_modifiers))
+    {
+        input = StickKey::down | StickKey::right;
+    }
+
+    // If there is still no movement direction, then some other key was pressed.
+    // Otherwise there would have been no key check.
+    if (input == StickKey::none)
+    {
+        for (const auto& key : keys)
+        {
+            if (!is_modifier(key))
+            {
+                // Encountered non-movement key, prioritize it over
+                // movement.
+                return none;
+            }
+        }
+    }
+
 
     if ((modifiers & snail::ModKey::shift) == snail::ModKey::shift)
     {
@@ -226,27 +252,6 @@ optional<std::string> InputContext::_check_movement_action(
 bool InputContext::_is_nonmovement_key(const snail::Key& k)
 {
     return keybind_is_bindable_key(k) || k == snail::Key::enter;
-}
-
-optional<Keybind> InputContext::_check_normal_action()
-{
-    const auto& keys = snail::Input::instance().pressed_keys();
-    auto modifiers = snail::Input::instance().modifiers();
-
-    // Pick the first nonmovement key out of the ones that were held.
-    // The only actions for which holding multiple keys makes sense is for the
-    // movement keys.
-    const auto it =
-        std::find_if(keys.begin(), keys.end(), [this](const snail::Key& k) {
-            return _is_nonmovement_key(k);
-        });
-
-    if (it != keys.end())
-    {
-        return Keybind(*it, modifiers);
-    }
-
-    return none;
 }
 
 InputContext InputContext::create(InputContextType type)
@@ -387,21 +392,21 @@ _is_keypress_delayed(int held_frames, int keywait, int initial_keywait)
     return true;
 }
 
-bool InputContext::_delay_normal_action(const Keybind& keybind)
+bool InputContext::_delay_normal_action(const MatchedInput& input)
 {
-    if (last_held_key != keybind.main)
+    if (!last_held.input.matches(input))
     {
-        last_held_key_frames = 0;
+        last_held.frames = 0;
     }
 
-    bool delayed = _is_keypress_delayed(last_held_key_frames, 1, 20);
+    bool delayed = _is_keypress_delayed(last_held.frames, 1, 20);
 
-    last_held_key_frames++;
-
-    if (last_held_key != keybind.main)
+    if (last_held.frames == 0)
     {
-        last_held_key = keybind.main;
+        last_held.input = input;
     }
+
+    last_held.frames++;
 
     if (delayed)
     {
@@ -431,17 +436,9 @@ std::string InputContext::check_for_command(KeyWaitDelay delay_type)
         }
     }
 
-    for (const auto& key : keys)
-    {
-        if (auto n = keybind_key_name(key))
-        {
-        }
-    }
-
     if (const auto action = _check_movement_action(keys, modifiers))
     {
-        last_held_key = snail::Key::none;
-        last_held_key_frames = 0;
+        last_held.clear();
 
         // Movement keys have special key delay behavior, so handle them.
         auto result = _delay_movement_action(*action, modifiers, delay_type);
@@ -456,25 +453,16 @@ std::string InputContext::check_for_command(KeyWaitDelay delay_type)
         running = 0;
     }
 
-    if (const auto keybind = _check_normal_action())
+    if (const auto matched = _check_normal_action(modifiers))
     {
-        if (const auto action = _action_for_key(*keybind))
+        if (!_delay_normal_action(*matched))
         {
-            if (!_delay_normal_action(*keybind))
-            {
-                return *action;
-            }
-        }
-        else
-        {
-            last_held_key = snail::Key::none;
-            last_held_key_frames = 0;
+            return matched->action_id;
         }
     }
     else
     {
-        last_held_key = snail::Key::none;
-        last_held_key_frames = 0;
+        last_held.clear();
     }
 
     return ""s;
@@ -542,8 +530,7 @@ void InputContext::reset()
 {
     snail::Input::instance().clear_pressed_keys_and_modifiers();
     key_escape = false;
-    last_held_key = snail::Key::none;
-    last_held_key_frames = 0;
+    last_held.clear();
 }
 
 InputContext& InputContext::instance()

@@ -217,6 +217,90 @@ void Mouse::update()
 
 
 
+void Joystick::_handle_event(const ::SDL_JoyButtonEvent& event)
+{
+    if (event.which != 0)
+        return;
+    if (event.type != SDL_JOYBUTTONUP && event.type != SDL_JOYBUTTONDOWN)
+        return;
+
+    if (event.state == SDL_PRESSED)
+    {
+        _pressed_count++;
+        buttons[event.button]._press();
+    }
+    else
+    {
+        _pressed_count--;
+        buttons[event.button]._release();
+    }
+}
+
+
+
+void Joystick::update()
+{
+    for (auto&& button : buttons)
+    {
+        if (button.is_pressed())
+            button._increase_repeat();
+    }
+}
+
+
+
+int Joystick::poll() const
+{
+    for (size_t i = 0; i < buttons.size(); i++)
+    {
+        if (buttons[i].is_pressed())
+            return static_cast<int>(i);
+    }
+
+    return -1;
+}
+
+
+
+void Joystick::open()
+{
+    if (_ptr || ::SDL_NumJoysticks() < 1)
+        return;
+
+    _ptr.reset(detail::enforce_sdl(::SDL_JoystickOpen(0)));
+
+    int button_count = ::SDL_JoystickNumButtons(_ptr.get());
+    _connect(button_count);
+}
+
+
+
+void Joystick::close()
+{
+    _disconnect();
+    _ptr.release();
+}
+
+
+
+void Joystick::_connect(int button_count)
+{
+    buttons.reserve(button_count);
+    for (int i = 0; i < button_count; i++)
+    {
+        buttons.emplace_back(JoystickButtonState{});
+    }
+}
+
+
+
+void Joystick::_disconnect()
+{
+    buttons.clear();
+}
+
+
+
 Input& Input::instance() noexcept
 {
     static Input the_instance;
@@ -244,9 +328,30 @@ bool Input::is_pressed(Key k, int key_wait) const
 
 
 
+bool Input::is_pressed(Key k, ModKey m, int key_wait) const
+{
+    const auto& key = _keys[static_cast<size_t>(k)];
+    return key.is_pressed() && _modifiers == m && key.repeat() % key_wait == 0;
+}
+
+
+
 bool Input::is_pressed(Mouse::Button b) const
 {
     return was_pressed_just_now(b);
+}
+
+
+
+bool Input::is_pressed(int joystick_button) const
+{
+    if (joystick_button < 0
+        || static_cast<size_t>(joystick_button) >= _joystick.size())
+    {
+        return false;
+    }
+
+    return _joystick[joystick_button].is_pressed();
 }
 
 
@@ -515,6 +620,31 @@ void Input::_handle_event(const ::SDL_MouseButtonEvent& event)
     _mouse._handle_event(event);
 }
 
+
+
+void Input::_handle_event(const ::SDL_JoyDeviceEvent& event)
+{
+    if (event.which != 0)
+    {
+        return;
+    }
+
+    if (event.type == SDL_JOYDEVICEADDED)
+    {
+        _joystick.open();
+    }
+    else
+    {
+        _joystick.close();
+    }
+}
+
+
+
+void Input::_handle_event(const ::SDL_JoyButtonEvent& event)
+{
+    _joystick._handle_event(event);
+}
 
 
 } // namespace snail

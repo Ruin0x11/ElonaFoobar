@@ -43,9 +43,9 @@ void KeybindSerializer::save(std::ostream& out)
             object.emplace("alternate", *str);
             valid = true;
         }
-        if (auto str = _serialize_joystick_key(binding.joystick))
+        if (auto obj = _serialize_joystick_binding(binding.joystick_button))
         {
-            object.emplace("joystick", *str);
+            object.emplace("joystick", *obj);
             valid = true;
         }
 
@@ -69,14 +69,10 @@ optional<std::string> KeybindSerializer::_serialize_keybind(
     return keybind.to_string();
 }
 
-optional<std::string> KeybindSerializer::_serialize_joystick_key(snail::Key key)
+optional<hcl::Object> KeybindSerializer::_serialize_joystick_binding(
+    int joystick_button)
 {
-    if (!keybind_is_joystick_key(key))
-    {
-        return none;
-    }
-
-    return keybind_key_name(key);
+    return hcl::Object{{"button", joystick_button}};
 }
 
 } // namespace elona

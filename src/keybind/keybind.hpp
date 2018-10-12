@@ -53,6 +53,58 @@ struct Keybind
     }
 };
 
+// The current system queries input to see if keys bound to an action are
+// pressed, instead of checking from a list of pressed keys to see which action
+// was activated. Due to this, there needs to be some way to remember the
+// key/joystick button that was pressed to handle key delay from holding a
+// key/button over multiple frames if a bound action was activated. This is a
+// consequence of needing to emulate the original key delay behavior, which
+// treated nonmovement input as text input and was delayed based on OS-level key
+// repeat settings.
+struct MatchedInput
+{
+    MatchedInput()
+    {
+    }
+    MatchedInput(Keybind keybind)
+        : action_id("")
+        , keybind(keybind)
+    {
+    }
+    MatchedInput(int joystick_button)
+        : action_id("")
+        , joystick_button(joystick_button)
+    {
+    }
+    MatchedInput(std::string action_id, Keybind keybind)
+        : action_id(action_id)
+        , keybind(keybind)
+    {
+    }
+    MatchedInput(std::string action_id, int joystick_button)
+        : action_id(action_id)
+        , joystick_button(joystick_button)
+    {
+    }
+
+    void clear()
+    {
+        action_id = "";
+        keybind.clear();
+        joystick_button = -1;
+    }
+
+    bool matches(const MatchedInput& other)
+    {
+        return keybind == other.keybind
+            && joystick_button == other.joystick_button;
+    }
+
+    std::string action_id;
+    Keybind keybind{};
+    int joystick_button = -1;
+};
+
 // clang-format off
 enum class InputContextType
 {
@@ -105,7 +157,6 @@ optional<snail::Key> keybind_key_code(
     const std::string& name,
     bool shift = false);
 bool keybind_is_bindable_key(snail::Key key);
-bool keybind_is_joystick_key(snail::Key key);
 bool keybind_action_has_category(
     const std::string& action_id,
     ActionCategory category);
