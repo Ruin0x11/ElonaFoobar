@@ -240,5 +240,11 @@ locale {
             accused = "あなたは税金を${_1}ヶ月滞納した罪で訴えられた。"
             lose_fame = "名声値を${_1}失った。"
         }
+
+        console {
+            error = "エラー: ${_1}"
+            console_script_error = "コンソールスクリプトの実行エラー: ${_1}"
+            reloaded_environment = "コンソール環境の再読み込みをしました。"
+        }
     }
 }

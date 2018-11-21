@@ -36,17 +36,23 @@ public:
     void grab_input();
 
 private:
-    void set_constants(int char_width, int char_height, int width, int height);
+    void _set_constants(int char_width, int char_height, int width, int height);
 
-    static bool is_incomplete_lua_line(const sol::error& error);
-    void print_single_line(const std::string& line);
-    bool lua_error_handler(
+    static bool _is_incomplete_lua_line(const sol::error& error);
+    void _print_single_line(const std::string& line);
+    bool _lua_error_handler(
         const std::string&,
         const sol::protected_function_result);
-    bool interpret_lua(const std::string&);
-    void input_loop();
-    void read_line();
-    void add_line(std::string);
+    bool _interpret_lua(const std::string&);
+    void _input_loop();
+    void _read_line();
+    void _add_line(std::string);
+    sol::optional<sol::protected_function> _lookup_console_command(
+        const std::string& input);
+    bool _run_console_command(const std::string& input);
+    sol::protected_function_result _execute_statement(
+        const std::string& statement,
+        bool& multiline_ended);
 
     // Assumes the font is monospaced.
     int _char_width = 10;

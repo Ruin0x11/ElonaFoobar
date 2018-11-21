@@ -223,5 +223,11 @@ locale {
             accused = "You have been accused for being in arrears with your tax for${_1} months."
             lose_fame = "You lose ${_1} fame."
         }
+
+        console {
+            error = "Error: ${_1}"
+            console_script_error = "Error running console script: ${_1}"
+            reloaded_environment = "Reloaded console environment."
+        }
     }
 }

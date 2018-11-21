@@ -2,6 +2,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include "../config/config.hpp"
 #include "../filesystem.hpp"
+#include "../i18n.hpp"
 #include "../input.hpp"
 #include "../macro.hpp"
 #include "../snail/application.hpp"
@@ -17,11 +18,17 @@ namespace elona
 namespace lua
 {
 
-static const std::string prompt_primary = ">";
-static const std::string prompt_secondary = ">>";
-static const std::string eof_mark = "<eof>";
+static const char* prompt_primary = ">";
+static const char* prompt_secondary = ">>";
+
+/// Used to determine if the last inputted statement should be expanded into a
+/// multiline statement.
+static const char* eof_mark = "<eof>";
 
 static constexpr int max_scrollback_count = 1000;
+static constexpr int default_width = 10;
+static constexpr int default_height = 14;
+static constexpr float window_fill_percentage = 0.35;
 
 LuaConsole::LuaConsole(LuaEnv* lua)
 {
@@ -45,11 +52,14 @@ void LuaConsole::init_constants()
 
     if (size.width == 0)
     {
-        size.width = 10;
-        size.height = 14;
+        size.width = default_width;
+        size.height = default_height;
     }
-    set_constants(
-        size.width, size.height, windoww, static_cast<int>(0.35 * windowh));
+    _set_constants(
+        size.width,
+        size.height,
+        windoww,
+        static_cast<int>(window_fill_percentage * windowh));
 
     print(u8"Elona_foobar debug console");
     print(_version_string());
@@ -76,12 +86,12 @@ void LuaConsole::init_environment()
     _console_mod->env.raw_set("reload", [this]() {
         if (run_userscript())
         {
-            print("Reloaded console environment.");
+            print(i18n::s.get("core.locale.misc.console.reloaded_environment"));
         }
     });
 }
 
-void LuaConsole::set_constants(
+void LuaConsole::_set_constants(
     int char_width,
     int char_height,
     int width,
@@ -106,14 +116,15 @@ bool LuaConsole::run_userscript()
     if (!result.valid())
     {
         sol::error err = result;
-        print("Error running console script: "s + err.what());
+        print(i18n::s.get(
+            "core.locale.misc.console.console_script_error", err.what()));
         return false;
     }
 
     return true;
 }
 
-void LuaConsole::print_single_line(const std::string& line)
+void LuaConsole::_print_single_line(const std::string& line)
 {
     if (line.size() == 0)
     {
@@ -144,7 +155,7 @@ void LuaConsole::print(const std::string& message)
 
     for (std::string line : strutil::split_lines(message))
     {
-        print_single_line(line);
+        _print_single_line(line);
     }
 }
 
@@ -199,12 +210,12 @@ void LuaConsole::draw()
     elona::color(0, 0, 0);
 }
 
-inline bool LuaConsole::is_incomplete_lua_line(const sol::error& error)
+inline bool LuaConsole::_is_incomplete_lua_line(const sol::error& error)
 {
     return boost::algorithm::ends_with(error.what(), eof_mark);
 }
 
-bool LuaConsole::lua_error_handler(
+bool LuaConsole::_lua_error_handler(
     const std::string& input,
     const sol::protected_function_result pfr)
 {
@@ -215,49 +226,51 @@ bool LuaConsole::lua_error_handler(
     if (pfr.status() == sol::call_status::syntax)
     {
         sol::error error = pfr;
-        if (is_incomplete_lua_line(error))
+        if (_is_incomplete_lua_line(error))
         {
             _is_multiline = true;
             multiline_ended = false;
         }
         else
         {
-            std::string mes =
-                "Error: "s + error.what(); // lang(u8"エラー: ", u8"Error: ") +
-                                           // error.what();
-            print(mes);
+            print(i18n::s.get("core.locale.misc.console.error", error.what()));
         }
     }
     else
     {
         sol::error error = pfr;
-        std::string mes = "Error: "s
-            + error.what(); // lang(u8"エラー: ", u8"Error: ") + error.what();
-        print(mes);
+        print(i18n::s.get("core.locale.misc.console.error", error.what()));
     }
 
     return multiline_ended;
 }
 
-/// Returns true if the Lua input is incomplete, and multiline input should be
-/// used.
-bool LuaConsole::interpret_lua(const std::string& input)
+sol::optional<sol::protected_function> LuaConsole::_lookup_console_command(
+    const std::string& input)
 {
-    if (input == ""s)
-    {
-        return _is_multiline;
-    }
+    return _console_mod->env.get<sol::optional<sol::protected_function>>(
+        std::tie(input, command_meta_tag));
+}
 
-    bool multiline_ended = true;
-
+sol::protected_function_result LuaConsole::_execute_statement(
+    const std::string& input,
+    bool& multiline_ended)
+{
     // Print errors to the console instead of throwing.
     auto handler = [this, &multiline_ended, &input](
                        lua_State*, sol::protected_function_result pfr) {
-        multiline_ended = lua_error_handler(input, pfr);
+        multiline_ended = _lua_error_handler(input, pfr);
         return pfr;
     };
 
-    // First, try prepending "return" to the statement, ignoring errors.
+    // First, see if the statement resolves to a table variable containing a
+    // '__command' field, and run it if so.
+    if (auto func = _lookup_console_command(input))
+    {
+        return (*func)();
+    }
+
+    // Next, try prepending "return" to the statement, ignoring errors.
     auto result = lua::lua->get_state()->safe_script(
         u8"return " + input, _console_mod->env, sol::script_pass_on_error);
 
@@ -267,6 +280,22 @@ bool LuaConsole::interpret_lua(const std::string& input)
         result = lua::lua->get_state()->safe_script(
             input, _console_mod->env, handler);
     }
+
+    return result;
+}
+
+/// Returns true if the Lua input is incomplete, and multiline input should be
+/// used.
+bool LuaConsole::_interpret_lua(const std::string& input)
+{
+    if (input == ""s)
+    {
+        return _is_multiline;
+    }
+
+    bool multiline_ended = true;
+
+    auto result = _execute_statement(input, multiline_ended);
 
     if (result.valid())
     {
@@ -447,7 +476,7 @@ void LuaConsole::grab_input()
                 print(
                     (_is_multiline ? prompt_secondary : prompt_primary) + u8" "s
                     + _input);
-                if (interpret_lua(_multiline_input))
+                if (_interpret_lua(_multiline_input))
                 {
                     _multiline_input = "";
                     _is_multiline = false;
