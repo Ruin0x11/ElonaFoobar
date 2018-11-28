@@ -1,0 +1,17 @@
+--- Macro system to programatically queue inputs to be sent to the
+--- game. You can queue any possible action runnable through keyboard
+--- input and the next time the game queries for input, the queued
+--- actions will be run first.
+--  @usage local Macro = Elona.require("Macro")
+module "Macro"
+
+--- Enqueues an action into the macro action queue. It will be run in
+--- order of insertion the next time input is queried.
+-- @tparam string action the action to run. Can also be a list of actions.
+-- @usage Macro.enqueue("north")
+-- Macro.enqueue({"east", "wait", "northwest"})
+function enqueue(action) end
+
+--- Clears any actions that haven't been run yet in the macro action
+--- queue.
+function clear_queue() end

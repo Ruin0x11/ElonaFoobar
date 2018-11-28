@@ -177,6 +177,7 @@ set(CORE_SOURCES
   src/lua_env/lua_api/lua_api_i18n.cpp
   src/lua_env/lua_api/lua_api_input.cpp
   src/lua_env/lua_api/lua_api_item.cpp
+  src/lua_env/lua_api/lua_api_macro.cpp
   src/lua_env/lua_api/lua_api_magic.cpp
   src/lua_env/lua_api/lua_api_map.cpp
   src/lua_env/lua_api/lua_api_math.cpp
@@ -207,6 +208,7 @@ set(CORE_SOURCES
   src/keybind/keybind_deserializer.cpp
   src/keybind/keybind_manager.cpp
   src/keybind/keybind_serializer.cpp
+  src/keybind/macro_action_queue.cpp
 
   src/lib/fps_counter.cpp
   src/lib/profiler.cpp

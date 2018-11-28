@@ -88,6 +88,12 @@ TEST_CASE("Core API: Trait", "[Lua: API]")
     lua_testcase("trait.lua");
 }
 
+TEST_CASE("Core API: Macro", "[Lua: API]")
+{
+    lua_testcase("macro.lua");
+}
+
+
 
 TEST_CASE("Core API: LuaCharacter", "[Lua: API]")
 {

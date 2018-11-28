@@ -21,6 +21,7 @@ void LuaApi::bind(sol::table& core)
     LUA_API_BIND(core, I18N);
     LUA_API_BIND(core, Map);
     LUA_API_BIND(core, Animation);
+    LUA_API_BIND(core, Macro);
     LUA_API_BIND(core, Debug);
 }
 
