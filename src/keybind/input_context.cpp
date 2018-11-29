@@ -45,7 +45,7 @@ static std::map<InputContextType, std::vector<ActionCategory>> input_context_typ
 
 bool InputContext::_is_valid_action(const std::string& action_id)
 {
-    return _available_actions.find(action_id) == _available_actions.end();
+    return _available_actions.find(action_id) != _available_actions.end();
 }
 
 bool InputContext::_matches(
@@ -420,19 +420,24 @@ bool InputContext::_delay_normal_action(const Keybind& keybind)
 }
 
 optional<std::string> InputContext::_handle_macro_action(
-    MacroActionQueue macro_action_queue)
+    MacroActionQueue& macro_action_queue)
 {
     std::string action = "";
 
-    while (action == "" || !_is_valid_action(action))
+    while (!macro_action_queue.empty() &&
+           (action == "" || !_is_valid_action(action)))
     {
         action = macro_action_queue.pop();
+        std::cerr << "bad, get " << action << std::endl;
     }
 
     if (action == "" || !_is_valid_action(action))
     {
+        std::cerr << "bad" << std::endl;
         return none;
     }
+
+    std::cerr << "Get " << action << std::endl;
 
     return action;
 }
@@ -441,6 +446,7 @@ std::string InputContext::check_for_command(KeyWaitDelay delay_type)
 {
     if (!keybind::macro_action_queue.empty())
     {
+        std::cerr << "---- commands found" << std::endl;
         if (auto action = _handle_macro_action(keybind::macro_action_queue))
         {
             return *action;

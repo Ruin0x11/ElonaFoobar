@@ -13,6 +13,8 @@ void enqueue_table(sol::table);
 
 void clear_queue();
 
+void ignore_wait();
+
 
 void bind(sol::table&);
 }; // namespace Macro

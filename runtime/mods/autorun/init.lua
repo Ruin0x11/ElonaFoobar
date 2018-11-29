@@ -19,15 +19,17 @@ Exports.on_use = {}
 
 function Exports.on_use.autorun_tester()
    for i=0,5 do
-      local dx = Rand.rnd(2) - 1
-      local dy = Rand.rnd(2) - 1
+      local dx = Rand.rnd(3) - 1
+      local dy = Rand.rnd(3) - 1
       local command = delta_to_command(dx, dy)
       if not command then
          command = "wait"
       end
       GUI.txt("Queue: " .. command)
-      Macro.queue(command)
+      Macro.enqueue(command)
+      Macro.ignore_wait()
    end
+   return true
 end
 
 Event.register(Event.EventKind.CharaDamaged,

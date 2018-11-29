@@ -28,11 +28,17 @@ void Macro::clear_queue()
     keybind::macro_action_queue.clear();
 }
 
+void Macro::ignore_wait()
+{
+    keybd_wait = 100000;
+}
+
 void Macro::bind(sol::table& api_table)
 {
     api_table.set_function(
         "enqueue", sol::overload(Macro::enqueue, Macro::enqueue_table));
     LUA_API_BIND_FUNCTION(api_table, Macro, clear_queue);
+    LUA_API_BIND_FUNCTION(api_table, Macro, ignore_wait);
 }
 
 } // namespace lua

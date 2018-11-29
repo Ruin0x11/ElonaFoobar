@@ -82,7 +82,7 @@ private:
     bool _delay_normal_action(const Keybind& keybind);
 
     optional<std::string> _handle_macro_action(
-        MacroActionQueue macro_action_queue);
+        MacroActionQueue& macro_action_queue);
 
     std::set<std::string> _available_actions;
     std::vector<std::string> _available_actions_sorted;

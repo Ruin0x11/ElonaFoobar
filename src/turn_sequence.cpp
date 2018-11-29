@@ -1520,6 +1520,8 @@ TurnResult pc_turn(bool advance_time)
         objprm(0, ""s);
     }
 
+    std::cerr << "===== reached player's turn" << std::endl;
+
 label_2747:
     if (game_data.wizard)
     {
@@ -1582,10 +1584,14 @@ label_2747:
         goto label_2747;
     }
 
+    std::cerr << "===== get action: " << command << std::endl;
+
     if (auto turn_result = handle_pc_action(command))
     {
         return *turn_result;
     }
+
+    std::cerr << "===== action handled: " << command << std::endl;
 
     goto label_2747;
 }
