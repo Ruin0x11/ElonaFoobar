@@ -111,11 +111,14 @@ local FEAT_STAIRS_UP = 232
 local FEAT_STAIRS_DOWN = 231
 
 local function add_waypoints_from_data(keys, waypoint_list)
-   for key, waypoint in pairs(data.raw["autorun.waypoint"]) do
-      if Pathing.is_tile_memorized(waypoint.pos) then
-         if Map.new_id() == waypoint.map_id and Map.dungeon_level() == waypoint.map_level then
-            table.insert(waypoint_list, waypoint)
-            table.insert(keys, key)
+   for key, obj in pairs(data.raw["autorun.waypoints"]) do
+      for _, waypoint in obj.waypoints do
+         if Pathing.is_tile_memorized(waypoint.pos) then
+            if Map.new_id() == waypoint.map_id and Map.dungeon_level() == waypoint.map_level then
+               local localized_name = "autorun.locale.waypoints." .. waypoint.localized_name
+               table.insert(waypoint_list, waypoint)
+               table.insert(keys, I18N.get(localized_name) .. " (" ..  waypoint.pos.x .. "," .. waypoint.pos.y .. ")")
+            end
          end
       end
    end
@@ -128,10 +131,10 @@ local function add_waypoints_from_stairs(keys, waypoint_list)
 
          if feat == FEAT_STAIRS_UP then
             table.insert(waypoint_list, { pos = { x = pos.x, y = pos.y } })
-            table.insert(keys, I18N.get("autorun.locale.waypoint.stairs.up") .. " " ..  pos.x .. "," .. pos.y .. ")")
+            table.insert(keys, I18N.get("autorun.locale.waypoint.stairs.up") .. " (" ..  pos.x .. "," .. pos.y .. ")")
          elseif feat == FEAT_STAIRS_DOWN then
             table.insert(waypoint_list, { pos = { x = pos.x, y = pos.y } })
-            table.insert(keys, I18N.get("autorun.locale.waypoint.stairs.down") .. " " ..  pos.x .. "," .. pos.y .. ")")
+            table.insert(keys, I18N.get("autorun.locale.waypoint.stairs.down") .. " (" ..  pos.x .. "," .. pos.y .. ")")
          end
       end
    end
@@ -159,13 +162,11 @@ local function waypoints()
    local choice = Input.prompt_choice(table.unpack(keys))
 
    if choice then
+      local name = keys[choice]
       local waypoint = waypoint_list[choice]
       if waypoint then
-         local name = I18N.get_optional("autorun.locale.waypoints." .. waypoint._id)
          if name then
             GUI.txt(I18N.get("autorun.locale.waypoint.start", name))
-         else
-            GUI.txt(I18N.get("autorun.locale.travel.start"))
          end
          Autorun.start(waypoint.pos, waypoint)
          return true
