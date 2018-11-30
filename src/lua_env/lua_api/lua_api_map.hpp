@@ -39,6 +39,12 @@ int get_tile_xy(int, int);
 int get_memory(const Position&);
 int get_memory_xy(int, int);
 
+int get_feat(const Position&);
+int get_feat_xy(int, int);
+
+int get_mef(const Position&);
+int get_mef_xy(int, int);
+
 sol::optional<LuaCharacterHandle> get_chara(const Position&);
 sol::optional<LuaCharacterHandle> get_chara_xy(int, int);
 

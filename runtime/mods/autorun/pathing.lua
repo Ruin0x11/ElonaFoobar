@@ -1,21 +1,36 @@
 local Chara = Elona.require("Chara")
 local FOV = Elona.require("FOV")
+local GUI = Elona.require("GUI")
 local Iter = Elona.require("Iter")
 local Map = Elona.require("Map")
 
 local function is_tile_memorized(pos)
-   -- Elona has no concept of never-seen tiles, because tile memory is
-   -- initialized to the "wall" type on generation, so some tiles will
-   -- already be correct in tile memory the first time the map is
-   -- entered. The best that can be done for now is to check if the
-   -- memory is different from the actual tile.
    local memory = Map.get_memory(pos.x, pos.y)
    local tile = Map.get_tile(pos.x, pos.y)
 
-   return memory ~= -1 and memory == tile
+   return memory ~= 0 and memory == tile
+end
+
+local CLOSED_DOOR = 726
+
+-- Like Map.is_solid(), but returns false for closed doors.
+local function is_solid(pos)
+   if Map.is_solid(pos.x, pos.y) then
+      return Map.get_feat(pos.x, pos.y) ~= CLOSED_DOOR
+   end
+
+   return false
+end
+
+local function points_equal(a, b)
+   return a.x == b.x and a.y == b.y
 end
 
 local function is_valid_explore_target(target)
+   if points_equal(target, Chara.player().position) then
+      return false
+   end
+
    for pos in Iter.rectangle_iter(-1, -1, 1, 1) do
       if pos.x ~= 0 and pos.y ~= 0 then
          if Map.valid(target.x + pos.x, target.y + pos.y) then
@@ -28,19 +43,22 @@ local function is_valid_explore_target(target)
    return false
 end
 
-local function points_equal(a, b)
-   return a.x == b.x and a.y == b.y
-end
-
 local function chara_blocks(pos)
    local chara = Map.get_chara(pos.x, pos.y)
    return chara
+      and not Chara.is_player(chara)
       and FOV.you_see(chara.position)
-      and (chara.relationship == "Aggressive" or chara.relationship == "Nonaggressive")
+      and (chara.relationship == "Aggressive"
+              or chara.relationship == "Nonagressive"
+              or chara.relationship == "Neutral")
+end
+
+local function mef_blocks(pos)
+   return Map.get_mef(pos.x, pos.y) ~= 0
 end
 
 local function is_safe_to_travel(pos)
-   if Map.is_solid(pos.x, pos.y) then
+   if is_solid(pos) then
       return false
    end
 
@@ -49,6 +67,10 @@ local function is_safe_to_travel(pos)
    end
 
    if chara_blocks(pos) then
+      return false
+   end
+
+   if mef_blocks(pos) then
       return false
    end
 
@@ -69,12 +91,22 @@ end
 
 local Pathfinder = {}
 
+function Pathfinder:is_exploring()
+   return self.dest == nil
+end
+
 function Pathfinder:update_unexplored_pos(pos, next_pos)
+   -- HACK: For some reason, by the time the destination is reached
+   -- the memorized tiles might not be updated, causing the reached
+   -- destination to still be marked as unexplored.
+   if points_equal(pos, Chara.player().position) then
+      return
+   end
+
    if not is_tile_memorized(next_pos) then
       if self.traveled_dist < self.unexplored_dist or self.unexplored_dist < 0 then
          self.unexplored_dist = self.traveled_dist
          self.unexplored_place = pos
-         print("found place " .. pos.x .. "," .. pos.y)
       end
    end
 end
@@ -92,7 +124,7 @@ function Pathfinder:flood(pos, next_pos)
       return false
    end
 
-   if self.explore then
+   if self:is_exploring() then
       self:update_unexplored_pos(pos, next_pos)
 
       if self.unexplored_dist >= 0 then
@@ -100,7 +132,7 @@ function Pathfinder:flood(pos, next_pos)
       end
    end
 
-   if not self.explore and points_equal(self.dest, next_pos) then
+   if not self:is_exploring() and points_equal(self.dest, next_pos) then
       self.next_move = pos
       return true
    end
@@ -146,11 +178,12 @@ function Pathfinder:pathfind(start, dest)
       return { x = -1, y = -1 }
    end
 
-   if not self.explore and points_equal(start, dest) then
+   self.dest = dest
+
+   if not self:is_exploring() and points_equal(start, dest) then
       return start
    end
 
-   self.dest = dest
    self.distance_map = make_distance_map()
    self.next_move = { x = -1, y = -1 }
    self.unexplored_place = { x = -1, y = -1 }
@@ -171,7 +204,7 @@ function Pathfinder:pathfind(start, dest)
          local pos = self.circ[self.ring][i]
          local reached = self:examine_point(pos)
          if reached then
-            if self.explore then
+            if self:is_exploring() then
                return self.unexplored_place
             else
                return self.next_move
@@ -185,7 +218,7 @@ function Pathfinder:pathfind(start, dest)
       self.traveled_distance = self.traveled_distance + 1
    end
 
-   if self.explore then
+   if self:is_exploring() then
       return self.unexplored_place
    else
       return self.next_move
@@ -291,16 +324,47 @@ function Pathing:has_explore_target()
    return self.dest and self.dest.x ~= -1 and is_valid_explore_target(self.dest)
 end
 
+local function print_halt_reason(dest)
+   if not Map.valid(dest.x, dest.y) then
+      GUI.txt("There's no unblocked path available. ")
+   elseif not Pathing.is_tile_memorized(dest) then
+      GUI.txt("You can't go there. ")
+   elseif is_solid(dest)  then
+      GUI.txt("The destination is blocked. ")
+   elseif chara_blocks(dest) then
+      local chara = Map.get_chara(dest.x, dest.y)
+      GUI.txt(chara.name .. " is in the way. ")
+   elseif mef_blocks(dest) then
+      GUI.txt("Something dangerous is there. ")
+   else
+      GUI.txt("There's no unblocked path available. ")
+   end
+end
+
+function Pathing:on_halt()
+   local pos = Chara.player().position
+   local not_reached = not points_equal(self.dest, pos)
+
+   if not_reached then
+      print_halt_reason(self.dest)
+      GUI.txt("Aborting travel. ")
+   else
+      GUI.txt("Travel finished. ")
+   end
+end
+
 function Pathing:get_action()
    local player = Chara.player()
+   local pos = {x = player.position.x, y = player.position.y}
 
    if self.explore and not self:has_explore_target() then
-      self.dest = find_target_square(player.position)
+      self.dest = find_target_square(pos)
    end
 
-   local move = calc_move_towards_dest(player.position, self.dest)
+   local move = calc_move_towards_dest(pos, self.dest)
 
    if move.x == 0 and move.y == 0 then
+      self:on_halt()
       return nil
    end
 
@@ -308,6 +372,8 @@ function Pathing:get_action()
 end
 
 Pathing.is_tile_memorized = is_tile_memorized
+Pathing.is_safe_to_travel = is_safe_to_travel
 Pathing.chara_blocks = chara_blocks
+Pathing.print_halt_reason = print_halt_reason
 
 return Pathing

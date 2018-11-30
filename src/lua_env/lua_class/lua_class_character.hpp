@@ -15,6 +15,8 @@ void damage_hp_chara(Character&, int, LuaCharacterHandle handle);
 
 void apply_ailment(Character&, const EnumString&, int);
 
+int get_ailment(Character&, const EnumString&);
+
 bool recruit_as_ally(Character&);
 
 void set_flag(Character&, const EnumString&, bool);

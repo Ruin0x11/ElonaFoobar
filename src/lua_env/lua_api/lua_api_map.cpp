@@ -36,10 +36,6 @@ bool Map::valid(const Position& position)
 
 bool Map::valid_xy(int x, int y)
 {
-    if (Map::is_overworld())
-    {
-        return false;
-    }
     if (x < 0 || y < 0 || x >= Map::width() || y >= Map::height())
     {
         return false;
@@ -55,16 +51,17 @@ bool Map::is_solid(const Position& position)
 
 bool Map::is_solid_xy(int x, int y)
 {
-    if (Map::is_overworld())
-    {
-        return true;
-    }
     if (!Map::valid_xy(x, y))
     {
         return true;
     }
 
-    return elona::chipm(7, elona::cell_data.at(x, y).chip_id_actual) & 4;
+    bool tile_blocks =
+        elona::chipm(7, elona::cell_data.at(x, y).chip_id_actual) & 4;
+    bool feat_blocks =
+        elona::chipm(7, elona::cell_data.at(x, y).feats % 1000) & 4;
+
+    return tile_blocks || feat_blocks;
 }
 
 bool Map::is_blocked(const Position& position)
@@ -74,10 +71,6 @@ bool Map::is_blocked(const Position& position)
 
 bool Map::is_blocked_xy(int x, int y)
 {
-    if (Map::is_overworld())
-    {
-        return true;
-    }
     if (!Map::valid_xy(x, y))
     {
         return true;
@@ -113,13 +106,9 @@ int Map::get_tile(const Position& position)
 
 int Map::get_tile_xy(int x, int y)
 {
-    if (Map::is_overworld())
-    {
-        return -1;
-    }
     if (!Map::valid_xy(x, y))
     {
-        return -1;
+        return 0;
     }
 
     return elona::cell_data.at(x, y).chip_id_actual;
@@ -132,16 +121,57 @@ int Map::get_memory(const Position& position)
 
 int Map::get_memory_xy(int x, int y)
 {
-    if (Map::is_overworld())
-    {
-        return -1;
-    }
     if (!Map::valid_xy(x, y))
     {
-        return -1;
+        return 0;
     }
 
     return elona::cell_data.at(x, y).chip_id_memory;
+}
+
+int Map::get_feat(const Position& position)
+{
+    return Map::get_feat_xy(position.x, position.y);
+}
+
+int Map::get_feat_xy(int x, int y)
+{
+    if (Map::is_overworld())
+    {
+        return 0;
+    }
+    if (!Map::valid_xy(x, y))
+    {
+        return 0;
+    }
+
+    return cell_data.at(x, y).feats % 1000;
+}
+
+int Map::get_mef(const Position& position)
+{
+    return Map::get_mef_xy(position.x, position.y);
+}
+
+int Map::get_mef_xy(int x, int y)
+{
+    if (Map::is_overworld())
+    {
+        return 0;
+    }
+    if (!Map::valid_xy(x, y))
+    {
+        return 0;
+    }
+
+    int index_plus_one = cell_data.at(x, y).mef_index_plus_one;
+
+    if (index_plus_one == 0)
+    {
+        return 0;
+    }
+
+    return mef(0, index_plus_one - 1);
 }
 
 sol::optional<LuaCharacterHandle> Map::get_chara(const Position& position)
@@ -222,6 +252,10 @@ void Map::bind(sol::table& api_table)
         "get_tile", sol::overload(Map::get_tile, Map::get_tile_xy));
     api_table.set_function(
         "get_memory", sol::overload(Map::get_memory, Map::get_memory_xy));
+    api_table.set_function(
+        "get_feat", sol::overload(Map::get_feat, Map::get_feat_xy));
+    api_table.set_function(
+        "get_mef", sol::overload(Map::get_mef, Map::get_mef_xy));
     api_table.set_function(
         "get_chara", sol::overload(Map::get_chara, Map::get_chara_xy));
     api_table.set_function(

@@ -105,7 +105,7 @@ Input::prompt_position_with_initial_xy(const std::string& message, int x, int y)
 
     txt(message + " ");
 
-    int result = elona::target_position();
+    int result = elona::target_position(false);
 
     if (result == -1)
     {
@@ -123,7 +123,6 @@ void Input::bind(sol::table& api_table)
         "prompt_number",
         sol::overload(Input::prompt_number, Input::prompt_number_with_initial));
     LUA_API_BIND_FUNCTION(api_table, Input, prompt_text);
-    LUA_API_BIND_FUNCTION(api_table, Input, prompt_position);
     api_table.set_function(
         "prompt_position",
         sol::overload(
