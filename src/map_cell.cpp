@@ -11,47 +11,47 @@ namespace elona
 int tc_at_m81 = 0;
 
 void cell_featset(
-    int prm_592,
-    int prm_593,
-    int prm_594,
-    int prm_595,
-    int prm_596,
-    int prm_597)
+    int x,
+    int y,
+    int id,
+    int extra_info_1,
+    int extra_info_2,
+    int extra_info_3)
 {
     elona_vector1<int> feat_at_m80;
-    if (prm_594 != -1)
+    if (id != -1)
     {
-        feat_at_m80 = prm_594;
+        feat_at_m80 = id;
     }
     else
     {
-        feat_at_m80 = cell_data.at(prm_592, prm_593).feats % 1000;
+        feat_at_m80 = cell_data.at(x, y).feats % 1000;
     }
-    if (prm_595 != -1)
+    if (extra_info_1 != -1)
     {
-        feat_at_m80(1) = prm_595;
+        feat_at_m80(1) = extra_info_1;
     }
     else
     {
-        feat_at_m80(1) = cell_data.at(prm_592, prm_593).feats / 1000 % 100;
+        feat_at_m80(1) = cell_data.at(x, y).feats / 1000 % 100;
     }
-    if (prm_596 != -1)
+    if (extra_info_2 != -1)
     {
-        feat_at_m80(2) = prm_596;
+        feat_at_m80(2) = extra_info_2;
     }
     else
     {
-        feat_at_m80(2) = cell_data.at(prm_592, prm_593).feats / 100000 % 100;
+        feat_at_m80(2) = cell_data.at(x, y).feats / 100000 % 100;
     }
-    if (prm_597 != -1)
+    if (extra_info_3 != -1)
     {
-        feat_at_m80(3) = prm_597;
+        feat_at_m80(3) = extra_info_3;
     }
     else
     {
-        feat_at_m80(3) = cell_data.at(prm_592, prm_593).feats / 10000000;
+        feat_at_m80(3) = cell_data.at(x, y).feats / 10000000;
     }
-    cell_data.at(prm_592, prm_593).feats = feat_at_m80 + feat_at_m80(1) * 1000 +
+    cell_data.at(x, y).feats = feat_at_m80 + feat_at_m80(1) * 1000 +
         feat_at_m80(2) * 100000 + feat_at_m80(3) * 10000000;
 }
 

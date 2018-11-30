@@ -16,6 +16,10 @@ int height();
 
 int id();
 
+sol::optional<std::string> new_id();
+
+int dungeon_level();
+
 bool is_overworld();
 
 bool valid(const Position&);

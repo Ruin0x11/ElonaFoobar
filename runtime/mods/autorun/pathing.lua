@@ -5,18 +5,28 @@ local Iter = Elona.require("Iter")
 local Map = Elona.require("Map")
 
 local function is_tile_memorized(pos)
-   local memory = Map.get_memory(pos.x, pos.y)
-   local tile = Map.get_tile(pos.x, pos.y)
-
-   return memory ~= 0 and memory == tile
+   return Map.valid(pos.x, pos.y)
+      and Map.get_memory(pos.x, pos.y) == Map.get_tile(pos.x, pos.y)
 end
 
-local CLOSED_DOOR = 726
+-- TODO: Make magic constants more understandable.
+local TILE_KNOWN_TRAP = 234
+local PASSABLE_FEATS = {726, 728, 730, 733} -- doors
+
+local function is_passable_feat(feat)
+   for _, id in ipairs(PASSABLE_FEATS) do
+      if feat == id then
+         return true
+      end
+   end
+   return false
+end
 
 -- Like Map.is_solid(), but returns false for closed doors.
 local function is_solid(pos)
    if Map.is_solid(pos.x, pos.y) then
-      return Map.get_feat(pos.x, pos.y) ~= CLOSED_DOOR
+      local feat = Map.get_feat(pos.x, pos.y)
+      return not is_passable_feat(feat)
    end
 
    return false
@@ -57,6 +67,10 @@ local function mef_blocks(pos)
    return Map.get_mef(pos.x, pos.y) ~= 0
 end
 
+local function has_trap(pos)
+   return Map.get_feat(pos.x, pos.y) == TILE_KNOWN_TRAP
+end
+
 local function is_safe_to_travel(pos)
    if is_solid(pos) then
       return false
@@ -71,6 +85,10 @@ local function is_safe_to_travel(pos)
    end
 
    if mef_blocks(pos) then
+      return false
+   end
+
+   if has_trap(pos) then
       return false
    end
 
@@ -174,7 +192,8 @@ function Pathfinder:examine_point(pos)
 end
 
 function Pathfinder:pathfind(start, dest)
-   if not is_safe_to_travel(start) then
+   if not is_safe_to_travel(start) and not self.ignore_blocking then
+      print("notseafe")
       return { x = -1, y = -1 }
    end
 
@@ -274,24 +293,26 @@ local function find_target_square(pos)
    end
 end
 
-local function calc_move_towards_dest(pos, dest)
+local function calc_move_towards_dest(pos, dest, ignore_blocking)
    local state = Pathfinder.new()
+   state.ignore_blocking = ignore_blocking
 
    if dest.x == -1 and dest.y == -1 then
-      return { x = 0, y = 0 }
+      return { x = 0, y = 0, reached = false }
    end
 
    local target = state:pathfind(dest, pos)
    if target.x == -1 then
       state = Pathfinder.new()
+      state.ignore_blocking = ignore_blocking
       state.avoid_danger = false
       target = state:pathfind(dest, pos)
    end
 
    if target.x ~= -1 then
-      return { x = target.x - pos.x, y = target.y - pos.y }
+      return { x = target.x - pos.x, y = target.y - pos.y, reached = points_equal(target, dest) }
    else
-      return { x = 0, y = 0 }
+      return { x = 0, y = 0, reached = false }
    end
 end
 
@@ -304,7 +325,7 @@ local function delta_to_command(dx, dy)
    return lookup[dy][dx]
 end
 
-function Pathing.new(dest)
+function Pathing.new(dest, waypoint)
    local e = {}
    e.explore = dest == nil
    if e.explore then
@@ -312,6 +333,8 @@ function Pathing.new(dest)
    else
       e.dest = dest
    end
+   e.waypoint = waypoint
+   e.waypoint_reached = false
 
    for k, v in pairs(Pathing) do
       e[k] = v
@@ -324,17 +347,53 @@ function Pathing:has_explore_target()
    return self.dest and self.dest.x ~= -1 and is_valid_explore_target(self.dest)
 end
 
+local function matches(obj, fields)
+   if not obj then
+      return false
+   end
+
+   for k, v in pairs(fields) do
+      if k ~= "_type" then
+         if obj[k] ~= v then
+            return false
+         end
+      end
+   end
+
+   return true
+end
+
+local function check_for_waypoint_target(waypoint)
+   if not waypoint.target then
+      return waypoint.pos
+   end
+
+   -- HACK: Write FOV.iter() instead of iterating the whole map.
+   for pos in Iter.rectangle_iter(0, 0, Map.width() - 1, Map.height() - 1) do
+      if FOV.you_see(pos.x, pos.y) then
+         if waypoint.target._type == "character" then
+            local chara = Map.get_chara(pos.x, pos.y)
+            if matches(chara, waypoint.target) then
+               return pos
+            end
+         end
+      end
+   end
+
+   return nil
+end
+
 local function print_halt_reason(dest)
    if not Map.valid(dest.x, dest.y) then
       GUI.txt("There's no unblocked path available. ")
    elseif not Pathing.is_tile_memorized(dest) then
-      GUI.txt("You can't go there. ")
+      GUI.txt("You don't know what's there. ")
    elseif is_solid(dest)  then
       GUI.txt("The destination is blocked. ")
    elseif chara_blocks(dest) then
       local chara = Map.get_chara(dest.x, dest.y)
       GUI.txt(chara.name .. " is in the way. ")
-   elseif mef_blocks(dest) then
+   elseif mef_blocks(dest) or has_trap(dest) then
       GUI.txt("Something dangerous is there. ")
    else
       GUI.txt("There's no unblocked path available. ")
@@ -343,25 +402,51 @@ end
 
 function Pathing:on_halt()
    local pos = Chara.player().position
-   local not_reached = not points_equal(self.dest, pos)
+   local reached = (self.waypoint and self.waypoint_reached) or points_equal(self.dest, pos)
 
-   if not_reached then
+   if not reached then
       print_halt_reason(self.dest)
       GUI.txt("Aborting travel. ")
    else
       GUI.txt("Travel finished. ")
+      if self.waypoint and not self.waypoint_reached then
+         GUI.txt("The waypoint target isn't here. ")
+      end
    end
 end
 
 function Pathing:get_action()
-   local player = Chara.player()
-   local pos = {x = player.position.x, y = player.position.y}
-
-   if self.explore and not self:has_explore_target() then
-      self.dest = find_target_square(pos)
+   if self.waypoint_reached then
+      self:on_halt()
+      return nil
    end
 
-   local move = calc_move_towards_dest(pos, self.dest)
+   local player = Chara.player()
+   local start = {x = player.position.x, y = player.position.y}
+
+   if self.explore and not self:has_explore_target() then
+      self.dest = find_target_square(start)
+   end
+
+   local dest = self.dest
+   local ignore_blocking = false
+
+   if self.waypoint then
+      local waypoint_dest = check_for_waypoint_target(self.waypoint)
+      if waypoint_dest then
+         dest = waypoint_dest
+         ignore_blocking = true
+      end
+   end
+
+   local move = calc_move_towards_dest(start, dest, ignore_blocking)
+
+   -- Allow the player to move into the waypoint (to interacting with
+   -- the waypoint character), but stop traveling on the next
+   -- iteration.
+   if move.reached and self.waypoint then
+      self.waypoint_reached = true
+   end
 
    if move.x == 0 and move.y == 0 then
       self:on_halt()

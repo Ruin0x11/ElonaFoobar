@@ -1,4 +1,5 @@
 #include "lua_api_map.hpp"
+#include "../../data/types/type_map.hpp"
 #include "../../lua_env/enums/enums.hpp"
 #include "../../lua_env/interface.hpp"
 #include "../../map.hpp"
@@ -24,6 +25,23 @@ int Map::id()
     return game_data.current_map;
 }
 
+sol::optional<std::string> Map::new_id()
+{
+    auto id = the_mapdef_db.get_id_from_legacy(game_data.current_map);
+
+    if (id)
+    {
+        return id->get();
+    }
+
+    return sol::nullopt;
+}
+
+int Map::dungeon_level()
+{
+    return map_data.current_dungeon_level;
+}
+
 bool Map::is_overworld()
 {
     return elona::map_data.atlas_number == 0;
@@ -36,12 +54,7 @@ bool Map::valid(const Position& position)
 
 bool Map::valid_xy(int x, int y)
 {
-    if (x < 0 || y < 0 || x >= Map::width() || y >= Map::height())
-    {
-        return false;
-    }
-
-    return elona::cell_data.at(x, y).chip_id_actual != 0;
+    return x >= 0 && y >= 0 && x < Map::width() && y < Map::height();
 }
 
 bool Map::is_solid(const Position& position)
@@ -239,6 +252,8 @@ void Map::bind(sol::table& api_table)
     LUA_API_BIND_FUNCTION(api_table, Map, width);
     LUA_API_BIND_FUNCTION(api_table, Map, height);
     LUA_API_BIND_FUNCTION(api_table, Map, id);
+    LUA_API_BIND_FUNCTION(api_table, Map, new_id);
+    LUA_API_BIND_FUNCTION(api_table, Map, dungeon_level);
     LUA_API_BIND_FUNCTION(api_table, Map, is_overworld);
     api_table.set_function("valid", sol::overload(Map::valid, Map::valid_xy));
     api_table.set_function(

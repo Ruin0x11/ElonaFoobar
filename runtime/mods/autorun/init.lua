@@ -1,18 +1,11 @@
---[[
-Map.iter_memory()
-FOV.iter()
-Map.feature_at(x, y)
-Map.chara_at(x, y)
-Map.tile_at(x, y)
-]]
-
+local Chara = Elona.require("Chara")
 local Event = Elona.require("Event")
-local FOV = Elona.require("FOV")
 local GUI = Elona.require("GUI")
 local Input = Elona.require("Input")
-local Chara = Elona.require("Chara")
+local Iter = Elona.require("Iter")
 local Macro = Elona.require("Macro")
 local Map = Elona.require("Map")
+local table = Elona.require("table")
 
 local Pathing = require "pathing"
 
@@ -20,10 +13,10 @@ local autorun = false
 local attacked = false
 local pathing = nil
 
-local function start_autorun(dest)
+local function start_autorun(dest, waypoint)
    attacked = false
    autorun = true
-   pathing = Pathing.new(dest)
+   pathing = Pathing.new(dest, waypoint)
 end
 
 local function stop_autorun()
@@ -59,16 +52,6 @@ local function step_autorun()
    end
 end
 
-local function explore()
-   if Map.is_overworld() then
-      GUI.txt("You can't explore in the overworld. ")
-      stop_autorun()
-      return false
-   end
-
-   start_autorun(nil)
-   return true
-end
 
 local function travel()
    local pos = Chara.player().position
@@ -84,12 +67,76 @@ local function travel()
       end
 
       GUI.txt("Traveling. ")
-      start_autorun(dest)
+      start_autorun(dest, nil)
       return true
    end
 
    return false
 end
+
+local function explore()
+   if Map.is_overworld() then
+      GUI.txt("You can't explore in the overworld. ")
+      stop_autorun()
+      return false
+   end
+
+   start_autorun(nil, nil)
+   return true
+end
+
+-- TODO: Make magic constants more understandable.
+local FEAT_STAIRS_UP = 232
+local FEAT_STAIRS_DOWN = 231
+
+local function waypoints()
+   local keys = {}
+   local waypoint_list = {}
+
+   for key, waypoint in pairs(data.raw["autorun.waypoint"]) do
+      if Map.new_id() == waypoint.map_id and Map.dungeon_level() == waypoint.map_level then
+         waypoint_list[#keys+1] = waypoint
+         keys[#keys+1] = key
+      end
+   end
+
+   for pos in Iter.rectangle_iter(0, 0, Map.width() - 1, Map.height() - 1) do
+      if Pathing.is_tile_memorized(pos) then
+         local feat = Map.get_feat(pos.x, pos.y)
+         if feat > 0 then
+            print(feat)
+         end
+         if feat == FEAT_STAIRS_UP then
+            waypoint_list[#keys+1] = { pos = { x = pos.x, y = pos.y } }
+            keys[#keys+1] = "Stairs up (" .. pos.x .. "," .. pos.y .. ")"
+         elseif feat == FEAT_STAIRS_DOWN then
+            waypoint_list[#keys+1] = { pos = { x = pos.x, y = pos.y } }
+            keys[#keys+1] = "Stairs down (" .. pos.x .. "," .. pos.y .. ")"
+         end
+      end
+   end
+
+   if #keys == 0 then
+      GUI.txt("No waypoints available for this area. ")
+      return false
+   end
+
+   GUI.txt("Which? ")
+   local choice = Input.prompt_choice(table.unpack(keys))
+
+   if choice then
+      local waypoint = waypoint_list[choice]
+      if waypoint then
+         print(waypoint.pos.x .. "," .. waypoint.pos.y)
+         GUI.txt("Traveling. ")
+         start_autorun(waypoint.pos, waypoint)
+         return true
+      end
+   end
+
+   return false
+end
+
 
 local function on_damaged(chara)
    if Chara.is_player(chara) then
@@ -113,7 +160,7 @@ Exports.on_use = {}
 
 function Exports.on_use.autorun_tester()
    GUI.txt("What to do? ")
-   local result = Input.prompt_choice("Travel", "Explore")
+   local result = Input.prompt_choice("Travel", "Explore", "Waypoints")
 
    -- TODO: Needs to restart the player's turn without running all
    -- other character turns, in order for the macro to trigger
@@ -121,6 +168,8 @@ function Exports.on_use.autorun_tester()
       return travel()
    elseif result == 2 then
       return explore()
+   elseif result == 3 then
+      return waypoints()
    end
 
    return false
@@ -144,6 +193,7 @@ return {
    Autorun = {
       travel = travel,
       explore = explore,
+      waypoints = waypoints,
       stop = stop_autorun
    }
 }
