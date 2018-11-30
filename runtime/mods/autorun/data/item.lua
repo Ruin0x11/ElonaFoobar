@@ -6,8 +6,8 @@ data:add(
 
          id = 910,
          image = 695,
-         value = 780,
-         weight = 500,
+         value = 100,
+         weight = 100,
 
          material = 31,
          is_usable = true,

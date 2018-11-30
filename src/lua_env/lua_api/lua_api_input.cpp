@@ -115,6 +115,11 @@ Input::prompt_position_with_initial_xy(const std::string& message, int x, int y)
     return Position{tlocx, tlocy};
 }
 
+bool Input::any_key_pressed()
+{
+    return snail::Input::instance().pressed_keys().size() > 0;
+}
+
 void Input::bind(sol::table& api_table)
 {
     LUA_API_BIND_FUNCTION(api_table, Input, yes_no);
@@ -129,6 +134,7 @@ void Input::bind(sol::table& api_table)
             Input::prompt_position,
             Input::prompt_position_with_initial,
             Input::prompt_position_with_initial_xy));
+    LUA_API_BIND_FUNCTION(api_table, Input, any_key_pressed);
 }
 
 } // namespace lua

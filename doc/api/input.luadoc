@@ -74,3 +74,7 @@ function prompt_text(message, is_cancelable) end
 --    GUI.txt("Never mind. ")
 -- end
 function prompt_position(message, pos) end
+
+--- Returns true if any key was pressed. Useful for interrupting
+--- actions enqueued by Macro.enqueue.
+function any_key_pressed() end

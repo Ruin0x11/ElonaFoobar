@@ -24,6 +24,8 @@ sol::optional<Position> prompt_position_with_initial(
 sol::optional<Position>
 prompt_position_with_initial_xy(const std::string&, int, int);
 
+bool any_key_pressed();
+
 
 void bind(sol::table&);
 }; // namespace Input

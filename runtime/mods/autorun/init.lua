@@ -1,5 +1,6 @@
 local Chara = Elona.require("Chara")
 local Event = Elona.require("Event")
+local I18N = Elona.require("I18N")
 local GUI = Elona.require("GUI")
 local Input = Elona.require("Input")
 local Iter = Elona.require("Iter")
@@ -9,38 +10,53 @@ local table = Elona.require("table")
 
 local Pathing = require "pathing"
 
+local pathing = nil
 local autorun = false
 local attacked = false
-local pathing = nil
 
-local function start_autorun(dest, waypoint)
+--
+-- Autorun control API
+--
+
+local Autorun = {}
+
+function Autorun.start(dest, waypoint)
+   pathing = Pathing.new(dest, waypoint)
    attacked = false
    autorun = true
-   pathing = Pathing.new(dest, waypoint)
 end
 
-local function stop_autorun()
+function Autorun.stop()
+   pathing = nil
    attacked = false
    autorun = false
 end
 
+
+-- Called when the player's turn begins. If autorun is active, it
+-- inputs the appropriate movement action for the player
+-- automatically.
 local function step_autorun()
    if not autorun then
       return
    end
 
+   if Input.any_key_pressed() then
+      GUI.txt(I18N.get("autorun.locale.key_pressed", "autorun.locale." .. pathing.type .. ".name"))
+      Autorun.stop()
+      return
+   end
+
    if Chara.player():get_ailment("Confused") > 0 then
-      GUI.txt("You are confused. Stopping. ")
-      stop_autorun()
+      GUI.txt(I18N.get("autorun.locale.confused", "autorun.locale." .. pathing.type .. ".name"))
+      Autorun.stop()
       return
    end
 
    if attacked then
-      stop_autorun()
+      Autorun.stop()
       return
    end
-
-   -- local esc = Input.is_key_held("escape")
 
    local next_action = pathing:get_action()
 
@@ -48,17 +64,21 @@ local function step_autorun()
       Macro.enqueue(next_action)
       Macro.ignore_wait()
    else
-      stop_autorun()
+      Autorun.stop()
    end
 end
 
 
+--
+-- Autorun functionality
+--
+
 local function travel()
    local pos = Chara.player().position
-   local dest = Input.prompt_position("Where to go? ", pos)
+   local dest = Input.prompt_position(I18N.get("autorun.locale.travel.prompt"), pos)
    if dest then
       if dest.x == pos.x and dest.y == pos.y then
-         GUI.txt("You're already there! ")
+         GUI.txt(I18N.get("autorun.locale.travel.already_there"))
          return false
       end
       if not Pathing.is_safe_to_travel(dest) then
@@ -66,8 +86,8 @@ local function travel()
          return false
       end
 
-      GUI.txt("Traveling. ")
-      start_autorun(dest, nil)
+      GUI.txt(I18N.get("autorun.locale.travel.start"))
+      Autorun.start(dest, nil)
       return true
    end
 
@@ -76,12 +96,13 @@ end
 
 local function explore()
    if Map.is_overworld() then
-      GUI.txt("You can't explore in the overworld. ")
-      stop_autorun()
+      GUI.txt(I18N.get("autorun.locale.explore.cannot_in_overworld"))
+      Autorun.stop()
       return false
    end
 
-   start_autorun(nil, nil)
+   GUI.txt(I18N.get("autorun.locale.explore.start"))
+   Autorun.start(nil, nil)
    return true
 end
 
@@ -89,47 +110,64 @@ end
 local FEAT_STAIRS_UP = 232
 local FEAT_STAIRS_DOWN = 231
 
-local function waypoints()
-   local keys = {}
-   local waypoint_list = {}
-
+local function add_waypoints_from_data(keys, waypoint_list)
    for key, waypoint in pairs(data.raw["autorun.waypoint"]) do
-      if Map.new_id() == waypoint.map_id and Map.dungeon_level() == waypoint.map_level then
-         waypoint_list[#keys+1] = waypoint
-         keys[#keys+1] = key
+      if Pathing.is_tile_memorized(waypoint.pos) then
+         if Map.new_id() == waypoint.map_id and Map.dungeon_level() == waypoint.map_level then
+            table.insert(waypoint_list, waypoint)
+            table.insert(keys, key)
+         end
       end
    end
+end
 
+local function add_waypoints_from_stairs(keys, waypoint_list)
    for pos in Iter.rectangle_iter(0, 0, Map.width() - 1, Map.height() - 1) do
       if Pathing.is_tile_memorized(pos) then
          local feat = Map.get_feat(pos.x, pos.y)
-         if feat > 0 then
-            print(feat)
-         end
+
          if feat == FEAT_STAIRS_UP then
-            waypoint_list[#keys+1] = { pos = { x = pos.x, y = pos.y } }
-            keys[#keys+1] = "Stairs up (" .. pos.x .. "," .. pos.y .. ")"
+            table.insert(waypoint_list, { pos = { x = pos.x, y = pos.y } })
+            table.insert(keys, I18N.get("autorun.locale.waypoint.stairs.up") .. " " ..  pos.x .. "," .. pos.y .. ")")
          elseif feat == FEAT_STAIRS_DOWN then
-            waypoint_list[#keys+1] = { pos = { x = pos.x, y = pos.y } }
-            keys[#keys+1] = "Stairs down (" .. pos.x .. "," .. pos.y .. ")"
+            table.insert(waypoint_list, { pos = { x = pos.x, y = pos.y } })
+            table.insert(keys, I18N.get("autorun.locale.waypoint.stairs.down") .. " " ..  pos.x .. "," .. pos.y .. ")")
          end
       end
    end
+end
+
+local function build_waypoints_list()
+   local keys = {}
+   local waypoint_list = {}
+
+   add_waypoints_from_data(keys, waypoint_list)
+   add_waypoints_from_stairs(keys, waypoint_list)
+
+   return keys, waypoint_list
+end
+
+local function waypoints()
+   local keys, waypoint_list = build_waypoints_list()
 
    if #keys == 0 then
-      GUI.txt("No waypoints available for this area. ")
+      GUI.txt(I18N.get("autorun.locale.waypoint.none_available"))
       return false
    end
 
-   GUI.txt("Which? ")
+   GUI.txt(I18N.get("autorun.locale.waypoint.prompt"))
    local choice = Input.prompt_choice(table.unpack(keys))
 
    if choice then
       local waypoint = waypoint_list[choice]
       if waypoint then
-         print(waypoint.pos.x .. "," .. waypoint.pos.y)
-         GUI.txt("Traveling. ")
-         start_autorun(waypoint.pos, waypoint)
+         local name = I18N.get_optional("autorun.locale.waypoints." .. waypoint._id)
+         if name then
+            GUI.txt(I18N.get("autorun.locale.waypoint.start", name))
+         else
+            GUI.txt(I18N.get("autorun.locale.travel.start"))
+         end
+         Autorun.start(waypoint.pos, waypoint)
          return true
       end
    end
@@ -137,6 +175,10 @@ local function waypoints()
    return false
 end
 
+
+--
+-- Event callback functions
+--
 
 local function on_damaged(chara)
    if Chara.is_player(chara) then
@@ -146,24 +188,41 @@ end
 
 local function on_killed(chara)
    if chara and Chara.is_player(chara) then
-      stop_autorun()
+      Autorun.stop()
    end
 end
 
 local function on_map_initialized()
-   stop_autorun()
-   Elona.require("Item").create(Chara.player().position, "autorun.autorun_tester")
+   Autorun.stop()
 end
+
+
+--
+-- Exports
+--
 
 local Exports = {}
 Exports.on_use = {}
 
-function Exports.on_use.autorun_tester()
-   GUI.txt("What to do? ")
-   local result = Input.prompt_choice("Travel", "Explore", "Waypoints")
+local function prompt_localized_choice(root, choices)
+   local localized = {}
+   for _, locale_key in ipairs(choices) do
+      table.insert(localized, I18N.get(root .. "." .. locale_key))
+   end
 
-   -- TODO: Needs to restart the player's turn without running all
-   -- other character turns, in order for the macro to trigger
+   return Input.prompt_choice(localized)
+end
+
+function Exports.on_use.autorun_tester()
+   GUI.txt(I18N.get("autorun.locale.menu.prompt"))
+   local result = prompt_localized_choice("autorun.locale.menu", {"travel", "explore", "waypoints"})
+
+   -- TODO: Currently this causes the player to wait a turn on
+   -- successful use. Instead it should restart the player's turn
+   -- without passing time and running all other character turns, in
+   -- order for the macro to trigger. Otherwise an enemy could attack
+   -- and interrupt the traveling. To do this the on_use callback
+   -- should return an enum string instead of a boolean.
    if result == 1 then
       return travel()
    elseif result == 2 then
@@ -175,7 +234,8 @@ function Exports.on_use.autorun_tester()
    return false
 end
 
--- TODO: It would be far better to integrate this with the continuous
+
+-- TODO: It would be ideal to integrate this with the continuous
 -- action/activity system, to allow things like player damage to be
 -- consistently handled. It makes logical sense since control is taken
 -- away from the player.
@@ -190,10 +250,5 @@ Event.register(Event.EventKind.GameInitialized, on_map_initialized)
 
 return {
    Exports = Exports,
-   Autorun = {
-      travel = travel,
-      explore = explore,
-      waypoints = waypoints,
-      stop = stop_autorun
-   }
+   Autorun = Autorun
 }

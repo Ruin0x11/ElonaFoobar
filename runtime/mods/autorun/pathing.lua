@@ -1,6 +1,7 @@
 local Chara = Elona.require("Chara")
 local FOV = Elona.require("FOV")
 local GUI = Elona.require("GUI")
+local I18N = Elona.require("I18N")
 local Iter = Elona.require("Iter")
 local Map = Elona.require("Map")
 
@@ -193,7 +194,6 @@ end
 
 function Pathfinder:pathfind(start, dest)
    if not is_safe_to_travel(start) and not self.ignore_blocking then
-      print("notseafe")
       return { x = -1, y = -1 }
    end
 
@@ -301,6 +301,10 @@ local function calc_move_towards_dest(pos, dest, ignore_blocking)
       return { x = 0, y = 0, reached = false }
    end
 
+   -- The destination and start are reversed, such that the final tile
+   -- in the path found is directly next to the starting point. This
+   -- allows for determining what direction the next step should be
+   -- taken.
    local target = state:pathfind(dest, pos)
    if target.x == -1 then
       state = Pathfinder.new()
@@ -318,9 +322,9 @@ end
 
 local function delta_to_command(dx, dy)
    local lookup = {
-      [-1] = { [-1] = "northwest", [0] = "north", [1] = "northeast"},
-      [0]  = { [-1] = "west",                     [1] = "east"},
-      [1]  = { [-1] = "southwest", [0] = "south", [1] = "southeast"},
+      [-1] = { [-1] = "northwest", [0] = "north", [1] = "northeast" },
+      [0]  = { [-1] = "west",                     [1] = "east"      },
+      [1]  = { [-1] = "southwest", [0] = "south", [1] = "southeast" },
    }
    return lookup[dy][dx]
 end
@@ -330,8 +334,10 @@ function Pathing.new(dest, waypoint)
    e.explore = dest == nil
    if e.explore then
       e.dest = { x = -1, y = -1 }
+      e.type = "explore"
    else
       e.dest = dest
+      e.type = "travel"
    end
    e.waypoint = waypoint
    e.waypoint_reached = false
@@ -384,19 +390,21 @@ local function check_for_waypoint_target(waypoint)
 end
 
 local function print_halt_reason(dest)
+   -- TODO: Determine if map is fully explored for more accurate
+   -- message.
    if not Map.valid(dest.x, dest.y) then
-      GUI.txt("There's no unblocked path available. ")
+      GUI.txt(I18N.get("autorun.locale.pathing.halt.default"))
    elseif not Pathing.is_tile_memorized(dest) then
-      GUI.txt("You don't know what's there. ")
+      GUI.txt(I18N.get("autorun.locale.pathing.halt.unknown_tile"))
    elseif is_solid(dest)  then
-      GUI.txt("The destination is blocked. ")
+      GUI.txt(I18N.get("autorun.locale.pathing.halt.solid"))
    elseif chara_blocks(dest) then
       local chara = Map.get_chara(dest.x, dest.y)
-      GUI.txt(chara.name .. " is in the way. ")
+      GUI.txt(I18N.get("autorun.locale.pathing.halt.chara", chara))
    elseif mef_blocks(dest) or has_trap(dest) then
-      GUI.txt("Something dangerous is there. ")
+      GUI.txt(I18N.get("autorun.locale.pathing.halt.danger"))
    else
-      GUI.txt("There's no unblocked path available. ")
+      GUI.txt(I18N.get("autorun.locale.pathing.halt.default"))
    end
 end
 
@@ -406,17 +414,17 @@ function Pathing:on_halt()
 
    if not reached then
       print_halt_reason(self.dest)
-      GUI.txt("Aborting travel. ")
+      GUI.txt("autorun.locale.pathing.aborted", "autorun.locale." .. self.type .. ".name")
    else
-      GUI.txt("Travel finished. ")
+      GUI.txt("autorun.locale.pathing.finished", "autorun.locale." .. self.type .. ".name")
       if self.waypoint and not self.waypoint_reached then
-         GUI.txt("The waypoint target isn't here. ")
+         GUI.txt("autorun.locale.pathing.waypoint_target_missing")
       end
    end
 end
 
 function Pathing:get_action()
-   if self.waypoint_reached then
+   if self.waypoint and self.waypoint_reached then
       self:on_halt()
       return nil
    end
@@ -434,6 +442,10 @@ function Pathing:get_action()
    if self.waypoint then
       local waypoint_dest = check_for_waypoint_target(self.waypoint)
       if waypoint_dest then
+         -- We want the pathing to run directly into the target,
+         -- causing the talk menu to appear, so don't count the tile
+         -- the character is standing on as blocked by the character
+         -- themselves.
          dest = waypoint_dest
          ignore_blocking = true
       end
@@ -441,9 +453,12 @@ function Pathing:get_action()
 
    local move = calc_move_towards_dest(start, dest, ignore_blocking)
 
-   -- Allow the player to move into the waypoint (to interacting with
-   -- the waypoint character), but stop traveling on the next
-   -- iteration.
+   -- Allow the player to move into the waypoint (to interact with the
+   -- waypoint character), but stop traveling on the next iteration.
+   -- The destination set by the pathfinder is the the tile the
+   -- waypoint character occupies, so the pathfinding would retry
+   -- inifinitely as the destination will never technically be
+   -- reached.
    if move.reached and self.waypoint then
       self.waypoint_reached = true
    end
