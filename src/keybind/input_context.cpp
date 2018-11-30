@@ -428,16 +428,12 @@ optional<std::string> InputContext::_handle_macro_action(
            (action == "" || !_is_valid_action(action)))
     {
         action = macro_action_queue.pop();
-        std::cerr << "bad, get " << action << std::endl;
     }
 
     if (action == "" || !_is_valid_action(action))
     {
-        std::cerr << "bad" << std::endl;
         return none;
     }
-
-    std::cerr << "Get " << action << std::endl;
 
     return action;
 }
@@ -446,7 +442,6 @@ std::string InputContext::check_for_command(KeyWaitDelay delay_type)
 {
     if (!keybind::macro_action_queue.empty())
     {
-        std::cerr << "---- commands found" << std::endl;
         if (auto action = _handle_macro_action(keybind::macro_action_queue))
         {
             return *action;

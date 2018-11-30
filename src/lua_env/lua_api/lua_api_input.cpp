@@ -85,6 +85,36 @@ sol::optional<int> Input::prompt_choice(sol::variadic_args args)
     return rtval + 1;
 }
 
+sol::optional<Position> Input::prompt_position(const std::string& message)
+{
+    return Input::prompt_position_with_initial_xy(message, 0, 0);
+}
+
+sol::optional<Position> Input::prompt_position_with_initial(
+    const std::string& message,
+    const Position& pos)
+{
+    return Input::prompt_position_with_initial_xy(message, pos.x, pos.y);
+}
+
+sol::optional<Position>
+Input::prompt_position_with_initial_xy(const std::string& message, int x, int y)
+{
+    elona::tlocinitx = x;
+    elona::tlocinity = y;
+
+    txt(message + " ");
+
+    int result = elona::target_position();
+
+    if (result == -1)
+    {
+        return sol::nullopt;
+    }
+
+    return Position{tlocx, tlocy};
+}
+
 void Input::bind(sol::table& api_table)
 {
     LUA_API_BIND_FUNCTION(api_table, Input, yes_no);
@@ -93,6 +123,13 @@ void Input::bind(sol::table& api_table)
         "prompt_number",
         sol::overload(Input::prompt_number, Input::prompt_number_with_initial));
     LUA_API_BIND_FUNCTION(api_table, Input, prompt_text);
+    LUA_API_BIND_FUNCTION(api_table, Input, prompt_position);
+    api_table.set_function(
+        "prompt_position",
+        sol::overload(
+            Input::prompt_position,
+            Input::prompt_position_with_initial,
+            Input::prompt_position_with_initial_xy));
 }
 
 } // namespace lua

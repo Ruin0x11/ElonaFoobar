@@ -58,7 +58,7 @@ local function run_life()
       for y = 1, Map.width() do
          for x = 1, Map.height() do
             local tile
-            if Store.map_local.grid[x][y] == 1 and Map.can_access(x, y) then
+            if Store.map_local.grid[x][y] == 1 and Map.is_blocked(x, y) then
                tile = Map.generate_tile(Enums.TileKind.Wall)
             else
                tile = Map.generate_tile(Enums.TileKind.Room)

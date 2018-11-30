@@ -19,7 +19,7 @@ function valid(position) end
 --- Checks if a position is accessable by walking.
 -- @tparam LuaPosition position (const) the map position
 -- @treturn bool true if the position is accessable by walking
-function can_access(position) end
+function is_blocked(position) end
 
 --- Given a position, returns a position that is bounded within the current map.
 -- @tparam LuaPosition position (const) the map position

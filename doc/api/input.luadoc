@@ -12,7 +12,7 @@ module "Input"
 -- else
 --    GUI.txt("You chose no. ")
 -- end
-function yes_or_no(message) end
+function yes_no(message) end
 
 --- Prompts the player to select from a list of choices. Raises an
 --- error if no arguments are provided.
@@ -60,3 +60,17 @@ function prompt_number(message, max, index) end
 --    GUI.txt("Never mind. ")
 -- end
 function prompt_text(message, is_cancelable) end
+
+--- Prompts the player to select a position.
+-- @tparam string message a message to display
+-- @tparam[opt] LuaPosition pos the initial position to select
+-- @treturn[1] LuaPosition the position that was selected
+-- @treturn[1] nil if canceled
+-- @usage local result = Input.prompt_position("Which position?")
+--
+-- if result then
+--    GUI.txt(result.x .. "," .. result.y)
+-- else
+--    GUI.txt("Never mind. ")
+-- end
+function prompt_position(message, pos) end

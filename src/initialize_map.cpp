@@ -1333,6 +1333,9 @@ init_map_after_refresh:
     }
     if (mode == 3)
     {
+        lua::lua->get_event_manager()
+            .run_callbacks<lua::EventKind::map_initialized>();
+
         mode = 0;
         if (mapsubroutine == 0)
         {
