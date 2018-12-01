@@ -13,6 +13,7 @@ local Pathing = require "pathing"
 local pathing = nil
 local autorun = false
 local attacked = false
+local cancelable = false
 
 --
 -- Autorun control API
@@ -24,14 +25,32 @@ function Autorun.start(dest, waypoint)
    pathing = Pathing.new(dest, waypoint)
    attacked = false
    autorun = true
+   cancelable = false
 end
 
 function Autorun.stop()
    pathing = nil
    attacked = false
    autorun = false
+   cancelable = false
 end
 
+
+--
+-- Main macro handling
+--
+
+local function check_cancel()
+   if Input.any_key_pressed() then
+      if cancelable then
+         GUI.txt(I18N.get("autorun.locale.key_pressed", I18N.get("autorun.locale." .. pathing.type .. ".name")))
+         Autorun.stop()
+         return
+      end
+   else
+      cancelable = true
+   end
+end
 
 -- Called when the player's turn begins. If autorun is active, it
 -- inputs the appropriate movement action for the player
@@ -41,14 +60,8 @@ local function step_autorun()
       return
    end
 
-   if Input.any_key_pressed() then
-      GUI.txt(I18N.get("autorun.locale.key_pressed", "autorun.locale." .. pathing.type .. ".name"))
-      Autorun.stop()
-      return
-   end
-
    if Chara.player():get_ailment("Confused") > 0 then
-      GUI.txt(I18N.get("autorun.locale.confused", "autorun.locale." .. pathing.type .. ".name"))
+      GUI.txt(I18N.get("autorun.locale.confused", I18N.get("autorun.locale." .. pathing.type .. ".name")))
       Autorun.stop()
       return
    end
@@ -61,6 +74,10 @@ local function step_autorun()
    local next_action = pathing:get_action()
 
    if next_action then
+      if check_cancel() then
+         return
+      end
+
       Macro.enqueue(next_action)
       Macro.ignore_wait()
    else
@@ -112,9 +129,9 @@ local FEAT_STAIRS_DOWN = 231
 
 local function add_waypoints_from_data(keys, waypoint_list)
    for key, obj in pairs(data.raw["autorun.waypoints"]) do
-      for _, waypoint in obj.waypoints do
-         if Pathing.is_tile_memorized(waypoint.pos) then
-            if Map.new_id() == waypoint.map_id and Map.dungeon_level() == waypoint.map_level then
+      if Map.new_id() == obj.map_id and Map.dungeon_level() == obj.map_level then
+         for _, waypoint in pairs(obj.waypoints) do
+            if Pathing.is_tile_memorized(waypoint.pos) then
                local localized_name = "autorun.locale.waypoints." .. waypoint.localized_name
                table.insert(waypoint_list, waypoint)
                table.insert(keys, I18N.get(localized_name) .. " (" ..  waypoint.pos.x .. "," .. waypoint.pos.y .. ")")
@@ -140,12 +157,26 @@ local function add_waypoints_from_stairs(keys, waypoint_list)
    end
 end
 
+local function add_waypoints_in_overworld(keys, waypoint_list)
+   for key, map in pairs(data.raw["core.map"]) do
+      -- TODO: handle Your Home.
+      if Map.id() == map.outer_map and Map.id() ~= map.id and map.map_type == "Town" then
+         table.insert(waypoint_list, { pos = map.outer_map_position })
+         -- TODO: Localization through new_id instead of enum
+         table.insert(keys, I18N.get_enum_property("core.locale.map.unique", "name", map.id))
+      end
+   end
+end
+
 local function build_waypoints_list()
    local keys = {}
    local waypoint_list = {}
 
    add_waypoints_from_data(keys, waypoint_list)
    add_waypoints_from_stairs(keys, waypoint_list)
+   if Map.is_overworld() then
+      add_waypoints_in_overworld(keys, waypoint_list)
+   end
 
    return keys, waypoint_list
 end
@@ -165,9 +196,14 @@ local function waypoints()
       local name = keys[choice]
       local waypoint = waypoint_list[choice]
       if waypoint then
-         if name then
-            GUI.txt(I18N.get("autorun.locale.waypoint.start", name))
+         if not waypoint.target then
+            local pos = Chara.player().position
+            if waypoint.pos.x == pos.x and waypoint.pos.y == pos.y then
+               GUI.txt(I18N.get("autorun.locale.travel.already_there"))
+               return false
+            end
          end
+         GUI.txt(I18N.get("autorun.locale.waypoint.start", name))
          Autorun.start(waypoint.pos, waypoint)
          return true
       end
@@ -211,7 +247,7 @@ local function prompt_localized_choice(root, choices)
       table.insert(localized, I18N.get(root .. "." .. locale_key))
    end
 
-   return Input.prompt_choice(localized)
+   return Input.prompt_choice(table.unpack(localized))
 end
 
 function Exports.on_use.autorun_tester()

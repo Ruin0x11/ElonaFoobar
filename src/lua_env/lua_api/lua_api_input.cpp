@@ -11,7 +11,8 @@ namespace lua
 
 bool Input::yes_no(const std::string& message)
 {
-    txt(message + " ");
+    keyhalt = 1;
+    txt(message + i18n::space_if_needed());
     rtval = yes_or_no(promptx, prompty, 160);
     return rtval == 0;
 }
@@ -31,7 +32,8 @@ sol::optional<int> Input::prompt_number_with_initial(
         throw sol::error("Input.prompt_number called with max < 1");
     }
 
-    txt(message + " ");
+    keyhalt = 1;
+    txt(message + i18n::space_if_needed());
     input_number_dialog(
         (windoww - 200) / 2 + inf_screenx, winposy(60), max, initial);
 
@@ -47,7 +49,7 @@ sol::optional<std::string> Input::prompt_text(
     const std::string& message,
     bool is_cancelable)
 {
-    txt(message + " ");
+    txt(message + i18n::space_if_needed());
     bool canceled = input_text_dialog(
         (windoww - 360) / 2 + inf_screenx,
         winposy(90),
@@ -70,12 +72,16 @@ sol::optional<int> Input::prompt_choice(sol::variadic_args args)
     }
 
     Prompt prompt;
+    size_t width = 160;
     for (size_t i = 0; i < args.size(); i++)
     {
-        prompt.append(args[i].as<std::string>(), i);
+        auto text = args[i].as<std::string>();
+        width = std::max(width, strlen_u(text) * (13 - en * 2));
+        prompt.append(std::move(text), i);
     }
 
-    int rtval = prompt.query(promptx, prompty, 160);
+    keyhalt = 1;
+    int rtval = prompt.query(promptx, prompty, (int)width);
     if (rtval == -1)
     {
         return sol::nullopt;
@@ -103,7 +109,7 @@ Input::prompt_position_with_initial_xy(const std::string& message, int x, int y)
     elona::tlocinitx = x;
     elona::tlocinity = y;
 
-    txt(message + " ");
+    txt(message + i18n::space_if_needed());
 
     int result = elona::target_position(false);
 

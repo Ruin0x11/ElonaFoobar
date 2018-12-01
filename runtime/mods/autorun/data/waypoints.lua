@@ -36,17 +36,17 @@ local roles_to_names = {
 }
 
 local names_to_roles = {}
-for role, name in ipairs(roles_to_names) do
+for role, name in pairs(roles_to_names) do
    names_to_roles[name] = role
 end
 
 local function generate_waypoints(obj)
    obj.type = "autorun.waypoints"
 
-   for _, v in obj.waypoints do
+   for _, v in pairs(obj.waypoints) do
       v.localized_name = v[1]
       v.target = { _type = "character", role = names_to_roles[v[1]] }
-      v.pos = v[1]
+      v.pos = v[2]
 
       v[1] = nil
       v[2] = nil
@@ -70,7 +70,7 @@ generate_waypoints(
          { "baker",          { x = 22, y = 26 } },
          { "general_vendor", { x = 10, y = 15 } },
          { "trader",         { x = 39, y = 27 } },
-         { "armory",         { x = 14, y = 12 } },
+         { "blacksmith",     { x = 14, y = 12 } },
          { "fishery",        { x = 47, y = 9  } },
          { "wizard",         { x = 28, y = 16 } },
          { "bartender",      { x = 38, y = 27 } },
@@ -106,7 +106,7 @@ generate_waypoints(
 -- thieves guild
 generate_waypoints(
    {
-      name = "derphy",
+      name = "thieves_guild",
       map_id = "core.derphy",
       map_level = 3,
       waypoints = {
@@ -171,7 +171,7 @@ generate_waypoints(
 -- mages guild
 generate_waypoints(
    {
-      name = "lumiest",
+      name = "mages_guild",
       map_id = "core.lumiest",
       map_level = 3,
       waypoints = {
@@ -256,7 +256,7 @@ generate_waypoints(
 -- fighters guild
 generate_waypoints(
    {
-      name = "port_kapul",
+      name = "fighters_guild",
       map_id = "core.port_kapul",
       map_level = 3,
       waypoints = {

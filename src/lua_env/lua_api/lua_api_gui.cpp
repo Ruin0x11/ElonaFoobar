@@ -1,4 +1,5 @@
 #include "lua_api_gui.hpp"
+#include "../../i18n.hpp"
 #include "../../lua_env/enums/enums.hpp"
 #include "../../message.hpp"
 
@@ -9,7 +10,7 @@ namespace lua
 
 void GUI::txt(const std::string& message)
 {
-    elona::txt(message);
+    elona::txt(message + i18n::space_if_needed());
 }
 
 void GUI::txt_txtef(const std::string& message, const EnumString& color_name)

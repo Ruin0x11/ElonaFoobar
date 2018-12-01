@@ -376,14 +376,16 @@ local function check_for_waypoint_target(waypoint)
 
    -- HACK: Write FOV.iter() instead of iterating the whole map.
    for pos in Iter.rectangle_iter(0, 0, Map.width() - 1, Map.height() - 1) do
-      if FOV.you_see(pos.x, pos.y) then
          if waypoint.target._type == "character" then
             local chara = Map.get_chara(pos.x, pos.y)
-            if matches(chara, waypoint.target) then
+            if chara
+               and FOV.you_see(chara)
+               and matches(chara, waypoint.target)
+               and not Chara.is_player(chara)
+            then
                return pos
             end
          end
-      end
    end
 
    return nil
@@ -411,14 +413,15 @@ end
 function Pathing:on_halt()
    local pos = Chara.player().position
    local reached = (self.waypoint and self.waypoint_reached) or points_equal(self.dest, pos)
+   local travel_name = I18N.get("autorun.locale." .. self.type .. ".name")
 
    if not reached then
       print_halt_reason(self.dest)
-      GUI.txt("autorun.locale.pathing.aborted", "autorun.locale." .. self.type .. ".name")
+      GUI.txt(I18N.get("autorun.locale.pathing.aborted", travel_name))
    else
-      GUI.txt("autorun.locale.pathing.finished", "autorun.locale." .. self.type .. ".name")
+      GUI.txt(I18N.get("autorun.locale.pathing.finished", travel_name))
       if self.waypoint and not self.waypoint_reached then
-         GUI.txt("autorun.locale.pathing.waypoint_target_missing")
+         GUI.txt(I18N.get("autorun.locale.pathing.waypoint_target_missing"))
       end
    end
 end

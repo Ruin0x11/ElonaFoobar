@@ -38,7 +38,7 @@ locale {
 
     pathing {
         aborted = "Aborting ${_1}."
-        finished = "${_1} finished."
+        finished = "${capitalize(_1)} finished."
         waypoint_target_missing = "The waypoint target isn't here."
 
         halt {
