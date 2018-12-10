@@ -48,7 +48,7 @@ void UIMenuDialog::update()
 
 void UIMenuDialog::draw()
 {
-    talk_window_show();
+    // talk_window_show();
 
     font(14 - en * 2);
     cs_listbk();

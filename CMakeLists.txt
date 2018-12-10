@@ -419,7 +419,7 @@ else()
 
   # My libraries: elona
   add_subdirectory(src/elona)
-  target_link_libraries(${PROJECT_NAME} elona)
+  target_link_libraries(${PROJECT_NAME} elona snail util)
 
   INSTALL(TARGETS ${PROJECT_NAME}
     BUNDLE DESTINATION . COMPONENT Runtime
