@@ -35,17 +35,17 @@ void talk_start()
     gsel(0);
 }
 
-void talk_to_npc()
+bool talk_setup_variables(Character& chara)
 {
     keyhalt = 1;
-    if (cdata[tc].character_role == 1005)
+    if (chara.character_role == 1005)
     {
         if (Config::instance().extrahelp)
         {
             maybe_show_ex_help(7, true);
         }
     }
-    if (cdata[tc].character_role == 7)
+    if (chara.character_role == 7)
     {
         maybe_show_ex_help(8, true);
     }
@@ -58,26 +58,38 @@ void talk_to_npc()
     cs = 0;
     chatflag = 0;
     chatesc = 1;
-    if (cdata[tc].relationship <= -1)
+    if (chara.relationship <= -1)
     {
         if (evnum == 0)
         {
-            txt(i18n::s.get("core.locale.talk.will_not_listen", cdata[tc]));
+            txt(i18n::s.get("core.locale.talk.will_not_listen", chara));
             quest_teleport = false;
             update_screen();
-            return;
+            return false;
         }
     }
-    if (game_data.date.hours() >= cdata[tc].time_interest_revive)
+    if (game_data.date.hours() >= chara.time_interest_revive)
     {
-        cdata[tc].interest = 100;
+        chara.interest = 100;
     }
-    if ((cdata[tc].character_role >= 1000 && cdata[tc].character_role < 2000) ||
-        cdata[tc].character_role == 2003)
+    if ((chara.character_role >= 1000 && chara.character_role < 2000) ||
+        chara.character_role == 2003)
     {
-        invfile = cdata[tc].shop_store_id;
+        invfile = chara.shop_store_id;
         shop_refresh_on_talk();
     }
+
+    return true;
+}
+
+void talk_to_npc_ex(Character& chara, sol::table dialog)
+{
+}
+
+void talk_to_npc(Character& chara)
+{
+    talk_setup_variables(chara);
+
     talk_start();
     if (scenemode == 1)
     {
@@ -86,9 +98,9 @@ void talk_to_npc()
     }
     chatval_unique_chara_id = none;
     chatval_show_impress = true;
-    if (cdata[tc].quality == Quality::special && tc >= 16)
+    if (chara.quality == Quality::special && tc >= 16)
     {
-        chatval_unique_chara_id = cdata[tc].id;
+        chatval_unique_chara_id = chara.id;
         chatval_show_impress = false;
     }
     if (event_id() == 2)
@@ -101,12 +113,12 @@ void talk_to_npc()
         talk_wrapper(TalkResult::talk_finish_escort);
         return;
     }
-    if (cdata[tc].sleep != 0)
+    if (chara.sleep != 0)
     {
         talk_wrapper(TalkResult::talk_sleeping);
         return;
     }
-    if (cdata[tc].continuous_action)
+    if (chara.continuous_action)
     {
         talk_wrapper(TalkResult::talk_busy);
         return;
@@ -116,16 +128,16 @@ void talk_to_npc()
         talk_wrapper(TalkResult::talk_end);
         return;
     }
-    if (cdata[tc].visited_just_now())
+    if (chara.visited_just_now())
     {
-        cdata[tc].visited_just_now() = false;
+        chara.visited_just_now() = false;
         talk_wrapper(TalkResult::talk_house_visitor);
     }
 
     if (chatval_unique_chara_id &&
         game_data.current_map != mdata_t::MapId::show_house && tc >= 16)
     {
-        const auto& dialog_id = the_character_db[cdata[tc].id]->dialog_id;
+        const auto& dialog_id = the_character_db[chara.id]->dialog_id;
 
         if (dialog_id)
         {

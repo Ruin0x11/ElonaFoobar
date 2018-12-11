@@ -23,7 +23,7 @@ enum class TalkResult
 };
 
 void talk_start();
-void talk_to_npc();
+void talk_to_npc(Character& chara);
 void talk_end();
 void talk_reset_variables();
 
