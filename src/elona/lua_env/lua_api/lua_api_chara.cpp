@@ -166,6 +166,22 @@ sol::optional<LuaCharacterHandle> LuaApiChara::generate_from_map_xy(
     }
 }
 
+sol::optional<LuaCharacterHandle> LuaApiChara::generate_from_map_id_pos(
+    const Position& pos,
+    const std::string& id)
+{
+
+    return LuaApiChara::generate_from_map_id_xy(pos.x, pos.y, id);
+}
+
+sol::optional<LuaCharacterHandle>
+LuaApiChara::generate_from_map_id_xy(int x, int y, const std::string& id)
+{
+    map_set_chara_generation_filter();
+
+    return LuaApiChara::create_from_id_xy(x, y, id);
+}
+
 /**
  * @luadoc
  *
@@ -257,6 +273,14 @@ void LuaApiChara::bind(sol::table& api_table)
     LUA_API_BIND_FUNCTION(api_table, LuaApiChara, kill_count);
     LUA_API_BIND_FUNCTION(api_table, LuaApiChara, find);
     LUA_API_BIND_FUNCTION(api_table, LuaApiChara, can_recruit_allies);
+    api_table.set_function(
+        "generate_from_map",
+        sol::overload(
+            LuaApiChara::generate_from_map,
+            LuaApiChara::generate_from_map_pos,
+            LuaApiChara::generate_from_map_xy,
+            LuaApiChara::generate_from_map_id_pos,
+            LuaApiChara::generate_from_map_id_xy));
 }
 
 } // namespace lua
