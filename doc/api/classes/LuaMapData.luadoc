@@ -17,7 +17,7 @@
 -- @tfield num tileset
 
 --- [RW] The time in hours after which map restock will occur.
--- - If "should_restock" in the map data is set, plants will grow and character inventories will be refilled.
+-- - If "should_regenerate" in the map data is set, plants will grow and character inventories will be refilled.
 -- - In the ranch, ranch-related updates occur.
 -- - In your home, temporary characters will be removed.
 -- @tfield num next_restock_date
@@ -28,17 +28,18 @@
 --- [R] The number of times this map has been regenerated.
 -- @tfield num regenerate_count
 
---- [R] The type of this map.
+--- [RW] The type of this map.
 -- @tfield Enums.MapType type
-
---- [R] The number of times this map has been regenerated.
--- @tfield bool is_generated_every_time
 
 --- [R] The stair up position of this map.
 -- @tfield LuaPosition stair_up_pos
 
 --- [R] The stair down position of this map.
 -- @tfield LuaPosition stair_down_pos
+
+--- [RW] If true, the characters in this map will be reset to their
+--- initial positions when the map is regenerated.
+-- @tfield bool designated_spawns
 
 --- [RW] Controls if this map is indoors. If true, weather effects will not occur.
 -- @tfield bool is_indoors
@@ -51,7 +52,7 @@
 
 --- [RW] Controls if the map should have restock behavior when the map is restocked.
 -- @see next_restock_date
--- @tfield bool should_restock
+-- @tfield bool should_regenerate
 
 --- [RW] Indicates if the map is a temporary instance. If true, its
 --- instance will be deleted on exit. Otherwise, it will be saved on
