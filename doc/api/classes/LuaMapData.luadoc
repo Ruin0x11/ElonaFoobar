@@ -1,0 +1,62 @@
+--- Contains variables affecting the map's properties.
+-- @classmod LuaMapData
+
+--- [RW] The tile atlas number used.
+-- @tfield num atlas_number
+
+--- [RW] The time in hours after which the map will be regenerated the next time it is entered.
+-- @tfield num next_regenerate_date
+
+--- [RW] The time taken per turn in this map.
+-- @tfield num turn_cost
+
+--- [RW] Controls the frequency and amount of monster respawns in this map.
+-- @tfield num max_crowd_density
+
+--- [RW] The map's tileset. Valid values are 0-12, 100-101, 200, and 300.
+-- @tfield num tileset
+
+--- [RW] The time in hours after which map restock will occur.
+-- - If "should_restock" in the map data is set, plants will grow and character inventories will be refilled.
+-- - In the ranch, ranch-related updates occur.
+-- - In your home, temporary characters will be removed.
+-- @tfield num next_restock_date
+
+--- [RW] The maximum number of items which can be placed in this map.
+-- @tfield num max_item_count
+
+--- [R] The number of times this map has been regenerated.
+-- @tfield num regenerate_count
+
+--- [R] The type of this map.
+-- @tfield Enums.MapType type
+
+--- [R] The number of times this map has been regenerated.
+-- @tfield bool is_generated_every_time
+
+--- [R] The stair up position of this map.
+-- @tfield LuaPosition stair_up_pos
+
+--- [R] The stair down position of this map.
+-- @tfield LuaPosition stair_down_pos
+
+--- [RW] Controls if this map is indoors. If true, weather effects will not occur.
+-- @tfield bool is_indoors
+
+--- [RW] Controls if this map is a user map. Currently has no effect.
+-- @tfield bool is_user_map
+
+--- [RW] Controls if the campfire ambience plays.
+-- @tfield bool play_campfire_sound
+
+--- [RW] Controls if the map should have restock behavior when the map is restocked.
+-- @see next_restock_date
+-- @tfield bool should_restock
+
+--- [RW] Indicates if the map is a temporary instance. If true, its
+--- instance will be deleted on exit. Otherwise, it will be saved on
+--- exit.
+-- @tfield bool is_temporary
+
+--- [RW] The map's current music. It takes an ID of type <code>core.music</code>.
+-- @tfield string bgm
