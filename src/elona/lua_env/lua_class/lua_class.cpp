@@ -6,6 +6,7 @@
 #include "lua_class_game_data.hpp"
 #include "lua_class_item.hpp"
 #include "lua_class_map_data.hpp"
+#include "lua_class_map_generator.hpp"
 #include "lua_class_position.hpp"
 
 namespace elona
@@ -21,6 +22,7 @@ void LuaApiClasses::bind(sol::state& lua)
     LuaGameData::bind(lua);
     LuaItem::bind(lua);
     LuaMapData::bind(lua);
+    LuaMapGenerator::bind(lua);
     LuaPosition::bind(lua);
 }
 
