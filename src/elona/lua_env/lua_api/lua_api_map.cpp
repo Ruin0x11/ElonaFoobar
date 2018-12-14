@@ -4,6 +4,7 @@
 #include "../../lua_env/enums/enums.hpp"
 #include "../../map.hpp"
 #include "../../map_cell.hpp"
+#include "../../mapgen.hpp"
 
 namespace elona
 {
@@ -277,6 +278,17 @@ void LuaApiMap::clear_feat_xy(int x, int y)
     cell_featclear(x, y);
 }
 
+
+/**
+ * @ luadoc
+ *
+ * Randomly sprays the map with the given tile type;
+ */
+void LuaApiMap::spray_tile(int tile, int amount)
+{
+    elona::map_randomtile(tile, amount);
+}
+
 void LuaApiMap::bind(sol::table& api_table)
 {
     LUA_API_BIND_FUNCTION(api_table, LuaApiMap, width);
@@ -305,6 +317,7 @@ void LuaApiMap::bind(sol::table& api_table)
     api_table.set_function(
         "clear_feat",
         sol::overload(LuaApiMap::clear_feat, LuaApiMap::clear_feat_xy));
+    LUA_API_BIND_FUNCTION(api_table, Map, spray_tile);
 
     /**
      * @luadoc data field LuaMapData
