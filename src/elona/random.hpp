@@ -36,7 +36,9 @@ inline void randomize(
 
 
 
-// [0, max)
+/**
+ * Returns a random integer in [0, @a max).
+ */
 template <
     typename Integer,
     std::enable_if_t<std::is_integral<Integer>::value, std::nullptr_t> =
@@ -49,6 +51,9 @@ inline Integer rnd(Integer max)
 
 
 
+/**
+ * Picks a random element from @a range.
+ */
 template <typename Range>
 auto choice(const Range& range)
 {
@@ -62,6 +67,9 @@ auto choice(const Range& range)
 
 
 
+/**
+ * Copies @a n random elements from @a range into @a result.
+ */
 template <typename Range, typename Iterator, typename Distance>
 Iterator sample(const Range& range, Iterator result, Distance n)
 {

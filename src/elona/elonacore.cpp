@@ -779,6 +779,10 @@ void getinheritance(int item_index, elona_vector1<int>& inhlist_, int& inhmax_)
 
 
 
+/**
+ * Clears the current filter. If @a level or @a quality are provided, they are
+ * used to set a random value of @ref objlv or @ref fixlv respectively.
+ */
 void flt(int level, Quality quality)
 {
     filtermax = 0;
@@ -792,21 +796,22 @@ void flt(int level, Quality quality)
 
 
 
+/**
+ * Sets the list of filter tags to restrict randomly generated characters/items
+ * based on their declared tags. Up to 5 tags can be used.
+ */
 void fltn(const std::string& filter)
 {
-    std::string s2_at_m44;
-    int p_at_m44 = 0;
-    s2_at_m44 = filter;
-    p_at_m44 = 0;
+    int index = 0;
     for (int cnt = 0; cnt < 5; ++cnt)
     {
-        getstr(filtern(cnt), s2_at_m44, p_at_m44, 47);
+        getstr(filtern(cnt), filter, index, 47);
         if (strsize == 0)
         {
             break;
         }
         filtern(cnt) = u8"/"s + filtern(cnt) + u8"/"s;
-        p_at_m44 += strsize;
+        index += strsize;
         ++filtermax;
     }
 }
@@ -881,6 +886,9 @@ int winposy(int y, int not_gaming)
 
 
 
+/**
+ * Truncates @a utf8_string to @a max_length_charwise.
+ */
 void cutname(std::string& utf8_string, int max_length_charwise)
 {
     utf8_string = utf8_string.substr(
@@ -1510,6 +1518,9 @@ void incognitoend()
 
 
 
+/**
+ * Renders an animation at a character's position.
+ */
 void animeload(int animation_type, int chara_index)
 {
     elona_vector1<int> i_at_m133;
@@ -1790,6 +1801,10 @@ void spillfrag(int x, int y, int range)
 
 
 
+/**
+ * Modifies impression and karma based on the victim's relationship/character
+ * type. Does not apply in arena/show house.
+ */
 void check_kill(int killer_chara_index, int victim_chara_index)
 {
     int p_at_m137 = 0;
@@ -2454,7 +2469,12 @@ void proc_turn_end(int cc)
 }
 
 
-
+/**
+ * Updates the player's burden state (Overweight, etc.) based on their current
+ * inventory weight.
+ * .
+ * Typically called when the player's inventory changes in any way.
+ */
 void refresh_burden_state()
 {
     cdata.player().inventory_weight = clamp(inv_weight(0), 0, 20000000) *
@@ -4510,7 +4530,10 @@ void save_map_local_data()
 }
 
 
-
+/**
+ * Adjusts the color of the current map tiles based on the weather, darkening
+ * them if it is night and outdoors.
+ */
 void map_prepare_tileset_atlas()
 {
     gsel(6);
@@ -11130,7 +11153,10 @@ label_22191_internal:
 }
 
 
-
+/**
+ * Triggers weapon enchantment effects for all characters in the player's party
+ * like passive healing and timestop.
+ */
 void proc_weapon_enchantments()
 {
     for (int cnt = 0; cnt < 15; ++cnt)

@@ -140,6 +140,9 @@ int quest_is_return_forbidden()
 
 
 
+/**
+ * Marks all other characters in the current map as quest targets.
+ */
 void quest_place_target()
 {
     for (auto&& cnt : cdata.others())
@@ -173,6 +176,10 @@ int quest_targets_remaining()
 
 
 
+/**
+ * Checks for the fulfillment of unique and immediate quest conditions, and
+ * updates the journal/events appropriately.
+ */
 void quest_check()
 {
     int p_at_m119 = 0;

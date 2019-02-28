@@ -198,6 +198,12 @@ void GameData::unpack_from(elona_vector1<int>& gdata)
 #undef SERIALIZE
 
 
+/**
+ * Adjusts the crowd density in the current map by @a delta if the character is
+ * a non-adventurer NPC. The higher the crowd density is in relation to the
+ * map's maximum crowd density, the less frequently monsters will randomly
+ * spawn.
+ */
 void modify_crowd_density(int cc, int delta)
 {
     if (cc >= 57)

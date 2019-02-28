@@ -539,6 +539,9 @@ public:
         return none;
     }
 
+    /**
+     * Gets the translated text at @a key, or none if it doesn't exist.
+     */
     template <typename Head, typename... Tail>
     optional<std::string>
     get_optional(const I18NKey& key, Head const& head, Tail&&... tail)
@@ -552,6 +555,9 @@ public:
         return fmt_with_context(*found, head, std::forward<Tail>(tail)...);
     }
 
+    /**
+     * Gets the translated text at @a key, or none if it doesn't exist.
+     */
     template <typename... Tail>
     optional<std::string> get_optional(const I18NKey& key, Tail&&... tail)
     {
@@ -564,6 +570,10 @@ public:
         return fmt_with_context(*found, std::forward<Tail>(tail)...);
     }
 
+    /**
+     * Gets the translated text at @a key, or an error message if it doesn't
+     * exist.
+     */
     template <typename Head, typename... Tail>
     std::string get(const I18NKey& key, Head const& head, Tail&&... tail)
     {
@@ -582,6 +592,10 @@ public:
         }
     }
 
+    /**
+     * Gets the translated text at @a key, or an error message if it doesn't
+     * exist.
+     */
     template <typename... Tail>
     std::string get(const I18NKey& key, Tail&&... tail)
     {
@@ -603,6 +617,9 @@ public:
 
     // Convenience methods for cases like "core.element._<enum index>.name"
 
+    /**
+     * Gets the translated text at "<key>._<index>".
+     */
     template <typename Head, typename... Tail>
     std::string
     get_enum(const I18NKey& key, int index, Head const& head, Tail&&... tail)
@@ -613,6 +630,9 @@ public:
             std::forward<Tail>(tail)...);
     }
 
+    /**
+     * Gets the translated text at "<key>._<index>".
+     */
     template <typename... Tail>
     std::string get_enum(const I18NKey& key, int index, Tail&&... tail)
     {
@@ -620,6 +640,10 @@ public:
             key + "._" + std::to_string(index), std::forward<Tail>(tail)...);
     }
 
+    /**
+     * Gets the translated text at "<key>._<index>", or none if it doesn't
+     * exist.
+     */
     template <typename Head, typename... Tail>
     optional<std::string> get_enum_optional(
         const I18NKey& key,
@@ -633,6 +657,10 @@ public:
             std::forward<Tail>(tail)...);
     }
 
+    /**
+     * Gets the translated text at "<key>._<index>", or none if it doesn't
+     * exist.
+     */
     template <typename... Tail>
     optional<std::string>
     get_enum_optional(const I18NKey& key, int index, Tail&&... tail)
@@ -641,6 +669,9 @@ public:
             key + "._" + std::to_string(index), std::forward<Tail>(tail)...);
     }
 
+    /**
+     * Gets the translated text at "<key_head>._<index>.<key_tail>".
+     */
     template <typename Head, typename... Tail>
     std::string get_enum_property(
         const std::string& key_head,
@@ -655,6 +686,9 @@ public:
             std::forward<Tail>(tail)...);
     }
 
+    /**
+     * Gets the translated text at "<key_head>._<index>.<key_tail>".
+     */
     template <typename... Tail>
     std::string get_enum_property(
         const std::string& key_head,
@@ -667,6 +701,10 @@ public:
             std::forward<Tail>(tail)...);
     }
 
+    /**
+     * Gets the translated text at "<key_head>._<index>.<key_tail>", or none if
+     * it doesn't exist.
+     */
     template <typename Head, typename... Tail>
     optional<std::string> get_enum_property_opt(
         const std::string& key_head,
@@ -681,6 +719,10 @@ public:
             std::forward<Tail>(tail)...);
     }
 
+    /**
+     * Gets the translated text at "<key_head>._<index>.<key_tail>", or none if
+     * it doesn't exist.
+     */
     template <typename... Tail>
     optional<std::string> get_enum_property_opt(
         const std::string& key_head,

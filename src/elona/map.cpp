@@ -151,7 +151,15 @@ namespace elona
 {
 
 
+/**
+ * Metadata of the current map.
+ */
 MapData map_data;
+
+
+/**
+ * Terrain of the current map.
+ */
 CellData cell_data;
 
 

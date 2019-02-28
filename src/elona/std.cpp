@@ -357,7 +357,8 @@ void font(int size, snail::Font::Style style)
 
 
 /**
- * Copy from source window to the currently selected window with offset.
+ * Copy from the source window @a window_id to the currently selected window
+ * with offset.
  */
 void gcopy(
     int window_id,
@@ -375,8 +376,8 @@ void gcopy(
 
 
 /**
- * Copy from source window to the currently selected window with offset and
- * stretching.
+ * Copy from the source window @a window_id to the currently selected window
+ * with offset and stretching.
  */
 void gcopy(
     int window_id,
@@ -404,7 +405,8 @@ void gcopy(
 
 
 /**
- * Copy from source window to the currently selected window, centered.
+ * Copy the source window @a window_id to the currently selected window,
+ * centered.
  */
 void gcopy_c(
     int window_id,
@@ -430,8 +432,8 @@ void gcopy_c(
 
 
 /**
- * Copy from source window to the currently selected window, centered, with
- * stretching.
+ * Copy the source window @a window_id to the currently selected window,
+ * centered, with stretching.
  */
 void gcopy_c(
     int window_id,
@@ -540,7 +542,8 @@ void gmode(int mode, int alpha)
 
 
 /**
- * Copy from source window to the currently selected window with rotation.
+ * Copy the source window @a window_id to the currently selected window with
+ * rotation.
  */
 void grotate(
     int window_id,
@@ -559,8 +562,8 @@ void grotate(
 
 
 /**
- * Copy from source window to the currently selected window with stretching and
- * rotation.
+ * Copy the source window @a window_id to the currently selected window with
+ * stretching and rotation.
  */
 void grotate(
     int window_id,
@@ -726,7 +729,7 @@ size_t count(const std::string& str)
  * If @a overwrite is true, overwrite the line instead of inserting it.
  *
  * @a text could contain multiple newlines, meaning multiple lines could be
- * added.
+ * added at once.
  */
 void noteadd(const std::string& text, int index, int overwrite)
 {
@@ -846,17 +849,15 @@ void objprm(int, const std::string&)
 
 
 
-void pget(int x, int y)
+void pget(int, int)
 {
-    UNUSED(x);
-    UNUSED(y);
 }
 
 
 
 /**
  * Loads @a filepath, an image file, and renders it to the currently selected
- * window. if @a create_buffer is true, create a new buffer and render to it
+ * window. If @a create_buffer is true, create a new buffer and render to it
  * instead.
  */
 void picload(const fs::path& filepath, int x, int y, bool create_buffer)
@@ -871,7 +872,7 @@ void picload(const fs::path& filepath, int x, int y, bool create_buffer)
         keycolor = none;
     }
     snail::Image img{filepath, keycolor};
-    snail::hsp::picload(img, x, y, create_buffeer);
+    snail::hsp::picload(img, x, y, create_buffer);
 }
 
 

@@ -299,6 +299,11 @@ void text_set()
 
 
 
+/**
+ * Shows Noren's help window of ID @a id if it hasn't been shown yet, then mark
+ * it as shown. If @a should_update_screen is true, calls @ref update_screen
+ * without updating the application window.
+ */
 bool maybe_show_ex_help(int id, bool should_update_screen)
 {
     if (Config::instance().extra_help)

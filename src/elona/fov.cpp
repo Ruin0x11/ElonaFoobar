@@ -36,6 +36,10 @@ bool is_in_fov(const Character& cc)
 
 
 
+/**
+ * Returns true if there is line of sight between [@a x1, @a y1] and [@a x2, @a
+ * y2].
+ */
 int fov_los(int x1, int y1, int x2, int y2)
 {
     if (x1 < 0 || map_data.width <= x1 || y1 < 0 || map_data.height <= y1 ||

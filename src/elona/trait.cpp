@@ -200,6 +200,9 @@ void trait_format_obtainable(const I18NKey& i18n_prefix, int max)
 
 
 
+/**
+ * Obtains the localized text for trait @a tid and puts it into @ref traitrefn.
+ */
 void trait_format(int tid, int min, int max)
 {
     I18NKey i18n_prefix = "core.locale.trait._" + std::to_string(tid);

@@ -19,6 +19,9 @@
 namespace elona
 {
 
+/**
+ * Queries the player for a number. It will be stored in @ref retval.
+ */
 void input_number_dialog(int x, int y, int max_number, int initial_number)
 {
     snd("core.pop2");
@@ -145,6 +148,9 @@ void input_number_dialog(int x, int y, int max_number, int initial_number)
 
 
 
+/**
+ * Queries the player for text. It will be stored in @ref inputlog.
+ */
 bool input_text_dialog(
     int x,
     int y,

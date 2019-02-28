@@ -37,6 +37,13 @@ namespace elona
 {
 
 
+/**
+ * Global list of all items. It is laid out as follows.
+ *
+ * 0 - 199: Player's inventory.
+ * 200 - 5079: Inventories of other characters, of 20 items each.
+ * 5080 - 5480: Items in the current map.
+ */
 Inventory inv;
 
 int ci_at_m138 = 0;
@@ -347,6 +354,10 @@ int mapitemfind(int x, int y, int id)
 
 
 
+/**
+ * Refreshes the appearance of the cell at [@a x, @a y] based on the items on
+ * top of it.
+ */
 void cell_refresh(int x, int y)
 {
     int p_at_m55 = 0;
@@ -459,6 +470,9 @@ void itemturn(int ci)
 }
 
 
+/**
+ * Copies the item at slot @a a to slot @a b, also running script callbacks.
+ */
 void item_copy(int a, int b)
 {
     if (a < 0 || b < 0)
@@ -487,6 +501,9 @@ void item_copy(int a, int b)
 
 
 
+/**
+ * Swaps the items at slots @a a and @a b.
+ */
 void item_exchange(int a, int b)
 {
     Item tmp;
@@ -536,6 +553,10 @@ void item_refresh(Item& i)
 
 
 
+/**
+ * Modifies the quantity of this item by @a delta and updates the script handle
+ * of the item if necessary.
+ */
 void Item::modify_number(int delta)
 {
     this->set_number(this->number_ + delta);
@@ -543,6 +564,10 @@ void Item::modify_number(int delta)
 
 
 
+/**
+ * Sets the quantity of this item to @a number_ and updates the script handle of
+ * the item if necessary.
+ */
 void Item::set_number(int number_)
 {
     bool item_was_empty = this->number_ <= 0;
@@ -566,6 +591,12 @@ void Item::set_number(int number_)
 
 
 
+/**
+ * Splits off a new stack of the item at @a ci, leaving 1 item in @a ci. Returns
+ * the item slot containing the rest of the items. If there are no free item
+ * slots, the player is notified and the rest of the stack falls on the ground
+ * or is lost.
+ */
 int item_separate(int ci)
 {
     if (inv[ci].number() <= 1)
@@ -923,6 +954,10 @@ void itemname_additional_info(int item_index)
 
 
 
+/**
+ * Returns the name of the item in slot @a item_index. If @a number is not
+ * provided, the item's number takes precedence.
+ */
 std::string itemname(int item_index, int number, int skip_article)
 {
     elona_vector1<int> iqiality_;
@@ -1552,6 +1587,12 @@ void remain_make(int ci, int cc)
 }
 
 
+/**
+ * Attempts to combine the item at slot @a ci with an item in the inventory @a
+ * inventory_id. If successful, the item in @a ci is removed.
+ *
+ * @return 1 if the stack succeeded.
+ */
 int item_stack(int inventory_id, int ci, int show_message)
 {
     if (inv[ci].quality == Quality::special &&

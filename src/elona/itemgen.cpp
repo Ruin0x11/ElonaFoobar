@@ -42,6 +42,10 @@ int calculate_original_value(const Item& ci)
 namespace elona
 {
 
+/**
+ * Creates a new item of type @a id at slot @a slot, with initial quantity @a
+ * number.
+ */
 int itemcreate(int slot, int id, int x, int y, int number)
 {
     if (flttypeminor != 0)

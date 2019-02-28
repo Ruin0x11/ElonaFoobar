@@ -44,6 +44,9 @@ namespace elona
 
 
 
+/**
+ * Applies a status ailment @a status_ailment on character @a cc by @a power.
+ */
 void dmgcon(int cc, StatusAilment status_ailment, int power)
 {
     if (power <= 0)
@@ -328,6 +331,9 @@ void dmgcon(int cc, StatusAilment status_ailment, int power)
 
 
 
+/**
+ * Heals a status ailment @a status_ailment on character @a cc by @a power.
+ */
 void healcon(int cc, StatusAilment status_ailment, int power)
 {
     switch (status_ailment)

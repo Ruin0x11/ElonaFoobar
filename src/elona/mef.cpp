@@ -37,6 +37,9 @@ void initialize_mef()
     mefsubref(1, 5) = 624;
 }
 
+/**
+ * Deletes the map effect at index @a mef_index.
+ */
 void mef_delete(int mef_index)
 {
     if (mef(0, mef_index) == 7)
@@ -65,6 +68,9 @@ void mef_delete(int mef_index)
 
 
 
+/**
+ * Adds a map effect to a location on the map.
+ */
 void mef_add(
     int pos_x,
     int pos_y,

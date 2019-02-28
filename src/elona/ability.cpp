@@ -83,6 +83,14 @@ void SkillData::copy(int tc, int cc)
 
 
 
+/**
+ * Initializes the skill @a skill_id on character @a cc by using @a
+ * initial_level to calculate the starting skill level and potential. Used for
+ * character generation.
+ *
+ * Life, luck, and mana are not adjusted and are set to @a initial_level
+ * instead.
+ */
 void chara_init_skill(Character& cc, int skill_id, int initial_level)
 {
     int original_level = sdata.get(skill_id, cc.index).original_level;
@@ -154,6 +162,16 @@ void chara_init_common_skills(Character& cc)
 
 
 
+/**
+ * Makes the character @a cc gain a skill @a id if they have not already learned
+ * it. If it is already been learned, 20 potential is added instead if the skill
+ * is not a magic spell.
+ *
+ * If the skill is a magic spell (@a id >= 400), @a stock controls the initial
+ * amount of spell stock.
+ *
+ * The starting potential is 200 for spells and 50 for all other skills.
+ */
 void chara_gain_skill(Character& cc, int id, int initial_level, int stock)
 {
     if (id >= 400)
@@ -233,6 +251,14 @@ void gain_special_action()
 
 
 
+/**
+ * Makes the character @a cc gain skill experience @a experience in skill @a id
+ * without any adjustment, and levels up the character and decreases
+ * potential appropriately.
+ *
+ * If @a experience is negative, the skill level will be decreased/potential
+ * increased instead.
+ */
 void chara_gain_fixed_skill_exp(Character& cc, int id, int experience)
 {
     auto lv = sdata.get(id, cc.index).original_level;
@@ -297,7 +323,24 @@ void chara_gain_fixed_skill_exp(Character& cc, int id, int experience)
 }
 
 
-
+/**
+ * Makes the character @a cc gain skill experience @a experience in skill @a id
+ * which is adjusted by various factors such as potential, passive training
+ * boosts, and character level, and levels up the character and decreases
+ * potential appropriately. Also makes the character gain character and related
+ * attribute skill experience.
+ *
+ * Character experience gained is controlled by @a
+ * experience_divisor_of_character_level. If it is exactly 1000, no character
+ * experience is gained.
+ *
+ * The character will gain experience in the related basic attribute of the
+ * skill by calling this function recursively. The amount gained is controlled
+ * by @a experience_divisor_of_related_basic_attribute.
+ *
+ * If @a experience is negative, the skill level will be decreased/potential
+ * increased instead.
+ */
 void chara_gain_skill_exp(
     Character& cc,
     int id,

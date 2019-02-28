@@ -532,11 +532,6 @@ public:
         return state_;
     }
 
-    /**
-     * Sets the state of this character. If the state transitions from "empty"
-     * to any other state, the corresponding Lua handle will be created or
-     * regenerated.
-     */
     void set_state(Character::State);
 
     /**
@@ -675,29 +670,12 @@ enum class CharaRelocationMode
 };
 
 
-/**
- * Relocate `source` to `destination_slot`. `source` character will be
- * destroyed.
- * @param source The relocated character.
- * @param destination_slot The slot of the character relocated from `source`. If
- * you specify `none`, find an empty slot in cdata.others().
- */
 void chara_relocate(
     Character& source,
     optional<int> destination_slot,
     CharaRelocationMode mode = CharaRelocationMode::normal);
-
 void chara_refresh(int);
-
-
-/**
- * Copy `source` character to a new slot.
- * @param source The character copied from.
- * @return the character slot copied to if `source` was successfully copied;
- * otherwise, -1.
- */
 int chara_copy(const Character& source);
-
 void chara_delete(int = 0);
 void chara_remove(Character&);
 void chara_vanquish(int = 0);

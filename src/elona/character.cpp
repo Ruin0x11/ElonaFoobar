@@ -404,6 +404,16 @@ void failed_to_place_character(Character& cc)
 namespace elona
 {
 
+
+/**
+ * Global list of all characters. It is laid out as follows.
+ *
+ * 0: Player.
+ * 1 - 15: Allies.
+ * 16 - 56: Adventurers.
+ * 57: Temporary slot.
+ * 58 - 244: All other characters.
+ */
 CData cdata;
 
 
@@ -420,6 +430,10 @@ Character::Character()
 }
 
 
+/**
+ * Updates this character's state to @a new_state, updates the script handle,
+ * and runs script callbacks.
+ */
 void Character::set_state(Character::State new_state)
 {
     bool was_alive = !this->is_dead();
@@ -565,6 +579,10 @@ void initialize_character()
 
 
 
+/**
+ * Generates a new character of type @a chara_id in @a slot. Returns 1 on
+ * success, or 0 on failure.
+ */
 int chara_create(int slot, int chara_id, int x, int y)
 {
     bool success = false;
@@ -618,6 +636,11 @@ int chara_create(int slot, int chara_id, int x, int y)
 
 
 
+/**
+ * Resets various status parameters on character @a cc, then applies intrinsic
+ * flags, growth buffs, stats/flags from equipment, burden state, speed, and
+ * various other things.
+ */
 void chara_refresh(int cc)
 {
     int rp = 0;
@@ -1086,6 +1109,10 @@ int relationbetween(int c1, int c2)
 
 
 
+/**
+ * Tries to find a character of type @a id. Returns the index if found, 0
+ * otherwise.
+ */
 int chara_find(int id)
 {
     for (auto&& i : cdata.others())
@@ -1328,6 +1355,9 @@ void chara_modify_impression(Character& cc, int delta)
 
 
 
+/**
+ * Deletes the character at index @a cc.
+ */
 void chara_vanquish(int cc)
 {
     if (cc == 0)
@@ -1365,6 +1395,12 @@ void chara_vanquish(int cc)
 
 
 
+/**
+ * Copy `source` character to a new slot.
+ * @param source The character copied from.
+ * @return the character slot copied to if `source` was successfully copied;
+ * otherwise, -1.
+ */
 int chara_copy(const Character& source)
 {
     // Find empty slot.
@@ -1491,6 +1527,13 @@ void chara_delete(int cc)
 
 
 
+/**
+ * Relocate `source` to `destination_slot`. `source` character will be
+ * destroyed.
+ * @param source The relocated character.
+ * @param destination_slot The slot of the character relocated from `source`. If
+ * you specify `none`, find an empty slot in cdata.others().
+ */
 void chara_relocate(
     Character& source,
     optional<int> destination_slot,

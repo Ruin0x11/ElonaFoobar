@@ -15,6 +15,9 @@ namespace elona
 {
 
 
+/**
+ * Adjusts parameters of the item in @ref ci based on the item ID @ref dbid.
+ */
 int access_item_db(int dbmode)
 {
     const auto info = the_item_db[dbid];

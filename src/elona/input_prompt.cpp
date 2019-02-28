@@ -12,6 +12,10 @@ namespace elona
 
 int _show_prompt_val{};
 
+/**
+ * Queries the player for input based on the entries in the prompt. The position
+ * and width are configurable.
+ */
 int Prompt::query(int x, int y, int width)
 {
     snd("core.pop2");

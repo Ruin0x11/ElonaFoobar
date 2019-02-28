@@ -161,7 +161,7 @@ optional_ref<Extent> draw_get_rect(const std::string& key)
 
 
 /**
- * Applies a color to the item sprite of ID @a id and copies it to the scratch
+ * Applies a color to the item sprite with ID @a id and copies it to the scratch
  * window (ID 1) at coordinates [0, 960], so it can be copied with @ref gcopy.
  */
 optional_ref<Extent> prepare_item_image(int id, int color)
@@ -188,7 +188,7 @@ optional_ref<Extent> prepare_item_image(int id, int color)
 
 
 /**
- * Applies a color to the item sprite of ID @a id and copies it to the scratch
+ * Applies a color to the item sprite with ID @a id and copies it to the scratch
  * window (ID 1) at coordinates [0, 960], so it can be copied with @ref gcopy.
  *
  * This variant is intended for use with cards/figures and copies the character
@@ -581,6 +581,11 @@ void set_pcc_depending_on_equipments(int cc, int ci)
 
 
 
+/**
+ * Applies a color to the character sprite with ID @a image_id and copies it to
+ * the scratch window (ID 1) at coordinates [0, 960], so it can be copied with
+ * @ref gcopy
+ */
 optional_ref<Extent> chara_preparepic(const Character& cc)
 {
     return chara_preparepic(cc.image);
@@ -588,6 +593,14 @@ optional_ref<Extent> chara_preparepic(const Character& cc)
 
 
 
+/**
+ * Applies a color to the character sprite with ID @a image_id and copies it to
+ * the scratch window (ID 1) at coordinates [0, 960], so it can be copied with
+ * @ref gcopy
+ *
+ * The first four digits of @a image_id are the sprite ID, the next four digits
+ * are the color.
+ */
 optional_ref<Extent> chara_preparepic(int image_id)
 {
     const auto chip_id = image_id % 1000;
@@ -611,7 +624,12 @@ optional_ref<Extent> chara_preparepic(int image_id)
 }
 
 
-
+/**
+ * Builds the atlas of PCC sprites for character ID @a cc by copying the
+ * individual parts to window ID (20 + @a cc).
+ *
+ * Typically called if the player changes appearance.
+ */
 void create_pcpic(int cc, bool with_equipments)
 {
     buffer(20 + cc, 384, 198);
@@ -1027,7 +1045,7 @@ void draw_select_key(const std::string& key, int x, int y)
 
 
 /**
- * Draws text with a shadow.
+ * Draws text with shadow.
  */
 void bmes(
     const std::string& message,

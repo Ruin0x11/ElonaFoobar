@@ -199,6 +199,9 @@ private:
 
 
 
+/**
+ * Displays a message in the message window.
+ */
 template <typename... Args>
 void txt(Args&&... args)
 {

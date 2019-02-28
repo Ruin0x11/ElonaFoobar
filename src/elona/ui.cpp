@@ -41,7 +41,9 @@ constexpr int inf_clockw = 120;
 constexpr int inf_clockh = 96;
 
 
-
+/**
+ * Draws the bottom bar and minimap.
+ */
 void update_screen_hud()
 {
     gmode(2);
@@ -1300,6 +1302,10 @@ void initialize_ui_constants()
 
 
 
+/**
+ * Draws everything on the main game screen besides any extra menus, then
+ * renders to the application window if @ref screenupdate is not -1.
+ */
 void update_entire_screen()
 {
     update_screen_hud();
@@ -1307,8 +1313,11 @@ void update_entire_screen()
     update_screen();
 }
 
-
-
+/**
+ * Updates scrolling and draws map cells, characters/items, minimap positions,
+ * weather effects, and most of the HUD besides the minimap, then renders to the
+ * application window if @ref screenupdate is not -1.
+ */
 void update_screen()
 {
     gmode(2);
@@ -1381,6 +1390,9 @@ void screen_txtadv()
 
 
 
+/**
+ * Draws the minimap terrain based on visibility.
+ */
 void update_minimap()
 {
     for (int y = 0; y < map_data.height; ++y)
@@ -1409,6 +1421,9 @@ void ui_render_from_screensync()
 
 
 
+/**
+ * Draws most of the HUD besides the minimap.
+ */
 void render_hud()
 {
     gmode(2);
@@ -1514,7 +1529,9 @@ void load_continuous_action_animation()
 }
 
 
-
+/**
+ * Draws the black caption in the character making screen.
+ */
 void ui_draw_caption(const std::string& text)
 {
     int msgx = 0;
@@ -1755,7 +1772,9 @@ void update_slight()
 }
 
 
-
+/**
+ * Draws map cells, characters/items, minimap positions, and weather effects.
+ */
 void ui_render_non_hud()
 {
     cell_draw();

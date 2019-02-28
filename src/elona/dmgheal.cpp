@@ -154,6 +154,10 @@ namespace elona
 
 
 
+/**
+ * Primary damage routine. Damages @a victim by adjusting @a amount damage for
+ * various factors.
+ */
 int damage_hp(
     Character& victim,
     int amount,
@@ -1228,6 +1232,10 @@ void heal_hp(Character& cc, int delta)
 
 
 
+/**
+ * Damages MP and potentially damages HP if MP falls below zero, based on Mana
+ * Capcity skill level.
+ */
 void damage_mp(Character& cc, int delta)
 {
     cc.mp -= delta;

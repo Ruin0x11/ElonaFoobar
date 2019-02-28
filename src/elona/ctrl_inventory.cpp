@@ -31,6 +31,9 @@
 namespace elona
 {
 
+/**
+ * Queries the player for an item.
+ */
 MenuResult ctrl_inventory()
 {
     MenuResult result = {false, false, TurnResult::none};

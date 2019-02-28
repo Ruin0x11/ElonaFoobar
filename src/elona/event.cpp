@@ -37,6 +37,9 @@ int event_find(int event_type)
     return f_at_m17;
 }
 
+/**
+ * Adds a new event to be triggered when @a proc_event is called.
+ */
 void event_add(int event_type, int info1, int info2)
 {
     if (evproc)
