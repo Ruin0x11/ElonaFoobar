@@ -15,6 +15,7 @@ deps/lib/
 deps/elona/
 deps/*.zip
 deps/*.tar.gz
+doc/generated/
 thirdparty/lib/lua/src/
 CMakeFiles/
 snail/Debug
@@ -46,3 +47,5 @@ android/external/SDL2_ttf/
 android/external/SDL2_image/
 android/external/lua/
 android/external/boost/
+target/
+**/*.rs.bk

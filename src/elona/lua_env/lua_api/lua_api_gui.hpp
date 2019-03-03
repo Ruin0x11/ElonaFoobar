@@ -6,6 +6,11 @@ namespace elona
 namespace lua
 {
 
+/**
+ * @luadoc
+ *
+ * Functions for manipulating the player's user interface.
+ */
 namespace LuaApiGUI
 {
 void txt(const std::string&);

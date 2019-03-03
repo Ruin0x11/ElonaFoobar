@@ -7,25 +7,35 @@ namespace elona
 namespace lua
 {
 
+/**
+ * @luadoc
+ *
+ * Prints some text in the HUD message window.
+ * @tparam string message the message to print
+ */
 void LuaApiGUI::txt(const std::string& message)
 {
     elona::txt(message);
 }
 
-void LuaApiGUI::txt_txtef(
-    const std::string& message,
-    const EnumString& color_name)
+/**
+ * @luadoc txt
+ *
+ * Prints some text in the HUD message window.
+ * @tparam string message the message to print
+ * @tparam Color color of the message
+ */
+void LuaApiGUI::txt_txtef(const std::string& message, const EnumString& color)
 {
-    LuaApiGUI::txtef(color_name);
+    LuaApiGUI::txtef(color);
     elona::txt(message);
 }
 
-void LuaApiGUI::txtef(const EnumString& color_name)
-{
-    ColorIndex color = LuaEnums::ColorIndexTable.ensure_from_string(color_name);
-    elona::Message::instance().txtef(color);
-}
-
+/**
+ * @luadoc
+ *
+ * Starts a new message line in the HUD message window.
+ */
 void LuaApiGUI::txtnew()
 {
     elona::Message::instance().linebreak();
