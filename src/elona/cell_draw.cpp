@@ -618,7 +618,7 @@ optional_ref<const Extent> prepare_chara_chip(int c_, int dx, int dy)
     if (cdata[c_].is_hung_on_sand_bag())
     {
         gmode(2, 80);
-        func_2(1, 96, 816, -80, 48, 96);
+        func_2(1, 96, 816, -80, 48, 96, dx, dy - 63);
         gmode(2);
         gcopy(1, 96, 816, 48, 96, dx, dy - 63);
         chara_chips[p_].offset_y += 24;
@@ -968,12 +968,8 @@ void draw_item_chip_in_world_map(int x, int y, const Extent& rect)
 }
 
 
-
 void draw_item_chip_shadow(int x, int y, const Extent& rect, int p_, int alpha)
 {
-    (void)x;
-    (void)y;
-
     gmode(2, alpha);
     if (rect.height == inf_tiles)
     {
@@ -985,7 +981,9 @@ void draw_item_chip_shadow(int x, int y, const Extent& rect, int p_, int alpha)
                 960,
                 item_chips[p_].shadow / 2,
                 rect.frame_width,
-                rect.height);
+                rect.height,
+                x + inf_tiles / 2 + item_chips[p_].shadow / 80 + 2,
+                y - item_chips[p_].offset_y + 22);
         }
     }
     else
@@ -996,7 +994,9 @@ void draw_item_chip_shadow(int x, int y, const Extent& rect, int p_, int alpha)
             960,
             item_chips[p_].shadow * 2,
             rect.frame_width,
-            rect.height);
+            rect.height,
+            x + inf_tiles / 2 + item_chips[p_].shadow / 4,
+            y - item_chips[p_].offset_y + 46);
     }
     gmode(2);
 }

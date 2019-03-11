@@ -1123,12 +1123,6 @@ void apledit(int& out, int kind, int column_no)
 
 
 
-void func_2(int, int, int, int, int, int)
-{
-}
-
-
-
 void DIINIT()
 {
 }

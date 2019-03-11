@@ -1052,6 +1052,24 @@ void bmes(
     mes(x, y, message, text_color);
 }
 
+
+void func_2(
+    int window_id,
+    int x,
+    int y,
+    int rot,
+    int width,
+    int height,
+    int dx,
+    int dy)
+{
+    double drot = (double)(rot / 10) * (3.141 / 180.0);
+    set_color_mod(0, 0, 0, window_id);
+    grotate(window_id, x, y, width, height, dx, dy, drot);
+    set_color_mod(255, 255, 255, window_id);
+}
+
+
 /**
  * Draws a character using its @a image field.
  */

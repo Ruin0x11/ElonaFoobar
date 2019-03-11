@@ -102,6 +102,9 @@ void bmes(
     const snail::Color& shadow_color = {0, 0, 0, 255});
 
 
+void func_2(int, int, int, int, int, int, int, int);
+
+
 void draw_chara(
     const Character& chara,
     int x,
