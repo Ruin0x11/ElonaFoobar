@@ -670,9 +670,13 @@ void LuaCharacter::bind(sol::state& lua)
      *
      * [R] The name of the character without article and title.
      */
-    LuaCharacter.set("basename", sol::property([](Character& c) {
-                         return elona::cdatan(0, c.index);
-                     }));
+    LuaCharacter.set(
+        "basename",
+        sol::property(
+            [](Character& c) { return elona::cdatan(0, c.index); },
+            [](Character& c, const std::string& s) {
+                elona::cdatan(0, c.index) = s;
+            }));
 
     /**
      * @luadoc title field string
@@ -754,7 +758,7 @@ void LuaCharacter::bind(sol::state& lua)
 
     auto key = Character::lua_type();
     lua.set_usertype(key, LuaCharacter);
-}
+} // namespace lua
 
 } // namespace lua
 } // namespace elona
