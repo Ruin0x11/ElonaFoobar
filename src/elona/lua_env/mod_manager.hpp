@@ -192,8 +192,6 @@ public:
      * Retrieves a pointer to an instantiated mod.
      *
      * Will throw if the mod doesn't exist.
-     *
-     * For testing use only.
      */
     ModInfo* get_mod(const std::string& name)
     {

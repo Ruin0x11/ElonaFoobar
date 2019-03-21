@@ -1,5 +1,6 @@
 #include "lua_api_env.hpp"
 #include "../../../version.hpp"
+#include "../mod_name_setter.hpp"
 
 
 
@@ -38,6 +39,20 @@ namespace LuaApiEnv
  * release until the mod API is stabilized.
  */
 
+/**
+ * @luadoc
+ *
+ * Gets the name of the currently loading mod. This only returns a value during
+ * the initial mod loading phase when init.lua is run.
+ *
+ * @treturn[1] string
+ * @treturn[2] nil
+ */
+sol::optional<std::string> mod_name()
+{
+    return lua::loading_mod_name();
+}
+
 void bind(sol::table& api_table)
 {
     LUA_API_BIND_CONSTANT(
@@ -49,6 +64,7 @@ void bind(sol::table& api_table)
     // TODO: you need to define it properly after mod API is stabilized!
     // Currently it always returns "0.1".
     LUA_API_BIND_CONSTANT(api_table, MOD_API_VERSION, "0.1");
+    LUA_API_BIND_FUNCTION(api_table, LuaApiEnv, mod_name);
 }
 
 } // namespace LuaApiEnv

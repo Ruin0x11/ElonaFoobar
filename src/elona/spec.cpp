@@ -25,6 +25,13 @@ void Object::load(
     const std::string& hcl_file,
     const std::string& mod_name)
 {
+    if (loaded_mods_.find(mod_name) != loaded_mods_.end())
+    {
+        throw std::runtime_error(
+            "A config was already loaded for mod \"" + mod_name + "\"");
+    }
+    loaded_mods_.emplace(mod_name);
+
     hcl::ParseResult parseResult = hcl::parse(is);
     std::string top_level_key = mod_name;
 

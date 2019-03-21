@@ -4,6 +4,7 @@
 #include "../elona/lua_env/api_manager.hpp"
 #include "../elona/lua_env/lua_env.hpp"
 #include "../elona/lua_env/mod_manager.hpp"
+#include "../elona/lua_env/mod_name_setter.hpp"
 #include "../elona/testing.hpp"
 #include "../elona/variables.hpp"
 #include "util.hpp"
@@ -14,21 +15,28 @@ using namespace elona;
 void lua_testcase(const std::string& filename)
 {
     std::cout << "TEST FILE: " << filename << std::endl;
-    elona::testing::reset_state();
+    testing::reset_state();
     testing::set_english();
     elona::fixlv = Quality::none;
 
-    elona::lua::lua->get_state()->open_libraries(sol::lib::os);
-    elona::lua::lua->get_api_manager().set_on(*elona::lua::lua);
-    REQUIRE_NOTHROW(elona::lua::lua->get_state()->safe_script_file(
-        "tests/lua/"s + filename));
+    lua::lua->get_state()->open_libraries(sol::lib::os);
+    lua::lua->get_api_manager().set_on(*lua::lua);
+    auto mod =
+        lua::lua->get_mod_manager().create_mod("test", fs::path("tests/lua"));
+
+    // Test APIs which depend on the currently loading mod's name (like
+    // Config.register()). This technically doesn't run in a mod environment in
+    // order to use minctest.
+    lua::ModNameSetter setter(mod->manifest.name);
+
     REQUIRE_NOTHROW(
-        elona::lua::lua->get_state()->safe_script(R"(assert(lresults()))"));
+        lua::lua->get_state()->safe_script_file("tests/lua/"s + filename));
+    REQUIRE_NOTHROW(lua::lua->get_state()->safe_script("assert(lresults())"));
 }
 
 TEST_CASE("test Elona.require", "[Lua: API]")
 {
-    elona::lua::LuaEnv lua;
+    lua::LuaEnv lua;
     lua.get_mod_manager().load_mods(filesystem::dir::mod());
 
     REQUIRE_NOTHROW(lua.get_mod_manager().load_mod_from_script("test", R"(
@@ -40,7 +48,7 @@ assert(type(Rand.coinflip) == "function")
 
 TEST_CASE("test Elona.require from other mods", "[Lua: API]")
 {
-    elona::lua::LuaEnv lua;
+    lua::LuaEnv lua;
     lua.get_mod_manager().load_mods(
         filesystem::dir::mod(),
         {filesystem::dir::exe() / u8"tests/data/mods/test_require"});
@@ -68,7 +76,7 @@ TEST_CASE("Core API: Env", "[Lua: API]")
 {
     const auto foobar_ver = latest_version.short_string();
 
-    elona::lua::LuaEnv lua;
+    lua::LuaEnv lua;
     lua.get_mod_manager().load_mods(filesystem::dir::mod());
     REQUIRE_NOTHROW(lua.get_mod_manager().load_mod_from_script(
         "test_env",
@@ -101,6 +109,11 @@ TEST_CASE("Core API: Map", "[Lua: API]")
 TEST_CASE("Core API: I18N", "[Lua: API]")
 {
     lua_testcase("i18n.lua");
+}
+
+TEST_CASE("Core API: Config", "[Lua: API]")
+{
+    lua_testcase("config.lua");
 }
 
 TEST_CASE("Core API: Trait", "[Lua: API]")

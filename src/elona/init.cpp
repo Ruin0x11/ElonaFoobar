@@ -686,36 +686,13 @@ void initialize_game()
 
 
 
-void initialize_config_defs()
-{
-    Config::instance().clear();
-
-    // Somewhat convoluted as mods haven't been loaded yet by the mod manager.
-    for (const auto& entry : filesystem::dir_entries(
-             filesystem::dir::mod(), filesystem::DirEntryRange::Type::dir))
-    {
-        const auto manifest_path = entry.path() / "mod.hcl";
-        if (fs::exists(manifest_path))
-        {
-            lua::ModManifest manifest = lua::ModManifest::load(manifest_path);
-            const auto config_def_path = entry.path() / "config_def.hcl";
-            if (fs::exists(config_def_path))
-            {
-                Config::instance().load_def(config_def_path, manifest.name);
-            }
-        }
-    }
-}
-
-
-
 void init()
 {
     const fs::path config_file = filesystem::dir::exe() / u8"config.hcl";
 
     lua::lua = std::make_unique<lua::LuaEnv>();
 
-    initialize_config_defs();
+    Config::instance().clear();
 
     initialize_config_preload(config_file);
 

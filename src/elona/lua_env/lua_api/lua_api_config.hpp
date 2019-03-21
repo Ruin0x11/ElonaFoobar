@@ -28,6 +28,8 @@ bool get_bool(const std::string& key);
 
 void save();
 
+void register_(const std::string& filename);
+
 
 void bind(sol::table&);
 } // namespace LuaApiConfig

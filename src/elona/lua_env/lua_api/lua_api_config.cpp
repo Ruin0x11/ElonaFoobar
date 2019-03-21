@@ -1,5 +1,7 @@
 #include "lua_api_config.hpp"
 #include "../../config/config.hpp"
+#include "../mod_manager.hpp"
+#include "../mod_name_setter.hpp"
 
 namespace elona
 {
@@ -84,6 +86,32 @@ void LuaApiConfig::save()
     Config::instance().save();
 }
 
+
+/**
+ * @luadoc
+ *
+ * Registers a config for the currently executing mod.
+ * @tparam string filename Path to config_def.hcl
+ */
+void LuaApiConfig::register_(const std::string& filename)
+{
+    auto mod_name = lua::loading_mod_name();
+    if (!mod_name)
+    {
+        throw sol::error{"Config.register must be called during mod loading."};
+    }
+
+    auto mod = lua::lua->get_mod_manager().get_mod(*mod_name);
+    auto path = mod->manifest.path;
+    if (!path)
+    {
+        throw sol::error{
+            "Config.register must be called from a mod loaded from a file."};
+    }
+
+    Config::instance().load_def(*path / filename, *mod_name);
+}
+
 void LuaApiConfig::bind(sol::table& api_table)
 {
     LUA_API_BIND_FUNCTION(api_table, LuaApiConfig, set_string);
@@ -93,6 +121,7 @@ void LuaApiConfig::bind(sol::table& api_table)
     LUA_API_BIND_FUNCTION(api_table, LuaApiConfig, get_int);
     LUA_API_BIND_FUNCTION(api_table, LuaApiConfig, get_bool);
     LUA_API_BIND_FUNCTION(api_table, LuaApiConfig, save);
+    api_table.set_function("register", LuaApiConfig::register_);
 }
 
 } // namespace lua

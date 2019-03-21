@@ -14,6 +14,7 @@
 #include "data_manager.hpp"
 #include "event_manager.hpp"
 #include "export_manager.hpp"
+#include "mod_name_setter.hpp"
 
 
 
@@ -112,6 +113,10 @@ void ModManager::load_mod(ModInfo& mod)
     {
         return;
     }
+
+    // Set the name of the running mod globally for certain API functions.
+    // (cleared with RAII)
+    ModNameSetter setter(mod.manifest.name);
 
     auto result = lua_->get_state()->safe_script_file(
         filepathutil::to_utf8_path(*mod.manifest.path / u8"init.lua"s),
@@ -451,7 +456,7 @@ std::vector<std::string> ModManager::calculate_loading_order()
 
 // For testing use
 void ModManager::load_mod_from_script(
-    const std::string& name,
+    const std::string& mod_name,
     const std::string& script,
     bool readonly)
 {
@@ -460,13 +465,17 @@ void ModManager::load_mod_from_script(
         throw std::runtime_error("Lua libraries weren't loaded!");
     }
     {
-        auto val = mods.find(name);
+        auto val = mods.find(mod_name);
         if (val != mods.end())
             throw std::runtime_error(
-                "Mod "s + name + " was already initialized."s);
+                "Mod "s + mod_name + " was already initialized."s);
     }
 
-    ModInfo* mod = create_mod(name, none, readonly);
+    ModInfo* mod = create_mod(mod_name, none, readonly);
+
+    // Set the name of the running mod globally for certain API functions.
+    // (cleared with RAII)
+    ModNameSetter setter(mod_name);
 
     // Run the provided script string.
     auto result = lua_->get_state()->safe_script(script, mod->env);
@@ -479,14 +488,14 @@ void ModManager::load_mod_from_script(
         if (object && object->is<sol::table>())
         {
             sol::table api_table = object->as<sol::table>();
-            lua_->get_api_manager().add_api(name, api_table);
+            lua_->get_api_manager().add_api(mod_name, api_table);
         }
     }
     else
     {
         sol::error err = result;
         report_error(err);
-        throw std::runtime_error("Failed initializing mod "s + name);
+        throw std::runtime_error("Failed initializing mod "s + mod_name);
     }
 }
 

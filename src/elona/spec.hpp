@@ -3,6 +3,7 @@
 #include <cassert>
 #include <map>
 #include <sstream>
+#include <unordered_set>
 #include <vector>
 #include <boost/variant.hpp>
 #include <boost/variant/get.hpp>
@@ -162,6 +163,7 @@ public:
     }
     virtual void clear()
     {
+        loaded_mods_.clear();
         items_.clear();
     }
 
@@ -394,6 +396,7 @@ private:
 
     std::string name_;
     MapType items_;
+    std::unordered_set<std::string> loaded_mods_;
 };
 } // namespace spec
 } // namespace elona

@@ -37,3 +37,8 @@ function get_bool(key) end
 --  call this when you modify the config using this API.
 --  @function save
 function save() end
+
+--- Registers a config for the currently executing mod.
+--  @tparam string filename Path to config_def.hcl
+--  @function register_
+function register_(filename) end
