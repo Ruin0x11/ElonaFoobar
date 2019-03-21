@@ -408,7 +408,6 @@ EnumMap<ItemFindLocation> ItemFindLocationTable{
  * @see Input.choose_ally
  */
 EnumMap<ControlAllyOperation> ControlAllyOperationTable{
-
     "ControlAllyOperation",
     {
         {"CallBack", ControlAllyOperation::call_back},
@@ -417,6 +416,22 @@ EnumMap<ControlAllyOperation> ControlAllyOperationTable{
         {"Staying", ControlAllyOperation::staying},
         {"Investigate", ControlAllyOperation::investigate},
         {"GeneEngineer", ControlAllyOperation::gene_engineer},
+    }};
+
+/**
+ * @luadoc
+ *
+ * Font style to use with Draw.set_font.
+ * @see Draw.set_font
+ */
+EnumMap<snail::Font::Style> FontStyleTable{
+    "FontStyle",
+    {
+        {"Regular", snail::Font::Style::regular},
+        {"Bold", snail::Font::Style::bold},
+        {"Italic", snail::Font::Style::italic},
+        {"Underline", snail::Font::Style::underline},
+        {"Strikethrough", snail::Font::Style::strikethrough},
     }};
 
 } // namespace LuaEnums
@@ -432,17 +447,19 @@ void LuaEnums::bind(sol::table& core)
     StatusAilmentTable.bind(Enums);
     ElementTable.bind(Enums);
     TileKindTable.bind(Enums);
+    QualityTable.bind(Enums);
+    BuffTypeTable.bind(Enums);
     MapTypeTable.bind(Enums);
     MapEntranceTypeTable.bind(Enums);
     MapTilesetTable.bind(Enums);
     GenderTable.bind(Enums);
     RelationTable.bind(Enums);
     CharaFlagTable.bind(Enums);
-    QualityTable.bind(Enums);
     TraitTypeTable.bind(Enums);
     CharaFindLocationTable.bind(Enums);
     ItemFindLocationTable.bind(Enums);
     ControlAllyOperationTable.bind(Enums);
+    FontStyleTable.bind(Enums);
 }
 
 } // namespace lua
