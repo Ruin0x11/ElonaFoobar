@@ -1,6 +1,9 @@
 #include "log.hpp"
 #include <iomanip>
 #include "filesystem.hpp"
+#include "lua_env/event_manager.hpp"
+#include "lua_env/lua_env.hpp"
+#include "lua_env/lua_event/lua_event_log_message_received.hpp"
 
 
 
@@ -102,6 +105,21 @@ Logger::_OneLineLogger Logger::_get_one_line_logger(
     const auto now = steady_clock::now();
     const auto elapsed_time = duration_cast<duration>(now - _start_time);
     return {_out, elapsed_time, tag, level};
+}
+
+
+
+void Logger::_OneLineLogger::_send_lua_event(
+    const std::string& message,
+    duration elapsed_time,
+    const std::string& tag,
+    Level level)
+{
+    if (lua::lua)
+    {
+        lua::lua->get_event_manager().trigger(
+            lua::LogMessageReceivedEvent(message, elapsed_time, tag, level));
+    }
 }
 
 } // namespace log

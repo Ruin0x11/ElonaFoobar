@@ -21,6 +21,7 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <type_traits>
 #include "../util/noncopyable.hpp"
 
@@ -46,7 +47,7 @@ public:
          * Normal; everything is okay.
          * E.g., launching, loading save, loading mod.
          */
-        log,
+        info,
         /**
          * Unusual, but easily recoverable; Elona will continue to run.
          * E.g., detected obsolete things, trivial errors.
@@ -77,32 +78,35 @@ public:
             const std::string& tag,
             Level level)
             : _out(out)
+            , _elapsed_time(elapsed_time)
+            , _tag(tag)
+            , _level(level)
         {
-            *this << elapsed_time.count() << " " << _to_string(level) << u8"["
-                  << tag << u8"] ";
+            _out << elapsed_time.count() << " " << _to_string(level) << u8"["
+                 << tag << u8"] ";
         }
 
 
         ~_OneLineLogger()
         {
-            // Need to explicit the template parameters of `std::endl` here
-            // because a compiler cannot infer `T` of the below template
-            // function (`operator<<`). Normal output stream classes like
-            // `std::basic_ostream` have overloads of `operator<<()` which take
-            // manipulators so that we usually don't have to specify
-            // `std::endl`'s template parameters.
-            using StreamT = std::remove_reference_t<decltype(_out)>;
-            using CharT = StreamT::char_type;
-            using CharTraitsT = StreamT::traits_type;
+            _out << std::endl;
 
-            *this << std::endl<CharT, CharTraitsT>;
+            _send_lua_event(_sout.str(), _elapsed_time, _tag, _level);
         }
+
+
+        void _send_lua_event(
+            const std::string& message,
+            duration elapsed_time,
+            const std::string& tag,
+            Level level);
 
 
         template <typename T>
         _OneLineLogger& operator<<(T&& value)
         {
             _out << value;
+            _sout << value;
 
             return *this;
         }
@@ -110,13 +114,17 @@ public:
 
     private:
         std::ofstream& _out;
+        std::ostringstream _sout;
+        duration _elapsed_time;
+        std::string _tag;
+        Level _level;
 
 
         std::string _to_string(Logger::Level level)
         {
             switch (level)
             {
-            case Logger::Level::log: return "INFO  ";
+            case Logger::Level::info: return "INFO  ";
             case Logger::Level::warn: return "WARN  ";
             case Logger::Level::error: return "ERROR ";
             case Logger::Level::fatal: return "FATAL ";
@@ -157,7 +165,7 @@ private:
 
 #define ELONA_LOG(tag) \
     ::elona::log::Logger::instance()._get_one_line_logger( \
-        tag, ::elona::log::Logger::Level::log)
+        tag, ::elona::log::Logger::Level::info)
 
 #define ELONA_WARN(tag) \
     ::elona::log::Logger::instance()._get_one_line_logger( \

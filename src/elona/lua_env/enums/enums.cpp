@@ -434,6 +434,21 @@ EnumMap<snail::Font::Style> FontStyleTable{
         {"Strikethrough", snail::Font::Style::strikethrough},
     }};
 
+/**
+ * @luadoc
+ *
+ * Log level to use with Debug.log.
+ * @see Debug.log
+ */
+EnumMap<log::Logger::Level> LogLevelTable{
+    "LogLevel",
+    {
+        {"Info", log::Logger::Level::info},
+        {"Warn", log::Logger::Level::warn},
+        {"Error", log::Logger::Level::error},
+        {"Fatal", log::Logger::Level::fatal},
+    }};
+
 } // namespace LuaEnums
 
 void LuaEnums::bind(sol::table& core)
@@ -460,6 +475,7 @@ void LuaEnums::bind(sol::table& core)
     ItemFindLocationTable.bind(Enums);
     ControlAllyOperationTable.bind(Enums);
     FontStyleTable.bind(Enums);
+    LogLevelTable.bind(Enums);
 }
 
 } // namespace lua

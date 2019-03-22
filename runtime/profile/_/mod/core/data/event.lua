@@ -56,5 +56,8 @@ data:add_multi(
       {
          name = "before_screen_redraw"
       },
+      {
+         name = "log_message_received"
+      },
    }
 )

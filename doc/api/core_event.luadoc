@@ -118,3 +118,9 @@ module "core.event"
 --- if you want to draw something no matter what is underneath.
 -- @event core.before_screen_redraw
 
+--- Fired when a log message has been received.
+-- @event core.log_message_received
+-- @tfield string message
+-- @tfield Enums.LogLevel level
+-- @tfield string tag
+-- @tfield num timestamp

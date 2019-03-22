@@ -3,6 +3,7 @@
 #include "../../element.hpp"
 #include "../../enums.hpp"
 #include "../../item.hpp"
+#include "../../log.hpp"
 #include "../../map_cell.hpp"
 #include "../../mdata.hpp"
 #include "../../menu.hpp"
@@ -44,6 +45,7 @@ extern EnumMap<CharaFindLocation> CharaFindLocationTable;
 extern EnumMap<ItemFindLocation> ItemFindLocationTable;
 extern EnumMap<ControlAllyOperation> ControlAllyOperationTable;
 extern EnumMap<snail::Font::Style> FontStyleTable;
+extern EnumMap<log::Logger::Level> LogLevelTable;
 
 void bind(sol::table&);
 } // namespace LuaEnums

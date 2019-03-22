@@ -15,13 +15,12 @@ namespace lua
  */
 namespace LuaApiDebug
 {
-void log(const std::string&);
+void log(
+    const std::string&,
+    sol::optional<std::string>,
+    sol::optional<EnumString>);
 
 void report_error(const std::string&);
-
-void dump_characters();
-
-void dump_items();
 
 
 void bind(sol::table&);
