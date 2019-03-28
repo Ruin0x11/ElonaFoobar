@@ -11,6 +11,7 @@
 #include "gdata.hpp"
 #include "i18n.hpp"
 #include "input.hpp"
+#include "lua_env/event_manager.hpp"
 #include "lua_env/lua_console.hpp"
 #include "magic.hpp"
 #include "map.hpp"
@@ -760,6 +761,18 @@ optional<TurnResult> handle_pc_action(std::string& action)
     cdata.player().direction = game_data.player_next_move_direction;
     if (p == 1)
     {
+        auto result = lua::lua->get_event_manager().trigger(
+            lua::BaseEvent("core.before_player_movement"));
+        if (auto turn_result = result.optional<std::string>("result"))
+        {
+            return lua::LuaEnums::TurnResultTable.get_from_string(
+                *turn_result, TurnResult::turn_end);
+        }
+        else if (result.blocked())
+        {
+            return TurnResult::turn_end;
+        }
+
         if (_proc_autodig())
         {
             return do_dig_after_sp_check();

@@ -44,6 +44,7 @@
 #include "lua_env/interface.hpp"
 #include "lua_env/lua_env.hpp"
 #include "lua_env/lua_event/character_instance_event.hpp"
+#include "lua_env/lua_event/slept_hour_passed_event.hpp"
 #include "lua_env/mod_manager.hpp"
 #include "macro.hpp"
 #include "magic.hpp"
@@ -7155,6 +7156,7 @@ void sleep_start()
     {
         ++game_data.date.hour;
         weather_changes();
+        lua::lua->get_event_manager().trigger(lua::SleptHourPassedEvent(cnt));
         if (mode != 9)
         {
             load_sleep_background();
@@ -7449,6 +7451,10 @@ void map_global_proc_travel_events()
         ++game_data.date.minute;
         return;
     }
+
+    lua::lua->get_event_manager().trigger(
+        lua::BaseEvent("core.travelled_globally"));
+
     traveldone = 1;
     game_data.distance_between_town += 4;
     cdata[cc].continuous_action.finish();
@@ -7830,6 +7836,16 @@ int do_cast_magic_attempt()
                     cdata[cc].special_attack_type)));
         }
     }
+
+    auto result = lua::lua->get_event_manager().trigger(
+        lua::BeforeMagicCastAttemptEvent(cdata[cc], tc, ci, efid));
+    if (result.blocked())
+    {
+        efsource = 0;
+        return 1;
+    }
+    efp = result.optional_or("effect_power", efp);
+
     if (buff_has(cdata[cc], "core.mist_of_silence"))
     {
         if (is_in_fov(cdata[cc]))
@@ -9715,6 +9731,10 @@ void sense_map_feats_on_move()
             if (cdata.player().blind == 0)
             {
                 txt(txtitemoncell(x, y));
+
+                lua::lua->get_event_manager().trigger(
+                    lua::BaseEvent("core.player_moved_onto_item"));
+
                 proc_autopick();
             }
             else
@@ -10575,10 +10595,401 @@ void try_to_melee_attack()
 
 
 
+static void _apply_physical_attack_outcome(
+    Character& target,
+    Character& victim,
+    Item& weapon,
+    int hit,
+    int critical,
+    int expmodifer)
+{
+    int attackdmg = 0;
+
+    if (hit == 1)
+    {
+        if (critical)
+        {
+            if (attacker.index == 0)
+            {
+                txt(i18n::s.get("core.locale.damage.critical_hit"),
+                    Message::color{ColorIndex::red});
+            }
+        }
+        dmg = calcattackdmg(AttackDamageCalculationMode::actual_damage);
+        attackdmg = dmg;
+        if (attacker.index == 0)
+        {
+            if (Config::instance().attack_animation)
+            {
+                int damage_percent = dmg * 100 / victim.max_hp;
+                MeleeAttackAnimation(
+                    victim.position,
+                    victim.breaks_into_debris(),
+                    attackskill,
+                    damage_percent,
+                    critical)
+                    .play();
+            }
+        }
+        if (attackskill != 106)
+        {
+            if (inv[weapon.index].quality >= Quality::miracle)
+            {
+                if (inv[weapon.index].quality == Quality::special)
+                {
+                    s(1) = i18n::s.get("core.locale.misc.wields_proudly.the") +
+                        iknownnameref(inv[weapon.index].id);
+                }
+                else if (inv[weapon.index].subname >= 40000)
+                {
+                    randomize(inv[weapon.index].subname - 40000);
+                    s(1) = random_title(RandomTitleType::weapon);
+                    randomize();
+                }
+                else
+                {
+                    s(1) = i18n::s.get("core.locale.misc.wields_proudly.the") +
+                        iknownnameref(inv[weapon.index].id);
+                }
+                if (inv[weapon.index].quality == Quality::godly)
+                {
+                    s(1) = i18n::s.get("core.locale.item.godly_paren", s(1));
+                }
+                else
+                {
+                    s(1) = i18n::s.get("core.locale.item.miracle_paren", s(1));
+                }
+                if (is_in_fov(attacker))
+                {
+                    if (rnd(5) == 0)
+                    {
+                        txt(i18n::s.get(
+                                "core.locale.damage.wields_proudly",
+                                attacker,
+                                s(1)),
+                            Message::color{ColorIndex::cyan});
+                    }
+                }
+                i = 1;
+            }
+        }
+        if (attackskill == 106)
+        {
+            if (attacker.element_of_unarmed_attack != 0)
+            {
+                ele = attacker.element_of_unarmed_attack / 100000;
+                elep = attacker.element_of_unarmed_attack % 100000;
+            }
+        }
+        if (is_in_fov(victim))
+        {
+            if (extraattack)
+            {
+                txt(i18n::s.get("core.locale.damage.furthermore"));
+                Message::instance().continue_sentence();
+            }
+            if (attackskill == 106)
+            {
+                if (victim.index >= 16)
+                {
+                    game_data.proc_damage_events_flag = 2;
+                    txt(i18n::s.get(
+                        "core.locale.damage.weapon.attacks_unarmed_and",
+                        attacker,
+                        _melee(0, attacker.melee_attack_type),
+                        victim));
+                }
+                else
+                {
+                    txt(i18n::s.get(
+                        "core.locale.damage.weapon.attacks_unarmed",
+                        attacker,
+                        _melee(1, attacker.melee_attack_type),
+                        victim));
+                }
+            }
+            else
+            {
+                optional<std::string> weapon_name = none;
+                if (attackskill == 111)
+                {
+                    // Special case for thrown weapons.
+                    weapon_name = itemname(weapon.index, 1, 1);
+                }
+                else
+                {
+                    weapon_name = i18n::s.get_enum_property_opt(
+                        "core.locale.damage.weapon", "name", attackskill);
+                }
+                if (weapon_name)
+                {
+                    if (victim.index >= 16)
+                    {
+                        game_data.proc_damage_events_flag = 2;
+                        if (attackskill == 111)
+                        {
+                            txt(i18n::s.get(
+                                "core.locale.damage.weapon.attacks_throwing",
+                                attacker,
+                                i18n::s.get_enum_property(
+                                    "core.locale.damage.weapon",
+                                    "verb_and",
+                                    attackskill),
+                                victim,
+                                *weapon_name));
+                        }
+                        else
+                        {
+                            txt(i18n::s.get(
+                                "core.locale.damage.weapon.attacks_and",
+                                attacker,
+                                i18n::s.get_enum_property(
+                                    "core.locale.damage.weapon",
+                                    "verb_and",
+                                    attackskill),
+                                victim));
+                        }
+                    }
+                    else
+                    {
+                        txt(i18n::s.get(
+                            "core.locale.damage.weapon.attacks_with",
+                            attacker,
+                            i18n::s.get_enum_property(
+                                "core.locale.damage.weapon",
+                                "verb",
+                                attackskill),
+                            victim,
+                            *weapon_name));
+                    }
+                }
+            }
+        }
+        damage_hp(victim, dmg, attacker.index, ele, elep);
+        if (critical)
+        {
+            chara_gain_skill_exp(attacker, 186, 60 / expmodifer, 2);
+            critical = 0;
+        }
+        if (rtdmg > victim.max_hp / 20 || rtdmg > sdata(154, victim.index) ||
+            rnd(5) == 0)
+        {
+            chara_gain_skill_exp(
+                attacker,
+                attackskill,
+                clamp(
+                    (sdata(173, victim.index) * 2 -
+                     sdata(attackskill, attacker.index) + 1),
+                    5,
+                    50) /
+                    expmodifer,
+                0,
+                4);
+            if (attackrange == 0)
+            {
+                chara_gain_skill_exp(attacker, 152, 20 / expmodifer, 0, 4);
+                if (attacker.equipment_type & 2)
+                {
+                    chara_gain_skill_exp(attacker, 167, 20 / expmodifer, 0, 4);
+                }
+                if (attacker.equipment_type & 4)
+                {
+                    chara_gain_skill_exp(attacker, 166, 20 / expmodifer, 0, 4);
+                }
+            }
+            else if (attackskill == 111)
+            {
+                chara_gain_skill_exp(attacker, 152, 10 / expmodifer, 0, 4);
+            }
+            else
+            {
+                chara_gain_skill_exp(attacker, 189, 25 / expmodifer, 0, 4);
+            }
+            if (attacker.index == 0)
+            {
+                if (game_data.mount != 0)
+                {
+                    chara_gain_skill_exp(
+                        cdata.player(), 301, 30 / expmodifer, 0, 5);
+                }
+            }
+            if (victim.state() == Character::State::alive)
+            {
+                chara_gain_skill_exp(
+                    victim,
+                    chara_armor_class(victim),
+                    clamp((250 * rtdmg / victim.max_hp + 1), 3, 100) /
+                        expmodifer,
+                    0,
+                    5);
+                if (victim.equipment_type & 1)
+                {
+                    chara_gain_skill_exp(victim, 168, 40 / expmodifer, 0, 4);
+                }
+            }
+        }
+        if (attackskill != 106)
+        {
+            proc_weapon_enchantments();
+        }
+        if (victim.cut_counterattack > 0)
+        {
+            if (attackrange == 0)
+            {
+                damage_hp(
+                    attacker,
+                    attackdmg * victim.cut_counterattack / 100 + 1,
+                    victim.index,
+                    61,
+                    100);
+            }
+        }
+        if (victim.damage_reaction_info != 0)
+        {
+            p = victim.damage_reaction_info % 1000;
+            attacker.indexbk = attacker.index;
+            for (int cnt = 0; cnt < 1; ++cnt)
+            {
+                if (attackrange == 0)
+                {
+                    if (p == 61)
+                    {
+                        if (is_in_fov(attacker))
+                        {
+                            txt(i18n::s.get(
+                                    "core.locale.damage.reactive_attack.thorns",
+                                    attacker),
+                                Message::color{ColorIndex::purple});
+                        }
+                        damage_hp(
+                            attacker,
+                            clamp(attackdmg / 10, 1, victim.max_hp / 10),
+                            victim.index,
+                            p,
+                            victim.damage_reaction_info / 1000);
+                        break;
+                    }
+                    if (p == 62)
+                    {
+                        if (is_in_fov(attacker))
+                        {
+                            txt(i18n::s.get(
+                                    "core.locale.damage.reactive_attack.ether_"
+                                    "thorns",
+                                    attacker),
+                                Message::color{ColorIndex::purple});
+                        }
+                        damage_hp(
+                            attacker,
+                            clamp(attackdmg / 10, 1, victim.max_hp / 10),
+                            victim.index,
+                            p,
+                            victim.damage_reaction_info / 1000);
+                        break;
+                    }
+                    if (p == 63)
+                    {
+                        if (attackskill != 106)
+                        {
+                            if (rnd(5) == 0)
+                            {
+                                item_acid(attacker, weapon.index);
+                            }
+                        }
+                    }
+                }
+                if (attackdmg > victim.max_hp / 10)
+                {
+                    attacker.index = victim.index;
+                    tlocx = attacker.position.x;
+                    tlocy = attacker.position.y;
+                    if (p == 63)
+                    {
+                        if (is_in_fov(victim))
+                        {
+                            txt(i18n::s.get(
+                                    "core.locale.damage.reactive_attack.acids"),
+                                Message::color{ColorIndex::purple});
+                        }
+                        efid = 455;
+                        efp = victim.damage_reaction_info / 1000;
+                        magic();
+                        break;
+                    }
+                }
+            }
+            attacker.index = attacker.indexbk;
+        }
+    }
+    else
+    {
+        if (attacker.index == 0)
+        {
+            snd("core.miss");
+        }
+        if (sdata(attackskill, attacker.index) > sdata(173, victim.index) ||
+            rnd(5) == 0)
+        {
+            p = clamp(
+                    (sdata(attackskill, attacker.index) -
+                     sdata(173, victim.index) / 2 + 1),
+                    1,
+                    20) /
+                expmodifer;
+            chara_gain_skill_exp(victim, 173, p, 0, 4);
+            chara_gain_skill_exp(victim, 187, p, 0, 4);
+        }
+    }
+    if (hit == -1)
+    {
+        if (is_in_fov(attacker))
+        {
+            if (extraattack)
+            {
+                txt(i18n::s.get("core.locale.damage.furthermore"));
+                Message::instance().continue_sentence();
+            }
+            if (victim.index < 16)
+            {
+                txt(i18n::s.get(
+                    "core.locale.damage.miss.ally", attacker, victim));
+            }
+            else
+            {
+                txt(i18n::s.get(
+                    "core.locale.damage.miss.other", attacker, victim));
+            }
+            add_damage_popup(u8"miss", victim.index, {191, 191, 191});
+        }
+    }
+    if (hit == -2)
+    {
+        if (is_in_fov(attacker))
+        {
+            if (extraattack)
+            {
+                txt(i18n::s.get("core.locale.damage.furthermore"));
+                Message::instance().continue_sentence();
+            }
+            if (victim.index < 16)
+            {
+                txt(i18n::s.get(
+                    "core.locale.damage.evade.ally", attacker, victim));
+            }
+            else
+            {
+                txt(i18n::s.get(
+                    "core.locale.damage.evade.other", attacker, victim));
+            }
+            add_damage_popup(u8"evade!!", victim.index, {191, 191, 191});
+        }
+    }
+}
+
+
+
 void do_physical_attack()
 {
-    int attackdmg;
-    int expmodifer = 0;
 label_22191_internal:
     if (cdata[cc].state() != Character::State::alive)
     {
@@ -10617,383 +11028,38 @@ label_22191_internal:
     if (attacknum > 1 || cc != 0)
     {
     }
-    expmodifer = 1 + cdata[tc].is_hung_on_sand_bag() * 15 + cdata[tc].splits() +
-        cdata[tc].splits2() +
-        (game_data.current_map == mdata_t::MapId::show_house);
+
     int hit = calcattackhit();
     i = 0;
-    if (hit == 1)
+
+    int expmodifer = 1 + victim.is_hung_on_sand_bag() * 15 + victim.splits() +
+        victim.splits2() +
+        (game_data.current_map == mdata_t::MapId::show_house);
+
+    auto result =
+        lua::lua->get_event_manager().trigger(lua::BeforePhysicalAttackEvent(
+            cdata[cc],
+            cdata[tc],
+            inv[cw],
+            hit,
+            critical,
+            extraattack,
+            attackskill,
+            attackrange,
+            expmodifier));
+
+    hit = result.optional_or<int>("hit", hit);
+    critical = result.optional_or<int>("critical", critical);
+    extraattack = result.optional_or<int>("extra_attacks", extraattack);
+    attackskill = result.optional_or<int>("attack_skill", attackskill);
+    expmodifier = result.optional_or<int>("exp_modifier", expmodifier);
+
+    if (!result.blocked())
     {
-        if (critical)
-        {
-            if (cc == 0)
-            {
-                txt(i18n::s.get("core.locale.damage.critical_hit"),
-                    Message::color{ColorIndex::red});
-            }
-        }
-        dmg = calcattackdmg(AttackDamageCalculationMode::actual_damage);
-        attackdmg = dmg;
-        if (cc == 0)
-        {
-            if (Config::instance().attack_animation)
-            {
-                int damage_percent = dmg * 100 / cdata[tc].max_hp;
-                MeleeAttackAnimation(
-                    cdata[tc].position,
-                    cdata[tc].breaks_into_debris(),
-                    attackskill,
-                    damage_percent,
-                    critical)
-                    .play();
-            }
-        }
-        if (attackskill != 106)
-        {
-            if (inv[cw].quality >= Quality::miracle)
-            {
-                if (inv[cw].quality == Quality::special)
-                {
-                    s(1) = i18n::s.get("core.locale.misc.wields_proudly.the") +
-                        iknownnameref(inv[cw].id);
-                }
-                else if (inv[cw].subname >= 40000)
-                {
-                    randomize(inv[cw].subname - 40000);
-                    s(1) = random_title(RandomTitleType::weapon);
-                    randomize();
-                }
-                else
-                {
-                    s(1) = i18n::s.get("core.locale.misc.wields_proudly.the") +
-                        iknownnameref(inv[cw].id);
-                }
-                if (inv[cw].quality == Quality::godly)
-                {
-                    s(1) = i18n::s.get("core.locale.item.godly_paren", s(1));
-                }
-                else
-                {
-                    s(1) = i18n::s.get("core.locale.item.miracle_paren", s(1));
-                }
-                if (is_in_fov(cdata[cc]))
-                {
-                    if (rnd(5) == 0)
-                    {
-                        txt(i18n::s.get(
-                                "core.locale.damage.wields_proudly",
-                                cdata[cc],
-                                s(1)),
-                            Message::color{ColorIndex::cyan});
-                    }
-                }
-                i = 1;
-            }
-        }
-        if (attackskill == 106)
-        {
-            if (cdata[cc].element_of_unarmed_attack != 0)
-            {
-                ele = cdata[cc].element_of_unarmed_attack / 100000;
-                elep = cdata[cc].element_of_unarmed_attack % 100000;
-            }
-        }
-        if (is_in_fov(cdata[tc]))
-        {
-            if (extraattack)
-            {
-                txt(i18n::s.get("core.locale.damage.furthermore"));
-                Message::instance().continue_sentence();
-            }
-            if (attackskill == 106)
-            {
-                if (tc >= 16)
-                {
-                    game_data.proc_damage_events_flag = 2;
-                    txt(i18n::s.get(
-                        "core.locale.damage.weapon.attacks_unarmed_and",
-                        cdata[cc],
-                        _melee(0, cdata[cc].melee_attack_type),
-                        cdata[tc]));
-                }
-                else
-                {
-                    txt(i18n::s.get(
-                        "core.locale.damage.weapon.attacks_unarmed",
-                        cdata[cc],
-                        _melee(1, cdata[cc].melee_attack_type),
-                        cdata[tc]));
-                }
-            }
-            else
-            {
-                optional<std::string> weapon_name = none;
-                if (attackskill == 111)
-                {
-                    // Special case for thrown weapons.
-                    weapon_name = itemname(cw, 1, 1);
-                }
-                else
-                {
-                    weapon_name = i18n::s.get_enum_property_opt(
-                        "core.locale.damage.weapon", "name", attackskill);
-                }
-                if (weapon_name)
-                {
-                    if (tc >= 16)
-                    {
-                        game_data.proc_damage_events_flag = 2;
-                        if (attackskill == 111)
-                        {
-                            txt(i18n::s.get(
-                                "core.locale.damage.weapon.attacks_throwing",
-                                cdata[cc],
-                                i18n::s.get_enum_property(
-                                    "core.locale.damage.weapon",
-                                    "verb_and",
-                                    attackskill),
-                                cdata[tc],
-                                *weapon_name));
-                        }
-                        else
-                        {
-                            txt(i18n::s.get(
-                                "core.locale.damage.weapon.attacks_and",
-                                cdata[cc],
-                                i18n::s.get_enum_property(
-                                    "core.locale.damage.weapon",
-                                    "verb_and",
-                                    attackskill),
-                                cdata[tc]));
-                        }
-                    }
-                    else
-                    {
-                        txt(i18n::s.get(
-                            "core.locale.damage.weapon.attacks_with",
-                            cdata[cc],
-                            i18n::s.get_enum_property(
-                                "core.locale.damage.weapon",
-                                "verb",
-                                attackskill),
-                            cdata[tc],
-                            *weapon_name));
-                    }
-                }
-            }
-        }
-        damage_hp(cdata[tc], dmg, cc, ele, elep);
-        if (critical)
-        {
-            chara_gain_skill_exp(cdata[cc], 186, 60 / expmodifer, 2);
-            critical = 0;
-        }
-        if (rtdmg > cdata[tc].max_hp / 20 || rtdmg > sdata(154, tc) ||
-            rnd(5) == 0)
-        {
-            chara_gain_skill_exp(
-                cdata[cc],
-                attackskill,
-                clamp(
-                    (sdata(173, tc) * 2 - sdata(attackskill, cc) + 1), 5, 50) /
-                    expmodifer,
-                0,
-                4);
-            if (attackrange == 0)
-            {
-                chara_gain_skill_exp(cdata[cc], 152, 20 / expmodifer, 0, 4);
-                if (cdata[cc].equipment_type & 2)
-                {
-                    chara_gain_skill_exp(cdata[cc], 167, 20 / expmodifer, 0, 4);
-                }
-                if (cdata[cc].equipment_type & 4)
-                {
-                    chara_gain_skill_exp(cdata[cc], 166, 20 / expmodifer, 0, 4);
-                }
-            }
-            else if (attackskill == 111)
-            {
-                chara_gain_skill_exp(cdata[cc], 152, 10 / expmodifer, 0, 4);
-            }
-            else
-            {
-                chara_gain_skill_exp(cdata[cc], 189, 25 / expmodifer, 0, 4);
-            }
-            if (cc == 0)
-            {
-                if (game_data.mount != 0)
-                {
-                    chara_gain_skill_exp(
-                        cdata.player(), 301, 30 / expmodifer, 0, 5);
-                }
-            }
-            if (cdata[tc].state() == Character::State::alive)
-            {
-                chara_gain_skill_exp(
-                    cdata[tc],
-                    chara_armor_class(cdata[tc]),
-                    clamp((250 * rtdmg / cdata[tc].max_hp + 1), 3, 100) /
-                        expmodifer,
-                    0,
-                    5);
-                if (cdata[tc].equipment_type & 1)
-                {
-                    chara_gain_skill_exp(cdata[tc], 168, 40 / expmodifer, 0, 4);
-                }
-            }
-        }
-        if (attackskill != 106)
-        {
-            proc_weapon_enchantments();
-        }
-        if (cdata[tc].cut_counterattack > 0)
-        {
-            if (attackrange == 0)
-            {
-                damage_hp(
-                    cdata[cc],
-                    attackdmg * cdata[tc].cut_counterattack / 100 + 1,
-                    tc,
-                    61,
-                    100);
-            }
-        }
-        if (cdata[tc].damage_reaction_info != 0)
-        {
-            p = cdata[tc].damage_reaction_info % 1000;
-            ccbk = cc;
-            for (int cnt = 0; cnt < 1; ++cnt)
-            {
-                if (attackrange == 0)
-                {
-                    if (p == 61)
-                    {
-                        if (is_in_fov(cdata[cc]))
-                        {
-                            txt(i18n::s.get(
-                                    "core.locale.damage.reactive_attack.thorns",
-                                    cdata[cc]),
-                                Message::color{ColorIndex::purple});
-                        }
-                        damage_hp(
-                            cdata[cc],
-                            clamp(attackdmg / 10, 1, cdata[tc].max_hp / 10),
-                            tc,
-                            p,
-                            cdata[tc].damage_reaction_info / 1000);
-                        break;
-                    }
-                    if (p == 62)
-                    {
-                        if (is_in_fov(cdata[cc]))
-                        {
-                            txt(i18n::s.get(
-                                    "core.locale.damage.reactive_attack.ether_"
-                                    "thorns",
-                                    cdata[cc]),
-                                Message::color{ColorIndex::purple});
-                        }
-                        damage_hp(
-                            cdata[cc],
-                            clamp(attackdmg / 10, 1, cdata[tc].max_hp / 10),
-                            tc,
-                            p,
-                            cdata[tc].damage_reaction_info / 1000);
-                        break;
-                    }
-                    if (p == 63)
-                    {
-                        if (attackskill != 106)
-                        {
-                            if (rnd(5) == 0)
-                            {
-                                item_acid(cdata[cc], cw);
-                            }
-                        }
-                    }
-                }
-                if (attackdmg > cdata[tc].max_hp / 10)
-                {
-                    cc = tc;
-                    tlocx = cdata[cc].position.x;
-                    tlocy = cdata[cc].position.y;
-                    if (p == 63)
-                    {
-                        if (is_in_fov(cdata[tc]))
-                        {
-                            txt(i18n::s.get(
-                                    "core.locale.damage.reactive_attack.acids"),
-                                Message::color{ColorIndex::purple});
-                        }
-                        efid = 455;
-                        efp = cdata[tc].damage_reaction_info / 1000;
-                        magic();
-                        break;
-                    }
-                }
-            }
-            cc = ccbk;
-        }
+        _apply_physical_attack_outcome(
+            cdata[cc], cdata[tc], inv[cw], hit, critical, expmodifier)
     }
-    else
-    {
-        if (cc == 0)
-        {
-            snd("core.miss");
-        }
-        if (sdata(attackskill, cc) > sdata(173, tc) || rnd(5) == 0)
-        {
-            p = clamp(
-                    (sdata(attackskill, cc) - sdata(173, tc) / 2 + 1), 1, 20) /
-                expmodifer;
-            chara_gain_skill_exp(cdata[tc], 173, p, 0, 4);
-            chara_gain_skill_exp(cdata[tc], 187, p, 0, 4);
-        }
-    }
-    if (hit == -1)
-    {
-        if (is_in_fov(cdata[cc]))
-        {
-            if (extraattack)
-            {
-                txt(i18n::s.get("core.locale.damage.furthermore"));
-                Message::instance().continue_sentence();
-            }
-            if (tc < 16)
-            {
-                txt(i18n::s.get(
-                    "core.locale.damage.miss.ally", cdata[cc], cdata[tc]));
-            }
-            else
-            {
-                txt(i18n::s.get(
-                    "core.locale.damage.miss.other", cdata[cc], cdata[tc]));
-            }
-            add_damage_popup(u8"miss", tc, {191, 191, 191});
-        }
-    }
-    if (hit == -2)
-    {
-        if (is_in_fov(cdata[cc]))
-        {
-            if (extraattack)
-            {
-                txt(i18n::s.get("core.locale.damage.furthermore"));
-                Message::instance().continue_sentence();
-            }
-            if (tc < 16)
-            {
-                txt(i18n::s.get(
-                    "core.locale.damage.evade.ally", cdata[cc], cdata[tc]));
-            }
-            else
-            {
-                txt(i18n::s.get(
-                    "core.locale.damage.evade.other", cdata[cc], cdata[tc]));
-            }
-            add_damage_popup(u8"evade!!", tc, {191, 191, 191});
-        }
-    }
+
     if (tc == 0)
     {
         game_data.player_cellaccess_check_flag = 0;
@@ -11047,6 +11113,14 @@ void proc_weapon_enchantments()
 {
     for (int cnt = 0; cnt < 15; ++cnt)
     {
+        auto result = lua::lua->get_event_manager().trigger(
+            lua::BeforeProcWeaponEnchantmentEvent(
+                cdata[cc], inv[cw], inv[cw].enchantments[cnt]));
+        if (result.blocked())
+        {
+            continue;
+        }
+
         cw = attackitem;
         if (inv[cw].enchantments[cnt].id == 0)
         {
@@ -11711,6 +11785,13 @@ void initialize_economy()
 
 int new_ally_joins()
 {
+    auto result = lua::lua->get_event_manager().trigger(
+        lua::CharacterInstanceEvent("core.before_new_ally_join", cdata[rc]));
+    if (result.blocked())
+    {
+        return -1;
+    }
+
     f = chara_get_free_slot_ally();
     if (f == 0)
     {
@@ -12146,6 +12227,8 @@ void weather_changes()
         {
             sound_play_environmental();
         }
+        lua::lua->get_event_manager().trigger(
+            lua::WeatherChangedEvent(game_data.weather));
     }
     draw_prepare_map_chips();
     adventurer_update();
@@ -12258,6 +12341,8 @@ void weather_changes()
                 }
             }
         }
+        lua::lua->get_event_manager().trigger(
+            lua::BaseEvent("core.day_passed"));
     }
     if (mode == 0)
     {
@@ -12294,6 +12379,7 @@ void weather_changes()
     {
         proc_random_event();
     }
+    lua::lua->get_event_manager().trigger(lua::BaseEvent("core.world_updated"));
 }
 
 
@@ -12521,6 +12607,14 @@ TurnResult pc_died()
     snd("core.dead1");
     screenupdate = -1;
     update_screen();
+
+    auto result = lua::lua->get_event_manager().trigger(
+        lua::BaseEvent("core.player_died"));
+    if (result.blocked())
+    {
+        return TurnResult::exit_map;
+    }
+
     if (game_data.executing_immediate_quest_type)
     {
         return quest_pc_died_during_immediate_quest();

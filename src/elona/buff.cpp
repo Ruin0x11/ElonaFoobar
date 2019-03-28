@@ -6,6 +6,7 @@
 #include "elona.hpp"
 #include "fov.hpp"
 #include "i18n.hpp"
+#include "lua_env/event_manager.hpp"
 #include "lua_env/interface.hpp"
 #include "message.hpp"
 #include "random.hpp"
@@ -163,6 +164,16 @@ void buff_add(
         }
     }
 
+    auto result = lua::lua->get_event_manager().trigger(
+        lua::BeforeBuffApplyEvent(cc, id, power, turns, doer));
+    if (result.blocked())
+    {
+        return result;
+    }
+
+    power = result.optional_or("power", power);
+    turns = result.optional_or("turns", turns);
+
     if (buff->type == BuffType::hex)
     {
         bool resists{};
@@ -193,6 +204,7 @@ void buff_add(
         {
             resists = true;
         }
+
         if (const auto& holy_veil = buff_find(cc, "core.holy_veil"))
         {
             if (holy_veil->power + 50 > power * 5 / 2 ||

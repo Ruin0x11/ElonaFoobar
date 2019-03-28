@@ -7,6 +7,7 @@
 #include "elona.hpp"
 #include "fov.hpp"
 #include "i18n.hpp"
+#include "lua_env/event_manager.hpp"
 #include "map.hpp"
 #include "message.hpp"
 #include "random.hpp"
@@ -46,6 +47,14 @@ namespace elona
 
 void dmgcon(int cc, StatusAilment status_ailment, int power)
 {
+    auto result = lua::lua->get_event_manager().trigger(
+        lua::BeforeApplyAilmentEvent(cc, status_ailment, power));
+    if (result.blocked())
+    {
+        return;
+    }
+    power = result.optional_or("power", power);
+
     if (power <= 0)
         return;
 

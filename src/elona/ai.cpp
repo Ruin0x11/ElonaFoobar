@@ -102,7 +102,16 @@ TurnResult ai_proc_basic()
     {
         pcattacker = cc;
     }
+
+    auto result = lua::lua->get_event_manager().trigger(
+        lua::BeforeAiActionEvent(cdata[cc], cdata[tc]));
+    if (result.blocked())
+    {
+        return TurnResult::turn_end;
+    }
+
     int act = choice(cdata[cc].normal_actions);
+
     if (cdata[cc].ai_act_sub_freq != 0)
     {
         if (cdata[cc].ai_act_sub_freq > rnd(100))

@@ -290,14 +290,11 @@ int damage_hp(
     auto result =
         lua::lua->get_event_manager().trigger(lua::CalcCharacterDamageEvent(
             victim, dmg_at_m141, element, damage_source));
-    if (auto damage = result.optional<int>("damage"))
-    {
-        dmg_at_m141 = *damage;
-    }
-    else if (result.blocked())
+    if (result.blocked())
     {
         return 1;
     }
+    dmg_at_m141 = result.optional_or("damage", dmg_at_m141);
 
     victim.hp -= dmg_at_m141;
 

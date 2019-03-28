@@ -6,6 +6,7 @@
 #include "character_status.hpp"
 #include "fov.hpp"
 #include "i18n.hpp"
+#include "lua_env/event_manager.hpp"
 #include "message.hpp"
 #include "random.hpp"
 #include "variables.hpp"
@@ -21,6 +22,13 @@ int increase_potential(int potential, int level_delta)
 {
     for (int i = 0; i < level_delta; ++i)
     {
+        auto result = lua::lua->get_event_manager().trigger(
+            lua::BeforePotentialChangedEvent(
+                cc,
+                the_ability_db.get_id_from_legacy(skill_id),
+                potential,
+                new_potential));
+
         potential = std::min(calc_potential_on_gain(potential), 400);
     }
     return potential;
@@ -32,6 +40,13 @@ int decrease_potential(int potential, int level_delta)
 {
     for (int i = 0; i < level_delta; ++i)
     {
+        auto result = lua::lua->get_event_manager().trigger(
+            lua::BeforePotentialChangedEvent(
+                cc,
+                the_ability_db.get_id_from_legacy(skill_id),
+                potential,
+                new_potential));
+
         potential = std::max(calc_potential_on_loss(potential), 1);
     }
     return potential;
@@ -108,10 +123,29 @@ void chara_init_skill(Character& cc, int skill_id, int initial_level)
         level = initial_level;
         potential = 100;
     }
+
+    auto result =
+        lua::lua->get_event_manager().trigger(lua::BeforeInitializeSkillEvent(
+            cc,
+            the_ability_db.get_id_from_legacy(skill_id),
+            initial_level,
+            level,
+            potential));
+
+    if (result.blocked())
+    {
+        return;
+    }
+
+    potential = result.optional_or("potential", initial_level);
+    level = result.optional_or("level", initial_level);
+
+
     if (original_level + level > 2000)
     {
         level = 2000 - original_level;
     }
+
     sdata.get(skill_id, cc.index).original_level += clamp(level, 0, 2000);
     sdata.get(skill_id, cc.index).potential += potential;
 }
@@ -150,12 +184,27 @@ void chara_init_common_skills(Character& cc)
     chara_init_skill(cc, 169, 4);
     chara_init_skill(cc, 168, 3);
     chara_init_skill(cc, 19, 50);
+
+    lua::lua->get_event_manager().trigger(
+        lua::CommonSkillsInitializedEvent(cc));
 }
 
 
 
 void chara_gain_skill(Character& cc, int id, int initial_level, int stock)
 {
+    auto result =
+        lua::lua->get_event_manager().trigger(lua::BeforeGainSkillEvent(
+            cc, the_ability_db.get_id_from_legacy(id), initial_level, stock));
+
+    if (result.blocked())
+    {
+        return;
+    }
+
+    initial_level = result.optional_or("initial_level", initial_level);
+    stock = result.optional_or("stock", stock);
+
     if (id >= 400)
     {
         if (cc.index == 0)
@@ -235,6 +284,17 @@ void gain_special_action()
 
 void chara_gain_fixed_skill_exp(Character& cc, int id, int experience)
 {
+    auto result = lua::lua->get_event_manager().trigger(
+        lua::BeforeGainFixedSkillExperienceEvent(
+            cc, the_ability_db.get_id_from_legacy(id), experience));
+
+    if (result.blocked())
+    {
+        return;
+    }
+
+    experience = result.optional_or("experience", experience);
+
     auto lv = sdata.get(id, cc.index).original_level;
     auto exp = sdata.get(id, cc.index).experience + experience;
     auto potential = sdata.get(id, cc.index).potential;
@@ -309,6 +369,27 @@ void chara_gain_skill_exp(
         return;
     if (experience == 0)
         return;
+
+    auto result = lua::lua->get_event_manager().trigger(
+        lua::BeforeGainSkillExperienceEvent(
+            cc,
+            the_ability_db.get_id_from_legacy(id),
+            experience,
+            experience_divisor_of_related_basic_attribute,
+            experience_divisor_of_character_level));
+
+    if (result.blocked())
+    {
+        return;
+    }
+
+    experience = result.optional_or("experience", experience);
+    experience_divisor_of_related_basic_attribute = result.optional_or(
+        "experience_divisor_attribute",
+        experience_divisor_of_related_basic_attribute);
+    experience_divisor_of_character_level = result.optional_or(
+        "experience_divisor_chara_level",
+        experience_divisor_of_character_level);
 
     if (the_ability_db[id]->related_basic_attribute != 0)
     {

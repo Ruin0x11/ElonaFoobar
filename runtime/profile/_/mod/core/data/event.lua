@@ -50,5 +50,23 @@ data:add_multi(
       {
          name = "script_loaded"
       },
+      {
+         name = "slept_hour_passed"
+      },
+      {
+         name = "day_passed"
+      },
+      {
+         name = "world_updated"
+      },
+      {
+         name = "before_new_ally_join"
+      },
+      {
+         name = "before_physical_attack"
+      }
+      {
+         name = "physical_attack_finished"
+      }
    }
 )

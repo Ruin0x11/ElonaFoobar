@@ -15,6 +15,8 @@
 #include "input.hpp"
 #include "item.hpp"
 #include "itemgen.hpp"
+#include "lua_env/event_manager.hpp"
+#include "lua_env/lua_event/lua_event_before_random_event.hpp"
 #include "magic.hpp"
 #include "map.hpp"
 #include "message.hpp"
@@ -570,7 +572,13 @@ void proc_random_event()
 {
     if (auto e = generate_random_event())
     {
-        run_random_event(*e);
+        auto result = lua::lua->get_event_manager().trigger(
+            lua::BeforeRandomEventEvent(e->id));
+
+        if (!result.blocked())
+        {
+            run_random_event(*e);
+        }
     }
 }
 

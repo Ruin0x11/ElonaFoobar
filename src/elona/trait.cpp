@@ -4,6 +4,7 @@
 #include "character.hpp"
 #include "elona.hpp"
 #include "i18n.hpp"
+#include "lua_env/event_manager.hpp"
 #include "optional.hpp"
 #include "variables.hpp"
 
@@ -267,6 +268,13 @@ int trait_get_info(int traitmode, int tid)
         trait_format(tid, data->min, data->max);
 
         return is_acquirable(tid) ? 1 : -1;
+    }
+
+    auto result =
+        lua::lua->get_event_manager().trigger(lua::BeforeApplyTraitEvent(tid));
+    if (result.blocked())
+    {
+        return 0;
     }
 
     if (tid == 24)

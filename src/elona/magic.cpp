@@ -24,6 +24,7 @@
 #include "input.hpp"
 #include "item.hpp"
 #include "itemgen.hpp"
+#include "lua_env/event_manager.hpp"
 #include "macro.hpp"
 #include "map.hpp"
 #include "map_cell.hpp"
@@ -4697,7 +4698,12 @@ bool magic()
         }
     }
 
-    return _proc_magic(efid, efcibk, fltbk, valuebk);
+    bool magic_result = _proc_magic(efid, efcibk, fltbk, valuebk);
+
+    auto result = lua::lua->get_event_manager().trigger(lua::MagicCastEvent(
+        cdata[cc], tc, ci, efid, efstatus, efp, obvious, efcancel, efsource));
+
+    return magic_result;
 }
 
 } // namespace elona

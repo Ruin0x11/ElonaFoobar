@@ -1570,6 +1570,18 @@ label_2747:
         txt(s, Message::color{ColorIndex::orange});
     }
 
+    auto result = lua::lua->get_event_manager().trigger(
+        lua::BaseEvent("core.before_player_input"));
+    if (auto turn_result = result.optional<std::string>("result"))
+    {
+        return lua::LuaEnums.get_from_string(
+            *turn_result, TurnResult::turn_end);
+    }
+    else if (result.blocked())
+    {
+        return TurnResult::turn_end;
+    }
+
     // Provide the opportunity for the game to quicksave if app focus
     // is lost on Android by setting whether or not player input is
     // being queried. This won't be true for any other place input is

@@ -11,6 +11,7 @@
 #include "i18n.hpp"
 #include "item.hpp"
 #include "itemgen.hpp"
+#include "lua_env/event_manager.hpp"
 #include "map_cell.hpp"
 #include "mef.hpp"
 #include "position.hpp"
@@ -799,6 +800,9 @@ static void _map_regenerate()
         _set_feats_on_regenerate();
     }
     map_data.next_regenerate_date = game_data.date.hours() + 120;
+
+    lua::lua->get_event_manager().trigger(
+        lua::BaseEvent("core.map_regenerated"));
 }
 
 
@@ -940,6 +944,8 @@ static void _map_restock()
         _map_restock_regenerate();
     }
     map_data.next_restock_date = game_data.date.hours() + 24;
+
+    lua::lua->get_event_manager().trigger(lua::BaseEvent("core.map_restocked"));
 }
 
 
@@ -1330,6 +1336,16 @@ int map_global_place_random_nefias()
         {
             x = cxinit + rnd((cnt + 1)) - rnd((cnt + 1));
             y = cyinit + rnd((cnt + 1)) - rnd((cnt + 1));
+
+            auto result = lua::lua->get_event_manager().trigger(
+                lua::BeforeChooseNefiaPositionEvent(cnt, x, y));
+            x = result.optional_or("x", x);
+            y = result.optional_or("y", y);
+            if (result.blocked())
+            {
+                continue;
+            }
+
             if (x <= 5 || y <= 5 || x >= map_data.width - 6 ||
                 y >= map_data.height - 6)
             {
@@ -1379,6 +1395,13 @@ int map_global_place_random_nefias()
             break;
         }
         p = cnt;
+
+        auto result = lua::lua->get_event_manager().trigger(
+            lua::BeforeCreateNefiaEvent(p(0), x, y));
+        if (result.blocked())
+        {
+            continue;
+        }
 
         _create_nefia(p(0), x, y);
 
