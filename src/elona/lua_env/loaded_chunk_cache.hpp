@@ -34,7 +34,8 @@ public:
             return it->second;
 
         const fs::path full_path = base_path / (name + ".lua");
-        if (!file_contained_in_dir(full_path))
+        if (!(fs::exists(full_path) &&
+              filesystem::file_contained_in_dir(full_path, base_path)))
             return sol::lua_nil;
 
         sol::object result =
@@ -47,36 +48,6 @@ public:
     }
 
 private:
-    bool file_contained_in_dir(fs::path file)
-    {
-        // Modifies filename, so copy is needed.
-        if (!file.has_filename())
-        {
-            return false;
-        }
-        file.remove_filename();
-
-        if (!fs::exists(file))
-        {
-            return false;
-        }
-
-        // Strip "." and ".."
-        file = fs::canonical(file);
-        fs::path dir = fs::canonical(base_path);
-
-        std::size_t dir_len = std::distance(dir.begin(), dir.end());
-        std::size_t file_len = std::distance(file.begin(), file.end());
-
-        if (dir_len > file_len)
-        {
-            return false;
-        }
-
-        bool dir_is_prefix = std::equal(dir.begin(), dir.end(), file.begin());
-        return dir_is_prefix;
-    }
-
     fs::path base_path;
     std::unordered_map<std::string, sol::object> chunk_cache;
 };

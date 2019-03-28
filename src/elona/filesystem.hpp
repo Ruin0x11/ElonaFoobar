@@ -67,6 +67,7 @@ void set_profile_directory(const fs::path& profile_dir);
 
 fs::path path(const std::string&);
 fs::path resolve_path_for_mod(const std::string& mod_local_path);
+bool file_contained_in_dir(fs::path file, const fs::path& base_path);
 
 
 

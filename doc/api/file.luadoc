@@ -1,0 +1,61 @@
+--- Functions for reading/writing mod-related files. All paths are assumed to use
+--  the mod path syntax, like "__core__/graphic/file.bmp".
+--
+--  There are two special mod names you can use:
+--  - <code>__BUILTIN__</code>: the root executable directory.
+--  - <code>__USER__</code>: the user/ directory.
+--
+--  You can read any path inside the game's directory, but paths can only be
+--  written to/deleted from the user/ folder.
+--  @usage local File = Elona.require("File")
+module "File"
+
+--- Creates a directory and any parent directories that do not exist.
+--  @tparam string path
+--  @function create_directory
+function create_directory(path) end
+
+--- Writes a string to a file, optionally appending instead of truncating.
+--  @tparam string path
+--  @tparam string content
+--  @tparam[opt] bool append
+--  @function write_file
+function write_file(path, content, append) end
+
+--- Copies a file or directory to path. Directories are copied recursively. If
+--  <code>overwrite</code> is false or not specified, an error will be raised if
+--  the source is a file and the destination already exists.
+--  @tparam string source
+--  @tparam string dest
+--  @tparam[opt] bool overwrite
+--  @function copy_path
+function copy_path(source, dest, overwrite) end
+
+--- Removes a file or directory, including any child directories.
+--  @tparam string path
+--  @function remove_path
+function remove_path(path) end
+
+--- Reads the entire contents of a file to a string.
+--  @tparam string path
+--  @treturn string
+--  @function read_file_to_string
+function read_file_to_string(path) end
+
+--- Returns true if the file or directory at the given path exists.
+--  @tparam string path
+--  @treturn bool
+--  @function exists
+function exists(path) end
+
+--- Returns true if the given path is a directory.
+--  @tparam string path
+--  @treturn bool
+--  @function is_directory
+function is_directory(path) end
+
+--- Returns the filename component of a path to a file.
+--  @tparam string path
+--  @treturn string
+--  @function filename
+function filename(path) end

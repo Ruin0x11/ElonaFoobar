@@ -7,6 +7,7 @@
 #include "lua_api_data.cpp"
 #include "lua_api_debug.cpp"
 #include "lua_api_env.cpp"
+#include "lua_api_file.cpp"
 #include "lua_api_fov.cpp"
 #include "lua_api_gui.cpp"
 #include "lua_api_i18n.cpp"
@@ -43,6 +44,7 @@ void LuaApi::bind(sol::table& core)
     LUA_API_BIND(core, Debug);
     LUA_API_BIND(core, Env);
     LUA_API_BIND(core, FOV);
+    LUA_API_BIND(core, File);
     LUA_API_BIND(core, GUI);
     LUA_API_BIND(core, I18N);
     LUA_API_BIND(core, Input);

@@ -9,6 +9,7 @@
 #include "lua_api_data.hpp"
 #include "lua_api_debug.hpp"
 #include "lua_api_env.hpp"
+#include "lua_api_file.hpp"
 #include "lua_api_fov.hpp"
 #include "lua_api_gui.hpp"
 #include "lua_api_i18n.hpp"

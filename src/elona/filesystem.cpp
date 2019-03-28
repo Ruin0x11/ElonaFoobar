@@ -165,13 +165,14 @@ fs::path resolve_path_for_mod(const std::string& mod_local_path)
     // TODO: standardize mod naming convention.
     std::regex mod_name_regex("^__([a-zA-Z0-9_]+)__/(.*)");
     std::smatch match;
-    std::string mod_name, rest;
+    std::string mod_name;
+    fs::path rest;
 
     if (std::regex_match(mod_local_path, match, mod_name_regex) &&
         match.size() == 3)
     {
         mod_name = match.str(1);
-        rest = match.str(2);
+        rest = filepathutil::to_utf8_path(match.str(2));
     }
     else
     {
@@ -182,6 +183,10 @@ fs::path resolve_path_for_mod(const std::string& mod_local_path)
     {
         return dir::exe() / rest;
     }
+    else if (mod_name == "USER")
+    {
+        return dir::user() / rest;
+    }
     else
     {
         return dir::for_mod(mod_name) / rest;
@@ -190,11 +195,48 @@ fs::path resolve_path_for_mod(const std::string& mod_local_path)
 
 
 
+bool file_contained_in_dir(fs::path file, const fs::path& base_path)
+{
+    // Modifies filename, so copy is needed.
+    if (!file.has_filename())
+    {
+        return false;
+    }
+    file.remove_filename();
+
+    // Strip "." and ".."
+    file = fs::weakly_canonical(file);
+    fs::path dir = fs::weakly_canonical(base_path);
+
+    std::size_t dir_len = std::distance(dir.begin(), dir.end());
+    std::size_t file_len = std::distance(file.begin(), file.end());
+
+    if (dir_len > file_len)
+    {
+        return false;
+    }
+
+    bool dir_is_prefix = std::equal(dir.begin(), dir.end(), file.begin());
+    return dir_is_prefix;
+}
+
+
+
 void copy_recursively(const fs::path& source, const fs::path& destination)
 {
     // Check pre-conditions.
-    assert(fs::exists(source) && fs::is_directory(source));
-    assert(!fs::exists(destination));
+    if (!(fs::exists(source) && fs::is_directory(source)))
+    {
+        throw std::runtime_error{
+            "Source does not exist, or isn't a directory: " +
+            filepathutil::make_preferred_path_in_utf8(source)};
+    }
+    if (fs::exists(destination))
+    {
+        throw std::runtime_error{
+            "Destination already exists: " +
+            filepathutil::make_preferred_path_in_utf8(destination)};
+    }
 
     // mkdir destination
     if (!fs::create_directories(destination))

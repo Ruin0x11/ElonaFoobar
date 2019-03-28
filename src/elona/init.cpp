@@ -45,7 +45,8 @@ namespace
 void initialize_directories()
 {
     const boost::filesystem::path paths[] = {filesystem::dir::save(),
-                                             filesystem::dir::tmp()};
+                                             filesystem::dir::tmp(),
+                                             filesystem::dir::user_script()};
 
     for (const auto& path : paths)
     {
