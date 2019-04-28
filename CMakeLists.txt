@@ -191,7 +191,7 @@ else()
       src/tests/item.cpp
       src/tests/i18n.cpp
       src/tests/i18n_builtins.cpp
-      src/tests/i18n_regressions.cpp
+      src/tests/i18n_itemname.cpp
       src/tests/keybind_deserializer.cpp
       src/tests/keybind_key_names.cpp
       src/tests/keybind_manager.cpp

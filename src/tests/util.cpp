@@ -8,6 +8,7 @@
 #include "../elona/itemgen.hpp"
 #include "../elona/lua_env/export_manager.hpp"
 #include "../elona/lua_env/mod_manager.hpp"
+#include "../elona/ui.hpp"
 #include "../elona/variables.hpp"
 #include "tests.hpp"
 
@@ -66,6 +67,7 @@ Character& create_chara(int id, int x, int y)
 {
     elona::fixlv = Quality::none;
     REQUIRE(chara_create(-1, id, x, y));
+    elona::update_slight();
     return elona::cdata[elona::rc];
 }
 
@@ -73,6 +75,7 @@ Item& create_item(int id, int number)
 {
     REQUIRE(itemcreate(-1, id, 0, 0, number) == 1);
     normalize_item(elona::inv[elona::ci]);
+    elona::update_slight();
     return elona::inv[elona::ci];
 }
 
