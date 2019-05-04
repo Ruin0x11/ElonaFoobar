@@ -116,10 +116,7 @@ void DataManager::_init_from_mod(ModInfo& mod)
             // Generate Lua file from HCL declaration file.
             sol::protected_function compile = _registry["_compile"];
             const auto result = compile(
-                mod.manifest.name,
-                hcl_filepath,
-                lua_filepath,
-                info.is_prototype);
+                mod.manifest.id, hcl_filepath, lua_filepath, info.is_prototype);
             if (!result.valid())
             {
                 sol::error err = result;
@@ -143,15 +140,12 @@ void DataManager::_init_from_mod(ModInfo& mod)
 
         sol::protected_function load = _registry[info.load_func_name];
         const auto result = load(
-            _registry /* self */,
-            mod.manifest.name,
-            lua_filepaths,
-            safe_dofile);
+            _registry /* self */, mod.manifest.id, lua_filepaths, safe_dofile);
         if (!result.valid())
         {
             sol::error err = result;
             ELONA_ERROR("lua.data") << "error occurs while loading data of "
-                                    << mod.manifest.name << ": " << err.what();
+                                    << mod.manifest.id << ": " << err.what();
 
             throw err;
         }
@@ -162,10 +156,9 @@ void DataManager::_init_from_mod(ModInfo& mod)
 
 void DataManager::init_from_mods()
 {
-    for (const auto& mod_name :
-         _lua->get_mod_manager().calculate_loading_order())
+    for (const auto& mod_id : _lua->get_mod_manager().calculate_loading_order())
     {
-        const auto& mod = _lua->get_mod_manager().get_enabled_mod(mod_name);
+        const auto& mod = _lua->get_mod_manager().get_enabled_mod(mod_id);
         _init_from_mod(*mod);
     }
 
