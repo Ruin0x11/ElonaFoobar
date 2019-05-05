@@ -43,6 +43,13 @@ locale {
                 installed = "インストール済みのMOD"
                 download = "MODダウンロード"
             }
+
+            caption {
+                installed = "ここにMODの切替ができます。"
+                download = "ここに新しいMODをサーバーから手に入れられます。"
+                confirm = "このMODをダウンロードしますか？"
+            }
+
             no_readme = "(READMEはありません)"
 
             info {
@@ -52,7 +59,11 @@ locale {
                 author = "作者"
                 version = "バージョン"
                 description = "説明文"
+                updated = "更新日時"
+                downloads = "ダウンロード数"
             }
+
+            date = "${_1}年${_2}月${_3}日 ${_4}:${_5}:${_6}"
 
             download {
                 failed = "MODリストのダウンロードに失敗しました。"
@@ -61,6 +72,7 @@ locale {
             hint {
                 toggle = "[有効/無効にする]"
                 info = "[MODの情報]"
+                do_download = "[ダウンロードの実行]"
                 download = "[ダウンロード]"
                 installed = "[インストール済み]"
             }

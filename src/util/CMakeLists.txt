@@ -1,6 +1,7 @@
 # Source files
 set(UTIL_SOURCES
   backtrace.cpp
+  date.cpp
   filepathutil.cpp
   fps_counter.cpp
   )

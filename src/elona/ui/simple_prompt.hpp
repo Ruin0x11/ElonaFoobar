@@ -39,6 +39,15 @@ public:
 protected:
     virtual void init()
     {
+        snd("core.pop2");
+
+        draw();
+
+        snail::Input::instance().clear_pressed_keys_and_modifiers();
+    }
+
+    virtual void draw()
+    {
         _width = 100;
         _height = 100;
         _font_size = 13 + sizefix - en * 2;
@@ -54,8 +63,6 @@ protected:
         _x = promptx - (_width / 2);
         _y = prompty - (_height / 2);
 
-        snd("core.pop2");
-
         gmode(2, 80);
         window(_x + 12, _y + 12, _width, _height, true); // Shadow
         gmode(2);
@@ -65,7 +72,6 @@ protected:
         font(_font_size);
         mes(_x + 40, _y + _font_size + 36, _message);
 
-        snail::Input::instance().clear_pressed_keys_and_modifiers();
         redraw();
     }
 

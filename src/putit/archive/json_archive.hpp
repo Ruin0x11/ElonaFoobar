@@ -4,7 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
-#include "../../thirdparty/nlohmannjson/json.hpp"
+#include <json.hpp>
 #include "../../util/filepathutil.hpp"
 #include "archive_base.hpp"
 

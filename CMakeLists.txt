@@ -304,6 +304,28 @@ else()
     target_link_libraries(${PROJECT_NAME} dl)
   endif()
 
+  if(WIN32)
+    # Build OpenSSL from source, as there are no official binaries.
+    add_subdirectory(${CMAKE_PREFIX_PATH}/lib/openssl ${PROJECT_BINARY_DIR}/lib/openssl)
+    include_directories(PUBLIC ${CMAKE_PREFIX_PATH}/lib/openssl/src/)
+    target_link_libraries(${PROJECT_NAME} openssl)
+  else()
+    if(NOT DEFINED OPENSSL_INCLUDE_DIR OR NOT DEFINED OPENSSL_LIBRARIES)
+      find_package(OpenSSL REQUIRED)
+    endif()
+    include_directories(${OPENSSL_INCLUDE_DIR})
+    target_link_libraries(${PROJECT_NAME} ${OPENSSL_LIBRARIES})
+  endif()
+
+  set(CPP-NETLIB_BUILD_TESTS NO)
+  set(CPP-NETLIB_BUILD_EXAMPLES NO)
+  add_subdirectory(src/thirdparty/cpp-netlib)
+  include_directories(PUBLIC ${PROJECT_NAME} src/thirdparty/cpp-netlib)
+  target_link_libraries(${PROJECT_NAME} cppnetlib-server-parsers cppnetlib-client-connections cppnetlib-uri)
+
+  set(JSON_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/thirdparty/nlohmannjson)
+  include_directories(PUBLIC ${PROJECT_NAME} ${JSON_INCLUDE_DIR})
+
   set(GENERAL_OPTIONS)
   set(DEBUG_OPTIONS)
   set(RELEASE_OPTIONS)
@@ -314,6 +336,7 @@ else()
 
   list(APPEND EXTRA_DEFINES
     "BOOST_ALLOW_DEPRECATED_HEADERS" # https://github.com/boostorg/random/issues/49
+    "BOOST_NETWORK_ENABLE_HTTPS"
     )
 
   if(MSVC)

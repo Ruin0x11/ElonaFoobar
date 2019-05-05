@@ -43,6 +43,13 @@ locale {
                 installed = "Installed Mods"
                 download = "Download Mods"
             }
+
+            caption {
+                installed = "You can enable and disable mods here."
+                download = "You can download new mods from the online repository here."
+                confirm = "Download this mod?"
+            }
+
             no_readme = "(No README available.)"
 
             info {
@@ -52,7 +59,11 @@ locale {
                 author = "Author"
                 version = "Version"
                 description = "Description"
+                updated = "Updated"
+                downloads = "Downloads"
             }
+
+            date = "${_3}-${_1}-${_2} ${_4}:${_5}:${_6}"
 
             download {
                 failed = "Could not download mod list."
@@ -61,6 +72,7 @@ locale {
             hint {
                 toggle = "[Enable/Disable]"
                 info = "[Mod Info]"
+                do_download = "[Download Mod]"
                 download = "[Switch To Download]"
                 installed = "[Switch To Installed]"
             }

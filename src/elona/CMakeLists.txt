@@ -132,6 +132,8 @@ set(ELONA_SOURCES
   lua_env/lua_class/lua_class_map_generator.cpp
   lua_env/lua_class/lua_class_position.cpp
 
+  mod_download/mod_downloader_impl.cpp
+
   config/config.cpp
   config/config_def.cpp
   config/set_option.cpp

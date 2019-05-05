@@ -100,6 +100,7 @@ MIT Licenseです。詳細は[LICENSE.txt](LICENSE.txt)を参照してくださ�
 * cmake/FindXXX.cmake: [cmake/LICENSE](cmake/LICENSE)を参照してください。
 * nativefiledialog: [src/thirdparty/nfd/LICENSE](src/thirdparty/nfd/LICENSE)を参照してください。
 * nlohmann/json: [src/thirdparty/nlohmannjson/LICENSE.MIT](src/thirdparty/nlohmannjson/LICENSE.MIT)を参照してください。
+* cpp-netlib: [src/thirdparty/cpp-netlib/LICENSE_1_0.txt](src/thirdparty/cpp-netlib/LICENSE_1_0.txt)を参照してください。
 
 ## Luaライブラリ
 

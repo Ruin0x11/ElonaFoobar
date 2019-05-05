@@ -63,6 +63,10 @@ bool UIMenuModInfo::init()
     pagesize = 1;
     listmax = 0;
 
+    windowshadow = 1;
+
+    snd("core.pop2");
+
     _build_description();
 
     return true;
