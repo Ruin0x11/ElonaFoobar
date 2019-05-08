@@ -7,5 +7,6 @@ Exports.impl = require("exports/impl")
 require("i18n/init")
 
 return {
-   Exports = Exports
+   Exports = Exports,
+   Elochat = Exports.impl.elochat
 }

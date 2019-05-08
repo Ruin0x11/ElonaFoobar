@@ -339,6 +339,7 @@ private:
                                                      "print",
                                                      "pcall",
                                                      "xpcall",
+                                                     "tonumber",
                                                      "tostring",
                                                      "error"};
 
