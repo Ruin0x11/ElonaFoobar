@@ -304,6 +304,15 @@ else()
     target_link_libraries(${PROJECT_NAME} dl)
   endif()
 
+  set(LIBDIR bin/data/script/kernel)
+  set(LUADIR bin/data/script/kernel)
+
+  add_subdirectory(src/thirdparty/luasec)
+  target_link_libraries(${PROJECT_NAME} ssl)
+
+  add_subdirectory(src/thirdparty/luasocket)
+  target_link_libraries(${PROJECT_NAME} socket_core mime_core)
+
   set(GENERAL_OPTIONS)
   set(DEBUG_OPTIONS)
   set(RELEASE_OPTIONS)
@@ -516,6 +525,28 @@ function(remove_dir dir)
     ${dir})
 endfunction()
 
+function(copy_files)
+    cmake_parse_arguments(
+        COPY
+        ""
+        "SOURCE;DESTINATION"
+        "FILES"
+        ${ARGN})
+    foreach(input ${COPY_FILES})
+        get_filename_component(output ${input} NAME)
+        set(output ${COPY_DESTINATION}${output})
+        get_filename_component(input_abs "${input}" ABSOLUTE)
+        get_filename_component(output_abs "${output}" ABSOLUTE)
+        message(STATUS "Copying ${COPY_SOURCE}/${input} to ${output}")
+            add_custom_command(
+                TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${COPY_SOURCE}/${input} ${output}
+                DEPENDS "${input}"
+            )
+    endforeach()
+endfunction()
+
 if(ANDROID)
   set(ASSET_DIR "${CMAKE_SOURCE_DIR}/android/app/src/main/assets")
   file(REMOVE_RECURSE ${ASSET_DIR})
@@ -534,6 +565,14 @@ copy_dir(${CMAKE_SOURCE_DIR}/runtime/locale/ "${RUNTIME_DIR}/locale/")
 copy_dir(${CMAKE_SOURCE_DIR}/runtime/map/ "${RUNTIME_DIR}/map/")
 copy_dir(${CMAKE_SOURCE_DIR}/runtime/mod/ "${RUNTIME_DIR}/mod/")
 copy_dir(${CMAKE_SOURCE_DIR}/runtime/profile/ "${RUNTIME_DIR}/profile/")
+
+get_target_property(LUASOCKET_SOURCE_DIR socket_core SOURCE_DIR)
+copy_files(SOURCE ${LUASOCKET_SOURCE_DIR} FILES ${LUASOCKET_FILES} DESTINATION "${RUNTIME_DIR}/data/script/kernel/")
+copy_files(SOURCE ${LUASOCKET_SOURCE_DIR} FILES ${LUASOCKET_SOCKET_FILES} DESTINATION "${RUNTIME_DIR}/data/script/kernel/socket/")
+
+get_target_property(LUASEC_SOURCE_DIR ssl SOURCE_DIR)
+copy_files(SOURCE ${LUASEC_SOURCE_DIR} FILES ${LUASEC_FILES} DESTINATION "${RUNTIME_DIR}/data/script/kernel/")
+copy_files(SOURCE ${LUASEC_SOURCE_DIR} FILES ${LUASEC_SSL_FILES} DESTINATION "${RUNTIME_DIR}/data/script/kernel/ssl/")
 
 # Copy assets from Elona 1.22 if they are present.
 if (NOT ANDROID OR ANDROID_BUNDLE_ASSETS)

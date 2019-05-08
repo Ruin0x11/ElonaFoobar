@@ -10,5 +10,7 @@ Elona.core.string = require "string"
 Elona.core.Math = require "math_ext"
 Elona.core.table = require "table_ext"
 Elona.core.coroutine = require "coroutine"
+Elona.core.Net = require "net"
+Elona.core.JSON = require "json"
 
 _LOADED = true

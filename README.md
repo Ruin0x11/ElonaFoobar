@@ -117,6 +117,11 @@ For files under [runtime/graphic](runtime/graphic/) folder of the repository, se
 ## Lua libraries
 
 * [inspect.lua](https://github.com/kikito/inspect.lua) (MIT)
+* [serpent](https://github.com/pkulchenko/serpent) (MIT)
+* [luasocket](https://github.com/diegonehab/luasocket) (MIT)
+* [luasec](https://github.com/brunoos/luasec) (MIT)
+* [json](https://github.com/rxi/json.lua) (MIT)
+* [hclua](https://github.com/Ruin0x11/hclua) (MIT)
 
 
 

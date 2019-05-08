@@ -3,6 +3,8 @@ set(UTIL_SOURCES
   backtrace.cpp
   filepathutil.cpp
   fps_counter.cpp
+
+  net/http_client.cpp
   )
 
 if(ANDROID_GENERATE_BUILD_FILES)
