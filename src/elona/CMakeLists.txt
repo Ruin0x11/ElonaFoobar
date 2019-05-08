@@ -1,5 +1,10 @@
 # Source files
 set(ELONA_SOURCES
+  # These source files are built unity-style, so compile them first
+  # for better parallelization.
+  lua_env/lua_api/lua_api.cpp
+  ui_menus.cpp
+
   ability.cpp
   access_character_info.cpp
   access_item_db.cpp
@@ -96,7 +101,6 @@ set(ELONA_SOURCES
   turn_sequence.cpp
   turn_sequence_pc_actions.cpp
   ui.cpp
-  ui_menus.cpp
   variables.cpp
   wish.cpp
 
@@ -118,8 +122,6 @@ set(ELONA_SOURCES
   lua_env/mod_serializer.cpp
 
   lua_env/enums/enums.cpp
-
-  lua_env/lua_api/lua_api.cpp
 
   lua_env/lua_class/lua_class.cpp
   lua_env/lua_class/lua_class_ability.cpp

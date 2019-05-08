@@ -21,6 +21,7 @@
 #include "lua_api_registry.cpp"
 #include "lua_api_skill.cpp"
 #include "lua_api_trait.cpp"
+#include "lua_api_util.cpp"
 #include "lua_api_world.cpp"
 
 namespace elona
@@ -50,13 +51,14 @@ void LuaApi::bind(sol::table& core)
     LUA_API_BIND(core, Internal);
     LUA_API_BIND(core, Item);
     LUA_API_BIND(core, Magic);
-    LUA_API_BIND(core, Math);
     LUA_API_BIND(core, Map);
+    LUA_API_BIND(core, Math);
     LUA_API_BIND(core, Pos);
     LUA_API_BIND(core, Rand);
     LUA_API_BIND(core, Registry);
     LUA_API_BIND(core, Skill);
     LUA_API_BIND(core, Trait);
+    LUA_API_BIND(core, Util);
     LUA_API_BIND(core, World);
 }
 

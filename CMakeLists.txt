@@ -537,7 +537,6 @@ function(copy_files)
         set(output ${COPY_DESTINATION}${output})
         get_filename_component(input_abs "${input}" ABSOLUTE)
         get_filename_component(output_abs "${output}" ABSOLUTE)
-        message(STATUS "Copying ${COPY_SOURCE}/${input} to ${output}")
             add_custom_command(
                 TARGET ${PROJECT_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
