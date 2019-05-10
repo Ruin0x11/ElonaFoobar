@@ -601,6 +601,38 @@ public:
     }
 
 
+    /**
+     * Return the found I18N text, or return the key itself as the text if not
+     * found.
+     */
+    template <typename Head, typename... Tail>
+    std::string
+    get_or_pass(const I18NKey& key, Head const& head, Tail&&... tail)
+    {
+        if (auto text = get_optional(key, head, std::forward<Tail>(tail)...))
+        {
+            return *text;
+        }
+        else
+        {
+            return key;
+        }
+    }
+
+    template <typename... Tail>
+    std::string get_or_pass(const I18NKey& key, Tail&&... tail)
+    {
+        if (auto text = get_optional(key, std::forward<Tail>(tail)...))
+        {
+            return *text;
+        }
+        else
+        {
+            return key;
+        }
+    }
+
+
     // Convenience methods for cases like "core.element._<enum index>.name"
 
     template <typename Head, typename... Tail>

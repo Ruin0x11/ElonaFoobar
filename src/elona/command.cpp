@@ -16,6 +16,7 @@
 #include "crafting.hpp"
 #include "ctrl_file.hpp"
 #include "data/types/type_item.hpp"
+#include "data/types/type_map_object.hpp"
 #include "dmgheal.hpp"
 #include "draw.hpp"
 #include "enchantment.hpp"
@@ -3272,27 +3273,32 @@ TurnResult do_movement_command()
     }
     if (cellfeat != -1)
     {
-        if (cellfeat == 21)
-        {
-            return proc_movement_event();
-        }
         keyhalt = 1;
-        if (cellfeat == 23)
+        auto map_object = the_map_object_db[cellfeat];
+        if (map_object)
         {
-            snd("core.chat");
-            return TurnResult::show_quest_board;
-        }
-        if (cellfeat == 31)
-        {
-            snd("core.chat");
-            // Voting box is not supported now.
-            return TurnResult::turn_end;
-        }
-        if (cellfeat == 33)
-        {
-            menucycle = 1;
-            show_city_chart();
+            map_object->on_activate.call();
+
+            // TODO return turn result based on callback
             return TurnResult::pc_turn_user_error;
+        }
+        else
+        {
+            if (cellfeat == 21)
+            {
+                return proc_movement_event();
+            }
+            if (cellfeat == 23)
+            {
+                snd("core.chat");
+                return TurnResult::show_quest_board;
+            }
+            if (cellfeat == 33)
+            {
+                menucycle = 1;
+                show_city_chart();
+                return TurnResult::pc_turn_user_error;
+            }
         }
     }
     if (cdata.player().confused != 0)

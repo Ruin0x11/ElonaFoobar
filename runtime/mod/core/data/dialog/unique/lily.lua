@@ -12,7 +12,7 @@ local common = require("data/dialog/common")
 local function give_potion()
    local potion = Item.find("core.potion_of_cure_corruption", "PlayerInventory")
    potion.number = potion.number - 1
-   GUI.txt(I18N.get("core.locale.talk.unique.lily.progress.end_life.give.you_hand_her"))
+   GUI.txt("core.locale.talk.unique.lily.progress.end_life.give.you_hand_her")
    GUI.play_sound("core.equip1")
    Chara.player():modify_karma(20)
 end

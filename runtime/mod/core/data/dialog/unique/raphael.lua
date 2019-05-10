@@ -98,7 +98,7 @@ return {
             t:say("bring_wife.this_one.not_human")
          elseif Internal.get_quest_flag("wife_collector") == 1 then
             Item.create(Chara.player().position, "core.gold_piece", 5000)
-            GUI.txt(I18N.get("core.locale.quest.completed"))
+            GUI.txt("core.locale.quest.completed")
             GUI.show_journal_update_message()
             Internal.set_quest_flag("wife_collector", 1000)
          end
@@ -122,7 +122,7 @@ return {
                GUI.play_sound("core.complete1")
                Item.create(Chara.player().position, "core.unicorn_horn", 2)
                Item.create(Chara.player().position, "core.platinum_coin", 2)
-               GUI.txt(I18N.get("core.locale.common.something_is_put_on_the_ground"))
+               GUI.txt("core.locale.common.something_is_put_on_the_ground")
             end,
             {"bring_wife.this_one.end"}
          }

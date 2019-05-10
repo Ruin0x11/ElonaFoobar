@@ -76,7 +76,7 @@ return {
             function()
                local drug = Item.find("core.blue_capsule_drug", "PlayerInventory")
                drug.number = drug.number - 1
-               GUI.txt(I18N.get("core.locale.talk.unique.kaneda_bike.before_drug.yes.you_hand_him"))
+               GUI.txt("core.locale.talk.unique.kaneda_bike.before_drug.yes.you_hand_him")
                GUI.play_sound("core.equip1")
             end,
             {"before_drug.yes.dialog"},

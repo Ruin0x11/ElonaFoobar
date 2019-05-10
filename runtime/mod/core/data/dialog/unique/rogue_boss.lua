@@ -17,7 +17,7 @@ local function surrender()
 
    for _, item in Item.iter(0, 200) do
       if item.number > 0 and item.prototype.is_cargo then
-         GUI.txt(I18N.get("core.locale.talk.npc.common.hand_over", item))
+         GUI.txt("core.locale.talk.npc.common.hand_over", item)
          item:remove()
       end
    end

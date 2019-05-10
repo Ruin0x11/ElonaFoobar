@@ -16,12 +16,13 @@ local function can_receive_reward()
 end
 
 local function turn_over_little_sister()
-    GUI.txt(I18N.get("core.locale.talk.unique.strange_scientist.turn_over.text"))
+    GUI.txt("core.locale.talk.unique.strange_scientist.turn_over.text")
     Internal.set_quest_flag("save_count_of_little_sister",
                             Internal.get_quest_flag("save_count_of_little_sister") + 1)
-    GUI.txt(I18N.get("core.locale.talk.unique.strange_scientist.saved_count",
-                     Internal.get_quest_flag("save_count_of_little_sister"),
-                     Internal.get_quest_flag("kill_count_of_little_sister")), "Green")
+    GUI.txt_colored("core.locale.talk.unique.strange_scientist.saved_count",
+                    "Green",
+                    Internal.get_quest_flag("save_count_of_little_sister"),
+                    Internal.get_quest_flag("kill_count_of_little_sister"))
     Chara.find("core.little_sister", "Allies"):vanquish()
     GUI.play_sound("core.complete1")
 end
@@ -51,7 +52,7 @@ return {
          on_finish = function()
             Item.create(Chara.player().position, "core.little_ball", 0)
 
-            GUI.txt(I18N.get("core.locale.common.something_is_put_on_the_ground"))
+            GUI.txt("core.locale.common.something_is_put_on_the_ground")
             GUI.show_journal_update_message()
 
             Internal.set_quest_flag("little_sister", 1)
@@ -103,7 +104,7 @@ return {
          },
          on_finish = function()
             Item.create(Chara.player().position, "core.little_ball", 0)
-            GUI.txt(I18N.get("core.locale.common.something_is_put_on_the_ground"))
+            GUI.txt("core.locale.common.something_is_put_on_the_ground")
          end
       },
 

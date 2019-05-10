@@ -33,6 +33,7 @@ void show_chat_dialog()
         inputlog = u8"\""s + inputlog + u8"\""s;
     }
     txt(inputlog);
+    lua::lua->get_event_manager()->trigger(lua::ChatMessageSentEvent(inputlog));
 }
 
 } // namespace elona

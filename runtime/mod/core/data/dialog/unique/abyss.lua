@@ -18,10 +18,10 @@ local function join_guild()
 
     World.join_guild("thieves")
 
-    GUI.txt(I18N.get("core.locale.quest.completed"))
+    GUI.txt("core.locale.quest.completed")
     GUI.play_sound("core.complete1")
     GUI.show_journal_update_message()
-    GUI.txt(I18N.get("core.locale.talk.unique.abyss.nonmember.joined"), "Orange")
+    GUI.txt_colored("core.locale.talk.unique.abyss.nonmember.joined", "Orange")
 end
 
 local function move_self(t)

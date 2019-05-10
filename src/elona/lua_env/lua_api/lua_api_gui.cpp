@@ -1,9 +1,11 @@
 #include "lua_api_gui.hpp"
 #include "../../audio.hpp"
+#include "../../i18n.hpp"
 #include "../../lua_env/enums/enums.hpp"
 #include "../../message.hpp"
 #include "../../quest.hpp"
 #include "../../ui.hpp"
+#include "lua_api_i18n.hpp"
 
 namespace elona
 {
@@ -13,26 +15,31 @@ namespace lua
 /**
  * @luadoc
  *
- * Prints some text in the HUD message window.
+ * Prints some text in the HUD message window. <code>message</code> can be a
+ * localization key or a raw string.
  * @tparam string message the message to print
  */
-void LuaApiGUI::txt(const std::string& message)
+void LuaApiGUI::txt(const std::string& message, sol::variadic_args rest)
 {
-    elona::txt(message);
+    elona::txt(LuaApiI18N::get_or_pass(message, rest));
 }
 
 /**
- * @luadoc txt
+ * @luadoc
  *
- * Prints some text in the HUD message window.
+ * Prints some text in the HUD message window, with coloring. In this case, the
+ * localization arguments start after the color argument.
  * @tparam string message the message to print
  * @tparam Color color of the message
  */
-void LuaApiGUI::txt_txtef(const std::string& message, const EnumString& color)
+void LuaApiGUI::txt_colored(
+    const std::string& message,
+    const EnumString& color,
+    sol::variadic_args rest)
 {
     auto color_value = LuaEnums::ColorIndexTable.ensure_from_string(color);
     elona::Message::instance().txtef(color_value);
-    elona::txt(message);
+    LuaApiGUI::txt(message, rest);
 }
 
 /**
@@ -80,8 +87,8 @@ void LuaApiGUI::fade_out()
 
 void LuaApiGUI::bind(sol::table& api_table)
 {
-    api_table.set_function(
-        "txt", sol::overload(LuaApiGUI::txt, LuaApiGUI::txt_txtef));
+    LUA_API_BIND_FUNCTION(api_table, LuaApiGUI, txt);
+    LUA_API_BIND_FUNCTION(api_table, LuaApiGUI, txt_colored);
     LUA_API_BIND_FUNCTION(api_table, LuaApiGUI, txtnew);
     LUA_API_BIND_FUNCTION(api_table, LuaApiGUI, play_sound);
     LUA_API_BIND_FUNCTION(api_table, LuaApiGUI, show_journal_update_message);

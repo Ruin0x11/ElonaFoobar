@@ -44,7 +44,7 @@ return {
             local item = Item.create(Chara.player().position, "core.bejeweled_chest", 0)
             item.param2 = 0
             GUI.show_journal_update_message()
-            GUI.txt(I18N.get("core.locale.talk.unique.karam.dies", t.speaker))
+            GUI.txt("core.locale.talk.unique.karam.dies", t.speaker)
             t.speaker:vanquish()
          end
       }

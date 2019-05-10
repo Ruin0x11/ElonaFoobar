@@ -74,7 +74,7 @@ return {
             function()
                local potion = Item.find("core.potion_of_cure_corruption", "PlayerInventory")
                potion.number = potion.number - 1
-               GUI.txt(I18N.get("core.locale.talk.unique.pael.give.you_give"))
+               GUI.txt("core.locale.talk.unique.pael.give.you_give")
                GUI.play_sound("core.equip1")
             end,
             {"give.dialog"}

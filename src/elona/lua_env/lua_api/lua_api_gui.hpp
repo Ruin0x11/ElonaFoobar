@@ -13,8 +13,9 @@ namespace lua
  */
 namespace LuaApiGUI
 {
-void txt(const std::string&);
-void txt_txtef(const std::string&, const EnumString&);
+void txt(const std::string&, sol::variadic_args);
+
+void txt_colored(const std::string&, const EnumString&, sol::variadic_args);
 
 void txtnew();
 

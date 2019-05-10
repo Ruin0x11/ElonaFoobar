@@ -8,7 +8,7 @@ local table = Elona.require("table")
 local common = require("data/dialog/common")
 
 local function buy_nuke()
-   GUI.txt(I18N.get("core.locale.common.something_is_put_on_the_ground"))
+   GUI.txt("core.locale.common.something_is_put_on_the_ground")
    Chara.player().gold = Chara.player().gold - 12000
    GUI.play_sound("core.paygold1")
    Item.create(Chara.player().position, "core.nuclear_bomb", 0)

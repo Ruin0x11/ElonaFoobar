@@ -130,6 +130,30 @@ sol::optional<std::string> LuaApiI18N::get_optional(
 /**
  * @luadoc
  *
+ * Gets a localized string and optionally formats it with arguments.
+ * This will return the <code>key</code> argument itself as the text if the key
+ * doesn't exist.
+ * @tparam string key the ID of the localization string
+ * @treturn[1] string the formatted string
+ * @treturn[2] nil
+ */
+std::string LuaApiI18N::get_or_pass(
+    const std::string& key,
+    sol::variadic_args args)
+{
+    auto opt = LuaApiI18N::get_optional(key, args);
+
+    if (opt)
+    {
+        return *opt;
+    }
+
+    return key;
+}
+
+/**
+ * @luadoc
+ *
  * Gets a localized string from an enum-style localization object.
  * This will return a string with a warning if the localization
  * string doesn't exist.
@@ -369,6 +393,7 @@ void LuaApiI18N::bind(sol::table& api_table)
 {
     LUA_API_BIND_FUNCTION(api_table, LuaApiI18N, get);
     LUA_API_BIND_FUNCTION(api_table, LuaApiI18N, get_optional);
+    LUA_API_BIND_FUNCTION(api_table, LuaApiI18N, get_or_pass);
     LUA_API_BIND_FUNCTION(api_table, LuaApiI18N, get_enum);
     LUA_API_BIND_FUNCTION(api_table, LuaApiI18N, get_enum_property);
     api_table.set_function(

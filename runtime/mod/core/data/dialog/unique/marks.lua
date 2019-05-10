@@ -53,7 +53,7 @@ return {
          text = {
             function()
                GUI.show_journal_update_message()
-               GUI.txt(I18N.get("core.locale.common.something_is_put_on_the_ground"))
+               GUI.txt("core.locale.common.something_is_put_on_the_ground")
 
                Chara.player().gold = Chara.player().gold - 20000
                GUI.play_sound("core.paygold1")

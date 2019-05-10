@@ -20,9 +20,8 @@ local function upgrade_cargo_limit()
    local small_medals = Item.find("core.small_medal", "PlayerInventory")
 
    GUI.txtnew()
-   GUI.txt(I18N.get(
-          "core.locale.talk.unique.miral.upgrade_cart.give.limit_increased",
-          Item.weight_string(amount)))
+   GUI.txt("core.locale.talk.unique.miral.upgrade_cart.give.limit_increased",
+          Item.weight_string(amount))
    GUI.play_sound("core.build1")
 
    small_medals.number = small_medals.number - cost

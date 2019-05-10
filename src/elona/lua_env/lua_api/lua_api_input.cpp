@@ -3,6 +3,7 @@
 #include "../../i18n.hpp"
 #include "../../input.hpp"
 #include "../../input_prompt.hpp"
+#include "../../keybind/keybind.hpp"
 #include "../../keybind/macro_action_queue.hpp"
 #include "../../message.hpp"
 
@@ -31,7 +32,7 @@ namespace lua
 sol::optional<bool> LuaApiInput::yes_no(const std::string& message)
 {
     keyhalt = 1;
-    txt(message + i18n::space_if_needed());
+    txt(i18n::s.get_or_pass(message) + i18n::space_if_needed());
     const auto result = elona::yes_no();
     if (result == YesNo::canceled)
     {
@@ -82,7 +83,7 @@ sol::optional<int> LuaApiInput::prompt_number_with_initial(
         throw sol::error("LuaApiInput.prompt_number called with max < 1");
     }
 
-    txt(message + i18n::space_if_needed());
+    txt(i18n::s.get_or_pass(message) + i18n::space_if_needed());
     input_number_dialog(
         (windoww - 200) / 2 + inf_screenx, winposy(60), max, initial);
 
@@ -114,7 +115,7 @@ sol::optional<std::string> LuaApiInput::prompt_text(
     const std::string& message,
     bool is_cancelable)
 {
-    txt(message + i18n::space_if_needed());
+    txt(i18n::s.get_or_pass(message) + i18n::space_if_needed());
     bool canceled = input_text_dialog(
         (windoww - 360) / 2 + inf_screenx,
         winposy(90),
@@ -158,8 +159,26 @@ sol::optional<int> LuaApiInput::prompt_choice(sol::table choices)
         sol::optional<std::string> choice = choices[i];
         if (choice)
         {
-            width = std::max(width, strlen_u(*choice) * (13 - en * 2));
-            prompt.append(std::move(*choice), i);
+            auto text = i18n::s.get_or_pass(*choice);
+            width = std::max(width, strlen_u(text) * (13 - en * 2));
+            prompt.append(std::move(text), i);
+        }
+        else
+        {
+            sol::optional<sol::table> choice_table = choices[i];
+            if (choice_table)
+            {
+                auto text = (*choice_table)[1].get<std::string>();
+                auto key = (*choice_table)[2].get<std::string>();
+                auto key_code = keybind_key_code(key);
+
+                if (key_code)
+                {
+                    text = i18n::s.get_or_pass(text);
+                    width = std::max(width, strlen_u(text) * (13 - en * 2));
+                    prompt.append(std::move(text), *key_code, i);
+                }
+            }
         }
     }
 
@@ -187,6 +206,7 @@ static void _append_choices(sol::table& choices)
         if (value.is<std::string>())
         {
             text = value.as<std::string>();
+            text = i18n::s.get_or_pass(text);
         }
         else
         {
@@ -501,7 +521,7 @@ sol::optional<Position> LuaApiInput::prompt_position_with_initial_xy(
     elona::tlocinitx = x;
     elona::tlocinity = y;
 
-    txt(message + i18n::space_if_needed());
+    txt(i18n::s.get_or_pass(message) + i18n::space_if_needed());
 
     int result = elona::target_position(false);
 

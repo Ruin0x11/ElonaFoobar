@@ -18,6 +18,8 @@ std::string get(const std::string&, sol::variadic_args);
 
 sol::optional<std::string> get_optional(const std::string&, sol::variadic_args);
 
+std::string get_or_pass(const std::string&, sol::variadic_args);
+
 std::string get_enum(const std::string&, int, sol::variadic_args);
 
 std::string get_enum_property(

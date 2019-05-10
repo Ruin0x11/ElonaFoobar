@@ -47,7 +47,7 @@ return {
             Item.create(Chara.player().position, "core.platinum_coin", 3)
             Item.create(Chara.player().position, "core.potion_of_cure_corruption", 0)
             Item.create(Chara.player().position, "core.treasure_map", 0)
-            GUI.txt(I18N.get("core.locale.common.something_is_put_on_the_ground"))
+            GUI.txt("core.locale.common.something_is_put_on_the_ground")
             GUI.show_journal_update_message()
          end
       }

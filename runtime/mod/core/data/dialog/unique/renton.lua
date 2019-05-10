@@ -88,7 +88,7 @@ return {
             {"quest.brought_all.dialog._3"},
             {"quest.brought_all.dialog._4"},
             function(t)
-               GUI.txt(I18N.get(t.dialog.root .. ".quest.brought_all.ehekatl"), "Orange")
+               GUI.txt_colored(t.dialog.root .. ".quest.brought_all.ehekatl", "Orange")
             end,
             {"quest.brought_all.dialog._5"},
          },
