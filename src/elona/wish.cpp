@@ -14,6 +14,8 @@
 #include "input.hpp"
 #include "item.hpp"
 #include "itemgen.hpp"
+#include "lua_env/event_manager.hpp"
+#include "lua_env/lua_event/lua_event_wish_ended.hpp"
 #include "map_cell.hpp"
 #include "menu.hpp"
 #include "message.hpp"
@@ -188,19 +190,13 @@ std::string remove_extra_str(const std::string& text)
 
 void wish_end()
 {
-    if (game_data.wizard || wishfilter)
+    if (game_data.wizard)
     {
         return;
     }
 
-    // net_send(
-    //     "wish"
-    //     + i18n::s.get(
-    //           "core.locale.wish.sent_message",
-    //           cdatan(1, 0),
-    //           cdatan(0, 0),
-    //           i18n::s.get("core.locale.wish.your_wish", inputlog(0)),
-    //           cnven(log_copy_observer->get_copy())));
+    lua::lua->get_event_manager().trigger(
+        lua::WishEndedEvent(inputlog, cnven(log_copy_observer->get_copy())));
 
     log_copy_observer.reset();
 

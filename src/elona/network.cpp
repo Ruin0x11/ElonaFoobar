@@ -1,14 +1,8 @@
 #include "network.hpp"
-// #include "audio.hpp"
-// #include "config/config.hpp"
-// #include "elona.hpp"
-// #include "i18n.hpp"
 #include "input.hpp"
-// #include "input_prompt.hpp"
-// #include "macro.hpp"
+#include "lua_env/event_manager.hpp"
+#include "lua_env/lua_event/lua_event_chat_message_sent.hpp"
 #include "message.hpp"
-// #include "random.hpp"
-// #include "ui.hpp"
 #include "variables.hpp"
 
 
@@ -33,7 +27,7 @@ void show_chat_dialog()
         inputlog = u8"\""s + inputlog + u8"\""s;
     }
     txt(inputlog);
-    lua::lua->get_event_manager()->trigger(lua::ChatMessageSentEvent(inputlog));
+    lua::lua->get_event_manager().trigger(lua::ChatMessageSentEvent(inputlog));
 }
 
 } // namespace elona

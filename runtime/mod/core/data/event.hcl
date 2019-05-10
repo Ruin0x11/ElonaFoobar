@@ -33,4 +33,14 @@
     }
     nefia_created {
     }
+    wish_ended {
+    }
+    chat_message_sent {
+    }
+    input_frame_passed {
+    }
+    player_died {
+    }
+    mod_store_created {
+    }
 }

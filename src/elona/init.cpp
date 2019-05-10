@@ -679,6 +679,10 @@ void initialize_game()
         script_loaded = true;
     }
 
+    // TODO: detect mods in savefile and only initialize store for new ones
+    lua::lua->get_event_manager().trigger(
+        lua::BaseEvent("core.mod_store_created"));
+
     init_fovlist();
     initialize_map();
 

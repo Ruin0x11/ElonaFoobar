@@ -1560,6 +1560,9 @@ label_2747:
         ui_render_from_screensync();
     }
 
+    lua::lua->get_event_manager().trigger(
+        lua::BaseEvent("core.input_frame_passed"));
+
     if (timeGetTime() / 1000 - time_warn > 3600)
     {
         time_warn = timeGetTime() / 1000;

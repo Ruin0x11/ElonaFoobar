@@ -73,6 +73,25 @@ local function get_https(url, headers, domain)
    return table.concat(resp_body, ""), resp_status, resp_headers
 end
 
+function Net.is_connected(timeout)
+    if timeout == nil then timeout = 1000 end
+    local tcp = socket.tcp()
+    if not tcp then
+       return false
+    end
+
+    tcp:settimeout(timeout)
+    local result = tcp:connect("1.1.1.1", 80)
+
+    local read, write, err = socket.select(nil, {tcp}, 0)
+    if write[1] and err ~= "timeout" then
+       tcp:close()
+       return true
+    end
+
+    return false
+end
+
 function Net.http_get(url, headers)
    if not headers and url:match("^http://") then
       local resp_body, resp_status, resp_headers = http.request(url)

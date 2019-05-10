@@ -44,6 +44,7 @@
 #include "lua_env/interface.hpp"
 #include "lua_env/lua_env.hpp"
 #include "lua_env/lua_event/character_instance_event.hpp"
+#include "lua_env/lua_event/lua_event_player_died.hpp"
 #include "lua_env/mod_manager.hpp"
 #include "macro.hpp"
 #include "magic.hpp"
@@ -12629,8 +12630,12 @@ TurnResult pc_died()
     prompt.append("lie_on_your_back", snail::Key::key_b);
     rtval = prompt.query(promptx, 100, 240);
 
+
     if (rtval == 1)
     {
+        lua::lua->get_event_manager().trigger(
+            lua::PlayerDiedEvent(mdatan(0), ndeathcause, last_words, true));
+
         show_game_score_ranking();
         ui_draw_caption(
             i18n::s.get("core.locale.misc.death.you_have_been_buried"));
@@ -12638,14 +12643,10 @@ TurnResult pc_died()
         wait_key_pressed();
         return TurnResult::finish_elona;
     }
-    s = u8"dead"s +
-        i18n::s.get(
-            "core.locale.misc.death.sent_message",
-            cdatan(1, 0),
-            cdatan(0, 0),
-            ndeathcause,
-            mdatan(0),
-            last_words);
+
+    lua::lua->get_event_manager().trigger(
+        lua::PlayerDiedEvent(mdatan(0), ndeathcause, last_words, false));
+
     screenupdate = -1;
     update_entire_screen();
     levelexitby = 3;
