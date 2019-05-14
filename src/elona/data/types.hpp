@@ -12,6 +12,7 @@
 #include "types/type_item_material.hpp"
 #include "types/type_map.hpp"
 #include "types/type_map_chip.hpp"
+#include "types/type_map_tileset.hpp"
 #include "types/type_music.hpp"
 #include "types/type_portrait.hpp"
 #include "types/type_race.hpp"

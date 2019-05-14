@@ -134,8 +134,7 @@ static void _init_map_test_site()
         p = cnt;
         for (int cnt = 0, cnt_end = (map_data.width); cnt < cnt_end; ++cnt)
         {
-            cell_data.at(cnt, p).chip_id_actual = tile_default +
-                (rnd(tile_default(2)) == 0) * rnd(tile_default(1));
+            cell_data.at(cnt, p).chip_id_actual = tileset.random("default");
         }
     }
     map_placeplayer();
@@ -2258,8 +2257,7 @@ static void _init_map_fields()
         p = cnt;
         for (int cnt = 0, cnt_end = (map_data.width); cnt < cnt_end; ++cnt)
         {
-            cell_data.at(cnt, p).chip_id_actual = tile_default +
-                (rnd(tile_default(2)) == 0) * rnd(tile_default(1));
+            cell_data.at(cnt, p).chip_id_actual = tileset.random("default");
         }
     }
 

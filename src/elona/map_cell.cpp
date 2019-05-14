@@ -3,6 +3,7 @@
 #include "elona.hpp"
 #include "item.hpp"
 #include "map.hpp"
+#include "mapgen.hpp"
 #include "variables.hpp"
 
 namespace elona
@@ -277,31 +278,21 @@ int cell_findspace(int base_x, int base_y, int range)
 }
 
 
-
-static int _random_tile(elona_vector1<int> tile)
-{
-    if (tile(1) == 0 || tile(2) == 0)
-    {
-        return tile(0);
-    }
-    return tile(0) + (rnd(tile(2)) == 0) * rnd(tile(1));
-}
-
 int cell_get_type(TileKind type)
 {
     // TODO dedup from map_converttile?
-    elona_vector1<int> tile;
+    std::string tile;
     switch (type)
     {
-    case TileKind::normal: tile = tile_default; break;
-    case TileKind::wall: tile = tile_wall; break;
-    case TileKind::tunnel: tile = tile_tunnel; break;
-    case TileKind::room: tile = tile_room; break;
-    case TileKind::fog: tile = tile_fog; break;
+    case TileKind::normal: tile = "default"; break;
+    case TileKind::wall: tile = "wall"; break;
+    case TileKind::tunnel: tile = "tunnel"; break;
+    case TileKind::room: tile = "room"; break;
+    case TileKind::fog: tile = "fog"; break;
     default: assert(0);
     }
 
-    return _random_tile(tile);
+    return tileset.random(tile);
 }
 
 } // namespace elona

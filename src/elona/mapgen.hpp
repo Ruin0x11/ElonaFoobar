@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <unordered_map>
+#include "data/types/type_map_tileset.hpp"
 
 namespace elona
 {
@@ -29,5 +31,17 @@ int initialize_random_nefia_rdtype2();
 int initialize_random_nefia_rdtype3();
 int initialize_quest_map_party();
 void initialize_home_mdata();
+
+struct Tileset
+{
+    int tile(const std::string& name);
+    int random(const std::string& name);
+    void set_chance(const std::string& name, int tile, int count);
+
+    SharedId current_id;
+    std::unordered_map<std::string, MapTile> raw_tiles;
+};
+
+extern Tileset tileset;
 
 } // namespace elona

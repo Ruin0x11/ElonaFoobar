@@ -5,10 +5,10 @@ local function tile(atlas, id)
    return "core." .. tostring(atlas) .. "_" .. tostring(id)
 end
 
-local function chance(atlas, id, chance, count)
+local function chance(atlas, id, count, chance)
    if chance == nil then chance = 1 end
    if count == nil then count = 1 end
-   other = {}
+   local other = {}
    for i=0,count do
       other[#other+1] = tile(atlas, id + i)
    end
@@ -49,7 +49,7 @@ end
 local function tiles_field(atlas)
    return function(e)
       local World = Elona.require("World")
-      local t = World.data.stood_world_map_tile
+      local t = e.stood_world_map_tile
       local result = {
          default = tile(atlas, 0),
          fog = tile(atlas, 528)
@@ -82,6 +82,22 @@ data:define_type("map_tileset")
 data:add_multi(
    "core.map_tileset",
    {
+      {
+         id = "0_0",
+         tiles = {
+            door_closed = tile(0, 726),
+            door_open = tile(0, 236),
+            default = chance(0, 396),
+            fog = chance(0, 531),
+            wall = chance(0, 462),
+            room = chance(0, 13),
+            board = tile(0, 727),
+            vote_box = tile(0, 729),
+            town_board = tile(0, 732),
+            tunnel = chance(0, 33),
+            pot = tile(0, 242),
+         },
+      },
       {
          id = "1_default",
          tiles = {

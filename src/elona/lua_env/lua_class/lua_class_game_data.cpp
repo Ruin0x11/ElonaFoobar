@@ -61,7 +61,6 @@ void LuaGameData::bind(sol::state& lua)
      */
     LuaGameData.set("date", &GameData::date);
 
-
     /**
      * @luadoc belongs_to_mages_guild field num
      */

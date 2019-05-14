@@ -4,6 +4,7 @@
 namespace elona
 {
 
+MapChipDB the_map_chip_db;
 const constexpr char* data::LuaLazyCacheTraits<MapChipDB>::type_id;
 
 

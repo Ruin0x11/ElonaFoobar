@@ -11,6 +11,7 @@
 #include "types/type_item_material.cpp"
 #include "types/type_map.cpp"
 #include "types/type_map_chip.cpp"
+#include "types/type_map_tileset.cpp"
 #include "types/type_music.cpp"
 #include "types/type_portrait.cpp"
 #include "types/type_race.cpp"

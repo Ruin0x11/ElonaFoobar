@@ -58,7 +58,7 @@ struct WrappedFunction
     }
 
     template <typename Retval, typename... Args>
-    Retval call_with_result(Retval default_value, Args&&... args) const
+    sol::optional<Retval> call_with_optional_result(Args&&... args) const
     {
         auto result = func.call(std::forward<Args>(args)...);
         if (!result.valid())
@@ -68,7 +68,7 @@ struct WrappedFunction
 
             txt(message, Message::color{ColorIndex::red});
             std::cerr << message << std::endl;
-            return default_value;
+            return sol::nullopt;
         }
 
         try
@@ -86,7 +86,7 @@ struct WrappedFunction
 
                 txt(message, Message::color{ColorIndex::red});
                 std::cerr << message << std::endl;
-                return default_value;
+                return sol::nullopt;
             }
         }
         catch (const std::exception& e)
@@ -95,10 +95,22 @@ struct WrappedFunction
 
             txt(message, Message::color{ColorIndex::red});
             std::cerr << message << std::endl;
-            return default_value;
+            return sol::nullopt;
         }
     }
-}; // namespace lua
+
+    template <typename Retval, typename... Args>
+    Retval call_with_result(Retval default_value, Args&&... args) const
+    {
+        auto result =
+            call_with_optional_result<Retval>(std::forward<Args>(args)...);
+        if (!result)
+        {
+            return default_value;
+        }
+        return *result;
+    }
+};
 
 } // namespace lua
 } // namespace elona

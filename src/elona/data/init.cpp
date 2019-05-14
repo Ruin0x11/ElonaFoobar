@@ -75,7 +75,6 @@ void _initialize_chip_dbs(lua::DataTable& data)
     }
 
     {
-        MapChipDB the_map_chip_db;
         the_map_chip_db.initialize(data);
         the_map_chip_db.load_all();
         initialize_map_chips(the_map_chip_db);
@@ -95,6 +94,7 @@ void _initialize_lazy_dbs(lua::DataTable& data)
     the_music_db.initialize(data);
     the_sound_db.initialize(data);
     the_buff_db.initialize(data);
+    the_map_tileset_db.initialize(data);
 }
 
 } // namespace

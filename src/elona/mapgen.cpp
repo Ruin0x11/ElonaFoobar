@@ -3,6 +3,7 @@
 #include "calc.hpp"
 #include "character.hpp"
 #include "ctrl_file.hpp"
+#include "data/types/type_map_chip.hpp"
 #include "elona.hpp"
 #include "enums.hpp"
 #include "i18n.hpp"
@@ -210,32 +211,27 @@ void map_converttile()
             x = cnt;
             if (cell_data.at(x, y).chip_id_actual == 0)
             {
-                cell_data.at(x, y).chip_id_actual = tile_default +
-                    (rnd(tile_default(2)) == 0) * rnd(tile_default(1));
+                cell_data.at(x, y).chip_id_actual = tileset.random("default");
                 continue;
             }
             if (cell_data.at(x, y).chip_id_actual >= 100)
             {
-                cell_data.at(x, y).chip_id_actual = tile_tunnel +
-                    (rnd(tile_tunnel(2)) == 0) * rnd(tile_tunnel(1));
+                cell_data.at(x, y).chip_id_actual = tileset.random("tunnel");
                 continue;
             }
             if (cell_data.at(x, y).chip_id_actual == 1)
             {
-                cell_data.at(x, y).chip_id_actual =
-                    tile_wall + (rnd(tile_wall(2)) == 0) * rnd(tile_wall(1));
+                cell_data.at(x, y).chip_id_actual = tileset.random("wall");
                 continue;
             }
             if (cell_data.at(x, y).chip_id_actual == 3)
             {
-                cell_data.at(x, y).chip_id_actual =
-                    tile_room + (rnd(tile_room(2)) == 0) * rnd(tile_room(1));
+                cell_data.at(x, y).chip_id_actual = tileset.random("room");
                 continue;
             }
             if (cell_data.at(x, y).chip_id_actual == 4)
             {
-                cell_data.at(x, y).chip_id_actual = tile_default +
-                    (rnd(tile_default(2)) == 0) * rnd(tile_default(1));
+                cell_data.at(x, y).chip_id_actual = tileset.random("default");
                 continue;
             }
         }
@@ -854,8 +850,7 @@ void map_setfog(int, int)
         for (int cnt = 0, cnt_end = (map_data.width); cnt < cnt_end; ++cnt)
         {
             x = cnt;
-            cell_data.at(x, y).chip_id_memory =
-                tile_fog + (rnd(tile_fog(2)) == 0) * rnd(tile_fog(1));
+            cell_data.at(x, y).chip_id_memory = tileset.random("fog");
         }
     }
 }
@@ -2128,10 +2123,11 @@ void initialize_random_nefia_rdtype6()
         y = rnd(map_data.height);
         cell_data.at(x, y).chip_id_actual = 1;
     }
-    if (game_data.previous_map2 == 33)
+    if (game_data.previous_map2 == static_cast<int>(mdata_t::MapId::noyel))
     {
-        tile_room(0) = 45;
-        tile_room(1) = 6;
+        // ugly edge case.
+        // TODO: move everything to lua.
+        tileset.set_chance("room", 45, 6);
     }
     map_converttile();
     map_placeplayer();
@@ -2171,8 +2167,7 @@ int initialize_quest_map_crop()
         p = cnt;
         for (int cnt = 0, cnt_end = (map_data.width); cnt < cnt_end; ++cnt)
         {
-            cell_data.at(cnt, p).chip_id_actual = tile_default +
-                (rnd(tile_default(2)) == 0) * rnd(tile_default(1));
+            cell_data.at(cnt, p).chip_id_actual = tileset.random("default");
         }
     }
     mdatan(0) = i18n::s.get("core.locale.map.quest.field");
@@ -3503,188 +3498,96 @@ void initialize_random_nefia_rdtype10()
 }
 
 
+int Tileset::tile(const std::string& name)
+{
+    auto it = raw_tiles.find(name);
+    if (it == raw_tiles.end())
+    {
+        throw std::runtime_error(
+            "No tile " + name + " found in current tileset " +
+            current_id.get());
+    }
+
+    auto& tile = it->second;
+
+    SharedId id = tile.id;
+    auto data = the_map_chip_db.ensure(id);
+    return data.legacy_id;
+}
+
+int Tileset::random(const std::string& name)
+{
+    auto it = raw_tiles.find(name);
+    if (it == raw_tiles.end())
+    {
+        throw std::runtime_error(
+            "No tile " + name + " found in current tileset " +
+            current_id.get());
+    }
+
+    auto& tile = it->second;
+
+    SharedId id = tile.id;
+    if (tile.random)
+    {
+        if (rnd(tile.random->chance) == 0)
+        {
+            id = choice(tile.random->other);
+        }
+    }
+
+    auto data = the_map_chip_db.ensure(id);
+    return data.legacy_id;
+}
+
+void Tileset::set_chance(const std::string& name, int tile_legacy_id, int count)
+{
+    int atlas = map_data.atlas_number;
+
+    auto it = raw_tiles.find(name);
+    if (it == raw_tiles.end())
+    {
+        throw std::runtime_error(
+            "No tile " + name + " found in current tileset " +
+            current_id.get());
+    }
+
+    auto& tile = it->second;
+
+    assert(tile.random);
+
+    tile.id = SharedId("core."s + atlas + "_" + tile_legacy_id);
+
+    std::vector<SharedId> other;
+    for (int i = tile_legacy_id; i < tile_legacy_id + count; i++)
+    {
+        other.emplace_back(SharedId("core."s + atlas + "_" + i));
+    }
+    tile.random->other = other;
+}
+
+Tileset tileset;
 
 void map_tileset(int tileset_type)
 {
-    tile_doorclosed = 726;
-    tile_dooropen = 236;
-    tile_default(0) = 396;
-    tile_default(1) = 1;
-    tile_default(2) = 1;
-    tile_fog(0) = 531;
-    tile_fog(1) = 1;
-    tile_fog(2) = 1;
-    tile_wall(0) = 462;
-    tile_wall(1) = 1;
-    tile_wall(2) = 1;
-    tile_room(0) = 13;
-    tile_room(1) = 1;
-    tile_room(2) = 1;
-    tile_board = 727;
-    tile_votebox = 729;
-    tile_townboard = 732;
-    tile_tunnel(0) = 33;
-    tile_tunnel(1) = 1;
-    tile_tunnel(2) = 1;
-    tile_pot = 242;
-    if (tileset_type == 12)
-    {
-        tile_doorclosed = 733;
-        tile_dooropen = 265;
-    }
-    if (tileset_type == 8)
-    {
-        tile_doorclosed = 728;
-        tile_dooropen = 241;
-    }
-    if (tileset_type == 9)
-    {
-        tile_doorclosed = 730;
-        tile_dooropen = 264;
-    }
-    if (tileset_type == 3)
-    {
-        tile_room = 41;
-        tile_tunnel = 41;
-        tile_wall = 469;
-        tile_fog = tile_wall + 66;
-    }
-    if (tileset_type == 2)
-    {
-        tile_wall = 462;
-        tile_fog = 529;
-    }
-    if (tileset_type == 10)
-    {
-        tile_room = 165;
-        tile_tunnel(0) = 33;
-        tile_tunnel(1) = 4;
-        tile_tunnel(2) = 2;
-        tile_wall = 469;
-        tile_default = 469;
-    }
-    if (tileset_type == 11)
-    {
-        tile_default = 465;
-        tile_fog = 530;
-        tile_tunnel = 212;
-        tile_wall = 467;
-        tile_room = 203;
-    }
-    if (tileset_type == 0)
-    {
-        tile_default = 469;
-        tile_fog = 529;
-        tile_tunnel(0) = 33;
-        tile_tunnel(1) = 4;
-        tile_tunnel(2) = 2;
-        tile_wall = 469;
-        tile_room(0) = 33;
-        tile_room(1) = 4;
-        tile_room(2) = 2;
-    }
-    if (tileset_type == 6)
-    {
-        tile_default = 469;
-        tile_fog = 529;
-        tile_tunnel(0) = 45;
-        tile_tunnel(1) = 3;
-        tile_tunnel(2) = 2;
-        tile_wall = 469;
-        tile_room(0) = 33;
-        tile_room(1) = 6;
-        tile_room(2) = 3;
-    }
-    if (tileset_type == 7)
-    {
-        tile_default = 474;
-        tile_fog = 530;
-        tile_tunnel = 68;
-        tile_wall = 474;
-        tile_room(0) = 66;
-        tile_room(1) = 2;
-        tile_room(2) = 2;
-    }
-    if (tileset_type == 300)
-    {
-        tile_default = 475;
-        tile_fog = 528;
-        tile_tunnel = 0;
-        tile_wall = 475;
-        tile_room(0) = 0;
-        tile_room(1) = 6;
-        tile_room(2) = 6;
-    }
-    if (tileset_type == 100)
-    {
-        tile_default = 472;
-        tile_fog = 530;
-        tile_tunnel = 103;
-        tile_wall = 473;
-        tile_room(0) = 132;
-        tile_room(1) = 3;
-        tile_room(2) = 2;
-    }
-    if (tileset_type == 101)
-    {
-        tile_default = 477;
-        tile_fog = 530;
-        tile_tunnel = 100;
-        tile_wall = 477;
-        tile_room = 99;
-    }
-    if (tileset_type == 200)
-    {
-        tile_default = 468;
-        tile_fog = 531;
-        tile_tunnel(0) = 33;
-        tile_tunnel(1) = 4;
-        tile_tunnel(2) = 2;
-        tile_wall = 462;
-        tile_room(0) = 119;
-        tile_room(1) = 4;
-        tile_room(2) = 2;
-    }
-    if (tileset_type == 1)
-    {
-        tile_wall = -1;
-        tile_fog(0) = 396;
-        tile_fog(1) = 4;
-        tile_fog(2) = 2;
-    }
-    if (tileset_type == 4)
-    {
-        tile_default = 0;
-        tile_fog = 528;
-        if (4 <= game_data.stood_world_map_tile &&
-            game_data.stood_world_map_tile < 9)
-        {
-            tile_default = 7;
-            tile_fog = 528;
-        }
-        if (264 <= game_data.stood_world_map_tile &&
-            game_data.stood_world_map_tile < 363)
-        {
-            tile_default = 12;
-        }
-        if (9 <= game_data.stood_world_map_tile &&
-            game_data.stood_world_map_tile < 13)
-        {
-            tile_fog = 528;
-            tile_default = 3;
-        }
-        if (13 <= game_data.stood_world_map_tile &&
-            game_data.stood_world_map_tile < 17)
-        {
-            tile_fog = 531;
-            tile_default = 19;
-        }
-        if (chip_data[game_data.stood_world_map_tile].kind == 4)
-        {
-            tile_fog = 532;
-            tile_default = 45;
-        }
-    }
+    // TODO: This should be the argument to map_tileset instead of tileset_type.
+    SharedId id("core."s + map_data.atlas_number + "_" + tileset_type);
+
+    auto tiles = the_map_tileset_db.convert_tiles(id);
+
+    tileset = Tileset{id, tiles};
+
+    tile_doorclosed = tileset.tile("door_closed");
+    tile_dooropen = tileset.tile("door_open");
+    tile_default = tileset.tile("default");
+    tile_fog = tileset.tile("fog");
+    tile_wall = tileset.tile("wall");
+    tile_room = tileset.tile("room");
+    tile_board = tileset.tile("board");
+    tile_votebox = tileset.tile("vote_box");
+    tile_townboard = tileset.tile("town_board");
+    tile_tunnel = tileset.tile("tunnel");
+    tile_pot = tileset.tile("pot");
 }
 
 
