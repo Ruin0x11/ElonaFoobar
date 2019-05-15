@@ -899,7 +899,7 @@ int change_appearance_equipment();
 int map_barrel(int = 0, int = 0);
 int map_connectroom();
 int map_createroom(int = 0);
-int map_digcheck(int = 0, int = 0);
+bool map_digcheck(int, int);
 int map_placedownstairs(int = 0, int = 0);
 int map_placeupstairs(int = 0, int = 0);
 int map_trap(int = 0, int = 0, int = 0, int = 0);

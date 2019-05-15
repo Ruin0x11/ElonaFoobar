@@ -5,7 +5,8 @@ local function make_atlas(atlas_index)
          local chip_index = x + y * 33
          atlas[chip_index] = {
             id = tostring(atlas_index) .. "_" .. tostring(chip_index),
-            legacy_id = chip_index,
+            legacy_id = 825 * atlas_index + chip_index,
+            atlas_local_id = chip_index,
             atlas = atlas_index,
             source = {
                x = x * 48,

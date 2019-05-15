@@ -7,7 +7,6 @@
 #include "pic_loader/extent.hpp"
 #include "shared_id.hpp"
 
-
 namespace elona
 {
 
@@ -225,49 +224,34 @@ extern CellData cell_data;
 struct ChipData
 {
     using MapType = std::unordered_map<int, MapChip>;
-    static constexpr int chip_size = 825;
+    static constexpr int atlas_size = 825;
     static constexpr int atlas_count = 3;
 
     ChipData()
     {
-        for (int i = 0; i < atlas_count; i++)
+        for (int i = 0; i < atlas_count * atlas_size; i++)
         {
-            MapType map = {};
-            for (int j = 0; j < chip_size; j++)
-            {
-                map[j] = MapChip{};
-            }
-            chips.emplace(i, map);
+            chips[i] = MapChip{};
         }
-    }
-
-    MapType& get_map(int i)
-    {
-        return chips.at(i);
-    }
-
-    MapType& current()
-    {
-        return get_map(map_data.atlas_number);
     }
 
     MapChip& operator[](int i)
     {
-        return current().at(i);
+        return chips.at(i);
     }
 
     MapChip& for_cell(int x, int y)
     {
-        return current().at(cell_data.at(x, y).chip_id_actual);
+        return chips.at(cell_data.at(x, y).chip_id_actual);
     }
 
     MapChip& for_feat(int x, int y)
     {
-        return current().at(cell_data.at(x, y).feats % 1000);
+        return chips.at(cell_data.at(x, y).feats % 1000);
     }
 
 private:
-    std::unordered_map<int, MapType> chips;
+    MapType chips;
 };
 
 extern ChipData chip_data;
@@ -302,5 +286,36 @@ void map_prepare_for_travel(int id, int level = 1);
 void map_prepare_for_travel_with_prev(int id, int level = 1);
 
 int map_global_place_random_nefias();
+
+
+bool is_world_map_forest(int chip_id)
+{
+    return 4 <= chip_id && chip_id < 9;
+}
+
+bool is_world_map_grassland(int chip_id)
+{
+    return 9 <= chip_id && chip_id < 13;
+}
+
+bool is_world_map_desert(int chip_id)
+{
+    return 13 <= chip_id && chip_id < 17;
+}
+
+bool is_world_map_road(int chip_id)
+{
+    return 33 <= chip_id && chip_id < 66;
+}
+
+bool is_world_map_water(int chip_id)
+{
+    return 264 <= chip_id && chip_id < 363;
+}
+
+bool can_place_area_on_world_map_tile(int chip_id)
+{
+    return chip_id <= 19;
+}
 
 } // namespace elona

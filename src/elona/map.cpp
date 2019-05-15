@@ -47,10 +47,8 @@ void _map_randsite()
     }
     if (map_data.type == mdata_t::MapType::world_map)
     {
-        if ((264 <= cell_data.at(pos->x, pos->y).chip_id_actual &&
-             cell_data.at(pos->x, pos->y).chip_id_actual < 363) ||
-            (33 <= cell_data.at(pos->x, pos->y).chip_id_actual &&
-             cell_data.at(pos->x, pos->y).chip_id_actual < 66))
+        auto chip_id = cell_data.at(pos->x, pos->y).chip_id_actual;
+        if (is_world_map_water(chip_id) || is_world_map_road(chip_id))
         {
             return;
         }
@@ -292,7 +290,18 @@ void CellData::pack_to(elona_vector3<int>& legacy_map)
     {
         for (int x = 0; x < width_; x++)
         {
+            // HACK: will become unnecessary with new map format.
+            auto offset = map_data.atlas_number * ChipData::atlas_size;
+            at(x, y).chip_id_memory -= offset;
+            at(x, y).chip_id_actual -= offset;
+
+            assert(at(x, y).chip_id_memory > 0);
+            assert(at(x, y).chip_id_actual > 0);
+
             at(x, y).pack_to(legacy_map, x, y);
+
+            at(x, y).chip_id_memory += offset;
+            at(x, y).chip_id_actual += offset;
         }
     }
 }
@@ -325,6 +334,14 @@ void CellData::unpack_from(elona_vector3<int>& legacy_map, bool clear)
             {
                 at(x, y).partly_unpack_from(legacy_map, x, y);
             }
+
+            // The tiles in vanilla format must be offset by atlas number since
+            // the 3 map chip atlases are merged into one atlas in foobar.
+            // map_data will have been loaded by this point.
+            at(x, y).chip_id_memory +=
+                map_data.atlas_number * ChipData::atlas_size;
+            at(x, y).chip_id_actual +=
+                map_data.atlas_number * ChipData::atlas_size;
         }
     }
 }
@@ -1312,12 +1329,12 @@ int map_global_place_random_nefias()
             {
                 continue;
             }
-            if (33 <= cell_data.at(x, y).chip_id_actual &&
-                cell_data.at(x, y).chip_id_actual < 66)
+            if (is_world_map_road(cell_data.at(x, y).chip_id_actual))
             {
                 continue;
             }
-            if (cell_data.at(x, y).chip_id_actual > 19)
+            if (!can_place_area_on_world_map_tile(
+                    cell_data.at(x, y).chip_id_actual))
             {
                 continue;
             }

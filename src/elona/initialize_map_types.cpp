@@ -2220,8 +2220,7 @@ static void _init_map_fields_maybe_generate_encounter()
             flt(calcobjlv(encounterlv), calcfixlv(Quality::bad));
             if (game_data.weather == 1)
             {
-                if ((33 > game_data.stood_world_map_tile ||
-                     game_data.stood_world_map_tile >= 66) &&
+                if (!is_world_map_road(game_data.stood_world_map_tile) &&
                     rnd(3) == 0)
                 {
                     fixlv = Quality::godly;
@@ -2262,23 +2261,19 @@ static void _init_map_fields()
     }
 
     mdatan(0) = "";
-    if (4 <= game_data.stood_world_map_tile &&
-        game_data.stood_world_map_tile < 9)
+    if (is_world_map_forest(game_data.stood_world_map_tile))
     {
         _init_map_fields_forest();
     }
-    if (264 <= game_data.stood_world_map_tile &&
-        game_data.stood_world_map_tile < 363)
+    if (is_world_map_water(game_data.stood_world_map_tile))
     {
         _init_map_fields_sea();
     }
-    if (9 <= game_data.stood_world_map_tile &&
-        game_data.stood_world_map_tile < 13)
+    if (is_world_map_grassland(game_data.stood_world_map_tile))
     {
         _init_map_fields_grassland();
     }
-    if (13 <= game_data.stood_world_map_tile &&
-        game_data.stood_world_map_tile < 17)
+    if (is_world_map_desert(game_data.stood_world_map_tile))
     {
         _init_map_fields_desert();
     }
@@ -2292,8 +2287,7 @@ static void _init_map_fields()
     }
 
     map_placeplayer();
-    if (264 > game_data.stood_world_map_tile ||
-        game_data.stood_world_map_tile >= 363)
+    if (is_world_map_water(game_data.stood_world_map_tile))
     {
         for (int cnt = 0, cnt_end = (4 + rnd(5)); cnt < cnt_end; ++cnt)
         {

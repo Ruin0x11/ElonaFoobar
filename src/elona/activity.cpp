@@ -1888,23 +1888,19 @@ int search_material_spot()
         {
             atxlv = 30 + rnd((rnd(atxlv - 30) + 1));
         }
-        if (4 <= game_data.stood_world_map_tile &&
-            game_data.stood_world_map_tile < 9)
+        if (is_world_map_forest(game_data.stood_world_map_tile))
         {
             atxspot = 10;
         }
-        if (264 <= game_data.stood_world_map_tile &&
-            game_data.stood_world_map_tile < 363)
+        if (is_world_map_water(game_data.stood_world_map_tile))
         {
             atxspot = 11;
         }
-        if (9 <= game_data.stood_world_map_tile &&
-            game_data.stood_world_map_tile < 13)
+        if (is_world_map_grassland(game_data.stood_world_map_tile))
         {
             atxspot = 10;
         }
-        if (13 <= game_data.stood_world_map_tile &&
-            game_data.stood_world_map_tile < 17)
+        if (is_world_map_desert(game_data.stood_world_map_tile))
         {
             atxspot = 11;
         }

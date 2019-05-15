@@ -173,12 +173,12 @@ static void _relocate_overlapping_area(Area& area)
         {
             continue;
         }
-        if (33 <= cell_data.at(x, y).chip_id_actual &&
-            cell_data.at(x, y).chip_id_actual < 66)
+        if (is_world_map_road(cell_data.at(x, y).chip_id_actual))
         {
             continue;
         }
-        if (cell_data.at(x, y).chip_id_actual > 19)
+        if (!can_place_area_on_world_map_tile(
+                cell_data.at(x, y).chip_id_actual))
         {
             continue;
         }

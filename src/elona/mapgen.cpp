@@ -25,6 +25,15 @@ int tile_board;
 int tile_townboard;
 int tile_votebox;
 
+enum class MapgenTileType
+{
+    default_ = 0,
+    tunnel = 100,
+    wall = 1,
+    room = 3,
+    default2 = 4
+};
+
 } // namespace
 
 
@@ -91,25 +100,32 @@ void map_initialize()
 
 void initialize_cell_object_data()
 {
+    constexpr int atlas_1_offset = 1 * ChipData::atlas_size;
+
     int tile_doorclosed2 = 0;
     int tile_doorclosed3 = 0;
     elona_vector1<std::string> cellobjname;
     int maxobjid = 0;
-    tile_trap = 234;
-    tile_doorclosed = 726;
-    tile_doorclosed2 = 728;
-    tile_doorclosed3 = 730;
-    tile_doorclosed4 = 733;
-    tile_dooropen = 236;
-    tile_downstairs = 231;
-    tile_upstairs = 232;
-    tile_hidden = 0;
-    tile_downlocked = 237;
-    tile_re = 238;
-    tile_plant = 247;
-    tile_board = 727;
-    tile_votebox = 729;
-    tile_townboard = 732;
+
+    // Tile IDs are global across all atlases. They are calculated by:
+    // (atlas_number * 825) + tile_number
+
+    tile_trap = atlas_1_offset + 234;
+    tile_doorclosed = atlas_1_offset + 726;
+    tile_doorclosed2 = atlas_1_offset + 728;
+    tile_doorclosed3 = atlas_1_offset + 730;
+    tile_doorclosed4 = atlas_1_offset + 733;
+    tile_dooropen = atlas_1_offset + 236;
+    tile_downstairs = atlas_1_offset + 231;
+    tile_upstairs = atlas_1_offset + 232;
+    tile_hidden = atlas_1_offset + 0;
+    tile_downlocked = atlas_1_offset + 237;
+    tile_re = atlas_1_offset + 238;
+    tile_plant = atlas_1_offset + 247;
+    tile_board = atlas_1_offset + 727;
+    tile_votebox = atlas_1_offset + 729;
+    tile_townboard = atlas_1_offset + 732;
+
     DIM3(cellobjdata, 5, 50);
     SDIM3(cellobjname, 20, 50);
     maxobjid = 0;
@@ -209,27 +225,32 @@ void map_converttile()
         for (int cnt = 0, cnt_end = (map_data.width); cnt < cnt_end; ++cnt)
         {
             x = cnt;
-            if (cell_data.at(x, y).chip_id_actual == 0)
+            if (cell_data.at(x, y).chip_id_actual ==
+                static_cast<int>(MapgenTileType::default_))
             {
                 cell_data.at(x, y).chip_id_actual = tileset.random("default");
                 continue;
             }
-            if (cell_data.at(x, y).chip_id_actual >= 100)
+            if (cell_data.at(x, y).chip_id_actual >=
+                static_cast<int>(MapgenTileType::tunnel))
             {
                 cell_data.at(x, y).chip_id_actual = tileset.random("tunnel");
                 continue;
             }
-            if (cell_data.at(x, y).chip_id_actual == 1)
+            if (cell_data.at(x, y).chip_id_actual ==
+                static_cast<int>(MapgenTileType::wall))
             {
                 cell_data.at(x, y).chip_id_actual = tileset.random("wall");
                 continue;
             }
-            if (cell_data.at(x, y).chip_id_actual == 3)
+            if (cell_data.at(x, y).chip_id_actual ==
+                static_cast<int>(MapgenTileType::room))
             {
                 cell_data.at(x, y).chip_id_actual = tileset.random("room");
                 continue;
             }
-            if (cell_data.at(x, y).chip_id_actual == 4)
+            if (cell_data.at(x, y).chip_id_actual ==
+                static_cast<int>(MapgenTileType::default2))
             {
                 cell_data.at(x, y).chip_id_actual = tileset.random("default");
                 continue;
@@ -496,15 +517,16 @@ void map_randomtile(int tile_id, int density)
 
 
 
-int map_digcheck(int x, int y)
+bool map_digcheck(int x, int y)
 {
     if (x < 1 || y < 1 || x > map_data.width - 2 || y > map_data.height - 2)
     {
-        return 0;
+        return false;
     }
-    if (cell_data.at(x, y).chip_id_actual == 100)
+    if (cell_data.at(x, y).chip_id_actual ==
+        static_cast<int>(MapgenTileType::tunnel))
     {
-        return 100;
+        return true;
     }
     return cell_data.at(x, y).chip_id_actual == 0;
 }
@@ -940,7 +962,8 @@ void map_createroomdoor()
                 f = 0;
                 break;
             }
-            if (cell_data.at(dx, dy).chip_id_actual == 1)
+            if (cell_data.at(dx, dy).chip_id_actual ==
+                static_cast<int>(MapgenTileType::wall))
             {
                 f = 0;
                 break;
@@ -948,7 +971,8 @@ void map_createroomdoor()
         }
         if (f == 1)
         {
-            cell_data.at(x, y).chip_id_actual = 3;
+            cell_data.at(x, y).chip_id_actual =
+                static_cast<int>(MapgenTileType::room);
             if (roomdoor != 3)
             {
                 cell_featset(
@@ -967,6 +991,8 @@ void map_createroomdoor()
 
 int map_createroom(int type)
 {
+    MapgenTileType tile_ = MapgenTileType::default_;
+
     int roompos = 0;
     int roomwall = 0;
     if (roomsum >= 30)
@@ -1159,7 +1185,7 @@ int map_createroom(int type)
         for (int cnt = 0, cnt_end = (roomwidth(cr)); cnt < cnt_end; ++cnt)
         {
             x = roomx(cr) + cnt;
-            tile = 3;
+            tile_ = MapgenTileType::room;
             if (roomwall != 0)
             {
                 if (cnt == 0 || cnt2 == 0 || cnt == roomwidth(cr) - 1 ||
@@ -1167,20 +1193,20 @@ int map_createroom(int type)
                 {
                     if (roomwall == 1)
                     {
-                        tile = 1;
+                        tile_ = MapgenTileType::wall;
                     }
                     if (roomwall == 2)
                     {
-                        tile = 4;
+                        tile_ = MapgenTileType::default2;
                     }
                     if (roomwall == 3)
                     {
-                        tile = 3;
+                        tile_ = MapgenTileType::room;
                         if (tile(1) == 1)
                         {
                             if (cnt == 0)
                             {
-                                tile = 1;
+                                tile_ = MapgenTileType::wall;
                             }
                         }
                         if (tile(2) == 1)
@@ -1204,14 +1230,14 @@ int map_createroom(int type)
                                         itemcreate(-1, 584, x, y + 1, 0);
                                     }
                                 }
-                                tile = 1;
+                                tile_ = MapgenTileType::wall;
                             }
                         }
                         if (tile(1) == 2)
                         {
                             if (cnt == roomwidth(cr) - 1)
                             {
-                                tile = 1;
+                                tile_ = MapgenTileType::wall;
                             }
                         }
                         if (tile(2) == 2)
@@ -1232,13 +1258,13 @@ int map_createroom(int type)
                                     flt();
                                     itemcreate(-1, 584, x, y + 1, 0);
                                 }
-                                tile = 1;
+                                tile_ = MapgenTileType::wall;
                             }
                         }
                     }
                 }
             }
-            cell_data.at(x, y).chip_id_actual = tile;
+            cell_data.at(x, y).chip_id_actual = static_cast<int>(tile_);
         }
     }
     if (roomdoor == 1)
@@ -1483,16 +1509,20 @@ int map_connectroom()
                     }
                     if (x != 0)
                     {
-                        if (cell_data.at(dx, dy - 1).chip_id_actual == 3 ||
-                            cell_data.at(dx, dy + 1).chip_id_actual == 3)
+                        if (cell_data.at(dx, dy - 1).chip_id_actual ==
+                                static_cast<int>(MapgenTileType::room) ||
+                            cell_data.at(dx, dy + 1).chip_id_actual ==
+                                static_cast<int>(MapgenTileType::room))
                         {
                             continue;
                         }
                     }
                     if (y != 0)
                     {
-                        if (cell_data.at(dx - 1, dy).chip_id_actual == 3 ||
-                            cell_data.at(dx + 1, dy).chip_id_actual == 3)
+                        if (cell_data.at(dx - 1, dy).chip_id_actual ==
+                                static_cast<int>(MapgenTileType::room) ||
+                            cell_data.at(dx + 1, dy).chip_id_actual ==
+                                static_cast<int>(MapgenTileType::room))
                         {
                             continue;
                         }
@@ -1556,7 +1586,8 @@ void map_makedoor()
             }
             dx = tx + roomx(cr);
             dy = ty + roomy(cr);
-            if (cell_data.at(dx, dy).chip_id_actual == 1)
+            if (cell_data.at(dx, dy).chip_id_actual ==
+                static_cast<int>(MapgenTileType::wall))
             {
                 continue;
             }
@@ -2517,7 +2548,8 @@ int initialize_random_nefia_rdtype2()
         {
             x = rnd(map_data.width);
             y = rnd(map_data.height);
-            if (cell_data.at(x, y).chip_id_actual == 3)
+            if (cell_data.at(x, y).chip_id_actual ==
+                static_cast<int>(MapgenTileType::room))
             {
                 dx = rnd(rdroomsizemax) + rdroomsizemin;
                 dy = rnd(rdroomsizemax) + rdroomsizemin;
@@ -3045,7 +3077,8 @@ void initialize_random_nefia_rdtype8()
     {
         x = rnd(map_data.width);
         y = rnd(15);
-        if (cell_data.at(x, y).chip_id_actual == 100)
+        if (cell_data.at(x, y).chip_id_actual ==
+            static_cast<int>(MapgenTileType::tunnel))
         {
             map_placeupstairs(x, y);
             break;
@@ -3055,7 +3088,8 @@ void initialize_random_nefia_rdtype8()
     {
         x = rnd(map_data.width);
         y = map_data.height - rnd(15) - 1;
-        if (cell_data.at(x, y).chip_id_actual == 100)
+        if (cell_data.at(x, y).chip_id_actual ==
+            static_cast<int>(MapgenTileType::tunnel))
         {
             map_placedownstairs(x, y);
             break;
@@ -3449,13 +3483,17 @@ void initialize_random_nefia_rdtype10()
             {
                 continue;
             }
-            if (cell_data.at(x - 1, y).chip_id_actual >= 100)
+            if (cell_data.at(x - 1, y).chip_id_actual >=
+                static_cast<int>(MapgenTileType::tunnel))
             {
-                if (cell_data.at(x + 1, y).chip_id_actual >= 100)
+                if (cell_data.at(x + 1, y).chip_id_actual >=
+                    static_cast<int>(MapgenTileType::tunnel))
                 {
-                    if (cell_data.at(x, y - 1).chip_id_actual == 0)
+                    if (cell_data.at(x, y - 1).chip_id_actual ==
+                        static_cast<int>(MapgenTileType::default_))
                     {
-                        if (cell_data.at(x, y + 1).chip_id_actual == 0)
+                        if (cell_data.at(x, y + 1).chip_id_actual ==
+                            static_cast<int>(MapgenTileType::default_))
                         {
                             cell_featset(
                                 x,
@@ -3471,13 +3509,17 @@ void initialize_random_nefia_rdtype10()
                     continue;
                 }
             }
-            if (cell_data.at(x, y - 1).chip_id_actual >= 100)
+            if (cell_data.at(x, y - 1).chip_id_actual >=
+                static_cast<int>(MapgenTileType::tunnel))
             {
-                if (cell_data.at(x, y + 1).chip_id_actual >= 100)
+                if (cell_data.at(x, y + 1).chip_id_actual >=
+                    static_cast<int>(MapgenTileType::tunnel))
                 {
-                    if (cell_data.at(x - 1, y).chip_id_actual == 0)
+                    if (cell_data.at(x - 1, y).chip_id_actual ==
+                        static_cast<int>(MapgenTileType::default_))
                     {
-                        if (cell_data.at(x + 1, y).chip_id_actual == 0)
+                        if (cell_data.at(x + 1, y).chip_id_actual ==
+                            static_cast<int>(MapgenTileType::default_))
                         {
                             cell_featset(
                                 x,

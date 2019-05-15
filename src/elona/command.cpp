@@ -3052,11 +3052,10 @@ static TurnResult _pre_proc_movement_event()
 {
     if (map_data.type == mdata_t::MapType::world_map)
     {
-        if (264 <= cell_data
-                       .at(cdata[cc].next_position.x, cdata[cc].next_position.y)
-                       .chip_id_actual &&
-            cell_data.at(cdata[cc].next_position.x, cdata[cc].next_position.y)
-                    .chip_id_actual < 363)
+        if (is_world_map_water(
+                cell_data
+                    .at(cdata[cc].next_position.x, cdata[cc].next_position.y)
+                    .chip_id_actual))
         {
             return TurnResult::pc_turn_user_error;
         }

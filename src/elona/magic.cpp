@@ -96,7 +96,7 @@ bool _magic_1136()
                 {
                     p = cell_data.at(dx + x(cnt2) * cnt, dy + y(cnt2) * cnt)
                             .chip_id_actual;
-                    if ((264 <= p && p < 363) || chip_data[p].effect & 4)
+                    if (is_world_map_water(p) || chip_data[p].effect & 4)
                     {
                         f = 0;
                         break;
