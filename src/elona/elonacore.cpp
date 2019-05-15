@@ -4694,7 +4694,8 @@ void map_global_place_entrances()
                 {
                     continue;
                 }
-                if (is_world_map_road(cell_data.at(x, y).chip_id_actual))
+                if (map_is_road_overworld_chip(
+                        cell_data.at(x, y).chip_id_actual))
                 {
                     continue;
                 }
@@ -9425,7 +9426,7 @@ TurnResult proc_movement_event()
                         encounter = 1;
                     }
                 }
-                if (is_world_map_road(p))
+                if (map_is_road_overworld_chip(p))
                 {
                     if (rnd(2) == 0)
                     {
@@ -9505,7 +9506,7 @@ TurnResult proc_movement_event()
                 {
                     encounterlv /= 2;
                 }
-                if (is_world_map_road(
+                if (map_is_road_overworld_chip(
                         cell_data.at(cdata[cc].position.x, cdata[cc].position.y)
                             .chip_id_actual))
                 {

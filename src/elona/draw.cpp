@@ -725,9 +725,7 @@ void initialize_map_chips(const MapChipDB& db)
 
     for (const auto& data : db.values())
     {
-        auto& atlas = chip_data.get_map(data.atlas);
-
-        atlas[data.legacy_id] = data;
+        chip_data[data.legacy_id] = data;
     }
 
     {
@@ -736,30 +734,32 @@ void initialize_map_chips(const MapChipDB& db)
             PicLoader::MapType extents_chips;
             PicLoader::MapType extents_feats;
 
-            for (const auto& pair : chip_data.get_map(i))
+            for (const auto& chip : db.values())
             {
-                const auto& chip = pair.second;
                 auto type = PicLoader::PageType::map_chip;
                 if (chip.is_feat)
                 {
                     type = PicLoader::PageType::map_feat;
                 }
 
-                if (chip.filepath)
+                if (chip.atlas == i)
                 {
-                    // chip is from an external file.
-                    loader.load(*chip.filepath, chip.key, type);
-                }
-                else
-                {
-                    // chip is located in item.bmp.
-                    if (chip.is_feat)
+                    if (chip.filepath)
                     {
-                        extents_feats[chip.key] = chip.source;
+                        // chip is from an external file.
+                        loader.add_image_extent(*chip.filepath, chip.key, type);
                     }
                     else
                     {
-                        extents_chips[chip.key] = chip.source;
+                        // chip is located in map<i>.bmp.
+                        if (chip.is_feat)
+                        {
+                            extents_feats[chip.key] = chip.source;
+                        }
+                        else
+                        {
+                            extents_chips[chip.key] = chip.source;
+                        }
                     }
                 }
             }
@@ -775,6 +775,7 @@ void initialize_map_chips(const MapChipDB& db)
                 PicLoader::PageType::map_feat);
         }
     }
+
     for (const auto& buffer :
          loader.get_buffers_of_type(PicLoader::PageType::map_chip))
     {
@@ -844,6 +845,17 @@ void draw_prepare_map_chips()
 {
     map_tileset(map_data.tileset);
 
+    for (const auto& buffer :
+         loader.get_buffers_of_type(PicLoader::PageType::map_chip))
+    {
+        tinted_buffers.reserve_tinted_buffer(buffer);
+    }
+    for (const auto& buffer :
+         loader.get_buffers_of_type(PicLoader::PageType::map_feat))
+    {
+        tinted_buffers.reserve_tinted_buffer(buffer);
+    }
+
     int shadow = _get_map_chip_shadow();
     snail::Color color{(uint8_t)(255 - shadow)};
 
@@ -898,7 +910,8 @@ void initialize_item_chips(const ItemChipDB& db)
         if (chip_data.filepath)
         {
             // chip is from an external file.
-            loader.load(*chip_data.filepath, key, PicLoader::PageType::item);
+            loader.add_image_extent(
+                *chip_data.filepath, key, PicLoader::PageType::item);
         }
         else
         {
@@ -926,7 +939,7 @@ void initialize_portraits(const PortraitDB& db)
         if (portrait_data.filepath)
         {
             // Portrait is from an external file.
-            loader.load(
+            loader.add_image_extent(
                 *portrait_data.filepath, key, PicLoader::PageType::portrait);
         }
         else
@@ -963,7 +976,7 @@ void initialize_chara_chips(const CharaChipDB& db)
         if (chip_data.filepath)
         {
             // Chip is from an external file.
-            loader.load(
+            loader.add_image_extent(
                 *chip_data.filepath, key, PicLoader::PageType::character);
         }
         else

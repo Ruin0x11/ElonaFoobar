@@ -528,7 +528,8 @@ bool map_digcheck(int x, int y)
     {
         return true;
     }
-    return cell_data.at(x, y).chip_id_actual == 0;
+    return cell_data.at(x, y).chip_id_actual ==
+        static_cast<int>(MapgenTileType::default_);
 }
 
 
@@ -810,10 +811,12 @@ int map_digtoentrance1(int x1, int y1, int x2, int y2)
         {
             tx_at_m168 = dx_at_m168;
             ty_at_m168 = dy_at_m168;
-            cell_data.at(dx_at_m168, dy_at_m168).chip_id_actual = 100;
+            cell_data.at(dx_at_m168, dy_at_m168).chip_id_actual =
+                static_cast<int>(MapgenTileType::tunnel);
             if (rnd(200) < rdhiddenpath)
             {
-                cell_data.at(dx_at_m168, dy_at_m168).chip_id_actual = 4;
+                cell_data.at(dx_at_m168, dy_at_m168).chip_id_actual =
+                    static_cast<int>(MapgenTileType::default2);
                 cell_featset(dx_at_m168, dy_at_m168, 0, 22);
             }
         }
@@ -1128,7 +1131,8 @@ int map_createroom(int type)
         }
         if (roompos == 0)
         {
-            if (cell_data.at(x, y).chip_id_actual != 3)
+            if (cell_data.at(x, y).chip_id_actual !=
+                static_cast<int>(MapgenTileType::room))
             {
                 continue;
             }
@@ -1529,11 +1533,13 @@ int map_connectroom()
                     }
                     break;
                 }
-                cell_data.at(dx, dy).chip_id_actual = 3;
+                cell_data.at(dx, dy).chip_id_actual =
+                    static_cast<int>(MapgenTileType::room);
                 roomexist(j) = 1;
                 dx += x;
                 dy += y;
-                cell_data.at(dx, dy).chip_id_actual = 100;
+                cell_data.at(dx, dy).chip_id_actual =
+                    static_cast<int>(MapgenTileType::tunnel);
                 if (j == cr)
                 {
                     tx = dx;
@@ -1619,7 +1625,8 @@ void generate_debug_map()
     {
         for (int x = 0; x < map_data.width; ++x)
         {
-            cell_data.at(x, y).chip_id_actual = 3;
+            cell_data.at(x, y).chip_id_actual =
+                static_cast<int>(MapgenTileType::room);
         }
     }
 
@@ -2143,7 +2150,8 @@ void initialize_random_nefia_rdtype6()
         p = cnt;
         for (int cnt = 0, cnt_end = (map_data.width); cnt < cnt_end; ++cnt)
         {
-            cell_data.at(cnt, p).chip_id_actual = 3;
+            cell_data.at(cnt, p).chip_id_actual =
+                static_cast<int>(MapgenTileType::room);
         }
     }
     for (int cnt = 0, cnt_end = (rnd(map_data.width * map_data.height / 30));
@@ -2152,7 +2160,8 @@ void initialize_random_nefia_rdtype6()
     {
         x = rnd(map_data.width);
         y = rnd(map_data.height);
-        cell_data.at(x, y).chip_id_actual = 1;
+        cell_data.at(x, y).chip_id_actual =
+            static_cast<int>(MapgenTileType::wall);
     }
     if (game_data.previous_map2 == static_cast<int>(mdata_t::MapId::noyel))
     {
@@ -2241,7 +2250,7 @@ int initialize_quest_map_crop()
                 {
                     break;
                 }
-                cell_data.at(x, y).chip_id_actual = tile;
+                cell_data.at(x, y).set_actual_in_map(tile);
                 if (rnd(10) != 0 ||
                     cell_data.at(x, y).item_appearances_actual != 0)
                 {
@@ -2276,8 +2285,8 @@ int initialize_quest_map_crop()
     {
         x = rnd(map_data.width);
         y = rnd(map_data.height);
-        if (cell_data.at(x, y).chip_id_actual != 30 &&
-            cell_data.at(x, y).chip_id_actual != 31)
+        if (cell_data.at(x, y).chip_id_actual != 825 + 30 &&
+            cell_data.at(x, y).chip_id_actual != 825 + 31)
         {
             if (cell_data.at(x, y).item_appearances_actual == 0)
             {
@@ -2351,11 +2360,13 @@ int initialize_random_nefia_rdtype4()
         for (int cnt = 0, cnt_end = (map_data.width); cnt < cnt_end; ++cnt)
         {
             x = cnt;
-            cell_data.at(x, y).chip_id_actual = 1;
+            cell_data.at(x, y).chip_id_actual =
+                static_cast<int>(MapgenTileType::wall);
             if (x > p && y > p && x + 1 < map_data.width - p &&
                 y + 1 < map_data.height - p)
             {
-                cell_data.at(x, y).chip_id_actual = 100;
+                cell_data.at(x, y).chip_id_actual =
+                    static_cast<int>(MapgenTileType::tunnel);
             }
         }
     }
@@ -2395,7 +2406,8 @@ int initialize_random_nefia_rdtype4()
                  ++cnt)
             {
                 x = p + cnt;
-                cell_data.at(x, y).chip_id_actual = 1;
+                cell_data.at(x, y).chip_id_actual =
+                    static_cast<int>(MapgenTileType::wall);
             }
         }
     }
@@ -2418,11 +2430,13 @@ int initialize_random_nefia_rdtype5()
         for (int cnt = 0, cnt_end = (map_data.width); cnt < cnt_end; ++cnt)
         {
             x = cnt;
-            cell_data.at(x, y).chip_id_actual = 1;
+            cell_data.at(x, y).chip_id_actual =
+                static_cast<int>(MapgenTileType::wall);
             if (x > p && y > p && x + 1 < map_data.width - p &&
                 y + 1 < map_data.height - p)
             {
-                cell_data.at(x, y).chip_id_actual = 100;
+                cell_data.at(x, y).chip_id_actual =
+                    static_cast<int>(MapgenTileType::tunnel);
             }
         }
     }
@@ -2462,7 +2476,8 @@ int initialize_random_nefia_rdtype5()
                  ++cnt)
             {
                 x = p + cnt;
-                cell_data.at(x, y).chip_id_actual = 1;
+                cell_data.at(x, y).chip_id_actual =
+                    static_cast<int>(MapgenTileType::wall);
             }
         }
     }
@@ -2477,7 +2492,8 @@ int initialize_random_nefia_rdtype2()
     map_initialize();
     dx = map_data.width / 2;
     dy = map_data.height / 2;
-    cell_data.at(dx, dy).chip_id_actual = 3;
+    cell_data.at(dx, dy).chip_id_actual =
+        static_cast<int>(MapgenTileType::room);
     p = 0;
     for (int cnt = 0, cnt_end = (rdtunnel); cnt < cnt_end; ++cnt)
     {
@@ -2521,7 +2537,8 @@ int initialize_random_nefia_rdtype2()
                 dy = 1;
             }
         }
-        cell_data.at(dx, dy).chip_id_actual = 3;
+        cell_data.at(dx, dy).chip_id_actual =
+            static_cast<int>(MapgenTileType::room);
     }
     int stat = map_createroom();
     if (stat == 0)
@@ -2573,7 +2590,8 @@ int initialize_random_nefia_rdtype2()
             dx = x;
             for (int cnt = 0, cnt_end = (rx); cnt < cnt_end; ++cnt)
             {
-                cell_data.at(dx, dy).chip_id_actual = 3;
+                cell_data.at(dx, dy).chip_id_actual =
+                    static_cast<int>(MapgenTileType::room);
                 ++dx;
             }
             ++dy;
@@ -2601,7 +2619,8 @@ int initialize_random_nefia_rdtype3()
             {
                 continue;
             }
-            cell_data.at(x, y).chip_id_actual = 3;
+            cell_data.at(x, y).chip_id_actual =
+                static_cast<int>(MapgenTileType::room);
         }
     }
     p(0) = rnd(map_data.width / 2) + 2;
@@ -2643,7 +2662,8 @@ int initialize_quest_map_party()
             {
                 continue;
             }
-            cell_data.at(x, y).chip_id_actual = 100;
+            cell_data.at(x, y).chip_id_actual =
+                static_cast<int>(MapgenTileType::tunnel);
         }
     }
     for (int cnt = 0, cnt_end = (rdroomnum); cnt < cnt_end; ++cnt)
@@ -2689,7 +2709,7 @@ int initialize_quest_map_party()
                     {
                         if (cnt != 0 && cnt != 3 && cnt2 != 0 && cnt2 != 3)
                         {
-                            cell_data.at(x, y).chip_id_actual = 473;
+                            cell_data.at(x, y).set_actual_in_map(473);
                         }
                     }
                     if (n == 2)
@@ -2700,11 +2720,11 @@ int initialize_quest_map_party()
                         }
                         if (cnt == 1 && cnt2 == 1)
                         {
-                            cell_data.at(x, y).chip_id_actual = 664;
+                            cell_data.at(x, y).set_actual_in_map(664);
                         }
                         else
                         {
-                            cell_data.at(x, y).chip_id_actual = 206;
+                            cell_data.at(x, y).set_actual_in_map(206);
                             flt();
                             itemcreate(-1, 91, x, y, 0);
                         }
@@ -2713,7 +2733,7 @@ int initialize_quest_map_party()
                     {
                         if (cnt == 1 && cnt2 == 1)
                         {
-                            cell_data.at(x, y).chip_id_actual = 204;
+                            cell_data.at(x, y).set_actual_in_map(204);
                             flt();
                             itemcreate(-1, 585, x, y, 0);
                         }
@@ -2723,7 +2743,7 @@ int initialize_quest_map_party()
                         if (cnt == 1 && cnt2 == 1)
                         {
                             flt();
-                            cell_data.at(x, y).chip_id_actual = 69;
+                            cell_data.at(x, y).set_actual_in_map(69);
                             itemcreate(-1, 138, x, y, 0);
                         }
                     }
@@ -3025,7 +3045,8 @@ void initialize_random_nefia_rdtype8()
         for (int cnt = 0, cnt_end = (w); cnt < cnt_end; ++cnt)
         {
             x = cnt + dx;
-            cell_data.at(x, y).chip_id_actual = 100;
+            cell_data.at(x, y).chip_id_actual =
+                static_cast<int>(MapgenTileType::tunnel);
         }
         if (p <= 0)
         {
@@ -3220,7 +3241,8 @@ void mapgen_dig_maze()
                          ++cnt)
                     {
                         x = sdigx + cnt - _bold + 4;
-                        cell_data.at(x, y).chip_id_actual = 100;
+                        cell_data.at(x, y).chip_id_actual =
+                            static_cast<int>(MapgenTileType::tunnel);
                     }
                 }
             }
@@ -3234,7 +3256,8 @@ void mapgen_dig_maze()
                          ++cnt)
                     {
                         x = sdigx + cnt - _bold + 4;
-                        cell_data.at(x, y).chip_id_actual = 100;
+                        cell_data.at(x, y).chip_id_actual =
+                            static_cast<int>(MapgenTileType::tunnel);
                     }
                 }
             }
@@ -3249,7 +3272,8 @@ void mapgen_dig_maze()
                          ++cnt)
                     {
                         x = sdigx + cnt - _bold + 4;
-                        cell_data.at(x, y).chip_id_actual = 100;
+                        cell_data.at(x, y).chip_id_actual =
+                            static_cast<int>(MapgenTileType::tunnel);
                     }
                 }
             }
@@ -3263,7 +3287,8 @@ void mapgen_dig_maze()
                          ++cnt)
                     {
                         x = sdigx + cnt - _bold * 2 - _bold + 4;
-                        cell_data.at(x, y).chip_id_actual = 100;
+                        cell_data.at(x, y).chip_id_actual =
+                            static_cast<int>(MapgenTileType::tunnel);
                     }
                 }
             }
@@ -3306,13 +3331,15 @@ void mapgen_dig_maze()
     {
         x = rnd(map_data.width);
         y = rnd(map_data.height);
-        if (cell_data.at(x, y).chip_id_actual != 100)
+        if (cell_data.at(x, y).chip_id_actual !=
+            static_cast<int>(MapgenTileType::tunnel))
         {
             continue;
         }
         dx = rnd(map_data.width);
         dy = rnd(map_data.height);
-        if (cell_data.at(dx, dy).chip_id_actual != 100)
+        if (cell_data.at(dx, dy).chip_id_actual !=
+            static_cast<int>(MapgenTileType::tunnel))
         {
             continue;
         }
@@ -3346,7 +3373,8 @@ void initialize_random_nefia_rdtype10()
         {
             x = rnd(map_data.width);
             y = rnd(map_data.height);
-            if (cell_data.at(x, y).chip_id_actual != 100)
+            if (cell_data.at(x, y).chip_id_actual !=
+                static_cast<int>(MapgenTileType::tunnel))
             {
                 continue;
             }
@@ -3370,9 +3398,11 @@ void initialize_random_nefia_rdtype10()
                     ty = dy;
                     if (cell_data.at(tx, ty).chip_id_actual != t)
                     {
-                        if (cell_data.at(tx, ty).chip_id_actual != 0)
+                        if (cell_data.at(tx, ty).chip_id_actual !=
+                            static_cast<int>(MapgenTileType::default_))
                         {
-                            if (cell_data.at(tx, ty).chip_id_actual != 100)
+                            if (cell_data.at(tx, ty).chip_id_actual !=
+                                static_cast<int>(MapgenTileType::tunnel))
                             {
                                 continue;
                             }
@@ -3382,9 +3412,11 @@ void initialize_random_nefia_rdtype10()
                     ty = dy;
                     if (cell_data.at(tx, ty).chip_id_actual != t)
                     {
-                        if (cell_data.at(tx, ty).chip_id_actual != 0)
+                        if (cell_data.at(tx, ty).chip_id_actual !=
+                            static_cast<int>(MapgenTileType::default_))
                         {
-                            if (cell_data.at(tx, ty).chip_id_actual != 100)
+                            if (cell_data.at(tx, ty).chip_id_actual !=
+                                static_cast<int>(MapgenTileType::tunnel))
                             {
                                 continue;
                             }
@@ -3394,9 +3426,11 @@ void initialize_random_nefia_rdtype10()
                     ty = dy - 1;
                     if (cell_data.at(tx, ty).chip_id_actual != t)
                     {
-                        if (cell_data.at(tx, ty).chip_id_actual != 0)
+                        if (cell_data.at(tx, ty).chip_id_actual !=
+                            static_cast<int>(MapgenTileType::default_))
                         {
-                            if (cell_data.at(tx, ty).chip_id_actual != 100)
+                            if (cell_data.at(tx, ty).chip_id_actual !=
+                                static_cast<int>(MapgenTileType::tunnel))
                             {
                                 continue;
                             }
@@ -3406,9 +3440,11 @@ void initialize_random_nefia_rdtype10()
                     ty = dy + 1;
                     if (cell_data.at(tx, ty).chip_id_actual != t)
                     {
-                        if (cell_data.at(tx, ty).chip_id_actual != 0)
+                        if (cell_data.at(tx, ty).chip_id_actual !=
+                            static_cast<int>(MapgenTileType::default_))
                         {
-                            if (cell_data.at(tx, ty).chip_id_actual != 100)
+                            if (cell_data.at(tx, ty).chip_id_actual !=
+                                static_cast<int>(MapgenTileType::tunnel))
                             {
                                 continue;
                             }
@@ -3418,9 +3454,11 @@ void initialize_random_nefia_rdtype10()
                     ty = dy - 1;
                     if (cell_data.at(tx, ty).chip_id_actual != t)
                     {
-                        if (cell_data.at(tx, ty).chip_id_actual != 0)
+                        if (cell_data.at(tx, ty).chip_id_actual !=
+                            static_cast<int>(MapgenTileType::default_))
                         {
-                            if (cell_data.at(tx, ty).chip_id_actual != 100)
+                            if (cell_data.at(tx, ty).chip_id_actual !=
+                                static_cast<int>(MapgenTileType::tunnel))
                             {
                                 continue;
                             }
@@ -3430,9 +3468,11 @@ void initialize_random_nefia_rdtype10()
                     ty = dy - 1;
                     if (cell_data.at(tx, ty).chip_id_actual != t)
                     {
-                        if (cell_data.at(tx, ty).chip_id_actual != 0)
+                        if (cell_data.at(tx, ty).chip_id_actual !=
+                            static_cast<int>(MapgenTileType::default_))
                         {
-                            if (cell_data.at(tx, ty).chip_id_actual != 100)
+                            if (cell_data.at(tx, ty).chip_id_actual !=
+                                static_cast<int>(MapgenTileType::tunnel))
                             {
                                 continue;
                             }
@@ -3442,9 +3482,11 @@ void initialize_random_nefia_rdtype10()
                     ty = dy + 1;
                     if (cell_data.at(tx, ty).chip_id_actual != t)
                     {
-                        if (cell_data.at(tx, ty).chip_id_actual != 0)
+                        if (cell_data.at(tx, ty).chip_id_actual !=
+                            static_cast<int>(MapgenTileType::default_))
                         {
-                            if (cell_data.at(tx, ty).chip_id_actual != 100)
+                            if (cell_data.at(tx, ty).chip_id_actual !=
+                                static_cast<int>(MapgenTileType::tunnel))
                             {
                                 continue;
                             }
@@ -3454,9 +3496,11 @@ void initialize_random_nefia_rdtype10()
                     ty = dy + 1;
                     if (cell_data.at(tx, ty).chip_id_actual != t)
                     {
-                        if (cell_data.at(tx, ty).chip_id_actual != 0)
+                        if (cell_data.at(tx, ty).chip_id_actual !=
+                            static_cast<int>(MapgenTileType::default_))
                         {
-                            if (cell_data.at(tx, ty).chip_id_actual != 100)
+                            if (cell_data.at(tx, ty).chip_id_actual !=
+                                static_cast<int>(MapgenTileType::tunnel))
                             {
                                 continue;
                             }
@@ -3475,7 +3519,8 @@ void initialize_random_nefia_rdtype10()
              ++cnt)
         {
             x = cnt * 2;
-            if (cell_data.at(x, y).chip_id_actual < 100)
+            if (cell_data.at(x, y).chip_id_actual <
+                static_cast<int>(MapgenTileType::tunnel))
             {
                 continue;
             }

@@ -146,6 +146,12 @@ struct Cell
     int light{};
 
 
+    void set_actual_in_map(int chip_id)
+    {
+        chip_id_actual = 825 * chip_id;
+    }
+
+
     /**
      * Moves this struct's fields into `map` so they can be serialized, for
      * compatibility. To be called before serializing `map`.
@@ -287,35 +293,11 @@ void map_prepare_for_travel_with_prev(int id, int level = 1);
 
 int map_global_place_random_nefias();
 
-
-bool is_world_map_forest(int chip_id)
-{
-    return 4 <= chip_id && chip_id < 9;
-}
-
-bool is_world_map_grassland(int chip_id)
-{
-    return 9 <= chip_id && chip_id < 13;
-}
-
-bool is_world_map_desert(int chip_id)
-{
-    return 13 <= chip_id && chip_id < 17;
-}
-
-bool is_world_map_road(int chip_id)
-{
-    return 33 <= chip_id && chip_id < 66;
-}
-
-bool is_world_map_water(int chip_id)
-{
-    return 264 <= chip_id && chip_id < 363;
-}
-
-bool can_place_area_on_world_map_tile(int chip_id)
-{
-    return chip_id <= 19;
-}
+bool map_is_forest_overworld_chip(int chip_id);
+bool map_is_grassland_overworld_chip(int chip_id);
+bool map_is_desert_overworld_chip(int chip_id);
+bool map_is_road_overworld_chip(int chip_id);
+bool map_is_water_overworld_chip(int chip_id);
+bool map_can_place_area_on_overworld_tile(int chip_id);
 
 } // namespace elona

@@ -48,7 +48,8 @@ void _map_randsite()
     if (map_data.type == mdata_t::MapType::world_map)
     {
         auto chip_id = cell_data.at(pos->x, pos->y).chip_id_actual;
-        if (is_world_map_water(chip_id) || is_world_map_road(chip_id))
+        if (map_is_water_overworld_chip(chip_id) ||
+            map_is_road_overworld_chip(chip_id))
         {
             return;
         }
@@ -1329,11 +1330,11 @@ int map_global_place_random_nefias()
             {
                 continue;
             }
-            if (is_world_map_road(cell_data.at(x, y).chip_id_actual))
+            if (map_is_road_overworld_chip(cell_data.at(x, y).chip_id_actual))
             {
                 continue;
             }
-            if (!can_place_area_on_world_map_tile(
+            if (!map_can_place_area_on_overworld_tile(
                     cell_data.at(x, y).chip_id_actual))
             {
                 continue;
@@ -1397,6 +1398,37 @@ void map_prepare_for_travel_with_prev(int id, int level)
     game_data.destination_map = id;
     game_data.destination_dungeon_level = level;
     levelexitby = 2;
+}
+
+
+bool map_is_forest_overworld_chip(int chip_id)
+{
+    return 4 <= chip_id && chip_id < 9;
+}
+
+bool map_is_grassland_overworld_chip(int chip_id)
+{
+    return 9 <= chip_id && chip_id < 13;
+}
+
+bool map_is_desert_overworld_chip(int chip_id)
+{
+    return 13 <= chip_id && chip_id < 17;
+}
+
+bool map_is_road_overworld_chip(int chip_id)
+{
+    return 33 <= chip_id && chip_id < 66;
+}
+
+bool map_is_water_overworld_chip(int chip_id)
+{
+    return 264 <= chip_id && chip_id < 363;
+}
+
+bool map_can_place_area_on_overworld_tile(int chip_id)
+{
+    return chip_id <= 19;
 }
 
 

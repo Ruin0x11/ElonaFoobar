@@ -150,12 +150,83 @@ std::pair<Extent, size_t> PicLoader::find_extent(
     return {ext, *skyline_index};
 }
 
-void PicLoader::load(
-    const fs::path& image_file,
-    const IdType& id,
-    PageType type)
+Extent PicLoader::load_atlas_extent(
+    const SharedId& id,
+    const ExtentInfo& extent_info,
+    const Extent& atlas_position)
 {
-    snail::Image img{image_file, snail::Color{0, 0, 0}};
+    snail::Image img{fs::path(extent_info.image_path.get()),
+                     snail::Color{0, 0, 0}};
+
+    // Add a new buffer for this atlas. The assumption is that all the
+    // defined sprites will fit on this buffer. This assumption might
+    // not hold in the degenerate case, but for the atlases used
+    // (character.bmp, image.bmp) there is still a good amount of
+    // unused space to hold any potential overflow.
+
+    size_t info_index = 0;
+
+    // Get the source loaded from a definition file.
+    Extent dest{0, 0, 0, 0};
+
+    auto it = storage.find(id);
+    if (it != storage.end())
+    {
+        dest = it->second;
+        info_index = dest.buffer - max_buffers;
+    }
+    else
+    {
+        assert(atlas_position.right() < img.width());
+        assert(atlas_position.bottom() < img.height());
+
+        // Find a region on a buffer to place the sprite.
+
+        // FIXME: refactor this dirty hack.
+        int width = atlas_position.width;
+        int height = atlas_position.height;
+        if (extent_info.type == PageType::portrait)
+        {
+            width = _displayed_portrait_width;
+            height = _displayed_portrait_height;
+        }
+
+        size_t skyline_index;
+        std::tie(dest, skyline_index) = find_extent(
+            width,
+            height,
+            extent_info.type,
+            info_index,
+            img.width(),
+            img.height());
+        dest.frame_width = atlas_position.frame_width;
+
+        // Update the sprite packing information.
+        auto& info = buffers.at(info_index);
+        info.insert_extent(skyline_index, dest);
+    }
+
+    gsel(dest.buffer);
+
+    // Render the defined portion of the image onto the buffer.
+    if (extent_info.type == PageType::portrait)
+    {
+        copy_image_portrait(img, atlas_position, dest);
+    }
+    else
+    {
+        copy_image_cropped(img, atlas_position, dest);
+    }
+
+    return dest;
+}
+
+Extent PicLoader::load_image_extent(
+    const SharedId& id,
+    const ExtentInfo& extent_info)
+{
+    snail::Image img{fs::path{extent_info.image_path.get()},
+                     snail::Color{0, 0, 0}};
     Extent ext{0, 0, 0, 0};
 
     auto it = storage.find(id);
@@ -168,7 +239,12 @@ void PicLoader::load(
         size_t info_index = 0;
         size_t skyline_index;
         std::tie(ext, skyline_index) = find_extent(
-            img.width(), img.height(), type, info_index, 1024, 1024);
+            img.width(),
+            img.height(),
+            extent_info.type,
+            info_index,
+            1024,
+            1024);
 
         // Update the sprite packing information.
         auto& info = buffers.at(info_index);
@@ -177,11 +253,47 @@ void PicLoader::load(
 
     // Render the sprite to the region of the buffer that was found.
     gsel(ext.buffer);
-
     copy_image(img, ext);
 
-    // Store the buffer region for later lookup.
-    storage[id] = ext;
+    return ext;
+}
+
+PicLoader::MapType::iterator PicLoader::load_extent(
+    const IdType& id,
+    const ExtentInfo& extent_info)
+{
+    Extent extent;
+
+    if (extent_info.atlas_position)
+    {
+        extent =
+            load_atlas_extent(id, extent_info, *extent_info.atlas_position);
+    }
+    else
+    {
+        extent = load_image_extent(id, extent_info);
+    }
+
+    return storage.try_emplace(id, extent).first;
+}
+
+void PicLoader::add_image_extent(
+    const fs::path& image_file,
+    const IdType& id,
+    PageType type)
+{
+    assert(extent_info.find(id) == extent_info.end());
+
+    extent_info[id] = ExtentInfo{
+        false,
+        none,
+        SharedId(filepathutil::make_preferred_path_in_utf8(image_file)),
+        type};
+
+    if (get_buffers_of_type(type).size() == 0)
+    {
+        add_buffer(type);
+    }
 }
 
 void PicLoader::add_predefined_extents(
@@ -189,67 +301,20 @@ void PicLoader::add_predefined_extents(
     const MapType& extents,
     PageType type)
 {
-    snail::Image img{atlas_file, snail::Color{0, 0, 0}};
-
-    // Add a new buffer for this atlas. The assumption is that all the
-    // defined sprites will fit on this buffer. This assumption might
-    // not hold in the degenerate case, but for the atlases used
-    // (character.bmp, image.bmp) there is still a good amount of
-    // unused space to hold any potential overflow.
-
-    size_t info_index = 0;
-    for (auto& pair : extents)
+    for (const auto& pair : extents)
     {
-        // Get the source loaded from a definition file.
-        const Extent& source = pair.second;
-        Extent dest{0, 0, 0, 0};
+        assert(extent_info.find(pair.first) == extent_info.end());
+        extent_info[pair.first] = ExtentInfo{
+            false,
+            pair.second,
+            SharedId(filepathutil::make_preferred_path_in_utf8(atlas_file)),
+            type};
+    }
 
-        auto it = storage.find(pair.first);
-        if (it != storage.end())
-        {
-            dest = it->second;
-            info_index = dest.buffer - max_buffers;
-        }
-        else
-        {
-            assert(source.right() < img.width());
-            assert(source.bottom() < img.height());
-
-            // Find a region on a buffer to place the sprite.
-
-            // FIXME: refactor this dirty hack.
-            int width = source.width;
-            int height = source.height;
-            if (type == PageType::portrait)
-            {
-                width = _displayed_portrait_width;
-                height = _displayed_portrait_height;
-            }
-
-            size_t skyline_index;
-            std::tie(dest, skyline_index) = find_extent(
-                width, height, type, info_index, img.width(), img.height());
-            dest.frame_width = source.frame_width;
-
-            // Update the sprite packing information.
-            auto& info = buffers.at(info_index);
-            info.insert_extent(skyline_index, dest);
-
-            // Store the buffer region for later lookup.
-            storage[pair.first] = dest;
-        }
-
-        gsel(dest.buffer);
-
-        // Render the defined portion of the image onto the buffer.
-        if (type == PageType::portrait)
-        {
-            copy_image_portrait(img, source, dest);
-        }
-        else
-        {
-            copy_image_cropped(img, source, dest);
-        }
+    if (get_buffers_of_type(type).size() == 0)
+    {
+        snail::Image image{atlas_file};
+        add_buffer(type, image.width(), image.height());
     }
 }
 

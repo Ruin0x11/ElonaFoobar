@@ -83,7 +83,7 @@ data:add_multi(
    "core.map_tileset",
    {
       {
-         id = "0_0",
+         id = "0_default",
          tiles = {
             door_closed = tile(0, 726),
             door_open = tile(0, 236),
@@ -97,6 +97,16 @@ data:add_multi(
             tunnel = chance(0, 33),
             pot = tile(0, 242),
          },
+      },
+      {
+         id = "0_0",
+         parent = "core.0_default",
+         tiles = {}
+      },
+      {
+         id = "0_1",
+         parent = "core.0_default",
+         tiles = {}
       },
       {
          id = "1_default",
@@ -414,7 +424,7 @@ data:add_multi(
          id = "1_1",
          parent = "core.1_default",
          tiles = {
-            wall = tile(1, -1), -- TODO
+            wall = tile(1, 0), -- TODO
             fog = chance(1, 396, 4, 2),
          }
       },
@@ -422,7 +432,7 @@ data:add_multi(
          id = "2_1",
          parent = "core.2_default",
          tiles = {
-            wall = tile(2, -1), -- TODO
+            wall = tile(2, 0), -- TODO
             fog = chance(2, 396, 4, 2),
          }
       },

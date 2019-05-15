@@ -239,42 +239,52 @@ public:
         std::vector<Skyline> skylines;
     };
 
+    struct ExtentInfo
+    {
+        bool loaded;
+        optional<Extent> atlas_position;
+        SharedId image_path;
+        PageType type;
+    };
 
     using IdType = SharedId;
     using MapType = tsl::ordered_map<IdType, Extent>;
 
     void clear();
 
-    /***
-     * Loads a single sprite into a buffer of the provided type into
-     * which it will fit. May allocate a new buffer if none are found.
+    /**
+     * Adds an image as an extent that could be lazily loaded.
      */
-    void load(const fs::path&, const IdType&, PageType);
+    void add_image_extent(const fs::path&, const IdType&, PageType);
 
-    /***
-     * Loads a map of rectangular extents indexed by an ID
-     * ("core.chara_sprite.<xxx>", etc.) using a map file.
-     *
-     * This does not copy the atlas image directly to a buffer, but
-     * instead copies the individual texture regions of the atlas into
-     * potentially multiple buffers. The reason is that it's difficult
-     * to add the known locations of sprites to the structs with
-     * skyline information, which expect the available texture regions
-     * to have been split or merged by previous texture region
-     * insertions.
+    /**
+     * Adds a map of rectangular extents indexed by an ID
+     * ("core.chara_sprite.<xxx>", etc.) using a map file that could be lazily
+     * loaded.
      */
     void add_predefined_extents(const fs::path&, const MapType&, PageType);
 
-    optional_ref<const Extent> operator[](const IdType& id) const
+    optional_ref<const Extent> operator[](const IdType& id)
     {
         const auto itr = storage.find(id);
         if (itr == std::end(storage))
-            return none;
-        else
-            return itr->second;
+        {
+            const auto info_itr = extent_info.find(id);
+            if (info_itr == std::end(extent_info))
+            {
+                return none;
+            }
+            else
+            {
+                const auto new_itr = load_extent(id, info_itr->second);
+                return new_itr->second;
+            }
+        }
+
+        return itr->second;
     }
 
-    optional_ref<const Extent> operator[](const std::string& inner_id) const
+    optional_ref<const Extent> operator[](const std::string& inner_id)
     {
         return (*this)[SharedId(inner_id)];
     }
@@ -292,8 +302,21 @@ public:
         return result;
     }
 
+    void clear_buffers_of_type(PageType type)
+    {
+    }
 
 private:
+    Extent load_atlas_extent(const SharedId&, const ExtentInfo&, const Extent&);
+
+    Extent load_image_extent(const SharedId&, const ExtentInfo&);
+
+    /**
+     * Loads a single sprite into a buffer based on its extent info.
+     */
+    MapType::iterator load_extent(const IdType&, const ExtentInfo&);
+
+
     BufferInfo& add_buffer(PageType type)
     {
         return add_buffer(type, 1024, 1024);
@@ -304,6 +327,8 @@ private:
 
     std::vector<BufferInfo> buffers;
     MapType storage;
+
+    tsl::ordered_map<IdType, ExtentInfo> extent_info;
 };
 
 

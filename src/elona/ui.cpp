@@ -1989,7 +1989,7 @@ void event_7_modify_screen()
             {
                 dx = map_data.width;
             }
-            ap = cell_data.at(dx, dy).chip_id_actual;
+            ap = cell_data.at(dx, dy).chip_id_actual % 825;
             gmode(0);
             gcopy_c(
                 2,

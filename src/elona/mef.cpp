@@ -168,7 +168,7 @@ void mef_update()
                         }
                         if (chip_data.for_cell(x, y).effect & 4)
                         {
-                            cell_data.at(x, y).chip_id_actual = 37;
+                            cell_data.at(x, y).set_actual_in_map(37);
                             cnt = 0 - 1;
                             continue;
                         }

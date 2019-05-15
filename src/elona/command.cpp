@@ -3052,7 +3052,7 @@ static TurnResult _pre_proc_movement_event()
 {
     if (map_data.type == mdata_t::MapType::world_map)
     {
-        if (is_world_map_water(
+        if (map_is_water_overworld_chip(
                 cell_data
                     .at(cdata[cc].next_position.x, cdata[cc].next_position.y)
                     .chip_id_actual))

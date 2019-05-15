@@ -825,7 +825,7 @@ void proc_event()
                     }
                     if (rnd(4) || f == 1)
                     {
-                        cell_data.at(dx, dy).chip_id_actual = 37;
+                        cell_data.at(dx, dy).set_actual_in_map(37);
                     }
                     if (rnd(10) == 0 || f == 1)
                     {
@@ -872,7 +872,7 @@ void proc_event()
             {
                 x = rnd(map_data.width);
                 y = rnd(map_data.height);
-                cell_data.at(x, y).chip_id_actual = 37;
+                cell_data.at(x, y).set_actual_in_map(37);
             }
             x = rnd(inf_screenw) + scx;
             y = rnd(inf_screenh) + scy;

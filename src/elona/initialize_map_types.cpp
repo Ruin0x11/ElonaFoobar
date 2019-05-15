@@ -2044,7 +2044,8 @@ static void _init_map_fields_forest()
         flttypemajor = 80000;
         itemcreate(-1, 0, -1, -1, 0);
         inv[ci].own_state = 1;
-        cell_data.at(inv[ci].position.x, inv[ci].position.y).chip_id_actual = 0;
+        cell_data.at(inv[ci].position.x, inv[ci].position.y).chip_id_actual =
+            0 + 825;
     }
 }
 
@@ -2220,7 +2221,8 @@ static void _init_map_fields_maybe_generate_encounter()
             flt(calcobjlv(encounterlv), calcfixlv(Quality::bad));
             if (game_data.weather == 1)
             {
-                if (!is_world_map_road(game_data.stood_world_map_tile) &&
+                if (!map_is_road_overworld_chip(
+                        game_data.stood_world_map_tile) &&
                     rnd(3) == 0)
                 {
                     fixlv = Quality::godly;
@@ -2261,19 +2263,19 @@ static void _init_map_fields()
     }
 
     mdatan(0) = "";
-    if (is_world_map_forest(game_data.stood_world_map_tile))
+    if (map_is_forest_overworld_chip(game_data.stood_world_map_tile))
     {
         _init_map_fields_forest();
     }
-    if (is_world_map_water(game_data.stood_world_map_tile))
+    if (map_is_water_overworld_chip(game_data.stood_world_map_tile))
     {
         _init_map_fields_sea();
     }
-    if (is_world_map_grassland(game_data.stood_world_map_tile))
+    if (map_is_grassland_overworld_chip(game_data.stood_world_map_tile))
     {
         _init_map_fields_grassland();
     }
-    if (is_world_map_desert(game_data.stood_world_map_tile))
+    if (map_is_desert_overworld_chip(game_data.stood_world_map_tile))
     {
         _init_map_fields_desert();
     }
@@ -2287,7 +2289,7 @@ static void _init_map_fields()
     }
 
     map_placeplayer();
-    if (is_world_map_water(game_data.stood_world_map_tile))
+    if (map_is_water_overworld_chip(game_data.stood_world_map_tile))
     {
         for (int cnt = 0, cnt_end = (4 + rnd(5)); cnt < cnt_end; ++cnt)
         {

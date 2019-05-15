@@ -12,6 +12,11 @@ namespace elona
  */
 void TintedBuffers::reserve_tinted_buffer(int buffer_id)
 {
+    if (_buffer_mapping.find(buffer_id) != _buffer_mapping.end())
+    {
+        return;
+    }
+
     assert(_current_index < max_buffers);
 
     const auto tinted_buffer = _current_index + 10 + PicLoader::max_buffers;

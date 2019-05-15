@@ -96,7 +96,8 @@ bool _magic_1136()
                 {
                     p = cell_data.at(dx + x(cnt2) * cnt, dy + y(cnt2) * cnt)
                             .chip_id_actual;
-                    if (is_world_map_water(p) || chip_data[p].effect & 4)
+                    if (map_is_water_overworld_chip(p) ||
+                        chip_data[p].effect & 4)
                     {
                         f = 0;
                         break;
@@ -3156,7 +3157,7 @@ bool _magic_465()
             dx = cnt;
             if (rnd(3) == 0)
             {
-                cell_data.at(dx, dy).chip_id_actual = 12 + rnd(2);
+                cell_data.at(dx, dy).set_actual_in_map(12 + rnd(2));
             }
             if (rnd(40) == 0)
             {
