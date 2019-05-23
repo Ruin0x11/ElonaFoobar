@@ -1,5 +1,6 @@
 #include "data_manager.hpp"
 
+#include "../../util/filepathutil.hpp"
 #include "../../util/natural_order_comparator.hpp"
 #include "../log.hpp"
 #include "api_manager.hpp"
@@ -24,47 +25,81 @@ void DataManager::clear()
     sol::table data = _lua->get_state()->script_file(filepathutil::to_utf8_path(
         filesystem::dir::data() / "script" / "kernel" / "data.lua"));
     _data.storage() = data;
+
+    _scripts.clear();
 }
 
-void DataManager::_init_from_mod(ModInfo& mod)
+void DataManager::add_data_script(
+    const std::string& filename,
+    int priority,
+    sol::environment env)
 {
-    // Bypass the metatable on the mod's environment preventing creation of
-    // new global variables.
-    mod.env.raw_set("data", _data.storage());
-
-    if (mod.manifest.path)
+    auto mod_id = env.get<std::string>("_MOD_ID");
+    auto path = filesystem::dir::for_mod(mod_id) / filename;
+    if (!fs::exists(path))
     {
-        // The name of the mod for which the current data script is being ran is
-        // present in the mod's environment table. However, it is not present in
-        // the chunk where the 'data' table originates from, as it originated
-        // outside of a mod environment. To determine which mod is adding new
-        // types/data in the data chunk, it has to be set on the global Lua
-        // state temporarily during the data loading process.
-        _lua->get_state()->set("_MOD_ID", mod.manifest.id);
+        throw std::runtime_error(
+            "Data script at " +
+            filepathutil::make_preferred_path_in_utf8(path) +
+            " doesn't exist.");
+    }
 
-        const auto data_script = *mod.manifest.path / "data.lua";
-        if (fs::exists(data_script))
-        {
-            auto result = _lua->get_state()->safe_script_file(
-                filepathutil::to_utf8_path(data_script),
-                mod.env,
-                sol::script_pass_on_error);
+    ELONA_LOG("lua.data") << "Add data script "
+                          << filepathutil::make_preferred_path_in_utf8(path);
 
-            if (!result.valid())
-            {
-                sol::error err = result;
-                throw err;
-            }
-        }
+    _scripts.add_script(priority, mod_id, path);
+}
+
+void DataManager::_init_from_mod(ModInfo& mod, const fs::path& script)
+{
+    // The name of the mod for which the current data script is being ran is
+    // present in the mod's environment table. However, it is not present in
+    // the chunk where the 'data' table originates from, as it originated
+    // outside of a mod environment. To determine which mod is adding new
+    // types/data in the data chunk, it has to be set on the global Lua
+    // state temporarily during the data loading process.
+    _lua->get_state()->set("_MOD_ID", mod.manifest.id);
+
+    auto result = _lua->get_state()->safe_script_file(
+        filepathutil::to_utf8_path(script), mod.env, sol::script_pass_on_error);
+
+    if (!result.valid())
+    {
+        sol::error err = result;
+        throw err;
     }
 }
 
 void DataManager::init_from_mods()
 {
-    for (const auto& mod_id : _lua->get_mod_manager().calculate_loading_order())
+    for (auto& mod : _lua->get_mod_manager().enabled_mods())
     {
-        const auto& mod = _lua->get_mod_manager().get_enabled_mod(mod_id);
-        _init_from_mod(*mod);
+        // Bypass the metatable on the mod's environment preventing creation of
+        // new global variables.
+        mod.second->env.raw_set("data", _data.storage());
+    }
+
+    // For each registered priority, run the scripts registered by mod loading
+    // order.
+    for (const auto& priority : _scripts.priorities)
+    {
+        const auto& scripts_in_priority = _scripts.storage.at(priority);
+
+        for (const auto& mod_id :
+             _lua->get_mod_manager().calculate_loading_order())
+        {
+            const auto it = scripts_in_priority.find(mod_id);
+            if (it != scripts_in_priority.end())
+            {
+                const auto& mod =
+                    _lua->get_mod_manager().get_enabled_mod(mod_id);
+
+                for (const auto& script : it->second)
+                {
+                    _init_from_mod(*mod, script);
+                }
+            }
+        }
     }
 
     _lua->get_state()->set("_MOD_ID", sol::lua_nil);

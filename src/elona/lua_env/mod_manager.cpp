@@ -105,6 +105,13 @@ void ModManager::load_mod(ModInfo& mod)
         return;
     }
 
+    // TODO if init.lua load fails, do not run data script.
+    auto data_script = *mod.manifest.path / "data.lua";
+    if (fs::exists(data_script))
+    {
+        lua_->get_data_manager().add_data_script("data.lua", 100, mod.env);
+    }
+
     auto result = lua_->get_state()->safe_script_file(
         filepathutil::to_utf8_path(*mod.manifest.path / u8"init.lua"s),
         mod.env);

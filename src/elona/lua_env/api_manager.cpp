@@ -1,5 +1,6 @@
 #include "api_manager.hpp"
 #include <iterator>
+#include "data_manager.hpp"
 #include "enums/enums.hpp"
 #include "lua_api/lua_api.hpp"
 #include "lua_class/lua_class.hpp"
@@ -125,7 +126,30 @@ sol::table APIManager::bind(LuaEnv& lua)
                 sol::optional<sol::table> result = sol::nullopt;
                 result = lua.get_api_manager().try_find_api("core", module);
                 return result;
-            }));
+            }),
+        "load_data",
+        [&lua](
+            const std::string& filename,
+            sol::optional<int> priority,
+            sol::this_environment this_env) {
+            sol::environment env = this_env;
+            int priority_;
+
+            if (priority)
+            {
+                priority_ = *priority;
+            }
+            else
+            {
+                std::string mod_id = env.get<std::string>("_MOD_ID");
+                priority_ =
+                    lua.get_data_manager().next_script_priority_for_mod(mod_id);
+            }
+
+            lua.get_data_manager().add_data_script(filename, priority_, env);
+        });
+
+    ;
 }
 
 void APIManager::set_on(LuaEnv& lua)
